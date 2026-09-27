@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Casts\DateOnly;
 use App\Enums\BookingSource;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -12,7 +13,7 @@ class LocationBooking extends Model
 
     protected function casts(): array
     {
-        return ['source' => BookingSource::class, 'booking_date' => 'date'];
+        return ['source' => BookingSource::class, 'booking_date' => DateOnly::class];
     }
 
     public function location(): BelongsTo

@@ -15,7 +15,7 @@ class Invoice extends Model
     {
         return [
             'status' => InvoiceStatus::class,
-            'due_date' => 'date',
+            'due_date' => \App\Casts\DateOnly::class,
             'amount_fils' => 'integer', 'paid_fils' => 'integer',
             'reminder_before_sent_at' => 'datetime', 'reminder_after_sent_at' => 'datetime',
         ];

@@ -14,7 +14,7 @@ class StudentProgress extends Model
 
     protected function casts(): array
     {
-        return ['type' => ProgressType::class, 'recorded_on' => 'date', 'surah_number' => 'integer', 'from_ayah' => 'integer', 'to_ayah' => 'integer', 'ayah_count' => 'integer'];
+        return ['type' => ProgressType::class, 'recorded_on' => \App\Casts\DateOnly::class, 'surah_number' => 'integer', 'from_ayah' => 'integer', 'to_ayah' => 'integer', 'ayah_count' => 'integer'];
     }
 
     public function student(): BelongsTo

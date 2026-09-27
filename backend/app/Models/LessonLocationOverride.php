@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Casts\DateOnly;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
@@ -11,7 +12,7 @@ class LessonLocationOverride extends Model
 
     protected function casts(): array
     {
-        return ['override_date' => 'date', 'notified_at' => 'datetime'];
+        return ['override_date' => DateOnly::class, 'notified_at' => 'datetime'];
     }
 
     public function lesson(): BelongsTo

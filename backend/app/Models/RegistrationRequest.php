@@ -24,7 +24,7 @@ class RegistrationRequest extends Model
             'status' => RegistrationStatus::class,
             'memorization_level' => MemorizationLevel::class,
             'locale' => Locale::class,
-            'birth_date' => 'date',
+            'birth_date' => \App\Casts\DateOnly::class,
             'decided_at' => 'datetime',
             'age_at_start' => 'integer',
             'waitlist_position' => 'integer',

@@ -1,0 +1,39 @@
+<?php
+
+namespace App\Http\Resources;
+
+use Illuminate\Http\Request;
+use Illuminate\Http\Resources\Json\JsonResource;
+
+class ExamResource extends JsonResource
+{
+    public function toArray(Request $request): array
+    {
+        return [
+            'id' => $this->id,
+            'name' => $this->name,
+            'type' => $this->type?->value,
+            'type_label' => $this->type?->label(),
+            'status' => $this->status?->value,
+            'status_label' => $this->status?->label(),
+            'package_id' => $this->package_id,
+            'package_name' => $this->whenLoaded('package', fn () => $this->package?->localizedName(app()->getLocale())),
+            'lesson_id' => $this->lesson_id,
+            'lesson_name' => $this->whenLoaded('lesson', fn () => $this->lesson?->name),
+            'exam_date' => $this->exam_date?->toDateString(),
+            'opens_at' => display_tz($this->opens_at)?->toIso8601String(),
+            'closes_at' => display_tz($this->closes_at)?->toIso8601String(),
+            'is_open_now' => $this->isOpenAt(now()),
+            'duration_minutes' => $this->duration_minutes,
+            'total_marks' => $this->total_marks,
+            'pass_mark' => $this->pass_mark,
+            'syllabus' => $this->syllabus,
+            'randomize' => $this->randomize,
+            'questions_count' => $this->whenCounted('questions'),
+            'attempts_count' => $this->whenCounted('attempts'),
+            'questions' => ExamQuestionResource::collection($this->whenLoaded('questions')),
+            'results_sent_at' => display_tz($this->results_sent_at)?->toIso8601String(),
+            'created_at' => display_tz($this->created_at)?->toIso8601String(),
+        ];
+    }
+}

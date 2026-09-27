@@ -24,7 +24,8 @@ class StudentSummaryResource extends JsonResource
             'student_phone' => $this->student_phone,
             'locale' => $this->locale?->value,
             'has_photo' => $this->photo_path !== null,
-            'photo_url' => $this->when($this->photo_path !== null, fn () => route('media.student-photo', ['student' => $this->id, 'size' => 'thumb'])),
+            'photo_url' => $this->photoUrl('thumb'),
+            'photo_urls' => $this->photoUrls(),
             'balance_fils' => $this->whenLoaded('wallet', fn () => $this->wallet?->balance_fils ?? 0),
             'is_due' => $this->whenLoaded('wallet', fn () => ($this->wallet?->balance_fils ?? 0) < 0),
         ];

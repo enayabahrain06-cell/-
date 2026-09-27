@@ -14,7 +14,7 @@ class Evaluation extends Model
     {
         return [
             'type' => EvaluationType::class,
-            'evaluated_on' => 'date',
+            'evaluated_on' => \App\Casts\DateOnly::class,
             'sent_to_guardian_at' => 'datetime',
             'memorization' => 'integer', 'tajweed' => 'integer', 'revision' => 'integer', 'behavior' => 'integer',
         ];

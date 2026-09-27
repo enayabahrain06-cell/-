@@ -9,6 +9,8 @@ return [
         'system_en' => 'Ahl Al-Quran System',
     ],
 
+    'frontend_url' => rtrim(env('FRONTEND_URL', 'http://localhost:5173'), '/'),
+
     'display_timezone' => env('APP_DISPLAY_TIMEZONE', 'Asia/Bahrain'),
     'country_code' => env('DEFAULT_COUNTRY_CODE', '973'),
     'currency' => env('DEFAULT_CURRENCY', 'BHD'),

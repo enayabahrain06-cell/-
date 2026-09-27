@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Casts\DateOnly;
 use App\Enums\SessionStatus;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -18,7 +19,7 @@ class LessonSession extends Model
     {
         return [
             'status' => SessionStatus::class,
-            'session_date' => 'date',
+            'session_date' => DateOnly::class,
             'reminder_sent_at' => 'datetime',
             'attendance_taken_at' => 'datetime',
         ];

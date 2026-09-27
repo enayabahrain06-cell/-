@@ -29,7 +29,7 @@ class Student extends Model
             'status' => StudentStatus::class,
             'memorization_level' => MemorizationLevel::class,
             'locale' => Locale::class,
-            'birth_date' => 'date',
+            'birth_date' => \App\Casts\DateOnly::class,
             'yearly_target_ayahs' => 'integer',
         ];
     }
@@ -138,5 +138,26 @@ class Student extends Model
     public function primaryPhone(): string
     {
         return $this->student_phone ?: $this->guardian_phone;
+    }
+
+    /** Temporary signed URL (10 minutes) for a photo variant, or null when there is no photo. */
+    public function photoUrl(string $size = 'thumb'): ?string
+    {
+        $path = $size === 'profile' ? $this->photo_path : $this->photo_thumb_path;
+        if (! $path) {
+            return null;
+        }
+
+        return \Illuminate\Support\Facades\URL::temporarySignedRoute(
+            'media.student-photo',
+            now()->addMinutes((int) config('ahl.media.signed_url_minutes', 10)),
+            ['student' => $this->id, 'size' => $size]
+        );
+    }
+
+    /** @return array{profile: string|null, thumb: string|null} */
+    public function photoUrls(): array
+    {
+        return ['profile' => $this->photoUrl('profile'), 'thumb' => $this->photoUrl('thumb')];
     }
 }

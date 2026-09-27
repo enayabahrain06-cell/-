@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Casts\DateOnly;
 use App\Enums\LessonStatus;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -20,8 +21,8 @@ class Lesson extends Model
         return [
             'status' => LessonStatus::class,
             'days' => 'array',
-            'start_date' => 'date',
-            'end_date' => 'date',
+            'start_date' => DateOnly::class,
+            'end_date' => DateOnly::class,
             'capacity' => 'integer',
         ];
     }

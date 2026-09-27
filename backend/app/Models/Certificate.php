@@ -4,12 +4,13 @@ namespace App\Models;
 
 use App\Enums\CertificateType;
 use App\Models\Concerns\HasMedia;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Certificate extends Model
 {
-    use HasMedia;
+    use HasFactory, HasMedia;
 
     protected $guarded = ['id'];
 
