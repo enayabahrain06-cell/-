@@ -67,6 +67,8 @@ saar/
 | 2.10 | Reports | Attendance, repeated absence, evaluation/memorization, exam results, teacher performance, messages, finance. Filters; Excel + PDF exports; weekly report command → admins via WhatsApp. |
 | 2.11 | Dashboard & settings | KPIs, today's lessons with location status, attendance chart data, alerts box, settings CRUD (authority, logo, timings, tz, country code, hijri, currency, photo_required). |
 | 2.12 | Student photo & media | `MediaService` (polymorphic store/delete), `PhotoProcessor` (Intervention: auto-orient, square crop, 512 + 96 WebP, original discarded), signed 10-minute photo URL route + policy, bulk ZIP/folder importer matching by student ID or phone. |
+| 2.14 | Honor board (section 13) | Monthly ranking per track (attendance 40% + evaluation 40% + new memorization 20%, weights in settings), monthly snapshots, badges + student_badges with rule engine and scheduled awarding, podium, honoring action (certificates, WhatsApp), circle of the month, student/guardian view, TV display mode. |
+| 2.15 | Competitions and challenges (section 14) | Competitions (rounds, participants, judges, weighted criteria, averaged scores, tie-break, hidden results until published, prizes, certificates) and challenges (goal types computed from ledgers nightly and on save, rewards once), eligibility by age/track/scope, registration windows, reminders, reports. |
 | 2.13 | Seeders | Roles/permissions, settings, templates (AR/EN), demo users, demo data with Bahraini names. |
 
 ### Phase 3 — Frontend
@@ -112,7 +114,7 @@ saar/
 
 ## Status (2026-09-27)
 
-Done: 2.0, 2.1, 2.2, 2.3, 2.5, 2.6, 2.6b, 2.7, 2.8, 2.9, 2.12, plus the frontend scaffold and login page (part of 3.0 and 3.1). Next (user priority): 2.11 dashboard API and the dashboard page with the app shell, then the other pages; 2.4 lottery (per gender), 2.10, 2.13 remain.
+Done: 2.0, 2.1, 2.2, 2.3, 2.5, 2.6, 2.6b, 2.7, 2.8, 2.9, 2.12, plus the frontend scaffold and login page (part of 3.0 and 3.1). Next (user priority): dashboard page done (backend 2.11 dashboard part + frontend shell and dashboard, commit below); then the other pages one by one. Backend still to do: 2.4 lottery (per gender), 2.10 reports, 2.11 settings, 2.13 seeders, 2.14 honor board, 2.15 competitions and challenges.
 
 ## Order of delivery from here
 

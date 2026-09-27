@@ -1,0 +1,55 @@
+{
+  "title": "لوحة التحكم",
+  "greeting": "مرحباً، {{name}}",
+  "track": { "male": "مسار البنين", "female": "مسار البنات", "both": "المساران" },
+  "own_circles": "حلقاتك فقط",
+  "refresh": "تحديث",
+  "error": "تعذر تحميل لوحة التحكم.",
+  "retry": "إعادة المحاولة",
+  "kpi": {
+    "active_students": "الطلاب النشطون",
+    "active_circles": "الحلقات النشطة",
+    "sessions_today": "حلقات اليوم",
+    "attendance_taken": "رُصد الحضور في {{taken}} من {{total}}",
+    "attendance_rate_7d": "الحضور خلال ٧ أيام",
+    "pending_registrations": "طلبات تسجيل معلقة",
+    "collected_this_month": "المحصّل هذا الشهر",
+    "students_due": "طلاب عليهم مستحقات",
+    "outstanding": "إجمالي المستحق {{amount}}"
+  },
+  "today": {
+    "title": "حلقات اليوم",
+    "empty": "لا توجد حلقات اليوم.",
+    "attendance_done": "تم رصد الحضور",
+    "attendance_pending": "لم يُرصد الحضور",
+    "present_of": "{{present}} حاضر من {{enrolled}}",
+    "no_teacher": "بدون معلم",
+    "status": {
+      "ok": "القاعة جاهزة",
+      "changed": "تغيّرت القاعة اليوم",
+      "conflict": "تعارض في القاعة",
+      "no_hall": "لا توجد قاعة",
+      "cancelled": "ملغاة"
+    }
+  },
+  "chart": {
+    "title": "الحضور — آخر ١٤ يوماً",
+    "subtitle": "عدد الطلاب يومياً حسب الحالة",
+    "present": "حاضر",
+    "late": "متأخر",
+    "absent": "غائب",
+    "excused": "معذور",
+    "rate": "نسبة الحضور",
+    "date": "التاريخ",
+    "show_table": "عرض كجدول",
+    "show_chart": "عرض كرسم",
+    "empty": "لا توجد بيانات حضور في هذه الفترة."
+  },
+  "alerts": {
+    "title": "تنبيهات تحتاج إلى قرار",
+    "empty": "لا توجد تنبيهات مفتوحة.",
+    "resolve": "تم التعامل",
+    "resolving": "جارٍ الحفظ…",
+    "severity": { "danger": "عاجل", "warning": "تنبيه", "info": "معلومة" }
+  }
+}

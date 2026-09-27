@@ -27,6 +27,7 @@ class LessonSessionController extends Controller
                 'attendances as absent_count' => fn ($q) => $q->where('status', 'absent'),
             ])
             ->where('session_date', $date)
+            ->tap(fn ($q) => \App\Support\Track::scopeVia($q, $user, 'lesson'))
             ->when(! $user->can('lessons.manage'), fn ($q) => $q->whereHas('lesson', fn ($l) => $l->where('teacher_id', $user->id)))
             ->orderBy('start_time')
             ->get();

@@ -8,6 +8,7 @@ export interface AuthUser {
   gender: string | null
   locale: 'ar' | 'en'
   is_active: boolean
+  track?: 'male' | 'female' | 'both'
   roles: string[]
   permissions: string[]
 }

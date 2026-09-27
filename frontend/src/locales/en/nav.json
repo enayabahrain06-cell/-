@@ -1,0 +1,21 @@
+{
+  "main": "Main menu",
+  "open_menu": "Open menu",
+  "close_menu": "Close menu",
+  "dashboard": "Dashboard",
+  "lessons": "Circles & halls",
+  "students": "Students",
+  "teachers": "Teachers",
+  "attendance": "Attendance",
+  "evaluation": "Evaluation & memorization",
+  "exams": "Exams",
+  "lottery": "Lottery",
+  "packages": "Packages & registration",
+  "payments": "Payments & wallets",
+  "messages": "Messages",
+  "reports": "Reports",
+  "users": "Users & permissions",
+  "settings": "Settings",
+  "coming_soon": "This page is being built",
+  "coming_soon_body": "The backend for this section is ready; its screens come in the next step."
+}

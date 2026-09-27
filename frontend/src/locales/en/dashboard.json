@@ -1,0 +1,55 @@
+{
+  "title": "Dashboard",
+  "greeting": "Welcome, {{name}}",
+  "track": { "male": "Boys track", "female": "Girls track", "both": "Both tracks" },
+  "own_circles": "Your circles only",
+  "refresh": "Refresh",
+  "error": "Could not load the dashboard.",
+  "retry": "Try again",
+  "kpi": {
+    "active_students": "Active students",
+    "active_circles": "Active circles",
+    "sessions_today": "Circles today",
+    "attendance_taken": "Attendance taken in {{taken}} of {{total}}",
+    "attendance_rate_7d": "Attendance rate (7 days)",
+    "pending_registrations": "Pending registrations",
+    "collected_this_month": "Collected this month",
+    "students_due": "Students with dues",
+    "outstanding": "Total outstanding {{amount}}"
+  },
+  "today": {
+    "title": "Today's circles",
+    "empty": "No circles today.",
+    "attendance_done": "Attendance taken",
+    "attendance_pending": "Attendance not taken",
+    "present_of": "{{present}} present of {{enrolled}}",
+    "no_teacher": "No teacher",
+    "status": {
+      "ok": "Hall ready",
+      "changed": "Hall changed today",
+      "conflict": "Hall conflict",
+      "no_hall": "No hall",
+      "cancelled": "Cancelled"
+    }
+  },
+  "chart": {
+    "title": "Attendance — last 14 days",
+    "subtitle": "Students per day by status",
+    "present": "Present",
+    "late": "Late",
+    "absent": "Absent",
+    "excused": "Excused",
+    "rate": "Attendance rate",
+    "date": "Date",
+    "show_table": "Show as table",
+    "show_chart": "Show as chart",
+    "empty": "No attendance recorded in this period."
+  },
+  "alerts": {
+    "title": "Alerts needing a decision",
+    "empty": "No open alerts.",
+    "resolve": "Handled",
+    "resolving": "Saving…",
+    "severity": { "danger": "Urgent", "warning": "Warning", "info": "Info" }
+  }
+}

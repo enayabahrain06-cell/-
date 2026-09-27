@@ -9,6 +9,7 @@ interface AuthState {
   signIn: (res: TokenResponse) => void
   signOut: () => Promise<void>
   hasRole: (...roles: string[]) => boolean
+  can: (...permissions: string[]) => boolean
 }
 
 const AuthContext = createContext<AuthState | null>(null)
@@ -45,7 +46,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const hasRole = useCallback((...roles: string[]) => !!user?.roles.some((r) => roles.includes(r)), [user])
 
-  const value = useMemo(() => ({ user, loading, signIn, signOut, hasRole }), [user, loading, signIn, signOut, hasRole])
+  /** True when the user holds any of the given permissions. */
+  const can = useCallback((...perms: string[]) => !!user?.permissions?.some((p) => perms.includes(p)), [user])
+
+  const value = useMemo(() => ({ user, loading, signIn, signOut, hasRole, can }), [user, loading, signIn, signOut, hasRole, can])
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>
 }
 

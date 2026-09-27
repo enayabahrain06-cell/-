@@ -69,6 +69,69 @@ class DemoUsersSeeder extends Seeder
             LessonStudent::updateOrCreate(['lesson_id' => $circle->id, 'student_id' => $student->id], ['status' => 'active', 'joined_at' => $circle->start_date->toDateString()]);
             app(SessionGenerator::class)->generateFor($circle);
         }
+
+        $this->history($boysCircle, 'male', ['يوسف', 'عبدالله', 'حسن', 'سلمان', 'عيسى', 'راشد'], $maleTeacher);
+        $this->history($girlsCircle, 'female', ['مريم', 'زينب', 'نور', 'سارة', 'هدى', 'ريم'], $femaleTeacher);
+    }
+
+    /**
+     * A small class per circle plus three weeks of past sessions with attendance, daily scores and
+     * ledger entries, so the dashboard, profiles and reports have something to show. Deterministic and idempotent.
+     */
+    private function history(Lesson $circle, string $gender, array $names, User $teacher): void
+    {
+        $families = ['الدوسري', 'المناعي', 'البوعينين', 'الكعبي', 'العريض', 'الرميحي'];
+        $students = collect($names)->map(function ($first, $i) use ($circle, $gender, $families) {
+            $no = sprintf('S26D%s%02d', $gender === 'male' ? 'B' : 'G', $i + 1);
+            $guardian = User::updateOrCreate(['phone' => sprintf('+973361%s%04d', $gender === 'male' ? '1' : '2', $i + 1)], [
+                'name' => 'محمد '.$families[$i], 'password' => null, 'gender' => 'male', 'locale' => 'ar', 'is_active' => true, 'phone_verified_at' => now(),
+            ]);
+            $guardian->syncRoles(['guardian']);
+            $s = $this->student($no, "{$first} محمد {$families[$i]}", $gender, 8 + $i, $guardian);
+            LessonStudent::updateOrCreate(['lesson_id' => $circle->id, 'student_id' => $s->id], ['status' => 'active', 'joined_at' => $circle->start_date->toDateString()]);
+
+            return $s;
+        })->push(...Student::whereIn('id', LessonStudent::where('lesson_id', $circle->id)->pluck('student_id'))->where('student_no', 'like', 'S26DEMO%')->get());
+
+        $keys = ['sun' => 0, 'mon' => 1, 'tue' => 2, 'wed' => 3, 'thu' => 4, 'fri' => 5, 'sat' => 6];
+        $days = array_map(fn ($d) => $keys[$d], $circle->days);
+        $surah = 114;
+
+        for ($d = today()->subDays(21); $d->lt(today()); $d->addDay()) {
+            if (! in_array($d->dayOfWeek, $days, true)) {
+                continue;
+            }
+            $session = \App\Models\LessonSession::updateOrCreate(
+                ['lesson_id' => $circle->id, 'session_date' => $d->toDateString()],
+                ['start_time' => $circle->start_time, 'end_time' => $circle->end_time, 'location_id' => $circle->location_id, 'status' => 'held', 'attendance_taken_at' => $d->copy()->setTime(17, 30), 'taken_by' => $teacher->id]
+            );
+            foreach ($students as $s) {
+                $roll = crc32($s->student_no.$d->toDateString()) % 20;
+                $status = $roll < 14 ? 'present' : ($roll < 16 ? 'late' : ($roll < 19 ? 'absent' : 'excused'));
+                \App\Models\Attendance::updateOrCreate(['lesson_session_id' => $session->id, 'student_id' => $s->id], ['status' => $status, 'recorded_by' => $teacher->id]);
+                if ($status === 'absent' || $status === 'excused') {
+                    continue;
+                }
+                $base = 6 + ($roll % 4);
+                \App\Models\Evaluation::updateOrCreate(
+                    ['student_id' => $s->id, 'lesson_session_id' => $session->id, 'type' => 'daily'],
+                    ['lesson_id' => $circle->id, 'evaluated_on' => $d->toDateString(), 'evaluated_by' => $teacher->id,
+                        'memorization' => min(10, $base + 1), 'tajweed' => $base, 'revision' => min(10, $base + ($roll % 2)), 'behavior' => 9]
+                );
+            }
+            $surah = max(100, $surah - 1);
+        }
+
+        // Ledger: each student has memorized from An-Nas backwards a different distance.
+        $progress = app(\App\Services\Progress\ProgressService::class);
+        foreach ($students->values() as $i => $s) {
+            if (\App\Models\StudentProgress::where('student_id', $s->id)->exists()) {
+                continue;
+            }
+            for ($n = 114; $n >= 114 - (4 + $i * 2); $n--) {
+                $progress->append($s, ['type' => 'memorized', 'surah_number' => $n, 'from_ayah' => 1, 'to_ayah' => \App\Support\Quran::ayahCount($n), 'lesson_id' => $circle->id, 'recorded_on' => today()->subDays(20 - $i)->toDateString()], $teacher->id);
+            }
+        }
     }
 
     private function staff(string $phone, string $name, string $gender, string $track, string $role, ?string $email = null): User
