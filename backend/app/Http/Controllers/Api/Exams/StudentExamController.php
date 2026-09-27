@@ -56,7 +56,7 @@ class StudentExamController extends Controller
     /** Start (or resume) an online attempt. Only inside the open window and only for eligible students. */
     public function start(Request $request, Exam $exam): JsonResponse
     {
-        $student = $this->resolveStudent($request);
+        $student = $this->resolveStudent($request, allowGuardian: true); // a guardian may sit the exam for their own child (young children have no login)
         $attempt = $this->exams->startAttempt($exam, $student, now());
 
         return $this->attemptPayload($attempt);
@@ -75,7 +75,7 @@ class StudentExamController extends Controller
     /** Autosave answers. Rejected once the server-side timer has expired or the attempt was submitted. */
     public function saveAnswers(SaveAnswersRequest $request, Exam $exam): JsonResponse
     {
-        $student = $this->resolveStudent($request);
+        $student = $this->resolveStudent($request, allowGuardian: true); // a guardian may sit the exam for their own child (young children have no login)
         $attempt = $exam->attempts()->where('student_id', $student->id)->firstOrFail();
         $attempt = $this->exams->saveAnswers($attempt, $request->validated('answers'), now());
 
@@ -85,7 +85,7 @@ class StudentExamController extends Controller
     /** Upload the recorded recitation for a question. */
     public function uploadAudio(Request $request, Exam $exam, ExamQuestion $question, MediaService $media): JsonResponse
     {
-        $student = $this->resolveStudent($request);
+        $student = $this->resolveStudent($request, allowGuardian: true); // a guardian may sit the exam for their own child (young children have no login)
         $attempt = $exam->attempts()->where('student_id', $student->id)->firstOrFail();
         $attempt = $this->exams->refreshIfExpired($attempt, now());
 
@@ -107,7 +107,7 @@ class StudentExamController extends Controller
 
     public function submit(Request $request, Exam $exam): JsonResponse
     {
-        $student = $this->resolveStudent($request);
+        $student = $this->resolveStudent($request, allowGuardian: true); // a guardian may sit the exam for their own child (young children have no login)
         $attempt = $exam->attempts()->where('student_id', $student->id)->firstOrFail();
         $attempt = $this->exams->submit($attempt, now());
 

@@ -128,3 +128,17 @@ it('payments page: a girls-track supervisor sees only girls payments, invoices a
     test()->postJson("/api/students/{$this->boy->id}/wallet/adjust", ['amount' => '-1', 'note' => 'خصم'])->assertForbidden();
     test()->postJson('/api/invoices', ['student_id' => $this->boy->id, 'amount_fils' => 1000, 'due_date' => today()->toDateString(), 'description' => 'x'])->assertForbidden();
 });
+
+it('exams page: a girls-track supervisor sees and manages only girls exams', function () {
+    $boysExam = \App\Models\Exam::factory()->create(['lesson_id' => $this->boysLesson->id, 'package_id' => null, 'name' => 'اختبار البنين']);
+    $girlsExam = \App\Models\Exam::factory()->create(['lesson_id' => $this->girlsLesson->id, 'package_id' => null, 'name' => 'اختبار البنات']);
+    girlsSupervisor();
+
+    expect(collect(test()->getJson('/api/exams')->assertOk()->json('data'))->pluck('id')->all())->toBe([$girlsExam->id]);
+    test()->getJson("/api/exams/{$boysExam->id}")->assertForbidden();
+    test()->getJson("/api/exams/{$boysExam->id}/results")->assertForbidden();
+    test()->putJson("/api/exams/{$boysExam->id}", ['name' => 'x'])->assertForbidden();
+    test()->putJson("/api/exams/{$boysExam->id}/scores", ['scores' => [['student_id' => $this->boy->id, 'score' => 1]]])->assertForbidden();
+    test()->postJson('/api/exams', ['name' => 'x', 'lesson_id' => $this->boysLesson->id, 'type' => 'paper', 'exam_date' => today()->toDateString(), 'opens_at' => now()->toIso8601String(), 'closes_at' => now()->addHour()->toIso8601String(), 'duration_minutes' => 30, 'total_marks' => 10, 'pass_mark' => 5])
+        ->assertStatus(422)->assertJsonValidationErrors('gender');
+});

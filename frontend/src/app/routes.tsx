@@ -23,6 +23,11 @@ import PublicRegisterPage from '../features/registration/PublicRegisterPage'
 import TrackRequestPage from '../features/registration/TrackRequestPage'
 import PackagesHomePage from '../features/registration/PackagesHomePage'
 import PaymentsHomePage from '../features/payments/PaymentsHomePage'
+import ExamsHomePage from '../features/exams/ExamsHomePage'
+import ExamDetailPage from '../features/exams/ExamDetailPage'
+import MyExamsPage from '../features/exams/MyExamsPage'
+import ExamPlayerPage from '../features/exams/ExamPlayerPage'
+import { LotteryDetailPage, LotteryListPage } from '../features/lottery/LotteryPages'
 
 function FullScreenLoader() {
   const { t } = useTranslation()
@@ -68,10 +73,14 @@ const BUILT: Record<string, React.ReactNode> = {
   lessons: <LessonsHomePage />,
   packages: <PackagesHomePage />,
   payments: <PaymentsHomePage />,
+  exams: <ExamsHomePage />,
+  lottery: <LotteryListPage />,
 }
 
 /** Detail pages under a section: [path, permissions (any), element]. */
 const DETAIL: [string, string[], React.ReactNode][] = [
+  ['exams/:id', ['exams.view'], <ExamDetailPage />],
+  ['lottery/:id', ['lottery.view'], <LotteryDetailPage />],
   ['students/:id', ['students.view'], <StudentProfilePage />],
   ['attendance/:sessionId', ['attendance.view', 'attendance.record'], <AttendanceSheetPage />],
   ['evaluation/:sessionId', ['evaluations.record'], <EvaluationSheetPage />],
@@ -97,6 +106,9 @@ export const router = createBrowserRouter([
   {
     element: <RequireAuth />,
     children: [
+      // Student / guardian portal pages (outside the staff shell).
+      { path: '/my/exams', element: <MyExamsPage /> },
+      { path: '/my/exams/:id', element: <ExamPlayerPage /> },
       {
         path: '/',
         element: <StaffOrFamily />,

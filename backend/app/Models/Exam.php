@@ -44,6 +44,32 @@ class Exam extends Model
         ];
     }
 
+    /**
+     * Store the window in UTC. Strings with an offset are converted; strings without one are read as
+     * the authority's display timezone (what staff type in the form). Carbon/DateTime values keep their instant.
+     */
+    protected function opensAt(): \Illuminate\Database\Eloquent\Casts\Attribute
+    {
+        return \Illuminate\Database\Eloquent\Casts\Attribute::set(fn ($v) => self::toUtc($v));
+    }
+
+    protected function closesAt(): \Illuminate\Database\Eloquent\Casts\Attribute
+    {
+        return \Illuminate\Database\Eloquent\Casts\Attribute::set(fn ($v) => self::toUtc($v));
+    }
+
+    public static function toUtc(mixed $v): ?string
+    {
+        if ($v === null || $v === '') {
+            return null;
+        }
+        $c = $v instanceof \DateTimeInterface
+            ? \Carbon\Carbon::instance($v)
+            : \Carbon\Carbon::parse((string) $v, config('ahl.display_timezone', 'Asia/Bahrain'));
+
+        return $c->utc()->format('Y-m-d H:i:s');
+    }
+
     public function isOpenAt(\DateTimeInterface $at): bool
     {
         return $this->status === ExamStatus::Published && $at >= $this->opens_at && $at <= $this->closes_at;

@@ -215,3 +215,23 @@ it('lists the student\'s exams grouped by state', function () {
     $this->actingAs($user, 'sanctum')->getJson('/api/me/exams')->assertOk()
         ->assertJsonCount(1, 'open')->assertJsonCount(1, 'upcoming')->assertJsonCount(0, 'finished');
 });
+
+it('lets a guardian sit the online exam for their own child, but never for another child', function () {
+    $exam = objectiveExam();
+    $guardian = User::factory()->withoutPassword()->create();
+    $guardian->assignRole('guardian');
+    $child = Student::factory()->create(['guardian_user_id' => $guardian->id]);
+    LessonStudent::create(['lesson_id' => $exam->lesson_id, 'student_id' => $child->id, 'joined_at' => now()->toDateString(), 'status' => 'active']);
+    $other = Student::factory()->create();
+    LessonStudent::create(['lesson_id' => $exam->lesson_id, 'student_id' => $other->id, 'joined_at' => now()->toDateString(), 'status' => 'active']);
+    $this->actingAs($guardian, 'sanctum');
+
+    $attempt = $this->postJson("/api/me/exams/{$exam->id}/start", ['student_id' => $child->id])->assertOk()->json('data');
+    expect($attempt['student_id'])->toBe($child->id);
+    $q = collect($attempt['questions'])->firstWhere('type', 'true_false');
+    $this->putJson("/api/me/exams/{$exam->id}/attempt/answers", ['student_id' => $child->id, 'answers' => [['question_id' => $q['id'], 'answer' => ['value' => true]]]])->assertOk();
+    $this->postJson("/api/me/exams/{$exam->id}/attempt/submit", ['student_id' => $child->id])->assertOk();
+
+    $this->postJson("/api/me/exams/{$exam->id}/start", ['student_id' => $other->id])->assertForbidden();
+    $this->postJson("/api/me/exams/{$exam->id}/start")->assertForbidden();
+});

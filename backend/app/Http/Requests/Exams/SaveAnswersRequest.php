@@ -8,7 +8,8 @@ class SaveAnswersRequest extends FormRequest
 {
     public function authorize(): bool
     {
-        return $this->user()?->student !== null;
+        // Students, or a guardian answering for their own child (the controller resolves and checks the child).
+        return $this->user()?->student !== null || ($this->user()?->hasRole('guardian') ?? false);
     }
 
     public function rules(): array
