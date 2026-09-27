@@ -20,7 +20,7 @@ return [
     'exam_status' => ['draft' => 'مسودة', 'published' => 'منشور', 'closed' => 'مغلق', 'graded' => 'مصحّح'],
     'question_type' => ['mcq' => 'اختيار من متعدد', 'true_false' => 'صح أو خطأ', 'complete_verse' => 'أكمل الآية', 'order_verses' => 'رتّب الآيات', 'recitation' => 'تلاوة'],
     'attempt_status' => ['in_progress' => 'جارٍ', 'submitted' => 'مُسلَّم', 'graded' => 'مصحّح', 'expired' => 'منتهي'],
-    'certificate_type' => ['completion' => 'إتمام', 'exam' => 'اجتياز اختبار'],
+    'certificate_type' => ['completion' => 'إتمام', 'exam' => 'اجتياز اختبار', 'excellence' => 'تميّز', 'competition' => 'مسابقة'],
     'transaction_type' => ['charge' => 'رسوم', 'payment' => 'دفعة', 'refund' => 'استرداد', 'adjustment' => 'تسوية'],
     'invoice_status' => ['open' => 'مستحقة', 'partial' => 'مدفوعة جزئياً', 'paid' => 'مدفوعة', 'cancelled' => 'ملغاة'],
     'payment_method' => ['cash' => 'نقداً', 'bank_transfer' => 'تحويل بنكي', 'benefit' => 'بنفت', 'card' => 'بطاقة'],

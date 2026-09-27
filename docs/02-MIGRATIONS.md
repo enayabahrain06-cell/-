@@ -56,7 +56,12 @@ Legend: `FK↓` = `cascadeOnDelete()`, `FK×` = `restrictOnDelete()`, `FK∅` = 
 | 42 | `..._add_progress_cache_to_students` | `students` | `progress_surah` tinyint nullable; `progress_ayah` smallint nullable; `progress_juz` tinyint nullable; `memorized_ayahs` smallint default 0 | index(progress_juz) |
 | 43 | `..._create_student_issues_table` | `student_issues`, `issue_notes` | issues: `student_id` FK↓, `lesson_id` FK∅, `evaluation_id` FK∅, `category`/`subcategory`/`severity`/`status` string(32), `description`, `action_plan` text, `opened_by` FK∅, `opened_at`, `resolved_at`, `next_follow_up_date`. notes: `student_issue_id` FK↓, `note`, `added_by` FK∅, `noted_on` | index(category), index(severity), index(status), index(student_id, status), index(opened_at), index(resolved_at), index(next_follow_up_date), index(noted_on) |
 
-Total: **31 migration files**, **59 tables** (43 domain + Laravel/Sanctum/spatie).
+| 44 | `..._add_gender_separation` | `users`, `locations`, `lessons`, `location_bookings`, `exams`, `lotteries` | `users.track` string(32) default `both`; `locations.gender` string(32) default `shared`; `gender` string(32) nullable on the other four (derived in model hooks) | index on each new column |
+| 45 | `..._create_honor_board_tables` | `honor_periods`, `honor_rankings`, `badges`, `student_badges`, `honor_points` | see ERD section I; fractional values as integers ×100 | unique(period, gender); unique(honor_period_id, student_id); unique(student_id, badge_id, period); unique(source_type, source_id, student_id) |
+| 46 | `..._create_competitions_tables` | `competitions`, `competition_rounds`, `competition_participants`, `competition_judges`, `competition_scores`, `competition_prizes` | see ERD section J | unique(competition_id, student_id); unique(participant_id, round_id, judge_id); unique(competition_id, rank) |
+| 47 | `..._create_challenges_tables` | `challenges`, `challenge_participants`; adds `honor_period_id`, `competition_id` to `certificates` | see ERD section J | unique(challenge_id, student_id) |
+
+Total: **35 migration files**, **72 tables** (56 domain + Laravel/Sanctum/spatie).
 
 ## Portability notes per driver
 
@@ -70,7 +75,7 @@ Total: **31 migration files**, **59 tables** (43 domain + Laravel/Sanctum/spatie
 | Concurrency | row locks | row locks | `journal_mode=WAL`, `busy_timeout=5000` |
 | Date grouping in reports | done in PHP with Carbon after fetching `date` columns | same | same |
 | Aggregates | COUNT/SUM/AVG/MIN/MAX only | same | same |
-| Column change migrations | `doctrine/dbal` not needed on Laravel 11 native schema; SQLite rebuilds table automatically | native | native |
+| Column change migrations | `doctrine/dbal` not needed on Laravel 12 native schema; SQLite rebuilds table automatically | native | native |
 
 ## PHP enums (app/Enums)
 
@@ -81,5 +86,7 @@ Total: **31 migration files**, **59 tables** (43 domain + Laravel/Sanctum/spatie
 1. `RolePermissionSeeder` — 4 roles, ~70 permissions (`students.view`, `students.update`, `attendance.record`, `payments.record`, ...), default matrix.
 2. `SettingsSeeder` — authority name (AR/EN), logo, timezone `Asia/Bahrain`, country code `973`, currency `BHD`, reminder offsets, `photo_required=false`, hijri display on.
 3. `MessageTemplateSeeder` — 11 automatic templates × 2 languages.
-4. `DemoUsersSeeder` — one account per role: super admin, supervisor, teacher, student, guardian (phones `+9733600000x`, password `password`).
-5. `DemoDataSeeder` — 4 locations, 3 packages, 6 teachers, 60 students with Bahraini names, lessons, 2 weeks of sessions/attendance/evaluations, 1 lottery, 2 exams with questions, invoices and payments.
+4. `QuranSurahSeeder` — the 114 surahs (also inserted by their migration).
+5. `BadgeSeeder` — default badge rules (Hafiz Juz Amma / Tabarak, full attendance, excellent tajweed, most improved, competition winner, challenge champion).
+
+`DatabaseSeeder` runs only 1–5 (reference data, production-safe). **`DemoSeeder`** holds all demo accounts and sample data, is never called by `DatabaseSeeder`, and refuses to run in production: `php artisan db:seed --class=DemoSeeder`. Accounts are listed in README.md.

@@ -611,6 +611,212 @@ erDiagram
 
 Laravel-owned tables (framework migrations, unchanged): `password_reset_tokens`, `sessions`, `cache`, `cache_locks`, `jobs`, `job_batches`, `failed_jobs`, `personal_access_tokens`, and the five spatie tables `permissions`, `roles`, `model_has_permissions`, `model_has_roles`, `role_has_permissions`.
 
+## I. Honor board (section 13)
+
+```mermaid
+erDiagram
+    honor_periods ||--o{ honor_rankings : ""
+    students ||--o{ honor_rankings : ""
+    lessons ||--o{ honor_rankings : "nullable"
+    packages ||--o{ honor_rankings : "nullable"
+    lessons ||--o| honor_periods : "circle of the month"
+    badges ||--o{ student_badges : ""
+    students ||--o{ student_badges : ""
+    students ||--o{ honor_points : ""
+
+    honor_periods {
+        bigint id PK
+        string period "YYYY-MM"
+        string gender "male/female, unique with period"
+        string status "open/finalized/honored"
+        text weights "JSON snapshot"
+        bigint circle_of_month_lesson_id FK
+        boolean published_to_students
+        datetime finalized_at
+        datetime honored_at
+        bigint honored_by FK
+    }
+    honor_rankings {
+        bigint id PK
+        bigint honor_period_id FK "unique with student"
+        bigint student_id FK
+        bigint lesson_id FK
+        bigint package_id FK
+        smallint attendance_pct
+        smallint evaluation_avg_x100
+        int new_ayahs
+        int attendance_points_x100
+        int evaluation_points_x100
+        int memorization_points_x100
+        int bonus_points_x100
+        int points_x100 "index"
+        int rank_in_track
+        int rank_in_package
+        int rank_in_circle
+        int points_change_x100
+    }
+    badges {
+        bigint id PK
+        string key UK
+        string name_ar
+        string name_en
+        string rule_type "completed_juz/full_attendance/tajweed_average/most_improved/points_min/competition/challenge/manual"
+        int rule_value
+        text rule_params "JSON"
+        boolean repeatable_monthly
+        int bonus_points
+        boolean is_active
+    }
+    student_badges {
+        bigint id PK
+        bigint student_id FK
+        bigint badge_id FK
+        string period "YYYY-MM or once; unique with student+badge"
+        datetime awarded_at
+        string source_type
+        bigint source_id
+    }
+    honor_points {
+        bigint id PK
+        bigint student_id FK
+        string period
+        int points_x100
+        string source_type "unique with source_id+student"
+        bigint source_id
+        string reason
+    }
+```
+
+- Points = attendance 40% + evaluation average 40% + new memorization 20% (weights in settings `honor.weight_*`, snapshotted per period). Rankings are always per gender track; boys and girls never share a period row.
+- Excellence certificates reuse `certificates` (type `excellence`, `honor_period_id`).
+
+## J. Competitions and challenges (section 14)
+
+```mermaid
+erDiagram
+    competitions ||--o{ competition_rounds : ""
+    competitions ||--o{ competition_participants : ""
+    competitions ||--o{ competition_judges : ""
+    competitions ||--o{ competition_prizes : ""
+    competition_rounds ||--o{ competition_scores : ""
+    competition_participants ||--o{ competition_scores : ""
+    users ||--o{ competition_judges : "judge"
+    users ||--o{ competition_scores : "judge"
+    students ||--o{ competition_participants : ""
+    locations ||--o{ competition_rounds : "nullable"
+    badges ||--o{ competition_prizes : "nullable"
+    challenges ||--o{ challenge_participants : ""
+    students ||--o{ challenge_participants : ""
+    badges ||--o{ challenges : "reward, nullable"
+
+    competitions {
+        bigint id PK
+        string name_ar
+        string name_en
+        string gender "track index"
+        string type "memorization/tajweed/recitation/knowledge"
+        string scope "circle/package/authority"
+        bigint scope_lesson_id FK
+        bigint scope_package_id FK
+        tinyint min_age
+        tinyint max_age
+        datetime registration_opens_at
+        datetime registration_closes_at
+        datetime starts_at
+        datetime ends_at
+        int max_participants
+        string status "draft/open/running/judging/finished/cancelled"
+        text criteria "JSON key,name,weight,max"
+        string tie_break
+        datetime results_published_at
+        bigint created_by FK
+    }
+    competition_rounds {
+        bigint id PK
+        bigint competition_id FK
+        string name
+        date round_date
+        time start_time
+        bigint location_id FK
+        smallint sort_order
+        text criteria "JSON override"
+        string status
+        datetime reminder_sent_at
+    }
+    competition_participants {
+        bigint id PK
+        bigint competition_id FK "unique with student"
+        bigint student_id FK
+        datetime registered_at
+        bigint registered_by FK
+        string status "registered/withdrawn/eliminated/finalist/winner"
+        int seed_no
+        int final_rank
+        int final_score_x100
+        datetime rewarded_at "exactly once"
+    }
+    competition_judges {
+        bigint id PK
+        bigint competition_id FK
+        bigint round_id FK "null = all rounds"
+        bigint user_id FK
+    }
+    competition_scores {
+        bigint id PK
+        bigint participant_id FK "unique with round+judge"
+        bigint round_id FK
+        bigint judge_id FK
+        text criteria_scores "JSON"
+        int total_x100
+        text note
+    }
+    competition_prizes {
+        bigint id PK
+        bigint competition_id FK "unique with rank"
+        smallint rank
+        string title
+        string certificate_template
+        bigint badge_id FK
+        int points
+    }
+    challenges {
+        bigint id PK
+        string name_ar
+        string name_en
+        string gender "track"
+        string scope
+        string goal_type "memorize_range/attendance_days/revision_range/score_streak/points"
+        int goal_value
+        tinyint surah_number
+        smallint from_ayah
+        smallint to_ayah
+        tinyint min_score
+        string score_criterion
+        date starts_at
+        date ends_at
+        bigint reward_badge_id FK
+        int reward_points
+        string status "draft/active/finished/cancelled"
+    }
+    challenge_participants {
+        bigint id PK
+        bigint challenge_id FK "unique with student"
+        bigint student_id FK
+        datetime joined_at
+        bigint joined_by FK
+        int progress_value
+        tinyint progress_pct
+        string status "joined/completed/failed"
+        datetime completed_at
+        datetime rewarded_at "exactly once"
+        datetime nudged_half_at
+        datetime nudged_deadline_at
+    }
+```
+
+- Judges must be staff of the competition's track (checked in Form Requests and Policies). Totals are the weighted criteria (×100) averaged across judges; results stay hidden until `results_published_at`.
+- Challenge progress is computed nightly and on every attendance, evaluation and ledger save; `rewarded_at` guards the badge and `honor_points` row so rewards are written once.
+- `certificates` gains `competition_id` (type `competition`).
 ## Key invariants enforced in code (and covered by tests)
 
 1. `wallets.balance_fils` always equals `SUM(wallet_transactions.amount_fils)` for that wallet. Every write goes through `WalletService` inside `DB::transaction()` with `lockForUpdate()`.

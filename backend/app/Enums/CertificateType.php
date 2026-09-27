@@ -10,4 +10,6 @@ enum CertificateType: string
 
     case Completion = 'completion';
     case Exam = 'exam';
+    case Excellence = 'excellence';
+    case Competition = 'competition';
 }

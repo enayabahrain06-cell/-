@@ -23,13 +23,15 @@ Consequence: local development and the test suite run on SQLite. MySQL 8 and Pos
 7. All eight design decisions confirmed.
 8. Delivery gate: the GitHub Actions matrix (sqlite, mysql, pgsql) must be green; each module summary includes the run link.
 
-**Framework note:** Composer refused every Laravel 11.x release (all carry unpatched advisories since 11.x left security support in March 2026), so the backend is on **Laravel 12.x** (PHP 8.2+). Same skeleton, same APIs used here. Pin back to 11 only if a hard constraint exists (needs `audit.block-insecure=false`).
+**Framework (approved 2026-09-27):** the backend is on **Laravel 12.x** (PHP 8.2+). The original brief said Laravel 11, but Composer blocks every 11.x release for unpatched security advisories; the user approved Laravel 12 and asked not to downgrade.
+
+**Delivery gate:** the GitHub Actions workflow (`.github/workflows/ci.yml`: SQLite, MySQL 8, PostgreSQL 15) stays in the repo. No phase counts as delivered until the MySQL and PostgreSQL runs pass; they run as soon as the GitHub remote exists.
 
 ## Repository layout
 
 ```
 saar/
-├── backend/            Laravel 11 API (PHP 8.2+)
+├── backend/            Laravel 12 API (PHP 8.2+)
 │   ├── app/Enums, Models, Policies, Services, Jobs, Http/{Controllers,Requests,Resources}, Console/Commands, Exports, Pdf
 │   ├── database/{migrations,seeders,factories}
 │   ├── lang/{ar,en}

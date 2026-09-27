@@ -14,6 +14,8 @@ use App\Services\Lessons\SessionGenerator;
 use Illuminate\Database\Seeder;
 
 /**
+ * DEMO DATA ONLY (never run in production; DatabaseSeeder does not call it).
+ *
  * Demo data for two fully separated tracks (boys and girls). Idempotent (updateOrCreate).
  * Staff password: "password". Students and guardians sign in with a WhatsApp code.
  *
@@ -25,10 +27,18 @@ use Illuminate\Database\Seeder;
  *  Supervisor (girls)       +97336000006  أ. فاطمة الشيخ, female track
  *  Teacher (girls)          +97336000007
  */
-class DemoUsersSeeder extends Seeder
+class DemoSeeder extends Seeder
 {
     public function run(): void
     {
+        // Demo data never reaches production: run explicitly with  php artisan db:seed --class=DemoSeeder
+        if (app()->environment('production')) {
+            $this->command?->error('DemoSeeder refuses to run in production.');
+
+            return;
+        }
+        $this->call([DatabaseSeeder::class]); // reference data first (idempotent)
+
         $this->staff('+97336000001', 'عبدالله أحمد الدوسري', 'male', 'both', 'super_admin', 'admin@ahlalquran.bh');
         $this->staff('+97336000002', 'أ. خالد إبراهيم الرميحي', 'male', 'male', 'supervisor');
         $this->staff('+97336000006', 'أ. فاطمة الشيخ', 'female', 'female', 'supervisor');

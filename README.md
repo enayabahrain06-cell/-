@@ -6,7 +6,7 @@ Quran circles (halaqat) management system for the Religious Education Authority 
 | Part | Path | Stack |
 |------|------|-------|
 | API | `backend/` | Laravel 12 (PHP 8.2+), Sanctum, spatie/permission, dompdf, maatwebsite/excel, Intervention Image, Scribe, Pest |
-| Web app | `frontend/` | React 19, Vite, TypeScript, TanStack Query, RHF + Zod, Tailwind (RTL/LTR), Recharts, i18next |
+| Web app | `frontend/` | React 18, Vite, TypeScript, TanStack Query, RHF + Zod, Tailwind (RTL/LTR), Recharts, i18next |
 | WhatsApp bridge | `whatsapp/` | Node + open-wa/wa-automate |
 | Docs | `docs/` | ERD, migrations, work plan |
 
@@ -152,12 +152,21 @@ cd backend && php artisan test   # SQLite in memory
 
 MySQL and PostgreSQL runs happen in GitHub Actions (`.github/workflows/ci.yml`) with service containers. To run locally against either, set `DB_*` in `.env` (or export them) and run `php artisan test`.
 
-### Demo accounts (after `--seed`, from Phase 2.13)
+### Demo accounts (DemoSeeder only — never in production)
 
-| Role | Phone | Login |
-|------|-------|-------|
-| Super Admin | +973 3600 0001 | password `password` |
-| Supervisor | +973 3600 0002 | password `password` |
-| Teacher | +973 3600 0003 | password `password` |
-| Student | +973 3600 0004 | WhatsApp OTP (logged when `WHATSAPP_PROVIDER=log`) |
-| Guardian | +973 3600 0005 | WhatsApp OTP |
+Load them with `php artisan db:seed --class=DemoSeeder` (it refuses to run when `APP_ENV=production`).
+`php artisan migrate --seed` loads reference data only (roles, permissions, settings, templates, surahs, badges).
+
+| Role | Name | Phone | Track | Sign-in |
+|------|------|-------|-------|---------|
+| Super Admin | عبدالله أحمد الدوسري | +973 3600 0001 | both (always) | password `password` |
+| Supervisor (boys) | أ. خالد إبراهيم الرميحي | +973 3600 0002 | male | password `password` |
+| Supervisor (girls) | أ. فاطمة الشيخ | +973 3600 0006 | female | password `password` |
+| Teacher (boys) | الشيخ يوسف علي المناعي | +973 3600 0003 | male | password `password` |
+| Teacher (girls) | أ. زينب حسن العريض | +973 3600 0007 | female | password `password` |
+| Student (boy) | أحمد محمد سلمان الجودر | +973 3600 0004 | male | WhatsApp code (shown on screen when `WHATSAPP_PROVIDER=log`) |
+| Guardian (of a boy and a girl) | محمد سلمان الجودر | +973 3600 0005 | — | WhatsApp code |
+| Demo class guardians | محمد … | +973 3611 0001–0006 (boys), +973 3612 0001–0006 (girls) | — | WhatsApp code |
+
+The demo also creates a boys hall, a girls hall and a shared hall, one boys and one girls package and circle,
+six extra students per circle, and three weeks of sessions with attendance, daily scores and memorization history.

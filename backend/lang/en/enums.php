@@ -20,7 +20,7 @@ return [
     'exam_status' => ['draft' => 'Draft', 'published' => 'Published', 'closed' => 'Closed', 'graded' => 'Graded'],
     'question_type' => ['mcq' => 'Multiple choice', 'true_false' => 'True / False', 'complete_verse' => 'Complete the verse', 'order_verses' => 'Order the verses', 'recitation' => 'Recitation'],
     'attempt_status' => ['in_progress' => 'In progress', 'submitted' => 'Submitted', 'graded' => 'Graded', 'expired' => 'Expired'],
-    'certificate_type' => ['completion' => 'Completion', 'exam' => 'Exam pass'],
+    'certificate_type' => ['completion' => 'Completion', 'exam' => 'Exam pass', 'excellence' => 'Excellence', 'competition' => 'Competition'],
     'transaction_type' => ['charge' => 'Charge', 'payment' => 'Payment', 'refund' => 'Refund', 'adjustment' => 'Adjustment'],
     'invoice_status' => ['open' => 'Open', 'partial' => 'Partially paid', 'paid' => 'Paid', 'cancelled' => 'Cancelled'],
     'payment_method' => ['cash' => 'Cash', 'bank_transfer' => 'Bank transfer', 'benefit' => 'Benefit', 'card' => 'Card'],
