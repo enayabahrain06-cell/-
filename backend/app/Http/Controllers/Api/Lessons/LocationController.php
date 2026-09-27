@@ -120,7 +120,7 @@ class LocationController extends Controller
 
         $items = [];
 
-        LessonSession::with(['lesson:id,name,teacher_id,location_id', 'lesson.teacher:id,name'])
+        LessonSession::with(['lesson:id,name,teacher_id,location_id,gender', 'lesson.teacher:id,name'])
             ->where('location_id', $location->id)
             ->whereBetween('session_date', [$from->toDateString(), $to->toDateString()])
             ->orderBy('session_date')->orderBy('start_time')
@@ -128,6 +128,7 @@ class LocationController extends Controller
             ->each(function (LessonSession $s) use (&$items) {
                 $items[] = [
                     'kind' => $s->location_id !== $s->lesson?->location_id ? 'override' : 'session',
+                    'gender' => $s->lesson?->gender?->value,
                     'id' => $s->id,
                     'lesson_id' => $s->lesson_id,
                     'title' => $s->lesson?->name,
@@ -141,7 +142,7 @@ class LocationController extends Controller
 
         // Overrides for dates whose session has not been materialised yet.
         $sessionDates = collect($items)->map(fn ($i) => $i['lesson_id'].'|'.$i['date'])->flip();
-        LessonLocationOverride::with('lesson:id,name,start_time,end_time')
+        LessonLocationOverride::with('lesson:id,name,start_time,end_time,gender')
             ->where('location_id', $location->id)
             ->whereBetween('override_date', [$from->toDateString(), $to->toDateString()])
             ->get()
@@ -151,7 +152,7 @@ class LocationController extends Controller
                     return;
                 }
                 $items[] = [
-                    'kind' => 'override', 'id' => $o->id, 'lesson_id' => $o->lesson_id, 'title' => $o->lesson->name, 'teacher' => null,
+                    'kind' => 'override', 'gender' => $o->lesson->gender?->value, 'id' => $o->id, 'lesson_id' => $o->lesson_id, 'title' => $o->lesson->name, 'teacher' => null,
                     'date' => $o->override_date->toDateString(), 'start_time' => substr($o->lesson->start_time, 0, 5), 'end_time' => substr($o->lesson->end_time, 0, 5), 'status' => 'scheduled',
                 ];
             });
@@ -161,12 +162,18 @@ class LocationController extends Controller
             ->get()
             ->each(function (LocationBooking $b) use (&$items) {
                 $items[] = [
-                    'kind' => 'booking', 'id' => $b->id, 'lesson_id' => null, 'title' => $b->title, 'teacher' => null,
+                    'kind' => 'booking', 'gender' => $b->gender?->value, 'id' => $b->id, 'lesson_id' => null, 'title' => $b->title, 'teacher' => null,
                     'date' => $b->booking_date->toDateString(), 'start_time' => substr($b->start_time, 0, 5), 'end_time' => substr($b->end_time, 0, 5), 'status' => $b->source?->value,
                 ];
             });
 
         usort($items, fn ($a, $b) => [$a['date'], $a['start_time']] <=> [$b['date'], $b['start_time']]);
+
+        // Gender separation: in a shared hall a scoped user sees the other track only as an occupied slot.
+        $user = $request->user();
+        $items = array_map(fn ($i) => \App\Support\Track::allows($user, $i['gender'] ?? null)
+            ? $i + ['masked' => false]
+            : ['kind' => 'occupied', 'gender' => null, 'id' => null, 'lesson_id' => null, 'title' => __('lessons.occupied_other_track'), 'teacher' => null, 'date' => $i['date'], 'start_time' => $i['start_time'], 'end_time' => $i['end_time'], 'status' => null, 'masked' => true], $items);
 
         return response()->json([
             'location' => new LocationResource($location),

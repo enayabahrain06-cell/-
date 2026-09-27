@@ -21,5 +21,16 @@
         "summary": "Page {{page}} of {{last}} · {{total}} records",
         "previous": "Previous",
         "next": "Next"
+    },
+    "retry": "Try again",
+    "quran": {
+        "type": "Type",
+        "memorized": "Memorized",
+        "revised": "Revised",
+        "surah": "Surah",
+        "from": "from",
+        "to": "to",
+        "remove": "Remove range",
+        "add": "Add memorized or revised range"
     }
 }

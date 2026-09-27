@@ -10,4 +10,5 @@ return [
     'teacher_role_required' => 'The selected user is not a teacher.',
     'all_upcoming' => 'all upcoming lessons',
     'alert_conflict_title' => 'Hall conflict: :lesson',
+    'occupied_other_track' => 'Occupied (other track)',
 ];

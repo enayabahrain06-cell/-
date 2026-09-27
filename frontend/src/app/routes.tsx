@@ -8,6 +8,13 @@ import DashboardPage from '../features/dashboard/DashboardPage'
 import ComingSoon from '../features/common/ComingSoon'
 import StudentsListPage from '../features/students/StudentsListPage'
 import StudentProfilePage from '../features/students/StudentProfilePage'
+import AttendanceDayPage from '../features/attendance/AttendanceDayPage'
+import AttendanceSheetPage from '../features/attendance/AttendanceSheetPage'
+import EvaluationHomePage from '../features/evaluation/EvaluationHomePage'
+import EvaluationSheetPage from '../features/evaluation/EvaluationSheetPage'
+import LessonsHomePage from '../features/lessons/LessonsHomePage'
+import LessonDetailPage from '../features/lessons/LessonDetailPage'
+import HallCalendarPage from '../features/lessons/HallCalendarPage'
 import AppLayout from '../layouts/AppLayout'
 import { StarSpinner } from '../components/ornaments'
 import OrnamentsDemo from '../features/design/OrnamentsDemo'
@@ -50,7 +57,19 @@ function Guard({ permissions, children }: { permissions: string[]; children: Rea
 /** Screens built so far; every other section shows the placeholder. */
 const BUILT: Record<string, React.ReactNode> = {
   students: <StudentsListPage />,
+  attendance: <AttendanceDayPage />,
+  evaluation: <EvaluationHomePage />,
+  lessons: <LessonsHomePage />,
 }
+
+/** Detail pages under a section: [path, permissions (any), element]. */
+const DETAIL: [string, string[], React.ReactNode][] = [
+  ['students/:id', ['students.view'], <StudentProfilePage />],
+  ['attendance/:sessionId', ['attendance.view', 'attendance.record'], <AttendanceSheetPage />],
+  ['evaluation/:sessionId', ['evaluations.record'], <EvaluationSheetPage />],
+  ['lessons/halls/:id', ['locations.view', 'lessons.view'], <HallCalendarPage />],
+  ['lessons/:id', ['lessons.view'], <LessonDetailPage />],
+]
 
 /** A section the user has no permission for bounces back to the dashboard. */
 function Section({ keyName, icon, permissions }: { keyName: string; icon: string; permissions: string[] }) {
@@ -75,7 +94,7 @@ export const router = createBrowserRouter([
             path: s.path.slice(1),
             element: BUILT[s.key] ? <Guard permissions={s.permissions}>{BUILT[s.key]}</Guard> : <Section keyName={s.key} icon={s.icon} permissions={s.permissions} />,
           })),
-          { path: 'students/:id', element: <Guard permissions={['students.view']}><StudentProfilePage /></Guard> },
+          ...DETAIL.map(([path, perms, el]) => ({ path, element: <Guard permissions={perms}>{el}</Guard> })),
         ],
       },
     ],

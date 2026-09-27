@@ -1,0 +1,146 @@
+import { useState } from 'react'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { Link, useParams } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
+import { lessonsApi } from '../../api/lessons'
+import { studentsApi } from '../../api/students'
+import { parseApiError } from '../../api/client'
+import { useAuth } from '../../app/AuthContext'
+import Avatar from '../../components/Avatar'
+import Icon from '../../components/Icon'
+import { EmptyState, OrnamentDivider } from '../../components/ornaments'
+import { Badge, Card, CardTitle, ErrorState, LoadingState, Notice, SecondaryButton } from '../../components/ui'
+import { formatDate, formatNumber, formatTime } from '../../lib/format'
+import ChangeLocationDialog from './ChangeLocationDialog'
+import LessonFormDialog from './LessonFormDialog'
+import { GENDER_TONE } from './LessonsHomePage'
+
+export default function LessonDetailPage() {
+  const { id } = useParams()
+  const lessonId = Number(id)
+  const { t, i18n } = useTranslation('lessons')
+  const locale = i18n.language
+  const { can } = useAuth()
+  const qc = useQueryClient()
+  const q = useQuery({ queryKey: ['lesson', lessonId, locale], queryFn: () => lessonsApi.show(lessonId) })
+  const conflicts = useQuery({ queryKey: ['lesson-conflicts', lessonId], queryFn: () => lessonsApi.conflicts(lessonId), enabled: can('lessons.manage') })
+  const [edit, setEdit] = useState(false)
+  const [change, setChange] = useState(false)
+  const [notice, setNotice] = useState<{ tone: 'success' | 'error'; text: string } | null>(null)
+  const [search, setSearch] = useState('')
+
+  const lesson = q.data
+  const candidates = useQuery({
+    queryKey: ['enroll-candidates', lessonId, search],
+    queryFn: () => studentsApi.list({ search, gender: lesson?.gender === 'mixed' ? undefined : lesson?.gender ?? undefined, per_page: 8 }),
+    enabled: !!lesson && search.trim().length >= 2,
+  })
+  const refresh = () => { void qc.invalidateQueries({ queryKey: ['lesson', lessonId] }); void qc.invalidateQueries({ queryKey: ['lessons'] }) }
+  const enroll = useMutation({
+    mutationFn: (sid: number) => lessonsApi.enroll(lessonId, [sid]),
+    onSuccess: () => { setSearch(''); setNotice({ tone: 'success', text: t('detail.added') }); refresh() },
+    onError: (e) => setNotice({ tone: 'error', text: parseApiError(e).message }),
+  })
+  const unenroll = useMutation({ mutationFn: (sid: number) => lessonsApi.unenroll(lessonId, sid), onSuccess: refresh })
+
+  if (q.isLoading) return <LoadingState />
+  if (q.isError || !lesson) return <ErrorState message={parseApiError(q.error).message} onRetry={() => void q.refetch()} />
+  const n = (v: number) => formatNumber(v, locale)
+  const enrolledIds = new Set((lesson.students ?? []).map((s) => s.student.id))
+  const full = lesson.student_count >= lesson.capacity
+  const manage = can('lessons.manage')
+
+  return (
+    <div className="mx-auto max-w-6xl space-y-5">
+      <Link to="/lessons" className="inline-flex items-center gap-1 text-sm font-medium text-brand-700 hover:underline"><Icon name="chevron" className="size-4 ltr:rotate-180" />{t('detail.back')}</Link>
+
+      <header className="rounded-2xl border border-ink/8 bg-white p-5 shadow-sm">
+        <div className="flex flex-wrap items-start gap-3">
+          <div className="min-w-0 flex-1">
+            <div className="flex flex-wrap items-center gap-2">
+              <h1 dir="auto" className="font-display text-3xl text-ink">{lesson.name}</h1>
+              {lesson.gender && <Badge tone={GENDER_TONE[lesson.gender]}>{t(`gender.${lesson.gender}`)}</Badge>}
+              {lesson.status !== 'active' && <Badge>{t(`status.${lesson.status}`)}</Badge>}
+            </div>
+            <p dir="auto" className="mt-1 text-sm text-ink/60">{lesson.package?.name} · {lesson.teacher?.name}</p>
+          </div>
+          {manage && (
+            <div className="flex flex-wrap gap-2">
+              <SecondaryButton onClick={() => setEdit(true)}><Icon name="edit" className="size-4" />{t('detail.edit')}</SecondaryButton>
+              <SecondaryButton onClick={() => setChange(true)}><Icon name="pin" className="size-4" />{t('detail.change_location')}</SecondaryButton>
+            </div>
+          )}
+        </div>
+        <OrnamentDivider className="my-3 text-gold-500/70" />
+        <dl className="grid gap-3 text-sm sm:grid-cols-4">
+          <div><dt className="text-xs text-ink/50">{t('form.days')}</dt><dd className="text-ink">{lesson.days.map((d) => t(`days.${d}`)).join(locale === 'ar' ? '، ' : ', ')}</dd></div>
+          <div><dt className="text-xs text-ink/50">{t('form.start_time')}</dt><dd className="tabular-nums text-ink">{formatTime(lesson.start_time, locale)}–{formatTime(lesson.end_time, locale)}</dd></div>
+          <div><dt className="text-xs text-ink/50">{t('form.hall')}</dt><dd dir="auto" className="text-ink">{lesson.location?.name ?? t('no_hall')}</dd></div>
+          <div><dt className="text-xs text-ink/50">{t('form.capacity')}</dt><dd className="tabular-nums text-ink">{t('students_of', { n: n(lesson.student_count), c: n(lesson.capacity) })}</dd></div>
+        </dl>
+      </header>
+
+      {notice && <Notice tone={notice.tone}>{notice.text}</Notice>}
+      {manage && conflicts.data && conflicts.data.length > 0 && (
+        <Notice tone="error">
+          <b>{t('detail.conflicts')}:</b>{' '}
+          {conflicts.data.map((c) => `${c.title} (${formatTime(c.start_time, locale)}–${formatTime(c.end_time, locale)}${c.date ? `, ${formatDate(c.date, locale, { day: 'numeric', month: 'short' })}` : ''})`).join(' · ')}
+        </Notice>
+      )}
+
+      <div className="grid gap-5 lg:grid-cols-5">
+        <Card className="lg:col-span-3">
+          <CardTitle>{t('detail.roster')} <span className="text-ink/45">({n(lesson.student_count)})</span></CardTitle>
+          {manage && (
+            <div className="mb-3">
+              <label htmlFor="enroll-search" className="sr-only">{t('detail.search_students')}</label>
+              <input id="enroll-search" type="search" value={search} disabled={full} onChange={(e) => setSearch(e.target.value)} placeholder={full ? t('detail.full') : t('detail.search_students')}
+                className="w-full rounded-xl border border-ink/15 px-3 py-2 text-sm shadow-sm disabled:bg-ink/5" />
+              {candidates.data && search.trim().length >= 2 && (
+                <ul className="mt-2 divide-y divide-ink/6 rounded-xl border border-ink/10">
+                  {candidates.data.data.filter((s) => !enrolledIds.has(s.id)).map((s) => (
+                    <li key={s.id} className="flex items-center gap-3 px-3 py-2 text-sm">
+                      <Avatar name={s.full_name} initial={s.initial} src={s.photo_url} gender={s.gender} size="sm" />
+                      <span dir="auto" className="flex-1 text-ink">{s.full_name}<span className="block text-xs text-ink/50">{s.circle?.name ?? ''}</span></span>
+                      <SecondaryButton disabled={enroll.isPending} onClick={() => enroll.mutate(s.id)}>{t('detail.add')}</SecondaryButton>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
+          )}
+          {(lesson.students ?? []).length === 0 ? <EmptyState size="sm" icon="students" title={t('detail.empty_roster')} /> : (
+            <ul className="divide-y divide-ink/6">
+              {lesson.students!.map((ls) => (
+                <li key={ls.id} className="flex items-center gap-3 py-2.5">
+                  <Avatar name={ls.student.full_name} initial={ls.student.initial} src={ls.student.photo_url} gender={ls.student.gender} size="sm" />
+                  <Link to={`/students/${ls.student.id}`} dir="auto" className="min-w-0 flex-1 truncate text-sm font-medium text-ink hover:text-brand-700">{ls.student.full_name}</Link>
+                  {manage && <button type="button" className="text-xs text-danger hover:underline" onClick={() => window.confirm(t('detail.unenroll_confirm', { name: ls.student.full_name })) && unenroll.mutate(ls.student.id)}>{t('detail.unenroll')}</button>}
+                </li>
+              ))}
+            </ul>
+          )}
+        </Card>
+
+        <Card className="lg:col-span-2">
+          <CardTitle>{t('detail.upcoming')}</CardTitle>
+          {(lesson.next_sessions ?? []).length === 0 ? <EmptyState size="sm" icon="attendance" title={t('detail.no_upcoming')} /> : (
+            <ul className="divide-y divide-ink/6 text-sm">
+              {lesson.next_sessions!.map((s) => (
+                <li key={s.id} className="flex flex-wrap items-center gap-2 py-2">
+                  <span className="w-32 text-ink/75">{formatDate(s.session_date, locale, { weekday: 'short', day: 'numeric', month: 'short' })}</span>
+                  <span dir="auto" className="flex-1 text-ink/60">{s.location?.name ?? t('no_hall')}</span>
+                  {s.location_id !== lesson.location_id && <Badge tone="info">{t('detail.hall_changed_on')}</Badge>}
+                  {s.status === 'cancelled' && <Badge>{t('status.ended')}</Badge>}
+                </li>
+              ))}
+            </ul>
+          )}
+        </Card>
+      </div>
+
+      {edit && <LessonFormDialog lesson={lesson} onClose={() => setEdit(false)} onSaved={(_l, c) => { setEdit(false); refresh(); void conflicts.refetch(); setNotice(c.length ? { tone: 'error', text: t('form.conflicts_body') } : { tone: 'success', text: t('form.saved') }) }} />}
+      {change && <ChangeLocationDialog lesson={lesson} onClose={() => setChange(false)} onDone={(m) => { setChange(false); setNotice({ tone: 'success', text: m }) }} />}
+    </div>
+  )
+}

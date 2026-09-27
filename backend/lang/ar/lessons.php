@@ -10,4 +10,5 @@ return [
     'teacher_role_required' => 'المستخدم المختار ليس معلّماً.',
     'all_upcoming' => 'جميع الدروس القادمة',
     'alert_conflict_title' => 'تعارض في القاعة: :lesson',
+    'occupied_other_track' => 'محجوزة (المسار الآخر)',
 ];

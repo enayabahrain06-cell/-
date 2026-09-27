@@ -1,17 +1,13 @@
 import i18n from 'i18next'
 import { initReactI18next } from 'react-i18next'
-import arCommon from '../locales/ar/common.json'
-import arAuth from '../locales/ar/auth.json'
-import enCommon from '../locales/en/common.json'
-import enAuth from '../locales/en/auth.json'
-import arNav from '../locales/ar/nav.json'
-import enNav from '../locales/en/nav.json'
-import arDashboard from '../locales/ar/dashboard.json'
-import enDashboard from '../locales/en/dashboard.json'
-import arDesign from '../locales/ar/design.json'
-import enDesign from '../locales/en/design.json'
-import arStudents from '../locales/ar/students.json'
-import enStudents from '../locales/en/students.json'
+
+// Every locales/<lang>/<namespace>.json file is picked up automatically (one namespace per module).
+const files = import.meta.glob<{ default: Record<string, unknown> }>('../locales/*/*.json', { eager: true })
+const resources: Record<string, Record<string, Record<string, unknown>>> = {}
+for (const [path, mod] of Object.entries(files)) {
+  const [, lang, ns] = path.match(/locales\/(\w+)\/([\w-]+)\.json$/) ?? []
+  if (lang && ns) (resources[lang] ??= {})[ns] = mod.default
+}
 
 export type AppLocale = 'ar' | 'en'
 const STORAGE_KEY = 'ahl.locale'
@@ -43,10 +39,7 @@ export function setLocale(locale: AppLocale) {
 }
 
 void i18n.use(initReactI18next).init({
-  resources: {
-    ar: { common: arCommon, auth: arAuth, nav: arNav, dashboard: arDashboard, design: arDesign, students: arStudents },
-    en: { common: enCommon, auth: enAuth, nav: enNav, dashboard: enDashboard, design: enDesign, students: enStudents },
-  },
+  resources,
   lng: readStoredLocale(),
   fallbackLng: 'ar',
   defaultNS: 'common',

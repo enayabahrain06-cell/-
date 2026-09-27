@@ -1,0 +1,49 @@
+{
+  "title": "Evaluation & memorization",
+  "subtitle": "Daily scores out of 10 per criterion, plus a monthly evaluation per circle",
+  "tabs": { "daily": "Daily evaluation", "monthly": "Monthly evaluation" },
+  "sheet_title": "Evaluation sheet",
+  "back": "Back to the day's circles",
+  "criteria": { "memorization": "Memorization", "tajweed": "Tajweed", "revision": "Revision", "behavior": "Behavior" },
+  "total": "Total",
+  "note": "Note for the student and guardian",
+  "save": "Save evaluations",
+  "saving": "Saving…",
+  "saved": "{{n}} evaluations saved.",
+  "unsaved": "You have unsaved changes",
+  "not_scored": "Not scored",
+  "set_all": "Set a score for everyone",
+  "below": "Below {{n}}",
+  "send": "Send to guardian",
+  "sent": "Sent to guardian",
+  "sending": "Sending…",
+  "send_done": "Evaluation sent on WhatsApp.",
+  "save_first": "Save the evaluation first",
+  "empty_roster": "No students are enrolled in this circle.",
+  "ledger": "Progress today",
+  "add_range": "Add memorized or revised range",
+  "suggest": {
+    "title": "Suggested difficulties",
+    "body": "Some students scored below {{n}} on a criterion. You can open a difficulty to follow it up.",
+    "open": "Open difficulty",
+    "dismiss": "Dismiss",
+    "opened": "Difficulty opened. It appears on the student profile and for the guardian."
+  },
+  "issue": {
+    "title": "Open a difficulty for {{name}}",
+    "category": "Category",
+    "aspect": "Tajweed aspect",
+    "severity": "Severity",
+    "description": "Description",
+    "action_plan": "Action plan (visible to the guardian)",
+    "follow_up": "Follow-up date",
+    "save": "Open difficulty",
+    "cancel": "Cancel"
+  },
+  "monthly": {
+    "circle": "Circle",
+    "period": "Month",
+    "choose_circle": "Choose a circle",
+    "hint": "One monthly evaluation per student, circle and month; saving again updates it."
+  }
+}

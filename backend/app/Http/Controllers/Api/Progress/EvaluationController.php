@@ -69,7 +69,18 @@ class EvaluationController extends Controller
                 'evaluation' => ($e = $saved->get($ls->student_id)) ? $this->service->scoreRow($e) : null,
             ]);
 
-        return response()->json(['session_id' => $session->id, 'date' => $session->session_date->toDateString(), 'data' => $rows]);
+        $session->loadMissing(['lesson.teacher:id,name', 'location:id,name']);
+
+        return response()->json([
+            'session_id' => $session->id,
+            'date' => $session->session_date->toDateString(),
+            'start_time' => substr((string) $session->start_time, 0, 5),
+            'end_time' => substr((string) $session->end_time, 0, 5),
+            'lesson' => ['id' => $session->lesson_id, 'name' => $session->lesson?->name, 'teacher' => $session->lesson?->teacher?->name],
+            'location' => $session->location?->name,
+            'threshold' => (int) setting('evaluation.issue_threshold', 6),
+            'data' => $rows,
+        ]);
     }
 
     /**

@@ -257,6 +257,8 @@ class EvaluationService
     {
         return [
             'id' => $e->id,
+            'student_id' => $e->student_id,
+            'sent_to_guardian_at' => display_tz($e->sent_to_guardian_at)?->toIso8601String(),
             'type' => $e->type->value,
             'date' => $e->evaluated_on?->toDateString(),
             'period' => $e->period,
