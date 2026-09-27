@@ -159,14 +159,20 @@ Load them with `php artisan db:seed --class=DemoSeeder` (it refuses to run when 
 
 | Role | Name | Phone | Track | Sign-in |
 |------|------|-------|-------|---------|
-| Super Admin | عبدالله أحمد الدوسري | +973 3600 0001 | both (always) | password `password` |
-| Supervisor (boys) | أ. خالد إبراهيم الرميحي | +973 3600 0002 | male | password `password` |
+| Super Admin | أ. محمد علي المرزوق | +973 3600 0001 | both (always) | password `password` |
+| Supervisor (boys) | أ. حسن جعفر الجمري | +973 3600 0002 | male | password `password` |
 | Supervisor (girls) | أ. فاطمة الشيخ | +973 3600 0006 | female | password `password` |
-| Teacher (boys) | الشيخ يوسف علي المناعي | +973 3600 0003 | male | password `password` |
-| Teacher (girls) | أ. زينب حسن العريض | +973 3600 0007 | female | password `password` |
-| Student (boy) | أحمد محمد سلمان الجودر | +973 3600 0004 | male | WhatsApp code (shown on screen when `WHATSAPP_PROVIDER=log`) |
-| Guardian (of a boy and a girl) | محمد سلمان الجودر | +973 3600 0005 | — | WhatsApp code |
-| Demo class guardians | محمد … | +973 3611 0001–0006 (boys), +973 3612 0001–0006 (girls) | — | WhatsApp code |
+| Teacher (boys) | الشيخ جعفر آل شهاب | +973 3600 0003 | male | password `password` |
+| Teacher (girls) | الأستاذة زينب الموسوي | +973 3600 0007 | female | password `password` |
+| Teacher (boys, no circle yet) | الأستاذ عباس المرزوق | +973 3600 0008 | male | password `password` |
+| Teacher (early years, mixed) | الأستاذة معصومة الحداد | +973 3600 0009 | female | password `password` |
+| Student (boy) | حسين علي المحروس | +973 3600 0004 | male | WhatsApp code (shown on screen when `WHATSAPP_PROVIDER=log`) |
+| Guardian (a boy, a girl, an early-years boy) | علي حسن المحروس | +973 3600 0005 | — | WhatsApp code |
+| Guardians (sibling families) | جعفر محمد الستراوي · حسن كاظم آل عباس · مهدي رضا السماهيجي | +973 3600 0010 · 0011 · 0012 | — | WhatsApp code |
+| Demo class guardians | e.g. حسن محمد الدرازي | +973 3611 0001–0006 (boys), +973 3612 0001–0006 (girls) | — | WhatsApp code |
 
-The demo also creates a boys hall, a girls hall and a shared hall, one boys and one girls package and circle,
-six extra students per circle, and three weeks of sessions with attendance, daily scores and memorization history.
+Names are Bahraini Shia names in Arabic (the shared list is `database/factories/Support/BahrainiNames.php`).
+The demo also creates four halls (قاعة مأتم سار الكبير for boys, قاعة النساء بالهيئة for girls, and قاعة الهيئة ٢ and الفصل ٣ shared by schedule),
+a boys package, a girls package and one mixed early-years package for ages 4–6, each with a circle,
+four sibling families under one guardian login each (المحروس, الستراوي, آل عباس, السماهيجي),
+six extra students in the boys and girls circles, and three weeks of sessions with attendance, daily scores and memorization history.

@@ -44,6 +44,8 @@ class SettingsSeeder extends Seeder
             ['evaluation.issue_threshold', 6, 'progress', 'int'],
             ['messages.progress_update_enabled', false, 'progress', 'bool'],
             ['messages.progress_update_day', 1, 'progress', 'int'],
+            // appearance: Islamic ornament density (full / minimal / off)
+            ['ui.ornament_level', 'full', 'ui', 'string'],
             // gender separation: girls' photos never print unless the Super Admin enables this
             ['media.print_female_photos', false, 'media', 'bool'],
         ];

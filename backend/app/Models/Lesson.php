@@ -16,7 +16,7 @@ class Lesson extends Model
 
     protected $guarded = ['id'];
 
-    /** A lesson always belongs to its package gender track (packages are male or female only). */
+    /** A lesson always belongs to its package gender track (male, female, or the mixed early-years exception). */
     protected static function booted(): void
     {
         static::saving(function (Lesson $lesson) {
@@ -30,7 +30,7 @@ class Lesson extends Model
     {
         return [
             'status' => LessonStatus::class,
-            'gender' => \App\Enums\Gender::class,
+            'gender' => \App\Enums\PackageGender::class,
             'days' => 'array',
             'start_date' => DateOnly::class,
             'end_date' => DateOnly::class,

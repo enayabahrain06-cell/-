@@ -19,13 +19,13 @@ class EnrollStudentsRequest extends FormRequest
         ];
     }
 
-    /** Boys only in boys circles, girls only in girls circles. */
+    /** Boys only in boys circles, girls only in girls circles; mixed early-years circles take both. */
     public function withValidator($validator): void
     {
         $validator->after(function ($v) {
             $gender = $this->route('lesson')?->gender?->value;
             $ids = array_filter((array) $this->input('student_ids'), 'is_numeric');
-            if ($gender && $ids && \App\Models\Student::whereIn('id', $ids)->where('gender', '!=', $gender)->exists()) {
+            if ($gender && $gender !== \App\Enums\PackageGender::Mixed->value && $ids && \App\Models\Student::whereIn('id', $ids)->where('gender', '!=', $gender)->exists()) {
                 $v->errors()->add('student_ids', __('gender.student_mismatch'));
             }
         });

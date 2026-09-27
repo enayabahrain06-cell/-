@@ -42,6 +42,7 @@ class PublicRegistrationController extends Controller
             'registration_open' => (bool) setting('registration.open', true),
             'photo_required' => (bool) setting('registration.photo_required', false),
             'memorization_levels' => \App\Enums\MemorizationLevel::options(),
+            'ornament_level' => in_array($level = setting('ui.ornament_level', 'full'), ['full', 'minimal', 'off'], true) ? $level : 'full',
         ]);
     }
 
@@ -51,11 +52,11 @@ class PublicRegistrationController extends Controller
      */
     public function packages(Request $request): AnonymousResourceCollection
     {
-        // Gender first: boys see only boys' packages and girls only girls' packages.
+        // Gender first: boys see boys' packages, girls see girls' packages; both see mixed early-years packages.
         $request->validate(['gender' => ['required', Gender::rule()], 'birth_date' => ['nullable', 'string', 'max:20']]);
         $gender = Gender::from($request->string('gender')->toString());
 
-        $packages = Package::where('status', PackageStatus::Open->value)->where('gender', $gender->value)->orderBy('start_date')->get();
+        $packages = Package::where('status', PackageStatus::Open->value)->whereIn('gender', [$gender->value, \App\Enums\PackageGender::Mixed->value])->orderBy('start_date')->get();
 
         if ($request->filled('birth_date')) {
             $birth = Carbon::parse(PhoneNumber::toLatinDigits($request->string('birth_date')));

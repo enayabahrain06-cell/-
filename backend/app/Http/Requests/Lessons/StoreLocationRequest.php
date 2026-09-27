@@ -43,9 +43,10 @@ class StoreLocationRequest extends FormRequest
             if (! $location || ! $gender || $gender === \App\Enums\LocationGender::Shared->value) {
                 return;
             }
-            $other = $gender === 'male' ? 'female' : 'male';
-            $inUse = \App\Models\Lesson::where('location_id', $location->id)->where('gender', $other)->where('status', 'active')->exists()
-                || \App\Models\LocationBooking::where('location_id', $location->id)->where('gender', $other)->where('booking_date', '>=', today()->toDateString())->exists();
+            // Mixed early-years groups use girls halls, so they block limiting a hall to boys.
+            $other = $gender === 'male' ? ['female', 'mixed'] : ['male'];
+            $inUse = \App\Models\Lesson::where('location_id', $location->id)->whereIn('gender', $other)->where('status', 'active')->exists()
+                || \App\Models\LocationBooking::where('location_id', $location->id)->whereIn('gender', $other)->where('booking_date', '>=', today()->toDateString())->exists();
             if ($inUse) {
                 $v->errors()->add('gender', __('gender.hall_in_use'));
             }

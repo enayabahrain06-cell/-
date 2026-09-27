@@ -31,7 +31,7 @@ class Exam extends Model
     {
         return [
             'type' => ExamType::class,
-            'gender' => \App\Enums\Gender::class,
+            'gender' => \App\Enums\PackageGender::class,
             'status' => ExamStatus::class,
             'exam_date' => 'date',
             'opens_at' => 'datetime',

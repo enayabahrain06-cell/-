@@ -29,7 +29,7 @@ class PackageSuitability
             $reason = 'closed';
         } elseif ($age < $package->min_age || $age > $package->max_age) {
             $reason = 'age';
-        } elseif ($package->gender->value !== $gender->value) {
+        } elseif (! $package->gender->accepts($gender)) {
             $reason = 'gender';
         }
 

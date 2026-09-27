@@ -7,5 +7,6 @@ return [
     'package_mismatch' => 'The circle and the package must be in the same track.',
     'hall_in_use' => 'The hall has circles or bookings of the other gender, so it cannot be limited to one gender.',
     'teacher_gender_required' => 'A teacher must have a gender.',
-    'student_mismatch' => 'Boys can only join boys circles and girls only girls circles.',
+    'student_mismatch' => 'Boys can only join boys circles and girls only girls circles (mixed early-years circles take both).',
+    'mixed_age' => 'Mixed packages are for early years only (maximum age :age).',
 ];

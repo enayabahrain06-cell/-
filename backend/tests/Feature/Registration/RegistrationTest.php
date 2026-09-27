@@ -164,3 +164,13 @@ it('enforces permissions on packages and requests', function () {
 
     $this->getJson('/api/packages')->assertOk();
 });
+
+it('exposes the ornament level in public settings and falls back to full for unknown values', function () {
+    $this->getJson('/api/public/settings')->assertOk()->assertJsonPath('ornament_level', 'full');
+
+    app(\App\Services\SettingsService::class)->set('ui.ornament_level', 'minimal', 'ui');
+    $this->getJson('/api/public/settings')->assertJsonPath('ornament_level', 'minimal');
+
+    app(\App\Services\SettingsService::class)->set('ui.ornament_level', 'loud', 'ui');
+    $this->getJson('/api/public/settings')->assertJsonPath('ornament_level', 'full');
+});

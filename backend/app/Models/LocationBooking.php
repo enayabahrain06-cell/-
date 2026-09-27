@@ -23,7 +23,7 @@ class LocationBooking extends Model
 
     protected function casts(): array
     {
-        return ['source' => BookingSource::class, 'booking_date' => DateOnly::class, 'gender' => \App\Enums\Gender::class];
+        return ['source' => BookingSource::class, 'booking_date' => DateOnly::class, 'gender' => \App\Enums\PackageGender::class];
     }
 
     public function location(): BelongsTo

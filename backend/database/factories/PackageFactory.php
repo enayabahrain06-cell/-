@@ -38,6 +38,12 @@ class PackageFactory extends Factory
         return $this->state(fn () => ['gender' => 'female', 'name' => 'باقة الحفظ — بنات', 'name_en' => 'Memorization Package — Girls']);
     }
 
+    /** Mixed early-years package (ages 4–6). */
+    public function earlyYears(): static
+    {
+        return $this->state(fn () => ['gender' => 'mixed', 'min_age' => 4, 'max_age' => 6, 'name' => 'باقة البراعم', 'name_ar' => 'باقة البراعم', 'name_en' => 'Early Years (mixed)']);
+    }
+
     public function closed(): static
     {
         return $this->state(fn () => ['status' => 'closed']);

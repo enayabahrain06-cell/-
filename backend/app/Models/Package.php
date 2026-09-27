@@ -14,6 +14,9 @@ class Package extends Model
 
     protected $guarded = ['id'];
 
+    /** Mirrors the column default so a package created without a status serialises correctly. */
+    protected $attributes = ['status' => 'draft'];
+
     protected function casts(): array
     {
         return [

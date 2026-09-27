@@ -3,6 +3,7 @@
 namespace App\Support;
 
 use App\Enums\Gender;
+use App\Enums\PackageGender;
 use App\Enums\Role;
 use App\Enums\Track as TrackEnum;
 use App\Models\User;
@@ -14,6 +15,7 @@ use Illuminate\Database\Eloquent\Builder;
  *
  * - Super Admin: always both tracks.
  * - Other staff: users.track (male / female / both).
+ * - Mixed early-years groups (PackageGender::Mixed) are visible to both tracks.
  * - Students and guardians are not scoped here; their own policies limit them to their records.
  */
 final class Track
@@ -41,7 +43,8 @@ final class Track
         }
         $value = $gender instanceof \BackedEnum ? $gender->value : $gender;
 
-        return $value === $limit->value;
+        // Mixed early-years groups belong to both tracks.
+        return $value === $limit->value || $value === PackageGender::Mixed->value;
     }
 
     /** Filter a query on its own gender column. */
@@ -49,7 +52,7 @@ final class Track
     {
         $limit = self::genderFor($user);
 
-        return $limit ? $query->where($query->qualifyColumn($column), $limit->value) : $query;
+        return $limit ? $query->whereIn($query->qualifyColumn($column), [$limit->value, PackageGender::Mixed->value]) : $query;
     }
 
     /** Filter a query through a relation that has a gender column (e.g. "student"). */
@@ -57,7 +60,7 @@ final class Track
     {
         $limit = self::genderFor($user);
 
-        return $limit ? $query->whereHas($relation, fn (Builder $q) => $q->where($q->qualifyColumn($column), $limit->value)) : $query;
+        return $limit ? $query->whereHas($relation, fn (Builder $q) => $q->whereIn($q->qualifyColumn($column), [$limit->value, PackageGender::Mixed->value])) : $query;
     }
 
     /** Halls: a scoped user sees halls of their gender plus shared halls. */

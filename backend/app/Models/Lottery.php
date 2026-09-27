@@ -25,7 +25,7 @@ class Lottery extends Model
     {
         return [
             'status' => LotteryStatus::class,
-            'gender' => \App\Enums\Gender::class,
+            'gender' => \App\Enums\PackageGender::class,
             'balance_ages' => 'boolean', 'keep_siblings' => 'boolean', 'balance_levels' => 'boolean',
             'run_at' => 'datetime', 'approved_at' => 'datetime', 'run_count' => 'integer',
         ];

@@ -13,9 +13,13 @@ enum LocationGender: string
     case Female = 'female';
     case Shared = 'shared';
 
-    public function accepts(Gender|string $gender): bool
+    /** $gender is a group gender; mixed early-years groups use girls or shared halls. */
+    public function accepts(Gender|PackageGender|string $gender): bool
     {
-        $value = $gender instanceof Gender ? $gender->value : $gender;
+        $value = $gender instanceof \BackedEnum ? $gender->value : $gender;
+        if ($value === PackageGender::Mixed->value) {
+            $value = Gender::Female->value;
+        }
 
         return $this === self::Shared || $this->value === $value;
     }

@@ -4,6 +4,7 @@ namespace App\Support;
 
 use App\Enums\Gender;
 use App\Enums\LocationGender;
+use App\Enums\PackageGender;
 use App\Models\Lesson;
 use App\Models\Location;
 use App\Models\Package;
@@ -40,7 +41,10 @@ final class GenderRules
         }
         $teacher = User::with('teacher')->find($teacherId);
 
-        return $teacher && Track::staffGender($teacher)?->value === $gender;
+        // Mixed early-years groups are taught by female teachers.
+        $required = PackageGender::tryFrom($gender)?->staffGender()->value ?? $gender;
+
+        return $teacher && Track::staffGender($teacher)?->value === $required;
     }
 
     public static function locationAccepts(?int $locationId, \BackedEnum|string|null $gender): bool

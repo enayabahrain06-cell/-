@@ -58,6 +58,12 @@ class PackageRequest extends FormRequest
             $gender = $this->input('gender') ?? $package?->gender?->value;
             \App\Support\GenderRules::check($v, $this->user(), $gender);
 
+            // Mixed is the early-years exception only.
+            $maxAge = $this->input('max_age') ?? $package?->max_age;
+            if ($gender === PackageGender::Mixed->value && (int) $maxAge > PackageGender::EARLY_YEARS_MAX_AGE) {
+                $v->errors()->add('gender', __('gender.mixed_age', ['age' => PackageGender::EARLY_YEARS_MAX_AGE]));
+            }
+
             if ($package && $this->filled('gender') && $this->input('gender') !== $package->gender->value
                 && ($package->lessons()->exists() || $package->registrationRequests()->exists())) {
                 $v->errors()->add('gender', __('gender.package_mismatch'));
