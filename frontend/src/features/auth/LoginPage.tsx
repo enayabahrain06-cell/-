@@ -8,6 +8,7 @@ import AuthLayout from '../../layouts/AuthLayout'
 import FormField from '../../components/FormField'
 import Button from '../../components/Button'
 import Alert from '../../components/Alert'
+import { OrnamentDivider } from '../../components/ornaments'
 import { authApi, type OtpRequestResponse } from '../../api/auth'
 import { parseApiError } from '../../api/client'
 import { useAuth } from '../../app/AuthContext'
@@ -29,7 +30,8 @@ export default function LoginPage() {
   return (
     <AuthLayout>
       <h1 className="font-display text-3xl text-ink sm:text-4xl">{t('title')}</h1>
-      <p className="mt-2 text-stone-600">{t('subtitle')}</p>
+      <OrnamentDivider className="mt-2 text-gold-500" />
+      <p className="mt-3 text-stone-600">{t('subtitle')}</p>
 
       <div role="tablist" aria-label={t('title')} className="mt-8 grid grid-cols-2 gap-1 rounded-2xl bg-stone-200/70 p-1">
         {(['password', 'otp'] as const).map((m) => (

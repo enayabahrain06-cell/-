@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next'
 import { Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts'
 import type { AttendanceDay } from '../../api/dashboard'
 import Icon from '../../components/Icon'
+import { EmptyState } from '../../components/ornaments'
 import { formatDate, formatNumber, formatPercent, formatWeekday } from '../../lib/format'
 
 /**
@@ -56,7 +57,7 @@ export default function AttendanceChart({ days }: { days: AttendanceDay[] }) {
       </ul>
 
       {!hasData ? (
-        <p className="py-12 text-center text-sm text-ink/50">{t('chart.empty')}</p>
+        <EmptyState size="sm" icon="chart" title={t('chart.empty')} />
       ) : asTable ? (
         <div className="mt-4 overflow-x-auto">
           <table className="w-full min-w-[32rem] text-sm">

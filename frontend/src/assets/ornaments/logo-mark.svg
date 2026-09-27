@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linejoin="round">
+  <!-- App logo mark: khatam with an inner rosette. Place on the deep emerald tile for the brand look. -->
+  <rect x="14" y="14" width="36" height="36"/>
+  <rect x="14" y="14" width="36" height="36" transform="rotate(45 32 32)"/>
+  <circle cx="32" cy="32" r="9.5" stroke-width="1.8"/>
+  <path d="M32 26.5 34 30 37.5 32 34 34 32 37.5 30 34 26.5 32 30 30z" stroke-width="1.6"/>
+</svg>

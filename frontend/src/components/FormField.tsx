@@ -1,4 +1,4 @@
-import { useId, type InputHTMLAttributes, type ReactNode } from 'react'
+import { forwardRef, useId, type InputHTMLAttributes, type ReactNode } from 'react'
 
 interface Props extends InputHTMLAttributes<HTMLInputElement> {
   label: string
@@ -7,8 +7,12 @@ interface Props extends InputHTMLAttributes<HTMLInputElement> {
   end?: ReactNode
 }
 
-/** Labelled input with error text wired through aria-describedby. */
-export default function FormField({ label, error, hint, end, id, className = '', ...input }: Props) {
+/**
+ * Labelled input with error text wired through aria-describedby.
+ * forwardRef is required on React 18: without it react-hook-form's register() ref is dropped
+ * and every field submits undefined.
+ */
+const FormField = forwardRef<HTMLInputElement, Props>(function FormField({ label, error, hint, end, id, className = '', ...input }, ref) {
   const autoId = useId()
   const inputId = id ?? autoId
   const msgId = `${inputId}-msg`
@@ -20,6 +24,7 @@ export default function FormField({ label, error, hint, end, id, className = '',
       </label>
       <div className="relative">
         <input
+          ref={ref}
           id={inputId}
           aria-invalid={!!error}
           aria-describedby={error || hint ? msgId : undefined}
@@ -41,4 +46,6 @@ export default function FormField({ label, error, hint, end, id, className = '',
       )}
     </div>
   )
-}
+})
+
+export default FormField

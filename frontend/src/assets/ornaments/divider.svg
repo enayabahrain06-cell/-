@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 16" fill="none" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round" stroke-linecap="round">
+  <!-- Title divider: rule, knot, khatam, knot, rule. -->
+  <path d="M0 8h98M142 8h98"/>
+  <path d="M104 5l3 3-3 3-3-3zM136 5l3 3-3 3-3-3z"/>
+  <rect x="114.5" y="2.5" width="11" height="11"/>
+  <rect x="114.5" y="2.5" width="11" height="11" transform="rotate(45 120 8)"/>
+</svg>

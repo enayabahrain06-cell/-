@@ -1,0 +1,26 @@
+{
+  "title": "Islamic ornaments",
+  "intro": "Living reference for the ornament identity: the eight-pointed star (khatam) and the girih tile, in gold on deep emerald and in emerald and gold on light paper. Ornament is decorative only and never carries meaning or interaction. Try the ornament levels and switch language to see both directions.",
+  "level": "Ornament level",
+  "levels": { "full": "Full", "minimal": "Minimal", "off": "Off" },
+  "light": "Light",
+  "dark": "Dark",
+  "loading": "Loading…",
+  "sections": {
+    "marks": "Star, logo and loading spinner",
+    "pattern": "Repeating pattern for header bands",
+    "divider": "Title divider and top strip",
+    "frame": "Frame for certificates, receipts and printed rosters",
+    "empty": "Empty states",
+    "type": "Typography"
+  },
+  "band_title": "Header band",
+  "page_title": "Page title",
+  "strip_note": "Tables, forms and exam screens allow only this thin strip along the top.",
+  "authority": "Religious Education Authority — Sar",
+  "cert_title": "Certificate of Excellence",
+  "cert_body": "The Authority certifies that the student",
+  "photo": "Photo",
+  "empty_title": "No students yet",
+  "empty_body": "Students appear here once registration requests are accepted."
+}

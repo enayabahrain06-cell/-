@@ -5,6 +5,8 @@
   --font-sans: "IBM Plex Sans Arabic", "Inter", system-ui, sans-serif;
   --font-latin: "Inter", "IBM Plex Sans Arabic", system-ui, sans-serif;
   --font-display: "Amiri", "IBM Plex Sans Arabic", serif;
+  /* Verse display only. KFGQPC Uthmanic is used when installed; Amiri Quran (web font) otherwise. */
+  --font-quran: "KFGQPC Uthmanic Script HAFS", "KFGQPC HAFS Uthmanic Script", "Amiri Quran", "Amiri", serif;
 
   /* emerald #2E6B4F */
   --color-brand-50: #eaf2ee;
@@ -14,13 +16,68 @@
   --color-brand-700: #2e6b4f;
   --color-brand-800: #245540;
   --color-brand-900: #1a3f2f;
-  /* gold #B8872E */
+  /* dark emerald header surface */
+  --color-deep: #1f3b33;
+  /* gold #B8872E / #D6A954 */
   --color-gold-300: #e9d3a4;
+  --color-gold-400: #d6a954;
   --color-gold-500: #b8872e;
   --color-gold-700: #8f6822;
   --color-page: #eef2ec;
+  --color-paper: #fbf6ea;
   --color-ink: #1b2b28;
   --color-danger: #a63d32;
+}
+
+/*
+ * Ornament tokens. Ornaments are decorative only (aria-hidden, no pointer events).
+ * Density and opacity are variables so the ornament_level setting (html[data-ornament])
+ * can reduce or remove them; any element can also scope a level with data-ornament.
+ */
+:root {
+  --ornament-tile: url("./assets/ornaments/girih-tile.svg");
+  --ornament-opacity: 0.14; /* keep within 0.10–0.20 */
+  --ornament-size: 80px; /* one girih tile */
+  --ornament-factor: 1; /* multiplied into opacity by the level */
+  --ornament-scale: 1; /* multiplied into tile size by the level (bigger = sparser) */
+  --ornament-accent: var(--color-gold-500);
+}
+[data-ornament="full"] {
+  --ornament-factor: 1;
+  --ornament-scale: 1;
+}
+[data-ornament="minimal"] {
+  --ornament-factor: 0.5;
+  --ornament-scale: 1.6;
+}
+[data-ornament="off"] {
+  --ornament-factor: 0;
+}
+[data-ornament="off"] .ornament,
+[data-ornament="minimal"] .ornament-full {
+  display: none !important;
+}
+
+/* Girih pattern layer: fills its positioned parent, painted in currentColor. */
+@utility ornament-pattern {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-color: currentColor;
+  mask-image: var(--ornament-tile);
+  mask-repeat: repeat;
+  mask-position: center;
+  mask-size: calc(var(--ornament-size) * var(--ornament-scale));
+  opacity: calc(var(--ornament-opacity) * var(--ornament-factor));
+}
+/* ornament-opacity-10 … ornament-opacity-20 */
+@utility ornament-opacity-* {
+  --ornament-opacity: calc(--value(integer) / 100);
+}
+/* ornament-size-48 (px) or ornament-size-[6rem] */
+@utility ornament-size-* {
+  --ornament-size: calc(--value(integer) * 1px);
+  --ornament-size: --value([length]);
 }
 
 @layer base {
@@ -40,5 +97,28 @@
     font-family: var(--font-latin);
     font-weight: 700;
     letter-spacing: -0.01em;
+  }
+  /* Quranic text always keeps its script face and direction, whatever the UI language. */
+  .font-quran {
+    font-family: var(--font-quran) !important;
+    font-weight: 400 !important;
+    letter-spacing: 0 !important;
+  }
+}
+
+@layer components {
+  .ornament-svg {
+    display: inline-block;
+    flex-shrink: 0;
+  }
+  .ornament-svg > svg {
+    display: block;
+    width: 100%;
+    height: 100%;
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .star-spin {
+      animation: spin 2.4s linear infinite;
+    }
   }
 }

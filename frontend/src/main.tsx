@@ -6,6 +6,9 @@ import './lib/i18n'
 import './index.css'
 import { AuthProvider } from './app/AuthContext'
 import { router } from './app/routes'
+import { initOrnamentLevel } from './lib/ornament'
+
+initOrnamentLevel()
 
 const queryClient = new QueryClient({
   defaultOptions: { queries: { retry: 1, refetchOnWindowFocus: false } },

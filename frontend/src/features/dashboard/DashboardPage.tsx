@@ -5,6 +5,7 @@ import { useAuth } from '../../app/AuthContext'
 import Icon from '../../components/Icon'
 import { formatDate, formatHijri, formatMoney, formatNumber, formatPercent, formatTime, formatWeekday } from '../../lib/format'
 import AttendanceChart from './AttendanceChart'
+import { EmptyState, PageBand } from '../../components/ornaments'
 
 export default function DashboardPage() {
   const { t, i18n } = useTranslation('dashboard')
@@ -16,29 +17,31 @@ export default function DashboardPage() {
 
   return (
     <div className="mx-auto max-w-7xl space-y-6">
-      <div className="flex flex-wrap items-end justify-between gap-3">
-        <div>
-          <h1 className="font-display text-3xl text-ink">{t('greeting', { name: user?.name })}</h1>
-          <p className="mt-1 text-sm text-ink/60">
-            {formatWeekday(today, locale)}{locale === 'ar' ? '، ' : ', '}{formatDate(today, locale)} <span className="mx-1 text-ink/30">·</span> {formatHijri(today, locale)}
-          </p>
-        </div>
-        <div className="flex items-center gap-2">
-          {query.data && (
-            <span className="rounded-full bg-brand-50 px-3 py-1 text-sm font-medium text-brand-700">
-              {query.data.scope.own_circles_only ? t('own_circles') : t(`track.${query.data.scope.track}`)}
-            </span>
-          )}
-          <button
-            type="button"
-            onClick={() => void query.refetch()}
-            className="inline-flex items-center gap-1.5 rounded-lg border border-ink/10 bg-white px-3 py-1.5 text-sm text-ink/70 hover:bg-ink/5"
-          >
-            <Icon name="refresh" className={`size-4 ${query.isFetching ? 'animate-spin' : ''}`} />
-            {t('refresh')}
-          </button>
-        </div>
-      </div>
+      <PageBand
+        title={t('greeting', { name: user?.name })}
+        subtitle={
+          <>
+            {formatWeekday(today, locale)}{locale === 'ar' ? '، ' : ', '}{formatDate(today, locale)} <span className="mx-1 text-white/50">·</span> {formatHijri(today, locale)}
+          </>
+        }
+        actions={
+          <>
+            {query.data && (
+              <span className="rounded-full bg-white/10 px-3 py-1 text-sm font-medium text-gold-300 ring-1 ring-gold-300/25">
+                {query.data.scope.own_circles_only ? t('own_circles') : t(`track.${query.data.scope.track}`)}
+              </span>
+            )}
+            <button
+              type="button"
+              onClick={() => void query.refetch()}
+              className="inline-flex items-center gap-1.5 rounded-lg border border-white/20 bg-white/10 px-3 py-1.5 text-sm text-white hover:bg-white/15"
+            >
+              <Icon name="refresh" className={`size-4 ${query.isFetching ? 'motion-safe:animate-spin' : ''}`} />
+              {t('refresh')}
+            </button>
+          </>
+        }
+      />
 
       {query.isLoading ? (
         <Skeleton />
@@ -129,7 +132,7 @@ function TodayList({ sessions, locale }: { sessions: TodaySession[]; locale: str
         {t('today.title')} <span className="ms-1 text-ink/45">({formatNumber(sessions.length, locale)})</span>
       </h2>
       {sessions.length === 0 ? (
-        <p className="px-5 py-10 text-center text-sm text-ink/50">{t('today.empty')}</p>
+        <EmptyState size="sm" icon="lessons" title={t('today.empty')} />
       ) : (
         <ul className="divide-y divide-ink/6">
           {sessions.map((s) => (
@@ -186,7 +189,7 @@ function AlertsBox({ alerts, total, locale }: { alerts: DashboardAlert[]; total:
         {total > 0 && <span className="ms-auto rounded-full bg-danger px-2 py-0.5 text-xs font-semibold text-white tabular-nums">{formatNumber(total, locale)}</span>}
       </h2>
       {alerts.length === 0 ? (
-        <p className="px-5 py-10 text-center text-sm text-ink/50">{t('alerts.empty')}</p>
+        <EmptyState size="sm" icon="check" title={t('alerts.empty')} />
       ) : (
         <ul className="max-h-[26rem] space-y-2 overflow-y-auto p-3">
           {alerts.map((a, i) => (

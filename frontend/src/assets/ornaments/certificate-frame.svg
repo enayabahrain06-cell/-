@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1123 794" width="1123" height="794" color="#B8872E" fill="none" stroke="currentColor">
+  <!-- A4 landscape certificate frame (96 dpi): girih band, double rules, khatam corner medallions.
+       Gold ink by default; lay it over a cream (#FBF6EA) page. Content area is 96..1027 × 96..698. -->
+  <defs>
+    <g id="st"><rect x="-14.14" y="-14.14" width="28.28" height="28.28"/><path d="M0-20 20 0 0 20-20 0z"/><circle r="6"/></g>
+    <path id="kn" d="M0-8 8 0 0 8-8 0z"/>
+    <pattern id="girih" width="36" height="36" patternUnits="userSpaceOnUse" x="24" y="24">
+      <g transform="scale(0.45)" stroke-width="2" stroke-linejoin="round" stroke-linecap="round">
+        <use href="#st" x="0" y="0"/>
+        <use href="#st" x="40" y="40"/><use href="#st" x="80" y="0"/><use href="#st" x="0" y="80"/><use href="#st" x="80" y="80"/>
+        <use href="#kn" x="40" y="0"/><use href="#kn" x="0" y="40"/><use href="#kn" x="80" y="40"/><use href="#kn" x="40" y="80"/>
+        <path d="M40 20V8M60 40h12M40 60v12M20 40H8M20 0h12M60 0H48M20 80h12M60 80H48M0 20v12M0 60V48M80 20v12M80 60V48M25.86 25.86 14.14 14.14M54.14 25.86 65.86 14.14M25.86 54.14 14.14 65.86M54.14 54.14 65.86 65.86"/>
+      </g>
+    </pattern>
+    <g id="medallion">
+      <circle r="40" fill="#FBF6EA" stroke-width="2"/>
+      <circle r="35" stroke-width="1"/>
+      <rect x="-20" y="-20" width="40" height="40" stroke-width="1.8"/>
+      <rect x="-20" y="-20" width="40" height="40" transform="rotate(45)" stroke-width="1.8"/>
+      <rect x="-7.5" y="-7.5" width="15" height="15" stroke-width="1.4"/>
+      <rect x="-7.5" y="-7.5" width="15" height="15" transform="rotate(45)" stroke-width="1.4"/>
+    </g>
+  </defs>
+  <path d="M24 24h1075v746H24zM60 60v674h1003V60z" fill="url(#girih)" fill-rule="evenodd" stroke="none" opacity="0.85"/>
+  <rect x="16" y="16" width="1091" height="762" stroke-width="2.5"/>
+  <rect x="24" y="24" width="1075" height="746" stroke-width="1"/>
+  <rect x="60" y="60" width="1003" height="674" stroke-width="1"/>
+  <rect x="68" y="68" width="987" height="658" stroke-width="2.5"/>
+  <use href="#medallion" x="42" y="42"/>
+  <use href="#medallion" x="1081" y="42"/>
+  <use href="#medallion" x="42" y="752"/>
+  <use href="#medallion" x="1081" y="752"/>
+</svg>

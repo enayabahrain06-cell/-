@@ -5,6 +5,7 @@ import { useAuth } from '../app/AuthContext'
 import { NAV_SECTIONS } from '../app/nav'
 import Icon from '../components/Icon'
 import LanguageSwitcher from '../components/LanguageSwitcher'
+import { LogoMark, OrnamentStrip } from '../components/ornaments'
 
 /** Staff shell: sidebar on desktop, drawer on mobile, header with language switcher and account. */
 export default function AppLayout() {
@@ -45,7 +46,7 @@ export default function AppLayout() {
 
   const brand = (
     <div className="flex items-center gap-3 px-5 pb-2 pt-5">
-      <img src="/favicon.svg" alt="" className="size-10 rounded-xl ring-1 ring-gold-300/30" />
+      <LogoMark className="size-10" />
       <div className="min-w-0">
         <p className="truncate font-display text-lg leading-tight text-gold-300">{t('common:app_name')}</p>
         <p className="truncate text-xs text-white/55">{t('common:authority')}</p>
@@ -56,7 +57,8 @@ export default function AppLayout() {
   return (
     <div className="min-h-screen lg:grid lg:grid-cols-[17rem_minmax(0,1fr)]">
       {/* Desktop sidebar */}
-      <aside className="sticky top-0 hidden h-screen flex-col overflow-y-auto bg-brand-800 lg:flex">
+      <aside className="sticky top-0 hidden h-screen flex-col overflow-y-auto bg-deep lg:flex">
+        <OrnamentStrip className="text-gold-400" />
         {brand}
         {nav}
       </aside>
@@ -65,7 +67,7 @@ export default function AppLayout() {
       {open && (
         <div className="fixed inset-0 z-40 lg:hidden" role="dialog" aria-modal="true" aria-label={t('main')}>
           <button type="button" className="absolute inset-0 bg-ink/50" aria-label={t('close_menu')} onClick={() => setOpen(false)} />
-          <aside className="absolute inset-y-0 start-0 flex w-72 max-w-[85vw] flex-col overflow-y-auto bg-brand-800 shadow-2xl">
+          <aside className="absolute inset-y-0 start-0 flex w-72 max-w-[85vw] flex-col overflow-y-auto bg-deep shadow-2xl">
             <div className="flex items-start justify-between">
               {brand}
               <button type="button" onClick={() => setOpen(false)} className="m-3 rounded-lg p-2 text-white/80 hover:bg-white/10" aria-label={t('close_menu')}>
