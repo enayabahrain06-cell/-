@@ -35,6 +35,21 @@ class StoreLocationBookingRequest extends FormRequest
             'booking_date' => [$sometimes, 'date_format:Y-m-d'],
             'start_time' => [$sometimes, 'date_format:H:i:s'],
             'end_time' => [$sometimes, 'date_format:H:i:s', 'after:start_time'],
+            'gender' => [$sometimes, \App\Enums\Gender::rule()],
         ];
+    }
+
+    /** Every booking belongs to one track; the hall must serve it and the actor must work in it. */
+    public function withValidator($validator): void
+    {
+        $validator->after(function ($v) {
+            $booking = $this->route('booking');
+            \App\Support\GenderRules::check(
+                $v,
+                $this->user(),
+                $this->input('gender') ?? $booking?->gender?->value,
+                locationId: (int) ($this->input('location_id') ?? $booking?->location_id) ?: null,
+            );
+        });
     }
 }

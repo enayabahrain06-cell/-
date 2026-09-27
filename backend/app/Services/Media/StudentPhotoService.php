@@ -96,4 +96,26 @@ class StudentPhotoService
 
         return $disk->exists($path) ? $disk->get($path) : null;
     }
+
+    /** Printed rosters and certificates never show girls' photos unless the Super Admin enables print_female_photos. */
+    public static function mayPrint(Student $student): bool
+    {
+        return $student->gender?->value !== 'female' || (bool) setting('media.print_female_photos', false);
+    }
+
+    /** Thumbnail as a PNG data URI for dompdf, or null (no photo, or not printable). */
+    public function printableDataUri(Student $student): ?string
+    {
+        if (! self::mayPrint($student) || ! ($bytes = $this->contentsFor($student, 'thumb'))) {
+            return null;
+        }
+        try {
+            $png = (string) (new \Intervention\Image\ImageManager(new \Intervention\Image\Drivers\Gd\Driver))
+                ->read($bytes)->encode(new \Intervention\Image\Encoders\PngEncoder);
+        } catch (\Throwable) {
+            return null;
+        }
+
+        return 'data:image/png;base64,'.base64_encode($png);
+    }
 }

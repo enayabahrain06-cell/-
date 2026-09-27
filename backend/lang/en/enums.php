@@ -2,7 +2,9 @@
 
 return [
     'gender' => ['male' => 'Male', 'female' => 'Female'],
-    'package_gender' => ['male' => 'Boys', 'female' => 'Girls', 'mixed' => 'Mixed'],
+    'package_gender' => ['male' => 'Boys', 'female' => 'Girls'],
+    'location_gender' => ['male' => 'Boys only', 'female' => 'Girls only', 'shared' => 'Shared by schedule'],
+    'track' => ['male' => 'Boys track', 'female' => 'Girls track', 'both' => 'Both tracks'],
     'package_status' => ['draft' => 'Draft', 'open' => 'Open', 'closed' => 'Closed'],
     'registration_status' => ['pending' => 'Pending', 'accepted' => 'Accepted', 'waitlist' => 'Waitlist', 'rejected' => 'Rejected'],
     'student_status' => ['active' => 'Active', 'inactive' => 'Inactive', 'graduated' => 'Graduated', 'suspended' => 'Suspended'],

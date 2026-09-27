@@ -2,6 +2,7 @@
 
 namespace App\Policies;
 
+use App\Support\Track;
 use App\Models\Student;
 use App\Models\User;
 
@@ -16,23 +17,23 @@ class WalletPolicy
     /** Staff with wallets.view, the student's own login, or the guardian. */
     public function view(User $user, Student $student): bool
     {
-        return $user->can('wallets.view')
+        return ($user->can('wallets.view') && Track::allows($user, $student->gender))
             || $student->user_id === $user->id
             || $student->guardian_user_id === $user->id;
     }
 
     public function recordPayment(User $user, Student $student): bool
     {
-        return $user->can('payments.record');
+        return $user->can('payments.record') && Track::allows($user, $student->gender);
     }
 
     public function adjust(User $user, Student $student): bool
     {
-        return $user->can('wallets.adjust');
+        return $user->can('wallets.adjust') && Track::allows($user, $student->gender);
     }
 
     public function refund(User $user, Student $student): bool
     {
-        return $user->can('refunds.manage');
+        return $user->can('refunds.manage') && Track::allows($user, $student->gender);
     }
 }

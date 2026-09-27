@@ -2,6 +2,7 @@
 
 namespace App\Policies;
 
+use App\Support\Track;
 use App\Models\Package;
 use App\Models\User;
 
@@ -14,7 +15,7 @@ class PackagePolicy
 
     public function view(User $user, Package $package): bool
     {
-        return $user->can('packages.view');
+        return $user->can('packages.view') && Track::allows($user, $package->gender);
     }
 
     public function create(User $user): bool
@@ -24,11 +25,11 @@ class PackagePolicy
 
     public function update(User $user, Package $package): bool
     {
-        return $user->can('packages.manage');
+        return $user->can('packages.manage') && Track::allows($user, $package->gender);
     }
 
     public function delete(User $user, Package $package): bool
     {
-        return $user->can('packages.manage');
+        return $user->can('packages.manage') && Track::allows($user, $package->gender);
     }
 }

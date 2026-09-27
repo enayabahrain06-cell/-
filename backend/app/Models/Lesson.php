@@ -16,10 +16,21 @@ class Lesson extends Model
 
     protected $guarded = ['id'];
 
+    /** A lesson always belongs to its package gender track (packages are male or female only). */
+    protected static function booted(): void
+    {
+        static::saving(function (Lesson $lesson) {
+            if ($lesson->package_id && ($lesson->isDirty('package_id') || ! $lesson->gender)) {
+                $lesson->gender = Package::whereKey($lesson->package_id)->toBase()->value('gender');
+            }
+        });
+    }
+
     protected function casts(): array
     {
         return [
             'status' => LessonStatus::class,
+            'gender' => \App\Enums\Gender::class,
             'days' => 'array',
             'start_date' => DateOnly::class,
             'end_date' => DateOnly::class,

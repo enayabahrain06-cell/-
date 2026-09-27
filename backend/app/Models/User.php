@@ -28,6 +28,7 @@ class User extends Authenticatable
         'password',
         'gender',
         'locale',
+        'track',
         'is_active',
         'phone_verified_at',
         'last_login_at',
@@ -44,6 +45,7 @@ class User extends Authenticatable
             'password' => 'hashed',
             'is_active' => 'boolean',
             'locale' => Locale::class,
+            'track' => \App\Enums\Track::class,
             'phone_verified_at' => 'datetime',
             'last_login_at' => 'datetime',
         ];

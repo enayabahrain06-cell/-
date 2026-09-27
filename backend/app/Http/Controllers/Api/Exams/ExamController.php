@@ -34,6 +34,7 @@ class ExamController extends Controller
         $user = $request->user();
 
         $q = Exam::with(['package', 'lesson'])->withCount(['questions', 'attempts'])
+            ->tap(fn ($q) => \App\Support\Track::scope($q, $user))
             ->when($request->filled('type'), fn ($q) => $q->where('type', $request->string('type')))
             ->when($request->filled('status'), fn ($q) => $q->where('status', $request->string('status')))
             ->when($request->filled('package_id'), fn ($q) => $q->where('package_id', $request->integer('package_id')))
@@ -108,10 +109,14 @@ class ExamController extends Controller
         $locale = app()->getLocale();
         $exam->load(['package', 'lesson.teacher']);
 
+        $students = $this->exams->eligibleStudents($exam);
+        $photos = app(\App\Services\Media\StudentPhotoService::class);
+
         $bytes = $pdf->render('pdf.exam-roster', [
             'locale' => $locale,
             'exam' => $exam,
-            'students' => $this->exams->eligibleStudents($exam),
+            'students' => $students,
+            'photos' => $students->mapWithKeys(fn ($s) => [$s->id => $photos->printableDataUri($s)]),
             'authority' => setting($locale === 'en' ? 'authority.name_en' : 'authority.name_ar', config('ahl.authority.name_'.$locale)),
         ]);
 

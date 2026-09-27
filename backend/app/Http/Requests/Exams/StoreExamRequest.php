@@ -30,4 +30,17 @@ class StoreExamRequest extends FormRequest
             'randomize' => ['nullable', 'boolean'],
         ];
     }
+
+    public function withValidator($validator): void
+    {
+        $validator->after(function ($v) {
+            // Gender separation: package and circle must be in the same track, and inside the actor track.
+            $pg = \App\Support\GenderRules::packageGender((int) $this->input('package_id') ?: null);
+            $lg = \App\Support\GenderRules::lessonGender((int) $this->input('lesson_id') ?: null);
+            if ($pg && $lg && $pg !== $lg) {
+                $v->errors()->add('lesson_id', __('gender.package_mismatch'));
+            }
+            \App\Support\GenderRules::check($v, $this->user(), $pg ?? $lg);
+        });
+    }
 }

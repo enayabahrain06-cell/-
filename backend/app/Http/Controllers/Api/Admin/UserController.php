@@ -47,10 +47,14 @@ class UserController extends Controller
 
             if (in_array('teacher', $request->validated('roles'), true)) {
                 Teacher::updateOrCreate(['user_id' => $user->id], [
-                    'gender' => $request->validated('teacher.gender', $user->gender ?? 'male'),
+                    'gender' => $request->validated('teacher.gender') ?? $user->gender,
                     'specialization' => $request->validated('teacher.specialization'),
                     'is_active' => true,
                 ]);
+                // A teacher works in the track of their own gender unless a track is given explicitly.
+                if (! $request->filled('track')) {
+                    $user->update(['track' => $user->teacher()->toBase()->value('gender')]);
+                }
             }
 
             return $user;
@@ -87,9 +91,12 @@ class UserController extends Controller
 
             if ($user->hasRole('teacher')) {
                 Teacher::updateOrCreate(['user_id' => $user->id], array_filter([
-                    'gender' => $request->validated('teacher.gender') ?? $user->gender ?? 'male',
+                    'gender' => $request->validated('teacher.gender') ?? $user->teacher?->gender?->value ?? $user->gender,
                     'specialization' => $request->validated('teacher.specialization'),
                 ], fn ($v) => $v !== null));
+                if (! $request->filled('track')) {
+                    $user->update(['track' => $user->teacher()->toBase()->value('gender')]);
+                }
             }
         });
 

@@ -14,7 +14,7 @@ class Location extends Model
 
     protected function casts(): array
     {
-        return ['is_active' => 'boolean', 'capacity' => 'integer'];
+        return ['is_active' => 'boolean', 'capacity' => 'integer', 'gender' => \App\Enums\LocationGender::class];
     }
 
     public function lessons(): HasMany

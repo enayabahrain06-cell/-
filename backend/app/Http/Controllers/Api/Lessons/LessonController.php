@@ -32,6 +32,8 @@ class LessonController extends Controller
         $lessons = Lesson::with(['package', 'teacher', 'location'])
             ->withCount(['lessonStudents as active_students_count' => fn ($q) => $q->where('status', LessonStudentStatus::Active->value)])
             ->when(! $user->can('lessons.manage'), fn ($q) => $q->where('teacher_id', $user->id))
+            ->tap(fn ($q) => \App\Support\Track::scope($q, $user))
+            ->when($request->filled('gender'), fn ($q) => $q->where('gender', $request->string('gender')))
             ->when($request->filled('package_id'), fn ($q) => $q->where('package_id', $request->integer('package_id')))
             ->when($request->filled('teacher_id'), fn ($q) => $q->where('teacher_id', $request->integer('teacher_id')))
             ->when($request->filled('location_id'), fn ($q) => $q->where('location_id', $request->integer('location_id')))

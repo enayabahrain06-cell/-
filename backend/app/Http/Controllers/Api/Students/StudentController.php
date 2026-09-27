@@ -27,6 +27,7 @@ class StudentController extends Controller
         $user = $request->user();
 
         $q = Student::with(['wallet', 'guardian'])
+            ->tap(fn ($q) => \App\Support\Track::scope($q, $user))
             ->when($user->hasRole('teacher') && ! $user->can('students.manage'), fn ($q) => $q->whereHas('lessonStudents', fn ($w) => $w->where('status', 'active')->whereIn('lesson_id', $user->lessons()->select('id'))))
             ->when($request->filled('search'), function ($q) use ($request) {
                 $s = '%'.$request->string('search').'%';

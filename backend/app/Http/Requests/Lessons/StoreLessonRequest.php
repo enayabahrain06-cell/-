@@ -56,6 +56,21 @@ class StoreLessonRequest extends FormRequest
             if ($teacherId && ! \App\Models\User::whereKey($teacherId)->role('teacher')->exists()) {
                 $v->errors()->add('teacher_id', __('lessons.teacher_role_required'));
             }
+
+            // Gender separation: the circle takes its package gender; teacher and hall must match it.
+            $lesson = $this->route('lesson');
+            $packageId = $this->input('package_id') ?? $lesson?->package_id;
+            $gender = \App\Support\GenderRules::packageGender($packageId ? (int) $packageId : null);
+            \App\Support\GenderRules::check(
+                $v,
+                $this->user(),
+                $gender,
+                (int) ($teacherId ?? $lesson?->teacher_id) ?: null,
+                (int) ($this->input('location_id') ?? $lesson?->location_id) ?: null,
+            );
+            if ($lesson && $gender && $lesson->gender && $lesson->gender->value !== $gender) {
+                $v->errors()->add('package_id', __('gender.package_mismatch'));
+            }
         });
     }
 }

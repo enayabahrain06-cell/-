@@ -49,4 +49,19 @@ class PackageRequest extends FormRequest
             'status' => ['nullable', PackageStatus::rule()],
         ];
     }
+
+    /** Own-track only; a package keeps its gender once circles or requests depend on it. */
+    public function withValidator($validator): void
+    {
+        $validator->after(function ($v) {
+            $package = $this->route('package');
+            $gender = $this->input('gender') ?? $package?->gender?->value;
+            \App\Support\GenderRules::check($v, $this->user(), $gender);
+
+            if ($package && $this->filled('gender') && $this->input('gender') !== $package->gender->value
+                && ($package->lessons()->exists() || $package->registrationRequests()->exists())) {
+                $v->errors()->add('gender', __('gender.package_mismatch'));
+            }
+        });
+    }
 }

@@ -15,6 +15,7 @@ class UserResource extends JsonResource
             'phone' => $this->phone,
             'email' => $this->email,
             'gender' => $this->gender,
+            'track' => $this->track?->value ?? 'both',
             'locale' => $this->locale?->value ?? $this->locale,
             'is_active' => $this->is_active,
             'roles' => $this->whenLoaded('roles', fn () => $this->roles->pluck('name')->values()),

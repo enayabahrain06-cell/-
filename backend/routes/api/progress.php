@@ -43,4 +43,5 @@ Route::prefix('reports')->group(function () {
     Route::get('issues/high-severity', [ProgressReportController::class, 'highSeverity']);
     Route::get('issues/categories', [ProgressReportController::class, 'categories']);
     Route::get('issues/resolved-monthly', [ProgressReportController::class, 'resolvedMonthly']);
+    Route::get('tracks/compare', [ProgressReportController::class, 'compareTracks']); // Super Admin only
 });

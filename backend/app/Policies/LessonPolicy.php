@@ -4,13 +4,17 @@ namespace App\Policies;
 
 use App\Models\Lesson;
 use App\Models\User;
+use App\Support\Track;
 
 class LessonPolicy
 {
-    /** Teachers without lessons.manage only see their own circles. */
+    /**
+     * Teachers without lessons.manage only see their own circles; managers only circles in their track.
+     * Sessions, attendance and evaluations all authorise through this method.
+     */
     public static function ownsOrManages(User $user, Lesson $lesson): bool
     {
-        return $user->can('lessons.manage') || $lesson->teacher_id === $user->id;
+        return ($user->can('lessons.manage') && Track::allows($user, $lesson->gender)) || $lesson->teacher_id === $user->id;
     }
 
     public function viewAny(User $user): bool
@@ -30,21 +34,26 @@ class LessonPolicy
 
     public function update(User $user, Lesson $lesson): bool
     {
-        return $user->can('lessons.manage');
+        return $this->manages($user, $lesson);
     }
 
     public function delete(User $user, Lesson $lesson): bool
     {
-        return $user->can('lessons.manage');
+        return $this->manages($user, $lesson);
     }
 
     public function enroll(User $user, Lesson $lesson): bool
     {
-        return $user->can('lessons.manage');
+        return $this->manages($user, $lesson);
     }
 
     public function changeLocation(User $user, Lesson $lesson): bool
     {
-        return $user->can('lessons.manage');
+        return $this->manages($user, $lesson);
+    }
+
+    private function manages(User $user, Lesson $lesson): bool
+    {
+        return $user->can('lessons.manage') && Track::allows($user, $lesson->gender);
     }
 }

@@ -20,7 +20,7 @@ function fakePhoto(string $name = 'photo.jpg', int $w = 800, int $h = 600): Uplo
 
 it('stores 512 and 96 px webp variants and discards the original', function () {
     actingAsRole('supervisor');
-    $student = Student::factory()->create();
+    $student = Student::factory()->male()->create();
 
     $this->post("/api/students/{$student->id}/photo", ['photo' => fakePhoto()])
         ->assertOk()
@@ -44,7 +44,7 @@ it('stores 512 and 96 px webp variants and discards the original', function () {
 
 it('replaces an existing photo instead of accumulating files', function () {
     actingAsRole('supervisor');
-    $student = Student::factory()->create();
+    $student = Student::factory()->male()->create();
 
     $this->post("/api/students/{$student->id}/photo", ['photo' => fakePhoto()])->assertOk();
     $this->post("/api/students/{$student->id}/photo", ['photo' => fakePhoto('b.png')])->assertOk();
@@ -55,7 +55,7 @@ it('replaces an existing photo instead of accumulating files', function () {
 
 it('rejects wrong types and oversized files', function () {
     actingAsRole('supervisor');
-    $student = Student::factory()->create();
+    $student = Student::factory()->male()->create();
 
     $this->post("/api/students/{$student->id}/photo", ['photo' => UploadedFile::fake()->create('doc.pdf', 100, 'application/pdf')])
         ->assertStatus(422)->assertJsonValidationErrors('photo');
@@ -66,7 +66,7 @@ it('rejects wrong types and oversized files', function () {
 
 it('removes the photo and clears the cached paths', function () {
     actingAsRole('supervisor');
-    $student = Student::factory()->create();
+    $student = Student::factory()->male()->create();
     $this->post("/api/students/{$student->id}/photo", ['photo' => fakePhoto()])->assertOk();
 
     $this->deleteJson("/api/students/{$student->id}/photo")->assertOk();
@@ -78,7 +78,7 @@ it('removes the photo and clears the cached paths', function () {
 
 it('serves the photo through a signed url that expires after 10 minutes', function () {
     actingAsRole('supervisor');
-    $student = Student::factory()->create();
+    $student = Student::factory()->male()->create();
     $this->post("/api/students/{$student->id}/photo", ['photo' => fakePhoto()])->assertOk();
 
     $urls = $this->getJson("/api/students/{$student->id}/photo-url")->assertOk()->json();
@@ -97,7 +97,7 @@ it('serves the photo through a signed url that expires after 10 minutes', functi
 });
 
 it('returns 404 from the signed route when the student has no photo', function () {
-    $student = Student::factory()->create();
+    $student = Student::factory()->male()->create();
     $url = \Illuminate\Support\Facades\URL::temporarySignedRoute('media.student-photo', now()->addMinutes(5), ['student' => $student->id, 'size' => 'thumb']);
 
     $this->get($url)->assertNotFound();
@@ -105,7 +105,7 @@ it('returns 404 from the signed route when the student has no photo', function (
 
 it('reports has_photo false and an initial when there is no photo', function () {
     actingAsRole('supervisor');
-    $student = Student::factory()->create(['full_name' => 'أحمد محمد الجودر']);
+    $student = Student::factory()->male()->create(['full_name' => 'أحمد محمد الجودر']);
 
     $this->getJson("/api/students/{$student->id}/photo-url")
         ->assertOk()
@@ -117,8 +117,8 @@ it('reports has_photo false and an initial when there is no photo', function () 
 it('lets a guardian see and edit only their own child', function () {
     $guardian = User::factory()->withoutPassword()->create();
     $guardian->assignRole('guardian');
-    $own = Student::factory()->create(['guardian_user_id' => $guardian->id, 'guardian_phone' => $guardian->phone]);
-    $other = Student::factory()->create();
+    $own = Student::factory()->male()->create(['guardian_user_id' => $guardian->id, 'guardian_phone' => $guardian->phone]);
+    $other = Student::factory()->male()->create();
 
     $this->actingAs($guardian, 'sanctum');
     $this->getJson("/api/students/{$own->id}/photo-url")->assertOk();
@@ -131,8 +131,8 @@ it('lets a guardian see and edit only their own child', function () {
 it('lets a teacher see photos only of students enrolled in their circles', function () {
     $teacher = actingAsRole('teacher');
     $lesson = Lesson::factory()->create(['teacher_id' => $teacher->id]);
-    $enrolled = Student::factory()->create();
-    $stranger = Student::factory()->create();
+    $enrolled = Student::factory()->male()->create();
+    $stranger = Student::factory()->male()->create();
     LessonStudent::create(['lesson_id' => $lesson->id, 'student_id' => $enrolled->id, 'joined_at' => now()->toDateString(), 'status' => 'active']);
 
     $this->getJson("/api/students/{$enrolled->id}/photo-url")->assertOk();
@@ -143,7 +143,7 @@ it('lets a teacher see photos only of students enrolled in their circles', funct
 
 it('streams generic media only to authorised users', function () {
     $supervisor = actingAsRole('supervisor');
-    $student = Student::factory()->create();
+    $student = Student::factory()->male()->create();
     $this->post("/api/students/{$student->id}/photo", ['photo' => fakePhoto()])->assertOk();
     $media = Media::where('model_id', $student->id)->where('collection', 'photo')->first();
 

@@ -27,6 +27,7 @@ class LocationBookingController extends Controller
         $this->authorize('viewAny', Location::class);
 
         $bookings = LocationBooking::with('location')
+            ->tap(fn ($q) => \App\Support\Track::scope($q, $request->user()))
             ->when($request->filled('location_id'), fn ($q) => $q->where('location_id', $request->integer('location_id')))
             ->when($request->filled('from'), fn ($q) => $q->where('booking_date', '>=', $request->string('from')))
             ->when($request->filled('to'), fn ($q) => $q->where('booking_date', '<=', $request->string('to')))

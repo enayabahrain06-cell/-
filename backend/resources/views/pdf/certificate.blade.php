@@ -18,6 +18,7 @@
         {{-- Arabic: every visual line is one shaped run (pdf_ar); multi-part lines are emitted in reverse reading order. --}}
         <div class="ctitle c">{{ pdf_ar($t('certificate')) }}</div>
         <div class="line c">{{ pdf_ar($t('certify').' '.$authority.' '.$t('that')) }}</div>
+        @if(!empty($photo))<div class="c"><img src="{{ $photo }}" style="width:48pt;height:48pt;border:2pt solid #B8872E" alt=""></div>@endif
         <div class="name c">{{ pdf_ar($student->full_name) }}</div>
         <div class="line c"><b>{{ pdf_ar($exam) }}</b> {{ pdf_ar($verb) }}</div>
         @if(isset($extra['score']))
@@ -31,6 +32,7 @@
     @else
         <div class="ctitle en center">{{ $t('certificate') }}</div>
         <div class="line en center">{{ $authority }} {{ $t('certify') }} {{ $t('that') }}</div>
+        @if(!empty($photo))<div class="c"><img src="{{ $photo }}" style="width:48pt;height:48pt;border:2pt solid #B8872E" alt=""></div>@endif
         <div class="name c">{{ pdf_ar($student->full_name) }}</div>
         <div class="line en center">{{ $verb }} <b>{{ pdf_ar($exam) }}</b></div>
         @if(isset($extra['score']))

@@ -13,11 +13,24 @@ use App\Models\User;
  */
 class StudentPhotoPolicy
 {
-    /** Staff with students.view; teachers only for enrolled students; the student; the guardian. */
+    /**
+     * The student and their guardian; the Super Admin; otherwise staff of the SAME gender as the student
+     * (female students' photos only to female staff, male to male), and then only within their track
+     * (teachers: only students enrolled in their circles).
+     */
     public function view(User $user, Student $student): bool
     {
         if ($this->isSelfOrGuardian($user, $student)) {
             return true;
+        }
+        if ($user->hasRole(\App\Enums\Role::SuperAdmin->value)) {
+            return true;
+        }
+        if (\App\Support\Track::staffGender($user)?->value !== $student->gender?->value) {
+            return false;
+        }
+        if (! \App\Support\Track::allows($user, $student->gender)) {
+            return false;
         }
 
         if ($user->hasRole('teacher')) {

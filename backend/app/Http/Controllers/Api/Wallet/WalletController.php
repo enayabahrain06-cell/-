@@ -88,6 +88,7 @@ class WalletController extends Controller
         Gate::authorize('viewAny', \App\Models\Wallet::class);
 
         $q = Invoice::with(['student', 'package'])
+            ->tap(fn ($q) => \App\Support\Track::scopeVia($q, $request->user(), 'student'))
             ->when($request->filled('status'), fn ($q) => $q->where('status', $request->string('status')))
             ->when($request->filled('student_id'), fn ($q) => $q->where('student_id', $request->integer('student_id')))
             ->when($request->filled('package_id'), fn ($q) => $q->where('package_id', $request->integer('package_id')))

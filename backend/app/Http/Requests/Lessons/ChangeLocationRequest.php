@@ -22,4 +22,14 @@ class ChangeLocationRequest extends FormRequest
             'reason' => ['nullable', 'string', 'max:500'],
         ];
     }
+
+    public function withValidator($validator): void
+    {
+        $validator->after(function ($v) {
+            $lesson = $this->route('lesson');
+            if ($this->filled('location_id') && ! \App\Support\GenderRules::locationAccepts((int) $this->input('location_id'), $lesson->gender)) {
+                $v->errors()->add('location_id', __('gender.location_mismatch'));
+            }
+        });
+    }
 }

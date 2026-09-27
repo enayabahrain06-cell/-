@@ -36,7 +36,11 @@
         @foreach($students as $i => $s)
             <tr>
                 <td class="center">{{ $i + 1 }}</td>
-                <td class="initial">{{ pdf_ar($s->initial()) }}</td>
+                @if($photos[$s->id] ?? null)
+                    <td class="center"><img src="{{ $photos[$s->id] }}" style="width:24pt;height:24pt" alt=""></td>
+                @else
+                    <td class="initial">{{ pdf_ar($s->initial()) }}</td>
+                @endif
                 <td class="center">{{ $s->student_no }}</td>
                 <td class="ar">{{ pdf_ar($s->full_name) }}</td>
                 <td class="scorebox"></td>

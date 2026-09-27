@@ -46,6 +46,13 @@ class UpdateExamRequest extends FormRequest
             if (! $this->input('package_id', $exam->package_id) && ! $this->input('lesson_id', $exam->lesson_id)) {
                 $v->errors()->add('lesson_id', __('exams.package_or_lesson'));
             }
+            // Gender separation: package and circle must be in the same track, and inside the actor track.
+            $pg = \App\Support\GenderRules::packageGender((int) ($this->input('package_id', $exam->package_id)) ?: null);
+            $lg = \App\Support\GenderRules::lessonGender((int) ($this->input('lesson_id', $exam->lesson_id)) ?: null);
+            if ($pg && $lg && $pg !== $lg) {
+                $v->errors()->add('lesson_id', __('gender.package_mismatch'));
+            }
+            \App\Support\GenderRules::check($v, $this->user(), $pg ?? $lg);
         });
     }
 }

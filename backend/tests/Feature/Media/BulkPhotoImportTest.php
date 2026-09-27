@@ -23,10 +23,10 @@ function pngBytes(int $w = 300, int $h = 200): string
 
 it('matches photos by student number, id and phone, including siblings', function () {
     actingAsRole('supervisor');
-    $a = Student::factory()->create(['student_no' => 'S2600001']);
-    $b = Student::factory()->create();
-    $sib1 = Student::factory()->create(['guardian_phone' => '+97336009999']);
-    $sib2 = Student::factory()->create(['guardian_phone' => '+97336009999']);
+    $a = Student::factory()->male()->create(['student_no' => 'S2600001']);
+    $b = Student::factory()->male()->create();
+    $sib1 = Student::factory()->male()->create(['guardian_phone' => '+97336009999']);
+    $sib2 = Student::factory()->male()->create(['guardian_phone' => '+97336009999']);
 
     $files = [
         UploadedFile::fake()->createWithContent('S2600001.png', pngBytes()),
@@ -50,7 +50,7 @@ it('matches photos by student number, id and phone, including siblings', functio
 
 it('imports from a zip archive', function () {
     actingAsRole('supervisor');
-    $a = Student::factory()->create(['student_no' => 'S2600002']);
+    $a = Student::factory()->male()->create(['student_no' => 'S2600002']);
 
     $zipPath = tempnam(sys_get_temp_dir(), 'zip');
     $zip = new ZipArchive;

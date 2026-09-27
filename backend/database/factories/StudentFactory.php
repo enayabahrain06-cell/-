@@ -34,4 +34,13 @@ class StudentFactory extends Factory
             'status' => 'active',
         ];
     }
+    public function male(): static
+    {
+        return $this->state(fn () => ['gender' => 'male', 'full_name' => fake()->randomElement(self::FIRST_M).' '.fake()->randomElement(self::FIRST_M).' '.fake()->randomElement(self::FAMILY)]);
+    }
+
+    public function female(): static
+    {
+        return $this->state(fn () => ['gender' => 'female', 'full_name' => fake()->randomElement(self::FIRST_F).' '.fake()->randomElement(self::FIRST_M).' '.fake()->randomElement(self::FAMILY)]);
+    }
 }

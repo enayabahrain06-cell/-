@@ -11,6 +11,7 @@ class LocationBookingResource extends JsonResource
     {
         return [
             'id' => $this->id,
+            'gender' => $this->gender?->value,
             'location_id' => $this->location_id,
             'location' => $this->whenLoaded('location', fn () => ['id' => $this->location->id, 'name' => $this->location->name]),
             'title' => $this->title,

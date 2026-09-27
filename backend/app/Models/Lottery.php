@@ -11,10 +11,21 @@ class Lottery extends Model
 {
     protected $guarded = ['id'];
 
+    /** A lottery runs inside one package, so it inherits that package gender. */
+    protected static function booted(): void
+    {
+        static::saving(function (Lottery $lottery) {
+            if ($lottery->package_id && ($lottery->isDirty('package_id') || ! $lottery->gender)) {
+                $lottery->gender = Package::whereKey($lottery->package_id)->toBase()->value('gender');
+            }
+        });
+    }
+
     protected function casts(): array
     {
         return [
             'status' => LotteryStatus::class,
+            'gender' => \App\Enums\Gender::class,
             'balance_ages' => 'boolean', 'keep_siblings' => 'boolean', 'balance_levels' => 'boolean',
             'run_at' => 'datetime', 'approved_at' => 'datetime', 'run_count' => 'integer',
         ];

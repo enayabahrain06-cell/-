@@ -23,7 +23,9 @@ class MessageLogController extends Controller
     {
         abort_unless($request->user()->can('messages.view'), 403);
 
+        // Scoped staff only see messages about students in their track (staff/system messages need both tracks).
         $logs = MessageLog::with(['student:id,full_name', 'user:id,name'])
+            ->tap(fn ($q) => \App\Support\Track::scopeVia($q, $request->user(), 'student'))
             ->when($request->filled('status'), fn ($q) => $q->where('status', $request->string('status')))
             ->when($request->filled('type'), fn ($q) => $q->where('type', $request->string('type')))
             ->when($request->filled('phone'), function ($q) use ($request) {
@@ -42,6 +44,7 @@ class MessageLogController extends Controller
     public function show(Request $request, MessageLog $log): MessageLogResource
     {
         abort_unless($request->user()->can('messages.view'), 403);
+        abort_unless(\App\Support\Track::genderFor($request->user()) === null || (\App\Support\Track::allows($request->user(), $log->student?->gender) && $log->student_id), 403);
 
         return new MessageLogResource($log->load(['student:id,full_name', 'user:id,name']));
     }

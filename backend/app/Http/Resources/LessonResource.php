@@ -11,6 +11,7 @@ class LessonResource extends JsonResource
     {
         return [
             'id' => $this->id,
+            'gender' => $this->gender?->value,
             'name' => $this->name,
             'package_id' => $this->package_id,
             'package' => $this->whenLoaded('package', fn () => [

@@ -2,6 +2,7 @@
 
 namespace App\Policies;
 
+use App\Support\Track;
 use App\Models\LessonStudent;
 use App\Models\Student;
 use App\Models\User;
@@ -26,7 +27,7 @@ class StudentPolicy
             return self::isTeacherOf($user, $student);
         }
 
-        return true;
+        return Track::allows($user, $student->gender);
     }
 
     public function create(User $user): bool
@@ -36,12 +37,12 @@ class StudentPolicy
 
     public function update(User $user, Student $student): bool
     {
-        return $user->can('students.manage');
+        return $user->can('students.manage') && Track::allows($user, $student->gender);
     }
 
     public function delete(User $user, Student $student): bool
     {
-        return $user->can('students.manage');
+        return $user->can('students.manage') && Track::allows($user, $student->gender);
     }
 
     /** Append to or correct the memorization ledger. */
@@ -52,7 +53,7 @@ class StudentPolicy
 
     public function issueCertificate(User $user, Student $student): bool
     {
-        return $user->can('students.manage') || ($user->can('evaluations.record') && self::isTeacherOf($user, $student));
+        return ($user->can('students.manage') && Track::allows($user, $student->gender)) || ($user->can('evaluations.record') && self::isTeacherOf($user, $student));
     }
 
     public static function isTeacherOf(User $user, Student $student): bool

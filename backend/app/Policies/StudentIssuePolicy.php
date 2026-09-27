@@ -2,6 +2,7 @@
 
 namespace App\Policies;
 
+use App\Support\Track;
 use App\Models\Student;
 use App\Models\StudentIssue;
 use App\Models\User;
@@ -41,7 +42,7 @@ class StudentIssuePolicy
             return false;
         }
         if ($user->can('students.manage') || $user->can('lessons.manage')) {
-            return true;
+            return Track::allows($user, $student->gender);
         }
 
         return StudentPolicy::isTeacherOf($user, $student);

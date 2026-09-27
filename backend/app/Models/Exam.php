@@ -15,10 +15,23 @@ class Exam extends Model
 
     protected $guarded = ['id'];
 
+    /** Exam gender follows its package, else its circle. */
+    protected static function booted(): void
+    {
+        static::saving(function (Exam $exam) {
+            if ($exam->isDirty(['package_id', 'lesson_id']) || ! $exam->gender) {
+                $exam->gender = $exam->package_id
+                    ? Package::whereKey($exam->package_id)->toBase()->value('gender')
+                    : Lesson::whereKey($exam->lesson_id)->toBase()->value('gender');
+            }
+        });
+    }
+
     protected function casts(): array
     {
         return [
             'type' => ExamType::class,
+            'gender' => \App\Enums\Gender::class,
             'status' => ExamStatus::class,
             'exam_date' => 'date',
             'opens_at' => 'datetime',

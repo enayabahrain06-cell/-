@@ -56,6 +56,7 @@ class CertificateService
             'gregorian' => $issued->format('Y/m/d'),
             'hijri' => hijri_date($issued, $locale === 'en' ? 'en' : 'ar') ?: null,
             'extra' => $extra,
+            'photo' => app(\App\Services\Media\StudentPhotoService::class)->printableDataUri($student),
         ], 'landscape');
         $this->media->storeContents($certificate, MediaCollection::Certificate, $bytes, 'pdf', 'application/pdf', $certificate->certificate_no.'.pdf');
 

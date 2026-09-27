@@ -11,6 +11,7 @@ class ExamResource extends JsonResource
     {
         return [
             'id' => $this->id,
+            'gender' => $this->gender?->value,
             'name' => $this->name,
             'type' => $this->type?->value,
             'type_label' => $this->type?->label(),

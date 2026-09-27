@@ -2,7 +2,9 @@
 
 return [
     'gender' => ['male' => 'ذكر', 'female' => 'أنثى'],
-    'package_gender' => ['male' => 'بنين', 'female' => 'بنات', 'mixed' => 'مختلط'],
+    'package_gender' => ['male' => 'بنين', 'female' => 'بنات'],
+    'location_gender' => ['male' => 'للبنين فقط', 'female' => 'للبنات فقط', 'shared' => 'مشتركة حسب الجدول'],
+    'track' => ['male' => 'مسار البنين', 'female' => 'مسار البنات', 'both' => 'المساران'],
     'package_status' => ['draft' => 'مسودة', 'open' => 'مفتوحة', 'closed' => 'مغلقة'],
     'registration_status' => ['pending' => 'قيد المراجعة', 'accepted' => 'مقبول', 'waitlist' => 'قائمة الانتظار', 'rejected' => 'مرفوض'],
     'student_status' => ['active' => 'نشط', 'inactive' => 'غير نشط', 'graduated' => 'متخرج', 'suspended' => 'موقوف'],

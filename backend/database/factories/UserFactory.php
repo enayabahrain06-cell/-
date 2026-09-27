@@ -19,7 +19,7 @@ class UserFactory extends Factory
             'phone' => '+9733'.fake()->unique()->numerify('#######'),
             'email' => null,
             'password' => static::$password ??= Hash::make('password'),
-            'gender' => fake()->randomElement(['male', 'female']),
+            'gender' => 'male', // deterministic: gender rules depend on it; use ->state(['gender' => 'female']) for the girls track
             'locale' => 'ar',
             'is_active' => true,
             'phone_verified_at' => now(),

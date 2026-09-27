@@ -158,7 +158,7 @@ it('enforces permissions on packages and requests', function () {
 
     actingAsRole('supervisor');
     $this->postJson('/api/packages', [
-        'name' => 'باقة التجويد', 'min_age' => 10, 'max_age' => 15, 'gender' => 'mixed', 'seats' => 20, 'price' => '15.500',
+        'name' => 'باقة التجويد', 'min_age' => 10, 'max_age' => 15, 'gender' => 'female', 'seats' => 20, 'price' => '15.500',
         'days' => ['sun', 'tue'], 'start_time' => '17:00', 'end_time' => '18:30', 'start_date' => now()->addMonth()->toDateString(), 'status' => 'open',
     ])->assertCreated()->assertJsonPath('data.price_fils', 15500)->assertJsonPath('data.seats_left', 20);
 

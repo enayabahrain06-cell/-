@@ -27,6 +27,8 @@ class LocationController extends Controller
         $this->authorize('viewAny', Location::class);
 
         $q = Location::withCount('lessons')
+            ->tap(fn ($q) => \App\Support\Track::scopeLocations($q, $request->user()))
+            ->when($request->filled('gender'), fn ($q) => $q->whereIn('gender', [$request->string('gender')->toString(), 'shared']))
             ->when($request->has('active'), fn ($q) => $q->where('is_active', $request->boolean('active')))
             ->when($request->filled('search'), fn ($q) => $q->where('name', 'like', '%'.$request->string('search').'%'))
             ->orderBy('name');
@@ -44,6 +46,7 @@ class LocationController extends Controller
             'start_time' => ['required', 'string'],
             'end_time' => ['required', 'string'],
             'ignore_lesson_id' => ['nullable', 'integer'],
+            'gender' => ['nullable', \App\Enums\Gender::rule()],
         ]);
 
         $start = WeekDays::time($data['start_time']);
@@ -52,7 +55,10 @@ class LocationController extends Controller
             throw ValidationException::withMessages(['end_time' => __('lessons.end_after_start')]);
         }
 
-        $free = Location::where('is_active', true)->orderBy('name')->get()
+        $free = Location::where('is_active', true)
+            ->tap(fn ($q) => \App\Support\Track::scopeLocations($q, $request->user()))
+            ->when(! empty($data['gender']), fn ($q) => $q->whereIn('gender', [$data['gender'], 'shared']))
+            ->orderBy('name')->get()
             ->filter(fn (Location $l) => $detector->forDate($l->id, Carbon::parse($data['date']), $start, $end, $data['ignore_lesson_id'] ?? null) === []);
 
         return LocationResource::collection($free->values());

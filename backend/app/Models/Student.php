@@ -152,11 +152,18 @@ class Student extends Model
         return $this->student_phone ?: $this->guardian_phone;
     }
 
-    /** Temporary signed URL (10 minutes) for a photo variant, or null when there is no photo. */
+    /**
+     * Temporary signed URL (10 minutes) for a photo variant, or null when there is no photo
+     * or the current viewer may not see it (gender rule in StudentPhotoPolicy). Lists then show the initial.
+     */
     public function photoUrl(string $size = 'thumb'): ?string
     {
         $path = $size === 'profile' ? $this->photo_path : $this->photo_thumb_path;
         if (! $path) {
+            return null;
+        }
+        $viewer = auth()->user();
+        if ($viewer && ! \Illuminate\Support\Facades\Gate::forUser($viewer)->allows('view-photo', $this)) {
             return null;
         }
 

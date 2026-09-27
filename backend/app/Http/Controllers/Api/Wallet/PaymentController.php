@@ -30,6 +30,7 @@ class PaymentController extends Controller
         Gate::authorize('viewAny', \App\Models\Wallet::class);
 
         $q = Payment::with(['student', 'receiver', 'allocations.invoice', 'media'])
+            ->tap(fn ($q) => \App\Support\Track::scopeVia($q, $request->user(), 'student'))
             ->when($request->filled('student_id'), fn ($q) => $q->where('student_id', $request->integer('student_id')))
             ->when($request->filled('method'), fn ($q) => $q->where('method', $request->string('method')))
             ->when($request->filled('received_by'), fn ($q) => $q->where('received_by', $request->integer('received_by')))
@@ -101,6 +102,7 @@ class PaymentController extends Controller
         Gate::authorize('viewAny', \App\Models\Wallet::class);
 
         $q = Refund::with(['student', 'approver'])
+            ->tap(fn ($q) => \App\Support\Track::scopeVia($q, $request->user(), 'student'))
             ->when($request->filled('student_id'), fn ($q) => $q->where('student_id', $request->integer('student_id')))
             ->orderByDesc('paid_at');
 

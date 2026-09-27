@@ -28,6 +28,7 @@ class PackageController extends Controller
         ])
             ->when($request->filled('status'), fn ($q) => $q->where('status', $request->string('status')))
             ->when($request->filled('gender'), fn ($q) => $q->where('gender', $request->string('gender')))
+            ->tap(fn ($q) => \App\Support\Track::scope($q, $request->user()))
             ->orderByDesc('start_date');
 
         return PackageResource::collection($q->paginate((int) $request->integer('per_page', 25)));

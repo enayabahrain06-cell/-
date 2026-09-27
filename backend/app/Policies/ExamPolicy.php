@@ -2,6 +2,7 @@
 
 namespace App\Policies;
 
+use App\Support\Track;
 use App\Models\Exam;
 use App\Models\User;
 use App\Services\Exams\ExamService;
@@ -19,7 +20,7 @@ class ExamPolicy
             return false;
         }
 
-        return $user->can('exams.manage') || app(ExamService::class)->teacherOwns($user, $exam);
+        return ($user->can('exams.manage') && Track::allows($user, $exam->gender)) || app(ExamService::class)->teacherOwns($user, $exam);
     }
 
     public function create(User $user): bool
@@ -29,12 +30,12 @@ class ExamPolicy
 
     public function update(User $user, Exam $exam): bool
     {
-        return $user->can('exams.manage');
+        return $user->can('exams.manage') && Track::allows($user, $exam->gender);
     }
 
     public function delete(User $user, Exam $exam): bool
     {
-        return $user->can('exams.manage');
+        return $user->can('exams.manage') && Track::allows($user, $exam->gender);
     }
 
     /** Enter paper scores / grade recitation / upload sheets. */
@@ -44,6 +45,6 @@ class ExamPolicy
             return false;
         }
 
-        return $user->can('exams.manage') || app(ExamService::class)->teacherOwns($user, $exam);
+        return ($user->can('exams.manage') && Track::allows($user, $exam->gender)) || app(ExamService::class)->teacherOwns($user, $exam);
     }
 }

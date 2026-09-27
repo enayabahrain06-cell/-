@@ -51,14 +51,15 @@ class PublicRegistrationController extends Controller
      */
     public function packages(Request $request): AnonymousResourceCollection
     {
-        $packages = Package::where('status', PackageStatus::Open->value)->orderBy('start_date')->get();
+        // Gender first: boys see only boys' packages and girls only girls' packages.
+        $request->validate(['gender' => ['required', Gender::rule()], 'birth_date' => ['nullable', 'string', 'max:20']]);
+        $gender = Gender::from($request->string('gender')->toString());
 
-        if ($request->filled('birth_date') && $request->filled('gender')) {
+        $packages = Package::where('status', PackageStatus::Open->value)->where('gender', $gender->value)->orderBy('start_date')->get();
+
+        if ($request->filled('birth_date')) {
             $birth = Carbon::parse(PhoneNumber::toLatinDigits($request->string('birth_date')));
-            $gender = Gender::tryFrom($request->string('gender'));
-            if ($gender) {
-                $packages->each(fn (Package $p) => $p->setAttribute('suitability', PackageSuitability::check($p, $birth, $gender)));
-            }
+            $packages->each(fn (Package $p) => $p->setAttribute('suitability', PackageSuitability::check($p, $birth, $gender)));
         }
 
         return PackageResource::collection($packages);

@@ -3,7 +3,6 @@
 namespace App\Services\Registration;
 
 use App\Enums\Gender;
-use App\Enums\PackageGender;
 use App\Enums\PackageStatus;
 use App\Models\Package;
 use Carbon\CarbonInterface;
@@ -30,7 +29,7 @@ class PackageSuitability
             $reason = 'closed';
         } elseif ($age < $package->min_age || $age > $package->max_age) {
             $reason = 'age';
-        } elseif ($package->gender !== PackageGender::Mixed && $package->gender->value !== $gender->value) {
+        } elseif ($package->gender->value !== $gender->value) {
             $reason = 'gender';
         }
 
