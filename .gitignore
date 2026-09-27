@@ -1,0 +1,40 @@
+# root
+.DS_Store
+Thumbs.db
+*.log
+.idea/
+.vscode/
+
+# backend
+backend/vendor/
+backend/node_modules/
+backend/.env
+backend/.env.backup
+backend/.phpunit.result.cache
+backend/storage/*.key
+backend/storage/app/private/*
+backend/storage/app/public/*
+backend/storage/app/backups/*
+backend/storage/framework/cache/data/*
+backend/storage/framework/sessions/*
+backend/storage/framework/testing/*
+backend/storage/framework/views/*
+backend/storage/logs/*
+backend/database/*.sqlite
+backend/database/*.sqlite-*
+backend/public/build
+backend/public/hot
+backend/public/storage
+backend/public/docs
+backend/.scribe
+
+# frontend
+frontend/node_modules/
+frontend/dist/
+frontend/.env
+frontend/.env.local
+
+# whatsapp
+whatsapp/node_modules/
+whatsapp/session/
+whatsapp/.env
