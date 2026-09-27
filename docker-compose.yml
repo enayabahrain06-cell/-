@@ -1,0 +1,126 @@
+# Ahl Al-Quran System — production stack.
+#
+#   docker compose --profile mysql up -d --build        # with MySQL 8
+#   docker compose --profile pgsql up -d --build        # with PostgreSQL 15
+#   docker compose up -d --build                        # SQLite inside the storage volume (small centres)
+#   add --profile whatsapp to also run the open-wa bridge
+#
+# Configuration comes from ./.env (copy .env.production.example). See docs/04-DEPLOYMENT.md.
+
+x-backend: &backend
+  build: ./backend
+  image: ahl-alquran/backend:latest
+  restart: unless-stopped
+  env_file: .env
+  environment:
+    APP_ENV: production
+    APP_DEBUG: "false"
+    LOG_CHANNEL: stderr
+  volumes:
+    - storage:/var/www/html/storage
+  depends_on:
+    mysql: { condition: service_healthy, required: false }
+    pgsql: { condition: service_healthy, required: false }
+
+services:
+  app:
+    <<: *backend
+    environment:
+      APP_ENV: production
+      APP_DEBUG: "false"
+      LOG_CHANNEL: stderr
+      CONTAINER_ROLE: app
+    healthcheck:
+      test: ["CMD-SHELL", "php-fpm -t >/dev/null 2>&1 || exit 1"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+
+  queue:
+    <<: *backend
+    environment:
+      APP_ENV: production
+      APP_DEBUG: "false"
+      LOG_CHANNEL: stderr
+      CONTAINER_ROLE: queue
+    command: ["php", "artisan", "queue:work", "--sleep=3", "--tries=3", "--max-time=3600"]
+    depends_on:
+      app: { condition: service_started }
+
+  scheduler:
+    <<: *backend
+    environment:
+      APP_ENV: production
+      APP_DEBUG: "false"
+      LOG_CHANNEL: stderr
+      CONTAINER_ROLE: scheduler
+    command: ["php", "artisan", "schedule:work"]
+    depends_on:
+      app: { condition: service_started }
+
+  web:
+    build: ./frontend
+    image: ahl-alquran/web:latest
+    restart: unless-stopped
+    ports:
+      - "${HTTP_PORT:-80}:80"
+    volumes:
+      - storage:/var/www/storage:ro
+    # /storage/ in nginx.conf serves storage/app/public from the shared volume
+    command: ["/bin/sh", "-c", "ln -sfn /var/www/storage/app/public /var/www/storage-public && exec nginx -g 'daemon off;'"]
+    depends_on:
+      app: { condition: service_started }
+
+  whatsapp:
+    profiles: ["whatsapp"]
+    build: ./whatsapp
+    image: ahl-alquran/whatsapp:latest
+    restart: unless-stopped
+    shm_size: 1gb
+    environment:
+      API_KEY: ${OPENWA_API_KEY:-}
+      INBOUND_WEBHOOK_URL: http://web/api/public/whatsapp/inbound
+      INBOUND_WEBHOOK_SECRET: ${WHATSAPP_INBOUND_SECRET:-}
+      SESSION_DIR: /data/session
+    volumes:
+      - whatsapp-session:/data/session
+
+  mysql:
+    profiles: ["mysql"]
+    image: mysql:8.0
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: ${DB_DATABASE:-ahl_alquran}
+      MYSQL_USER: ${DB_USERNAME:-ahl}
+      MYSQL_PASSWORD: ${DB_PASSWORD:-}
+      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD:-}
+    command: ["--character-set-server=utf8mb4", "--collation-server=utf8mb4_unicode_ci"]
+    volumes:
+      - mysql-data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -h 127.0.0.1 -u root -p$$MYSQL_ROOT_PASSWORD --silent"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  pgsql:
+    profiles: ["pgsql"]
+    image: postgres:15
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${DB_DATABASE:-ahl_alquran}
+      POSTGRES_USER: ${DB_USERNAME:-ahl}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-}
+    volumes:
+      - pgsql-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+volumes:
+  storage:
+  whatsapp-session:
+  mysql-data:
+  pgsql-data:

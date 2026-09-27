@@ -1,0 +1,14 @@
+{
+  "name": "ahl-alquran-whatsapp",
+  "private": true,
+  "version": "1.0.0",
+  "description": "open-wa bridge for the Ahl Al-Quran system: POST /send, GET /status, GET /qr, inbound messages forwarded to the Laravel webhook",
+  "main": "server.js",
+  "type": "commonjs",
+  "scripts": { "start": "node server.js", "check": "node --check server.js" },
+  "engines": { "node": ">=20" },
+  "dependencies": {
+    "@open-wa/wa-automate": "^4.76.0",
+    "express": "^4.21.2"
+  }
+}

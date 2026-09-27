@@ -116,7 +116,8 @@ docker compose --profile mysql up -d     # app + nginx + queue + scheduler + wha
 docker compose --profile pgsql up -d     # same, with PostgreSQL 15
 docker compose up -d                     # app only, SQLite inside the container
 ```
-(docker-compose ships in Phase 4.)
+Production setup, HTTPS, WhatsApp, updates and backups: [docs/04-DEPLOYMENT.md](docs/04-DEPLOYMENT.md). Copy `.env.production.example` to `.env` first.
+Add `--profile whatsapp` to run the open-wa bridge (`whatsapp/`).
 
 ### Migrate data from SQLite to MySQL / PostgreSQL
 

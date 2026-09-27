@@ -109,3 +109,13 @@ jobs:
       - run: npm ci
       - run: npm run lint --if-present
       - run: npm run build
+
+  docker:
+    name: Docker images build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Validate compose file
+        run: cp .env.production.example .env && docker compose --profile mysql --profile pgsql --profile whatsapp config -q
+      - name: Build backend, web and whatsapp images
+        run: docker compose --profile whatsapp build

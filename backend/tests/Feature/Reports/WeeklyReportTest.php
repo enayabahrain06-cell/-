@@ -24,3 +24,10 @@ it('sends the weekly report once, only on the configured day, to staff with repo
     $this->artisan('reports:weekly')->assertSuccessful();
     expect(MessageLog::where('type', 'weekly_report')->count())->toBe(0);
 });
+
+it('creates the first super admin from the command line', function () {
+    $this->artisan('users:create-admin', ['phone' => '+97336999001', 'name' => 'مدير النظام', '--password' => 'long-enough-pass'])->assertSuccessful();
+    $u = \App\Models\User::where('phone', '+97336999001')->first();
+    expect($u->hasRole('super_admin'))->toBeTrue()->and(\Illuminate\Support\Facades\Hash::check('long-enough-pass', $u->password))->toBeTrue();
+    $this->artisan('users:create-admin', ['phone' => '+97336999002', 'name' => 'x', '--password' => 'short'])->assertFailed();
+});

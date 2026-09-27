@@ -38,3 +38,6 @@ frontend/.env.local
 whatsapp/node_modules/
 whatsapp/session/
 whatsapp/.env
+
+# docker compose production settings
+/.env
