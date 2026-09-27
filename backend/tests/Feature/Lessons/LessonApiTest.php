@@ -60,7 +60,7 @@ it('validates lesson input', function () {
 it('enrolls and unenrolls students respecting capacity', function () {
     actingAsRole('supervisor');
     $lesson = Lesson::factory()->create(['capacity' => 2]);
-    $students = Student::factory()->count(3)->create();
+    $students = Student::factory()->count(3)->create(['birth_date' => now()->subYears(10)->toDateString()]);
 
     $this->postJson("/api/lessons/{$lesson->id}/students", ['student_ids' => [$students[0]->id, $students[1]->id]])->assertOk();
     $this->postJson("/api/lessons/{$lesson->id}/students", ['student_ids' => [$students[2]->id]])->assertStatus(422)->assertJsonValidationErrors('student_ids');
@@ -79,7 +79,7 @@ it('changes the hall for one day with an override and notifies students and guar
     $session = LessonSession::where('lesson_id', $lesson->id)->where('session_date', '>', today())->orderBy('session_date')->first();
     $newHall = Location::factory()->create(['map_link' => 'https://maps.google.com/?q=9,9']);
 
-    $s1 = Student::factory()->create(['student_phone' => '+97336100001', 'guardian_phone' => '+97336100002']);
+    $s1 = Student::factory()->create(['student_phone' => '+97336100001', 'guardian_phone' => '+97336100002', 'birth_date' => today()->subYears(14)->toDateString()]); // 12+: gets a copy (section 23)
     $s2 = Student::factory()->create(['student_phone' => null, 'guardian_phone' => '+97336100003']);
     $lesson->lessonStudents()->createMany([
         ['student_id' => $s1->id, 'joined_at' => today(), 'status' => 'active'],

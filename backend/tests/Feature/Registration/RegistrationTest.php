@@ -2,6 +2,8 @@
 
 use App\Models\Alert;
 use App\Models\Invoice;
+use App\Models\Lesson;
+use App\Models\LessonStudent;
 use App\Models\MessageLog;
 use App\Models\Package;
 use App\Models\RegistrationRequest;
@@ -12,6 +14,8 @@ use App\Models\Wallet;
 beforeEach(function () {
     // starts in 30 days; ages 7–12 boys
     $this->package = Package::factory()->create(['min_age' => 7, 'max_age' => 12, 'gender' => 'male', 'seats' => 2, 'start_date' => now()->addDays(30)->toDateString(), 'price_fils' => 20000]);
+    // Enrollment goes straight into a circle of the package (lesson_id on accept).
+    $this->circle = Lesson::factory()->create(['package_id' => $this->package->id, 'capacity' => 5]);
 });
 
 function registrationPayload(array $overrides = []): array
@@ -68,7 +72,7 @@ it('puts requests on the waitlist with an explicit position when the package is 
     // fill the 2 seats
     foreach ([1, 2] as $i) {
         $r = RegistrationRequest::factory()->create(['package_id' => $this->package->id]);
-        $this->postJson("/api/registrations/{$r->id}/accept")->assertOk();
+        $this->postJson("/api/registrations/{$r->id}/accept", ['lesson_id' => $this->circle->id])->assertOk();
     }
     expect($this->package->fresh()->isFull())->toBeTrue();
 
@@ -88,7 +92,7 @@ it('accepting creates the guardian and student accounts, wallet, invoice and sen
     $admin = actingAsRole('supervisor');
     $r = RegistrationRequest::factory()->create(['package_id' => $this->package->id, 'student_phone' => '+97336001020', 'guardian_phone' => '+97336001021']);
 
-    $res = $this->postJson("/api/registrations/{$r->id}/accept")->assertOk();
+    $res = $this->postJson("/api/registrations/{$r->id}/accept", ['lesson_id' => $this->circle->id])->assertOk();
 
     $student = Student::find($res->json('student.id'));
     expect($student)->not->toBeNull()
@@ -98,19 +102,21 @@ it('accepting creates the guardian and student accounts, wallet, invoice and sen
         ->and($student->user->hasRole('student'))->toBeTrue()
         ->and(Wallet::where('student_id', $student->id)->value('balance_fils'))->toBe(-20000)
         ->and(Invoice::where('student_id', $student->id)->where('amount_fils', 20000)->where('status', 'open')->exists())->toBeTrue()
-        ->and($r->fresh()->status->value)->toBe('accepted')
+        ->and($r->fresh()->status->value)->toBe('enrolled')
+        ->and($r->fresh()->lesson_id)->toBe($this->circle->id)
+        ->and(LessonStudent::where('lesson_id', $this->circle->id)->where('student_id', $student->id)->where('status', 'active')->exists())->toBeTrue()
         ->and($r->fresh()->decided_by)->toBe($admin->id)
         ->and(MessageLog::where('type', 'registration_accepted')->count())->toBe(2)
         ->and(\App\Models\AuditLog::where('action', 'registration.accepted')->exists())->toBeTrue();
 
     // siblings share the guardian login
     $r2 = RegistrationRequest::factory()->create(['package_id' => $this->package->id, 'guardian_phone' => '+97336001021']);
-    $res2 = $this->postJson("/api/registrations/{$r2->id}/accept")->assertOk();
+    $res2 = $this->postJson("/api/registrations/{$r2->id}/accept", ['lesson_id' => $this->circle->id])->assertOk();
     expect(Student::find($res2->json('student.id'))->guardian_user_id)->toBe($student->guardian_user_id)
         ->and(User::where('phone', '+97336001021')->count())->toBe(1);
 
     // accepting twice fails; alert resolved when nothing is pending
-    $this->postJson("/api/registrations/{$r->id}/accept")->assertStatus(422);
+    $this->postJson("/api/registrations/{$r->id}/accept", ['lesson_id' => $this->circle->id])->assertStatus(422);
     expect(Alert::where('type', 'registration_request')->where('status', 'open')->exists())->toBeFalse();
 });
 
@@ -120,7 +126,7 @@ it('re-packs waitlist positions on accept and reject', function () {
     $w2 = RegistrationRequest::factory()->create(['package_id' => $this->package->id, 'status' => 'waitlist', 'waitlist_position' => 2]);
     $w3 = RegistrationRequest::factory()->create(['package_id' => $this->package->id, 'status' => 'waitlist', 'waitlist_position' => 3]);
 
-    $this->postJson("/api/registrations/{$w1->id}/accept")->assertOk();
+    $this->postJson("/api/registrations/{$w1->id}/accept", ['lesson_id' => $this->circle->id])->assertOk();
     expect($w2->fresh()->waitlist_position)->toBe(1)->and($w3->fresh()->waitlist_position)->toBe(2);
 
     $this->postJson("/api/registrations/{$w2->id}/reject", ['reason' => 'لم يحضر المقابلة'])->assertOk();
@@ -148,7 +154,7 @@ it('requires a photo before acceptance when the setting is on', function () {
     app(\App\Services\SettingsService::class)->set('registration.photo_required', true, 'registration', 'bool');
     $r = RegistrationRequest::factory()->create(['package_id' => $this->package->id]);
 
-    $this->postJson("/api/registrations/{$r->id}/accept")->assertStatus(422)->assertJsonValidationErrors('photo');
+    $this->postJson("/api/registrations/{$r->id}/accept", ['lesson_id' => $this->circle->id])->assertStatus(422)->assertJsonValidationErrors('photo');
 });
 
 it('enforces permissions on packages and requests', function () {

@@ -19,6 +19,7 @@ use App\Models\RegistrationRequest;
 use App\Models\Student;
 use App\Models\User;
 use App\Services\AuditLogger;
+use App\Services\Circles\CircleEnrollmentService;
 use App\Services\Lessons\StudentMessenger;
 use App\Support\Track;
 use Illuminate\Support\Collection;
@@ -37,6 +38,7 @@ class LotteryService
         private LotteryAllocator $allocator,
         private StudentMessenger $messenger,
         private AuditLogger $audit,
+        private CircleEnrollmentService $circles,
     ) {}
 
     /** @param  array{package_id:int,name:string,balance_ages?:bool,keep_siblings?:bool,balance_levels?:bool,teachers:list<array{teacher_id:int,lesson_id:int,capacity:int}>}  $data */
@@ -194,10 +196,18 @@ class LotteryService
 
                     continue;
                 }
-                LessonStudent::updateOrCreate(
-                    ['lesson_id' => $r->lesson_id, 'student_id' => $r->student_id],
-                    ['status' => LessonStudentStatus::Active, 'joined_at' => max(today()->toDateString(), $r->lesson?->start_date?->toDateString() ?? today()->toDateString()), 'left_at' => null]
-                );
+                // Seat, gender and age range are checked again under a lock by the circle service (one row per stay).
+                try {
+                    $start = $r->lesson?->start_date;
+                    $this->circles->join($r->lesson, $r->student, $by, on: $start && $start->isFuture() ? $start : today());
+                } catch (ValidationException) {
+                    $skipped++;
+
+                    continue;
+                }
+                RegistrationRequest::where('package_id', $lottery->package_id)->where('student_id', $r->student_id)
+                    ->whereIn('status', ['pending_lottery', 'accepted'])
+                    ->update(['status' => 'enrolled', 'lesson_id' => $r->lesson_id]);
                 $enrolled++;
             }
             $lottery->update(['status' => LotteryStatus::Approved, 'approved_at' => now(), 'approved_by' => $by->id]);

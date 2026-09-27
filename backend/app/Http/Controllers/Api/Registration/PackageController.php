@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api\Registration;
 
+use App\Enums\RegistrationStatus;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Registration\PackageRequest;
 use App\Http\Resources\PackageResource;
@@ -21,7 +22,7 @@ class PackageController extends Controller
         $this->authorize('viewAny', Package::class);
 
         $q = Package::withCount([
-            'registrationRequests as accepted_count' => fn ($q) => $q->where('status', 'accepted'),
+            'registrationRequests as accepted_count' => fn ($q) => $q->whereIn('status', RegistrationStatus::seated()),
             'registrationRequests as pending_count' => fn ($q) => $q->where('status', 'pending'),
             'registrationRequests as waitlist_count' => fn ($q) => $q->where('status', 'waitlist'),
             'lessons',
@@ -49,7 +50,7 @@ class PackageController extends Controller
         $this->authorize('view', $package);
 
         $package->loadCount([
-            'registrationRequests as accepted_count' => fn ($q) => $q->where('status', 'accepted'),
+            'registrationRequests as accepted_count' => fn ($q) => $q->whereIn('status', RegistrationStatus::seated()),
             'registrationRequests as pending_count' => fn ($q) => $q->where('status', 'pending'),
             'registrationRequests as waitlist_count' => fn ($q) => $q->where('status', 'waitlist'),
             'lessons',

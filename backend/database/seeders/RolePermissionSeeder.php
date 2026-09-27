@@ -22,7 +22,9 @@ class RolePermissionSeeder extends Seeder
         'attendance.view', 'attendance.record',
         'evaluations.view', 'evaluations.record',
         'exams.view', 'exams.manage', 'exams.grade',
+        'certificates.view', 'certificates.issue', 'certificates.approve', 'certificates.templates',
         'lottery.view', 'lottery.manage',
+        'honor.view', 'honor.manage', 'competitions.view', 'competitions.manage', 'competitions.judge', 'challenges.view', 'challenges.manage',
         'wallets.view', 'payments.record', 'wallets.adjust', 'refunds.manage',
         'messages.view', 'messages.manage', 'messages.send', 'whatsapp.status',
         'reports.view', 'reports.export',
@@ -43,7 +45,9 @@ class RolePermissionSeeder extends Seeder
             'attendance.view', 'attendance.record',
             'evaluations.view', 'evaluations.record',
             'exams.view', 'exams.manage', 'exams.grade',
+            'certificates.view', 'certificates.issue', 'certificates.approve',
             'lottery.view', 'lottery.manage',
+            'honor.view', 'honor.manage', 'competitions.view', 'competitions.manage', 'competitions.judge', 'challenges.view', 'challenges.manage',
             'wallets.view', 'payments.record', 'wallets.adjust', 'refunds.manage',
             'messages.view', 'messages.manage', 'messages.send', 'whatsapp.status',
             'reports.view', 'reports.export',
@@ -55,6 +59,8 @@ class RolePermissionSeeder extends Seeder
             'attendance.view', 'attendance.record',
             'evaluations.view', 'evaluations.record',
             'exams.view', 'exams.grade',
+            'certificates.view', 'certificates.issue', // drafts for own students; approval stays with supervisors
+            'honor.view', 'competitions.view', 'competitions.judge', 'challenges.view', // judging only where assigned
             'messages.send',
         ],
         'student' => [],
@@ -65,8 +71,11 @@ class RolePermissionSeeder extends Seeder
     {
         app(PermissionRegistrar::class)->forgetCachedPermissions();
 
+        $added = [];
         foreach (self::PERMISSIONS as $name) {
-            Permission::firstOrCreate(['name' => $name, 'guard_name' => 'web']);
+            if (Permission::firstOrCreate(['name' => $name, 'guard_name' => 'web'])->wasRecentlyCreated) {
+                $added[] = $name;
+            }
         }
 
         foreach (self::MATRIX as $roleName => $perms) {
@@ -75,6 +84,9 @@ class RolePermissionSeeder extends Seeder
             // Only set the default matrix when the role is new, so admin edits survive re-seeding.
             if ($role->wasRecentlyCreated || $role->permissions()->count() === 0) {
                 $role->syncPermissions($perms === '*' ? self::PERMISSIONS : $perms);
+            } elseif ($perms !== '*' && ($new = array_intersect($added, $perms))) {
+                // Permissions introduced by a later release reach existing roles by their default matrix.
+                $role->givePermissionTo($new);
             }
         }
 

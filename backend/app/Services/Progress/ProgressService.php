@@ -47,6 +47,11 @@ class ProgressService
 
             $this->refreshCache($student);
 
+            // A newly completed juz (or the whole Quran) drafts a completion certificate.
+            if ($row->type === ProgressType::Memorized) {
+                app(\App\Services\Certificates\AutoCertificateIssuer::class)->afterProgress($student);
+            }
+
             return $row;
         });
     }

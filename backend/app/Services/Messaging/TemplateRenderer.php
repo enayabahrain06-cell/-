@@ -9,6 +9,7 @@ class TemplateRenderer
     public const VARIABLES = [
         'name', 'lesson', 'time', 'assignment', 'date', 'teacher', 'location', 'map_link',
         'request_no', 'score', 'balance', 'amount', 'invoice_no', 'code', 'authority', 'package', 'status', 'link',
+        'guardian_name', 'next_date', 'absence_count', 'supervisor_phone',
     ];
 
     public function render(string $templateKey, array $vars, string $locale): string

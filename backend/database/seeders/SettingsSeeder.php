@@ -34,6 +34,12 @@ class SettingsSeeder extends Seeder
             // attendance
             ['attendance.repeated_absence_count', 3, 'attendance', 'int'],
             ['attendance.repeated_absence_days', 30, 'attendance', 'int'],
+            // honor board (section 13): monthly points weights (normalised to 100); TV display key (empty = display disabled)
+            ['honor.weight_attendance', 40, 'honor', 'int'],
+            ['honor.weight_evaluation', 40, 'honor', 'int'],
+            ['honor.weight_memorization', 20, 'honor', 'int'],
+            ['honor.full_attendance_min_sessions', 4, 'honor', 'int'],
+            ['honor.display_key', '', 'honor', 'string'],
             // registration
             ['registration.photo_required', false, 'registration', 'bool'],
             ['registration.open', true, 'registration', 'bool'],
@@ -44,6 +50,11 @@ class SettingsSeeder extends Seeder
             ['evaluation.issue_threshold', 6, 'progress', 'int'],
             ['messages.progress_update_enabled', false, 'progress', 'bool'],
             ['messages.progress_update_day', 1, 'progress', 'int'],
+            // certificates: drafts need approval; approval congratulates the family; a completed juz drafts one automatically
+            ['certificates.require_approval', true, 'certificates', 'bool'],
+            ['certificates.notify_on_approve', true, 'certificates', 'bool'],
+            ['certificates.auto_juz', true, 'certificates', 'bool'],
+            ['certificates.link_minutes', 30, 'certificates', 'int'],
             // appearance: Islamic ornament density (full / minimal / off)
             ['ui.ornament_level', 'full', 'ui', 'string'],
             // gender separation: girls' photos never print unless the Super Admin enables this

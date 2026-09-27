@@ -109,7 +109,7 @@ it('saves and enrolls in one step: student, guardian, wallet, invoice, circle, s
         ->and(Invoice::where('student_id', $student->id)->where('package_id', $this->boys->id)->value('status')->value)->toBe('paid')
         ->and(LessonStudent::where('lesson_id', $this->boysCircle->id)->where('student_id', $student->id)->first()->joined_at->toDateString())->toBe(today()->toDateString())
         ->and(RegistrationRequest::where('student_id', $student->id)->first()->only(['source', 'status']))->toMatchArray(['source' => 'staff'])
-        ->and(RegistrationRequest::where('student_id', $student->id)->value('status')->value)->toBe('accepted')
+        ->and(RegistrationRequest::where('student_id', $student->id)->value('status')->value)->toBe('enrolled')
         ->and(Payment::where('student_id', $student->id)->value('method')->value)->toBe('cash')
         ->and(MessageLog::where('recipient_phone', '+97336005001')->pluck('type')->map->value->all())->toContain('registration_accepted', 'payment_receipt')
         ->and(AuditLog::where('action', 'enrollment.quick')->where('user_id', $admin->id)->exists())->toBeTrue();

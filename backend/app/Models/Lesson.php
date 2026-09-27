@@ -35,12 +35,19 @@ class Lesson extends Model
             'start_date' => DateOnly::class,
             'end_date' => DateOnly::class,
             'capacity' => 'integer',
+            'min_age' => 'integer',
+            'max_age' => 'integer',
         ];
     }
 
     public function package(): BelongsTo
     {
         return $this->belongsTo(Package::class);
+    }
+
+    public function ageGroup(): BelongsTo
+    {
+        return $this->belongsTo(AgeGroup::class);
     }
 
     public function teacher(): BelongsTo

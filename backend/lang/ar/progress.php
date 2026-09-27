@@ -7,7 +7,7 @@ return [
     'recorded' => 'تم تسجيل الإنجاز.',
     'removed' => 'تم حذف السجل.',
     'certificate_title' => 'شهادة إتمام: :title',
-    'certificate_issued' => 'تم إصدار شهادة الإتمام.',
+    'certificate_issued' => 'تم إنشاء مسودة شهادة الإتمام بانتظار الاعتماد.',
     'monthly_update' => [
         'none' => 'لا توجد',
         'not_started' => 'لم يبدأ بعد',

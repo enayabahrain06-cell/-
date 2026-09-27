@@ -206,12 +206,19 @@ it('sends the optional monthly progress update to guardians in their language, o
     expect(MessageLog::where('type', 'student_progress_update')->count())->toBe(3);
 });
 
-it('issues a completion certificate PDF', function () {
+it('drafts a completion certificate that gets its PDF on approval', function () {
     $this->actingAs($this->teacher, 'sanctum');
     $res = $this->postJson("/api/students/{$this->students[0]->id}/certificates/completion", ['achievement' => 'جزء عمّ'])->assertCreated();
 
     $cert = Certificate::find($res->json('data.id'));
     expect($cert->type->value)->toBe('completion')
+        ->and($cert->status->value)->toBe('draft')
         ->and($cert->title)->toContain('جزء عمّ')
-        ->and($cert->mediaIn(\App\Enums\MediaCollection::Certificate))->not->toBeNull();
+        ->and($cert->mediaIn(\App\Enums\MediaCollection::Certificate))->toBeNull();
+
+    // Teachers draft; approval stays with supervisors.
+    $this->postJson("/api/certificates/{$cert->id}/approve")->assertForbidden();
+    actingAsRole('supervisor');
+    $this->postJson("/api/certificates/{$cert->id}/approve")->assertOk()->assertJsonPath('data.status', 'approved');
+    expect($cert->fresh()->mediaIn(\App\Enums\MediaCollection::Certificate))->not->toBeNull();
 });

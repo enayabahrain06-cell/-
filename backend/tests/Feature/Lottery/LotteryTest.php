@@ -110,6 +110,10 @@ it('approves once: writes lesson_students and messages students and guardians wi
     test()->postJson("/api/lotteries/{$lottery['id']}/approve")->assertStatus(422);
     test()->postJson("/api/lotteries/{$lottery['id']}/run")->assertStatus(422);
     expect(LessonStudent::count())->toBe(10);
+    // Each request is now enrolled and points at the circle the lottery chose.
+    $lessonOf = LessonStudent::pluck('lesson_id', 'student_id');
+    expect(RegistrationRequest::where('status', 'enrolled')->count())->toBe(10)
+        ->and(RegistrationRequest::all()->every(fn ($rr) => $rr->lesson_id === $lessonOf[$rr->student_id]))->toBeTrue();
 });
 
 it('balances ages and levels across circles when asked', function () {

@@ -7,7 +7,7 @@ return [
     'recorded' => 'Progress recorded.',
     'removed' => 'Entry removed.',
     'certificate_title' => 'Certificate of completion: :title',
-    'certificate_issued' => 'Completion certificate issued.',
+    'certificate_issued' => 'Completion certificate drafted; it awaits approval.',
     'monthly_update' => [
         'none' => 'none',
         'not_started' => 'not started yet',

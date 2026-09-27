@@ -65,7 +65,12 @@ it('records paper scores, sets pass/fail, computes results and issues certificat
 
     $this->postJson("/api/exams/{$exam->id}/certificates")->assertOk()->assertJsonPath('issued', 2);
     $this->postJson("/api/exams/{$exam->id}/certificates")->assertOk()->assertJsonPath('issued', 0);
-    expect(Certificate::count())->toBe(2)->and(\App\Models\Media::where('collection', 'certificate')->count())->toBe(2);
+    // Drafts first: no PDF is stored until a supervisor approves them.
+    expect(Certificate::count())->toBe(2)->and(Certificate::where('status', 'draft')->count())->toBe(2)
+        ->and(Certificate::where('student_id', $students[0]->id)->first()->grade->value)->toBe('excellent')
+        ->and(\App\Models\Media::where('collection', 'certificate')->count())->toBe(0);
+    $this->postJson('/api/certificates/approve', ['ids' => Certificate::pluck('id')->all()])->assertOk()->assertJsonPath('approved', 2);
+    expect(\App\Models\Media::where('collection', 'certificate')->count())->toBe(2);
 
     $cert = Certificate::first();
     $this->get("/api/certificates/{$cert->id}/pdf")->assertOk()->assertHeader('Content-Type', 'application/pdf');

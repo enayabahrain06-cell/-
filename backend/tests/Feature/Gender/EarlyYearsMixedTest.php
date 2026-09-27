@@ -63,8 +63,8 @@ it('needs a female teacher and a girls or shared hall for a mixed circle, and ta
     $id = $this->postJson('/api/lessons', $payload + ['name' => 'حلقة البراعم ٢', 'teacher_id' => $this->femaleTeacher->id, 'location_id' => $girlsHall->id])
         ->assertCreated()->assertJsonPath('data.gender', 'mixed')->json('data.id');
 
-    $boy = Student::factory()->male()->create();
-    $girl = Student::factory()->female()->create();
+    $boy = Student::factory()->male()->create(['birth_date' => now()->subYears(5)->toDateString()]);
+    $girl = Student::factory()->female()->create(['birth_date' => now()->subYears(5)->toDateString()]);
     $this->postJson("/api/lessons/{$id}/students", ['student_ids' => [$boy->id, $girl->id]])->assertSuccessful();
 
     // A girls hall with a mixed circle can no longer be limited to boys.

@@ -11,4 +11,16 @@ return [
     'all_upcoming' => 'all upcoming lessons',
     'alert_conflict_title' => 'Hall conflict: :lesson',
     'occupied_other_track' => 'Occupied (other track)',
+
+    // Adding existing students from the circle page.
+    'add' => [
+        'added' => 'Student added to the circle.',
+        'moved' => 'Student moved to this circle.',
+        'lesson_inactive' => 'Students can only be added to an active circle.',
+        'inactive' => ':name is not an active student.',
+        'age' => ':name is outside this circle\'s age range (:min–:max years at the package start).',
+        'already_in' => ':name is already in this circle.',
+        'in_other_circle' => ':name is already in another circle (:circle). Confirm the move to transfer them.',
+        'cannot_move' => ':name is in a circle you do not manage (:circle), so they cannot be moved from here.',
+    ],
 ];

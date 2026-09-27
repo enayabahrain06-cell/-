@@ -2,68 +2,44 @@
 
 namespace App\Console\Commands;
 
-use App\Enums\LessonStudentStatus;
-use App\Enums\MessageType;
 use App\Enums\SessionStatus;
 use App\Models\LessonSession;
-use App\Models\LessonStudent;
-use App\Services\Lessons\StudentMessenger;
-use Carbon\Carbon;
+use App\Services\Messaging\AttendanceMessenger;
+use App\Services\Messaging\ScheduledMessageDispatcher;
 use Illuminate\Console\Command;
 
-/** Pre-lesson WhatsApp reminders, sent once per session at a configurable offset before start. */
+/**
+ * Plans the two pre-lesson reminders (attendance_reminder_long / _short, section 23) for every
+ * scheduled session starting in the next --hours (default 36), then releases whatever is due.
+ * Planning is idempotent (one row per template, recipient and session time); a session whose time
+ * changes has its planned reminders cancelled and re-planned by LessonSessionObserver.
+ */
 class SendLessonRemindersCommand extends Command
 {
-    protected $signature = 'lessons:send-reminders {--hours= : Override the reminder offset}';
+    protected $signature = 'lessons:send-reminders {--hours=36 : Plan for sessions starting within this many hours}';
 
-    protected $description = 'Send pre-lesson reminders for sessions starting within the configured window';
+    protected $description = 'Plan pre-lesson WhatsApp reminders and send the ones that are due';
 
-    public function handle(StudentMessenger $messenger): int
+    public function handle(AttendanceMessenger $messenger, ScheduledMessageDispatcher $dispatcher): int
     {
-        $hours = $this->option('hours') !== null ? (float) $this->option('hours') : (float) setting('reminders.pre_lesson_hours', config('ahl.reminders.pre_lesson_hours', 2));
+        $hours = max(1, (float) $this->option('hours'));
         $tz = config('ahl.display_timezone', 'Asia/Bahrain');
         $now = now();
-        $windowEnd = $now->copy()->addMinutes((int) round($hours * 60));
+        $until = $now->copy()->addMinutes((int) round($hours * 60));
 
-        $candidates = LessonSession::with(['lesson.teacher', 'location'])
+        $sessions = LessonSession::with(['lesson.teacher', 'lesson.location', 'location'])
             ->where('status', SessionStatus::Scheduled->value)
-            ->whereNull('reminder_sent_at')
-            ->whereBetween('session_date', [$now->copy()->setTimezone($tz)->toDateString(), $windowEnd->copy()->setTimezone($tz)->toDateString()])
-            ->get();
+            ->whereBetween('session_date', [$now->copy()->setTimezone($tz)->toDateString(), $until->copy()->setTimezone($tz)->toDateString()])
+            ->get()
+            ->filter(fn (LessonSession $s) => $messenger->startsAt($s)->between($now, $until));
 
-        $sessions = 0;
-        $messages = 0;
-
-        foreach ($candidates as $session) {
-            $startsAt = Carbon::parse($session->session_date->toDateString().' '.$session->start_time, $tz)->utc();
-            if ($startsAt->lt($now) || $startsAt->gt($windowEnd)) {
-                continue;
-            }
-
-            $enrolled = LessonStudent::with('student')
-                ->where('lesson_id', $session->lesson_id)
-                ->where('status', LessonStudentStatus::Active->value)
-                ->get();
-
-            foreach ($enrolled as $ls) {
-                if (! $ls->student) {
-                    continue;
-                }
-                $messages += $messenger->notify($ls->student, MessageType::PreLessonReminder, [
-                    'lesson' => $session->lesson?->name ?? '',
-                    'teacher' => $session->lesson?->teacher?->name ?? '',
-                    'time' => substr($session->start_time, 0, 5),
-                    'location' => $session->location?->name ?? '',
-                    'map_link' => $session->location?->map_link ?? '',
-                    'assignment' => $ls->current_memorization ?: '—',
-                ]);
-            }
-
-            $session->update(['reminder_sent_at' => now()]);
-            $sessions++;
+        $planned = 0;
+        foreach ($sessions as $session) {
+            $planned += $messenger->planReminders($session);
         }
 
-        $this->info("Reminded sessions: {$sessions}, messages queued: {$messages}");
+        $released = $dispatcher->dispatchDue();
+        $this->info("Sessions: {$sessions->count()}, reminders planned: {$planned}, released: ".json_encode($released ?: new \stdClass));
 
         return self::SUCCESS;
     }

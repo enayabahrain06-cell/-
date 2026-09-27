@@ -3,6 +3,8 @@
 namespace App\Services\Students;
 
 use App\Enums\AttendanceStatus;
+use App\Enums\CertificateStatus;
+use Illuminate\Support\Facades\DB;
 use App\Enums\IssueSeverity;
 use App\Models\Attendance;
 use App\Models\Student;
@@ -53,6 +55,8 @@ class StudentProfileService
                 'attendance_percent' => $this->attendancePercent($student),
                 'balance_fils' => $balance,
                 'is_due' => $balance < 0,
+                'certificates_count' => $student->certificates()->where('status', CertificateStatus::Approved->value)->count(),
+                'badges_count' => DB::table('student_badges')->where('student_id', $student->id)->count(),
                 'open_issues' => [
                     'total' => $openIssues->count(),
                     'by_severity' => collect(IssueSeverity::cases())->mapWithKeys(fn ($s) => [$s->value => $openIssues->where('severity', $s)->count()])->all(),

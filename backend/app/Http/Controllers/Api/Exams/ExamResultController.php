@@ -8,9 +8,8 @@ use App\Enums\RecipientType;
 use App\Exports\ExamResultsExport;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\CertificateResource;
-use App\Models\Certificate;
 use App\Models\Exam;
-use App\Services\Exams\CertificateService;
+use App\Services\Certificates\CertificateService;
 use App\Services\Exams\ExamService;
 use App\Services\Messaging\MessageService;
 use Illuminate\Http\JsonResponse;
@@ -68,29 +67,16 @@ class ExamResultController extends Controller
         return response()->json(['message' => __('exams.results_sent', ['count' => $sent]), 'sent' => $sent]);
     }
 
-    /** Issue PDF certificates for passers who do not have one yet. */
+    /** Draft exam-pass certificates for passers who have none yet; they are approved from the Certificates page. */
     public function certificates(Request $request, Exam $exam, CertificateService $certificates): JsonResponse
     {
         $this->authorize('update', $exam);
 
-        $issued = $certificates->issueForExam($exam, $request->user()->id);
+        $issued = $certificates->issueForExam($exam, $request->user());
 
         return response()->json([
             'issued' => $issued->count(),
             'data' => CertificateResource::collection($exam->certificates()->with('student')->get()),
-        ]);
-    }
-
-    /** Stream a certificate PDF (staff, the student, or their guardian). */
-    public function certificatePdf(Certificate $certificate, CertificateService $certificates): Response
-    {
-        $this->authorize('view', $certificate);
-
-        $bytes = $certificates->pdfContents($certificate) ?? $certificates->render($certificate, $certificate->student);
-
-        return response($bytes, 200, [
-            'Content-Type' => 'application/pdf',
-            'Content-Disposition' => 'inline; filename="'.$certificate->certificate_no.'.pdf"',
         ]);
     }
 }

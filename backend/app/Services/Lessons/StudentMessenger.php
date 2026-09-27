@@ -5,9 +5,14 @@ namespace App\Services\Lessons;
 use App\Enums\MessageType;
 use App\Enums\RecipientType;
 use App\Models\Student;
+use App\Services\Messaging\AttendanceMessenger;
 use App\Services\Messaging\MessageService;
 
-/** Sends one message to the student's own phone and one to the guardian, deduplicating identical numbers. */
+/**
+ * Sends one message to the student's own phone and one to the guardian, deduplicating identical numbers.
+ * Location-change notices follow the attendance messaging rules instead (AttendanceMessenger:
+ * guardian + students 12+, recipient locale, quiet hours, one notice per recipient per session).
+ */
 class StudentMessenger
 {
     public function __construct(private MessageService $messages) {}
@@ -15,6 +20,10 @@ class StudentMessenger
     /** @return int number of messages queued */
     public function notify(Student $student, MessageType $type, array $vars): int
     {
+        if ($type === MessageType::LocationChange) {
+            return app(AttendanceMessenger::class)->locationChange($student, $vars);
+        }
+
         $sent = [];
         $locale = $student->locale?->value ?? 'ar';
 

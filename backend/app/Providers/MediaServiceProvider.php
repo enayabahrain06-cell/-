@@ -31,7 +31,7 @@ class MediaServiceProvider extends ServiceProvider
                 MediaCollection::ReceiptImage, MediaCollection::ReceiptPdf => $own || $user->can('wallets.view'),
                 MediaCollection::ExamSheet, MediaCollection::Recitation => $own || $user->can('exams.view') || $user->can('exams.grade')
                     || ($student && $user->hasRole('teacher') && $policy->teaches($user, $student)),
-                MediaCollection::Certificate => $own || $user->can('students.view')
+                MediaCollection::Certificate => ($own && $media->model?->status?->value === 'approved') || $user->can('students.view')
                     || ($student && $user->hasRole('teacher') && $policy->teaches($user, $student)),
                 MediaCollection::Logo => true,
                 default => false,

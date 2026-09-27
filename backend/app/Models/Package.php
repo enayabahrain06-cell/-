@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Enums\PackageGender;
 use App\Enums\PackageStatus;
+use App\Enums\RegistrationStatus;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -64,10 +65,10 @@ class Package extends Model
         return $this->hasMany(Exam::class);
     }
 
-    /** Seats consumed = accepted requests (waitlist excluded). */
+    /** Seats consumed = enrolled requests, plus those held for a lottery (waitlist excluded). */
     public function acceptedCount(): int
     {
-        return $this->registrationRequests()->where('status', 'accepted')->count();
+        return $this->registrationRequests()->whereIn('status', RegistrationStatus::seated())->count();
     }
 
     public function isFull(): bool

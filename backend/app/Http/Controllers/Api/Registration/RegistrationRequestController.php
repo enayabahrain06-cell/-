@@ -8,6 +8,7 @@ use App\Http\Resources\RegistrationRequestResource;
 use App\Http\Resources\StudentSummaryResource;
 use App\Models\Package;
 use App\Models\RegistrationRequest;
+use App\Services\Circles\CircleMatcher;
 use App\Services\Registration\AcceptRegistrationAction;
 use App\Services\Registration\RegistrationService;
 use Illuminate\Http\JsonResponse;
@@ -51,11 +52,35 @@ class RegistrationRequestController extends Controller
         return new RegistrationRequestResource($registration->load(['package', 'student', 'decider', 'media']));
     }
 
-    public function accept(Request $request, RegistrationRequest $registration, AcceptRegistrationAction $action): JsonResponse
+    /**
+     * Circles for the accept dialog: every active circle of the request's package the user may fill,
+     * those that fit (gender track, age group, free seat) first, best match first (recommended_id).
+     */
+    public function circles(Request $request, RegistrationRequest $registration, CircleMatcher $matcher): JsonResponse
     {
         $this->authorize('decide', $registration);
 
-        $student = $action->execute($registration, $request->user()->id, $request->boolean('force'));
+        $rows = $matcher->evaluate($registration->gender, $registration->birth_date, $request->user(), $registration->package_id);
+
+        return response()->json([
+            'data' => $rows->map(fn ($r) => CircleMatcher::present($r))->values(),
+            'recommended_id' => $rows->firstWhere('fits', true)['lesson']->id ?? null,
+        ]);
+    }
+
+    /**
+     * Enroll into a circle (lesson_id), or take the lottery path (lottery=1: status pending_lottery, no circle yet).
+     * With no fitting circle, put the request on the waitlist instead.
+     */
+    public function accept(Request $request, RegistrationRequest $registration, AcceptRegistrationAction $action): JsonResponse
+    {
+        $this->authorize('decide', $registration);
+        $data = $request->validate([
+            'lesson_id' => ['nullable', 'required_unless:lottery,true,1', 'integer', 'exists:lessons,id'],
+            'lottery' => ['sometimes', 'boolean'],
+        ], ['lesson_id.required_unless' => __('circles.errors.no_circle')]);
+
+        $student = $action->execute($registration, $request->user()->id, $request->boolean('force'), $data['lesson_id'] ?? null, $request->boolean('lottery'));
 
         return response()->json([
             'message' => __('registration.accepted'),
@@ -67,7 +92,7 @@ class RegistrationRequestController extends Controller
     public function waitlist(Request $request, RegistrationRequest $registration, RegistrationService $service): JsonResponse
     {
         $this->authorize('decide', $registration);
-        if ($registration->status === RegistrationStatus::Accepted) {
+        if ($registration->status->isDecided()) {
             throw ValidationException::withMessages(['status' => __('registration.errors.already_accepted')]);
         }
         $data = $request->validate(['note' => ['nullable', 'string', 'max:500']]);
@@ -78,7 +103,7 @@ class RegistrationRequestController extends Controller
     public function reject(Request $request, RegistrationRequest $registration, RegistrationService $service): JsonResponse
     {
         $this->authorize('decide', $registration);
-        if ($registration->status === RegistrationStatus::Accepted) {
+        if ($registration->status->isDecided()) {
             throw ValidationException::withMessages(['status' => __('registration.errors.already_accepted')]);
         }
         $data = $request->validate(['reason' => ['required', 'string', 'min:3', 'max:500']]);
@@ -90,7 +115,7 @@ class RegistrationRequestController extends Controller
      * Accept every matching request (pending by default; optionally waitlist) for a package while seats remain.
      * Returns counts and the ids that could not be accepted.
      */
-    public function bulkAccept(Request $request, AcceptRegistrationAction $action): JsonResponse
+    public function bulkAccept(Request $request, AcceptRegistrationAction $action, CircleMatcher $matcher, RegistrationService $service): JsonResponse
     {
         $this->authorize('decide', RegistrationRequest::class);
 
@@ -118,6 +143,7 @@ class RegistrationRequestController extends Controller
 
         $accepted = [];
         $skipped = [];
+        $waitlisted = [];
 
         foreach ($requests as $req) {
             if ($package->fresh()->isFull()) {
@@ -125,9 +151,21 @@ class RegistrationRequestController extends Controller
 
                 continue;
             }
+            // Each student goes to their best-fitting circle; with none left, a pending request joins the waitlist.
+            $best = $matcher->candidates($req->gender, $req->birth_date, $request->user(), $package->id)->first();
+            if (! $best) {
+                if ($req->status === RegistrationStatus::Pending) {
+                    $service->moveToWaitlist($req, $request->user()->id, null);
+                    $waitlisted[] = ['id' => $req->id, 'request_no' => $req->request_no];
+                } else {
+                    $skipped[] = ['id' => $req->id, 'request_no' => $req->request_no, 'reason' => 'no_circle'];
+                }
+
+                continue;
+            }
             try {
-                $student = $action->execute($req, $request->user()->id);
-                $accepted[] = ['id' => $req->id, 'request_no' => $req->request_no, 'student_id' => $student->id];
+                $student = $action->execute($req, $request->user()->id, false, $best['lesson']->id);
+                $accepted[] = ['id' => $req->id, 'request_no' => $req->request_no, 'student_id' => $student->id, 'lesson_id' => $best['lesson']->id];
             } catch (ValidationException $e) {
                 $skipped[] = ['id' => $req->id, 'request_no' => $req->request_no, 'reason' => collect($e->errors())->flatten()->first()];
             }
@@ -137,6 +175,7 @@ class RegistrationRequestController extends Controller
             'message' => __('registration.bulk_done', ['count' => count($accepted)]),
             'accepted' => $accepted,
             'skipped' => $skipped,
+            'waitlisted' => $waitlisted,
             'seats_left' => max(0, $package->seats - $package->fresh()->acceptedCount()),
         ]);
     }

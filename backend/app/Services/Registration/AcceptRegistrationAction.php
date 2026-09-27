@@ -6,12 +6,14 @@ use App\Enums\LotteryStatus;
 use App\Enums\MessageType;
 use App\Enums\RegistrationStatus;
 use App\Enums\StudentStatus;
+use App\Models\Lesson;
 use App\Models\Lottery;
 use App\Models\LotteryStudent;
 use App\Models\RegistrationRequest;
 use App\Models\Student;
 use App\Models\User;
 use App\Services\AuditLogger;
+use App\Services\Circles\CircleEnrollmentService;
 use App\Services\Wallet\WalletService;
 use App\Support\Money;
 use Illuminate\Support\Facades\DB;
@@ -19,7 +21,8 @@ use Illuminate\Validation\ValidationException;
 
 /**
  * Accepting a request: guardian user (find-or-create by phone) → optional student user →
- * student row → photo transfer → wallet → package invoice → lottery pool → WhatsApp with the login link.
+ * student row → circle (lesson_students) or lottery pool → photo transfer → wallet → package invoice →
+ * WhatsApp with the login link.
  */
 class AcceptRegistrationAction
 {
@@ -27,11 +30,17 @@ class AcceptRegistrationAction
         private WalletService $wallets,
         private RegistrationService $registrations,
         private AuditLogger $audit,
+        private CircleEnrollmentService $circles,
     ) {}
 
-    public function execute(RegistrationRequest $request, ?int $by = null, bool $force = false): Student
+    /**
+     * Enroll the request's student straight into a circle ($lessonId, which must match their gender and
+     * age group and have a seat), or, when the supervisor explicitly takes the lottery path, hold a
+     * package seat as pending_lottery with no circle yet.
+     */
+    public function execute(RegistrationRequest $request, ?int $by = null, bool $force = false, ?int $lessonId = null, bool $lottery = false): Student
     {
-        if ($request->status === RegistrationStatus::Accepted) {
+        if ($request->status->isDecided()) {
             throw ValidationException::withMessages(['status' => __('registration.errors.already_accepted')]);
         }
 
@@ -45,11 +54,27 @@ class AcceptRegistrationAction
             throw ValidationException::withMessages(['package_id' => __('registration.errors.full')]);
         }
 
-        $student = DB::transaction(fn () => $this->createStudent($request, $by));
+        $lesson = null;
+        if (! $lottery) {
+            $lesson = $lessonId ? Lesson::find($lessonId) : null;
+            if (! $lesson || $lesson->package_id !== $package->id) {
+                throw ValidationException::withMessages(['lesson_id' => __('circles.errors.no_circle')]);
+            }
+        }
+
+        $student = DB::transaction(function () use ($request, $by, $lesson) {
+            $student = $this->createStudent($request, $by, $lesson ? RegistrationStatus::Enrolled : RegistrationStatus::PendingLottery);
+            if ($lesson) {
+                $this->circles->join($lesson, $student, $by ? User::find($by) : null);
+                $request->update(['lesson_id' => $lesson->id]);
+            }
+
+            return $student;
+        });
 
         $this->transferPhoto($request, $student);
 
-        $this->audit->record('registration.accepted', $request, ['status' => 'pending'], ['status' => 'accepted', 'student_id' => $student->id]);
+        $this->audit->record('registration.accepted', $request, ['status' => 'pending'], ['status' => $request->status->value, 'student_id' => $student->id, 'lesson_id' => $lesson?->id]);
         $this->registrations->refreshPendingAlert($package);
 
         $this->notifyAccepted($request);
@@ -61,7 +86,7 @@ class AcceptRegistrationAction
      * The transactional part of acceptance (no messages, photo or audit), so callers such as
      * quick enrollment can run it inside a larger transaction. Call it inside DB::transaction.
      */
-    public function createStudent(RegistrationRequest $request, ?int $by = null): Student
+    public function createStudent(RegistrationRequest $request, ?int $by = null, RegistrationStatus $status = RegistrationStatus::Enrolled): Student
     {
         $package = $request->package;
 
@@ -89,7 +114,7 @@ class AcceptRegistrationAction
 
         $wasWaitlist = $request->status === RegistrationStatus::Waitlist;
         $request->update([
-            'status' => RegistrationStatus::Accepted,
+            'status' => $status,
             'student_id' => $student->id,
             'waitlist_position' => null,
             'decided_by' => $by ?? auth()->id(),
@@ -113,9 +138,11 @@ class AcceptRegistrationAction
             );
         }
 
-        // Lottery pool: join any draft lottery of this package.
-        Lottery::where('package_id', $package->id)->where('status', LotteryStatus::Draft->value)->get()
-            ->each(fn (Lottery $l) => LotteryStudent::firstOrCreate(['lottery_id' => $l->id, 'student_id' => $student->id]));
+        // The lottery is optional: only students taken down the lottery path join the package's draft lotteries.
+        if ($status === RegistrationStatus::PendingLottery) {
+            Lottery::where('package_id', $package->id)->where('status', LotteryStatus::Draft->value)->get()
+                ->each(fn (Lottery $l) => LotteryStudent::firstOrCreate(['lottery_id' => $l->id, 'student_id' => $student->id]));
+        }
 
         return $student;
     }

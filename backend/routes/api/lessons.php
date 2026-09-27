@@ -16,7 +16,8 @@ Route::apiResource('location-bookings', LocationBookingController::class)->param
 // Lessons (circles)
 Route::get('lessons/{lesson}/conflicts', [LessonController::class, 'conflicts']);
 Route::get('lessons/{lesson}/sessions', [LessonController::class, 'sessions']);
-Route::post('lessons/{lesson}/students', [LessonController::class, 'enroll']);
+Route::get('lessons/{lesson}/candidates', [LessonController::class, 'candidates']);
+Route::post('lessons/{lesson}/students',[LessonController::class, 'enroll']);
 Route::delete('lessons/{lesson}/students/{student}', [LessonController::class, 'unenroll']);
 Route::post('lessons/{lesson}/change-location', [LessonController::class, 'changeLocation']);
 Route::apiResource('lessons', LessonController::class);

@@ -18,6 +18,9 @@ class DatabaseSeeder extends Seeder
             MessageTemplateSeeder::class,
             QuranSurahSeeder::class,
             BadgeSeeder::class,
+            AgeGroupSeeder::class,
+            EngagementTemplateSeeder::class,
+            AttendanceTemplateSeeder::class,
         ]);
     }
 }

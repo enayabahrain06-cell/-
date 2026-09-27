@@ -23,4 +23,13 @@ return [
     'delay_max' => (int) env('WHATSAPP_DELAY_MAX', 5),
     'max_tries' => (int) env('WHATSAPP_MAX_TRIES', 3),
     'backoff_seconds' => [30, 120, 300],
+
+    // Inbound webhook (POST /api/public/whatsapp/inbound). Requests must carry this secret in the
+    // X-Webhook-Secret header (or ?token=). Empty = inbound disabled (the endpoint answers 503).
+    // Cloud API: the same value is the webhook verify token; with WHATSAPP_CLOUD_APP_SECRET set, a valid
+    // X-Hub-Signature-256 is accepted instead of the header.
+    'inbound' => [
+        'secret' => env('WHATSAPP_INBOUND_SECRET', ''),
+        'cloud_app_secret' => env('WHATSAPP_CLOUD_APP_SECRET', ''),
+    ],
 ];

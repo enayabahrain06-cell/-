@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources;
 
+use App\Services\Circles\CircleMatcher;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -28,12 +29,19 @@ class LessonResource extends JsonResource
             'start_time' => substr($this->start_time, 0, 5),
             'end_time' => substr($this->end_time, 0, 5),
             'capacity' => $this->capacity,
-            'student_count' => $this->when(isset($this->active_students_count), fn () => $this->active_students_count, fn () => $this->activeStudentCount()),
+            'student_count' => $count = (int) (isset($this->active_students_count) ? $this->active_students_count : $this->activeStudentCount()),
+            'free_seats' => max(0, $this->capacity - $count),
+            'age_group_id' => $this->age_group_id,
+            'age_group' => $this->whenLoaded('ageGroup', fn () => $this->ageGroup ? ['id' => $this->ageGroup->id, 'name' => $this->ageGroup->name(), 'sort' => $this->ageGroup->sort] : null),
+            'min_age' => CircleMatcher::range($this->resource)[0],
+            'max_age' => CircleMatcher::range($this->resource)[1],
             'start_date' => $this->start_date?->toDateString(),
             'end_date' => $this->end_date?->toDateString(),
             'status' => $this->status?->value,
             'status_label' => $this->status?->label(),
             'students' => LessonStudentResource::collection($this->whenLoaded('lessonStudents')),
+            // Drives the "Add student" button on the circle page (LessonPolicy::addStudents).
+            'can_add_students' => $this->when($this->relationLoaded('lessonStudents'), fn () => (bool) $request->user()?->can('addStudents', $this->resource)),
             'next_sessions' => LessonSessionResource::collection($this->whenLoaded('sessions')),
             'created_at' => display_tz($this->created_at)?->toIso8601String(),
         ];

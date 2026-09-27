@@ -7,11 +7,18 @@ use App\Enums\AlertType;
 use App\Enums\AttendanceStatus;
 use App\Models\Alert;
 use App\Models\Attendance;
+use App\Models\LessonSession;
 use App\Models\Student;
+use App\Services\Messaging\AttendanceMessenger;
 
-/** N absences within D days (settings) raise one open admin alert per student. */
+/**
+ * N absences within D days (settings, default 3 in 30) raise one open supervisor alert per student
+ * and send the repeated_absence message to the guardian (at most once per 14 days per student).
+ */
 class RepeatedAbsenceDetector
 {
+    public function __construct(private AttendanceMessenger $messenger) {}
+
     public function threshold(): int
     {
         return (int) setting('attendance.repeated_absence_count', config('ahl.attendance.repeated_absence_count', 3));
@@ -24,7 +31,7 @@ class RepeatedAbsenceDetector
 
     public function absenceCount(int $studentId): int
     {
-        $since = today()->subDays($this->windowDays())->toDateString();
+        $since = now()->setTimezone(config('ahl.display_timezone', 'Asia/Bahrain'))->subDays($this->windowDays())->toDateString();
 
         return Attendance::where('student_id', $studentId)
             ->where('status', AttendanceStatus::Absent->value)
@@ -32,7 +39,7 @@ class RepeatedAbsenceDetector
             ->count();
     }
 
-    public function check(int $studentId): ?Alert
+    public function check(int $studentId, ?LessonSession $session = null): ?Alert
     {
         $count = $this->absenceCount($studentId);
         if ($count < $this->threshold()) {
@@ -43,6 +50,8 @@ class RepeatedAbsenceDetector
         if (! $student) {
             return null;
         }
+
+        $this->messenger->sendRepeatedAbsence($student, $count, $session);
 
         return Alert::raise(
             AlertType::RepeatedAbsence,

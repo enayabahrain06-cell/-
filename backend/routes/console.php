@@ -17,3 +17,7 @@ Schedule::command('exams:send-reminders')->everyFiveMinutes()->withoutOverlappin
 
 // memorization: optional monthly progress update to guardians (the command checks the enabled flag and day)
 Schedule::command('progress:send-monthly-updates')->dailyAt('17:00')->withoutOverlapping();
+
+// honor board (monthly periods per track), challenge progress and nudges, competition reminders
+Schedule::command('engagement:run daily')->dailyAt('01:30')->withoutOverlapping();
+Schedule::command('engagement:run reminders')->hourly()->withoutOverlapping();

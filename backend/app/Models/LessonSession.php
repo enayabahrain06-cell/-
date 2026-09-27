@@ -9,6 +9,8 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
+/** Attendance messaging follows time changes, cancellation and deletion (LessonSessionObserver). */
+#[\Illuminate\Database\Eloquent\Attributes\ObservedBy(\App\Observers\LessonSessionObserver::class)]
 class LessonSession extends Model
 {
     use HasFactory;

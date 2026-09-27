@@ -14,4 +14,5 @@ enum AlertType: string
     case LotteryPending = 'lottery_pending';
     case ExamUpcoming = 'exam_upcoming';
     case InvoiceOverdue = 'invoice_overdue';
+    case LessonWithoutTeacher = 'lesson_no_teacher'; // computed on the dashboard, never stored
 }

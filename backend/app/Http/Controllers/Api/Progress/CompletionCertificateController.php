@@ -2,14 +2,15 @@
 
 namespace App\Http\Controllers\Api\Progress;
 
+use App\Enums\CertificateGrade;
 use App\Enums\CertificateType;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\CertificateResource;
-use App\Models\Certificate;
 use App\Models\Student;
-use App\Services\Exams\CertificateService;
+use App\Services\Certificates\CertificateService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 
 /**
  * @group Memorization & evaluation
@@ -17,8 +18,8 @@ use Illuminate\Http\Request;
 class CompletionCertificateController extends Controller
 {
     /**
-     * Issue a completion certificate PDF (e.g. "Juz Amma", "Five ajza").
-     * The PDF is stored as media (collection = certificate) and can be downloaded from the certificates endpoints.
+     * Draft a memorization-completion certificate (e.g. "Juz Amma", "Five ajza").
+     * It reaches the family once approved on the Certificates page.
      */
     public function store(Request $request, Student $student, CertificateService $certificates): JsonResponse
     {
@@ -26,21 +27,14 @@ class CompletionCertificateController extends Controller
 
         $data = $request->validate([
             'achievement' => ['required', 'string', 'min:2', 'max:150'],
+            'grade' => ['nullable', Rule::enum(CertificateGrade::class)],
             'lesson_id' => ['nullable', 'integer', 'exists:lessons,id'],
         ]);
-        $locale = $student->locale?->value ?? 'ar';
 
-        $certificate = Certificate::create([
-            'certificate_no' => Certificate::nextNo(),
-            'student_id' => $student->id,
-            'type' => CertificateType::Completion,
-            'lesson_id' => $data['lesson_id'] ?? null,
-            'title' => __('progress.certificate_title', ['title' => $data['achievement']], $locale),
-            'issued_on' => now()->toDateString(),
-            'issued_by' => $request->user()->id,
-        ]);
-        $certificates->render($certificate, $student, ['exam' => $data['achievement'], 'verb' => 'completed']);
+        $certificate = $certificates->createDraft($student, CertificateType::Completion, $data + [
+            'title' => __('progress.certificate_title', ['title' => $data['achievement']], $student->locale?->value ?? 'ar'),
+        ], $request->user());
 
-        return response()->json(['message' => __('progress.certificate_issued'), 'data' => new CertificateResource($certificate->fresh())], 201);
+        return response()->json(['message' => __('progress.certificate_issued'), 'data' => new CertificateResource($certificate->fresh('student'))], 201);
     }
 }

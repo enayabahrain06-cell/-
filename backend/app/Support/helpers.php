@@ -23,10 +23,45 @@ if (! function_exists('pdf_ar')) {
         if (! preg_match('/\p{Arabic}/u', $text)) {
             return e($text);
         }
+        // ArPHP leaves a leading number on the left of the reversed run ("16 ربيع الآخر" → "١٦ ﺮﺧﻵا ﻊﻴﺑر");
+        // in right-to-left reading it belongs at the right end, so it is placed there by hand.
+        if (preg_match('/^([0-9٠-٩]+)\s+(.+)$/u', trim($text), $m) && preg_match('/^\p{Arabic}/u', $m[2])) {
+            return pdf_ar($m[2]).' '.e(strtr($m[1], array_combine(range(0, 9), ['٠', '١', '٢', '٣', '٤', '٥', '٦', '٧', '٨', '٩'])));
+        }
         static $arabic = null;
         $arabic ??= new \ArPHP\I18N\Arabic;
 
         return e($arabic->utf8Glyphs($text));
+    }
+}
+
+if (! function_exists('pdf_ar_lines')) {
+    /**
+     * Word-wrap text into lines of at most $max characters (in reading order), each shaped with pdf_ar().
+     * dompdf would wrap a single shaped Arabic run from the wrong end, so long paragraphs are split here.
+     *
+     * @return list<string>
+     */
+    function pdf_ar_lines(?string $text, int $max = 70): array
+    {
+        $lines = [];
+        $current = '';
+        foreach (preg_split('/\s+/u', trim((string) $text)) ?: [] as $word) {
+            if ($word === '') {
+                continue;
+            }
+            if ($current !== '' && mb_strlen($current.' '.$word) > $max) {
+                $lines[] = $current;
+                $current = $word;
+            } else {
+                $current = $current === '' ? $word : $current.' '.$word;
+            }
+        }
+        if ($current !== '') {
+            $lines[] = $current;
+        }
+
+        return array_map('pdf_ar', $lines);
     }
 }
 

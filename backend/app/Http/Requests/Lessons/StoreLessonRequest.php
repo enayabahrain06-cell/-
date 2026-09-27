@@ -46,6 +46,10 @@ class StoreLessonRequest extends FormRequest
             'start_date' => [$req, 'date_format:Y-m-d'],
             'end_date' => ['nullable', 'date_format:Y-m-d', 'after_or_equal:start_date'],
             'status' => ['nullable', LessonStatus::rule()],
+            // Age group of the circle; min/max default to the group's (or the package's) range.
+            'age_group_id' => ['nullable', 'integer', 'exists:age_groups,id'],
+            'min_age' => ['nullable', 'integer', 'min:3', 'max:99'],
+            'max_age' => ['nullable', 'integer', 'min:3', 'max:99', 'gte:min_age'],
         ];
     }
 

@@ -51,7 +51,7 @@ it('saves attendance, updates current assignments, marks the session held and qu
         ->and(LessonStudent::where('student_id', $b->id)->first()->current_memorization)->toBe('سورة النبأ'); // unchanged
 
     // Absence message: student B has no own phone → one message to the guardian, with the missed (current) assignment.
-    $logs = MessageLog::where('type', 'absence')->get();
+    $logs = MessageLog::where('type', 'absence_notice')->get();
     expect($logs)->toHaveCount(1)
         ->and($logs->first()->recipient_phone)->toBe('+97336200003')
         ->and($logs->first()->body)->toContain('حلقة النور')->toContain('سورة النبأ');
@@ -60,7 +60,7 @@ it('saves attendance, updates current assignments, marks the session held and qu
     // Re-saving is an upsert and does not resend.
     $this->putJson("/api/sessions/{$this->session->id}/attendance", ['records' => [['student_id' => $b->id, 'status' => 'absent']]])->assertOk();
     expect(Attendance::where('lesson_session_id', $this->session->id)->count())->toBe(3)
-        ->and(MessageLog::where('type', 'absence')->count())->toBe(1);
+        ->and(MessageLog::where('type', 'absence_notice')->count())->toBe(1);
 });
 
 it('deduplicates when student and guardian share a phone', function () {
@@ -69,7 +69,7 @@ it('deduplicates when student and guardian share a phone', function () {
 
     $this->putJson("/api/sessions/{$this->session->id}/attendance", ['records' => [['student_id' => $c->id, 'status' => 'absent']]])->assertOk();
 
-    expect(MessageLog::where('type', 'absence')->count())->toBe(1);
+    expect(MessageLog::where('type', 'absence_notice')->count())->toBe(1);
 });
 
 it('marks everyone present in one click', function () {
@@ -78,7 +78,7 @@ it('marks everyone present in one click', function () {
     $this->postJson("/api/sessions/{$this->session->id}/attendance/mark-all-present")->assertOk()->assertJsonPath('saved', 3);
 
     expect(Attendance::where('lesson_session_id', $this->session->id)->where('status', 'present')->count())->toBe(3)
-        ->and(MessageLog::where('type', 'absence')->count())->toBe(0);
+        ->and(MessageLog::where('type', 'absence_notice')->count())->toBe(0);
 });
 
 it('raises a repeated-absence alert after 3 absences within 30 days', function () {

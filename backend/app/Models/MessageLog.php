@@ -19,6 +19,9 @@ class MessageLog extends Model
             'status' => MessageStatus::class,
             'recipient_type' => RecipientType::class,
             'sent_at' => 'datetime',
+            'scheduled_for' => 'datetime',
+            'delivered_at' => 'datetime',
+            'read_at' => 'datetime',
             'attempts' => 'integer',
         ];
     }
@@ -31,5 +34,10 @@ class MessageLog extends Model
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function session(): BelongsTo
+    {
+        return $this->belongsTo(LessonSession::class, 'lesson_session_id');
     }
 }

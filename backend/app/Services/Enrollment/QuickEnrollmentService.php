@@ -18,6 +18,8 @@ use App\Models\Student;
 use App\Models\User;
 use App\Policies\LessonPolicy;
 use App\Services\AuditLogger;
+use App\Services\Circles\CircleEnrollmentService;
+use App\Services\Circles\CircleMatcher;
 use App\Services\Media\StudentPhotoService;
 use App\Services\Registration\AcceptRegistrationAction;
 use App\Services\Registration\PackageSuitability;
@@ -49,6 +51,8 @@ class QuickEnrollmentService
         private WalletService $wallets,
         private StudentPhotoService $photos,
         private AuditLogger $audit,
+        private CircleMatcher $matcher,
+        private CircleEnrollmentService $circles,
     ) {}
 
     /** Open packages this actor may enrol into, suitable for the age and gender, each with its eligible circles. */
@@ -64,7 +68,7 @@ class QuickEnrollmentService
             if ($check && ! $check['suitable']) {
                 return null;
             }
-            $circles = $this->eligibleCircles($actor, $package);
+            $circles = $this->eligibleCircles($actor, $package, $birthDate, $gender);
             // A teacher only sees packages that hold one of their circles.
             if ($circles->isEmpty() && ! $this->managesLessons($actor)) {
                 return null;
@@ -86,10 +90,22 @@ class QuickEnrollmentService
         })->filter()->values();
     }
 
-    /** Active circles of the package with a free seat, a teacher of the right gender, and visible to the actor. */
-    public function eligibleCircles(User $actor, Package $package): Collection
+    /**
+     * Active circles of the package visible to the actor, with a free seat and a teacher of the right gender.
+     * Given the student's birth date and gender, only circles of their gender track and age range are
+     * listed, best match first (own age group, then most free seats), the first one flagged recommended.
+     */
+    public function eligibleCircles(User $actor, Package $package, ?Carbon $birthDate = null, ?Gender $gender = null): Collection
     {
-        return Lesson::with(['teacher:id,name', 'location:id,name'])
+        if ($birthDate && $gender) {
+            return $this->matcher->candidates($gender, $birthDate, $actor, $package->id)
+                ->map(fn (array $row, int $i) => $this->circleRow($row['lesson'], $row['free_seats']) + [
+                    'age_group' => $row['lesson']->ageGroup?->name(),
+                    'recommended' => $i === 0,
+                ])->values();
+        }
+
+        return Lesson::with(['teacher:id,name', 'location:id,name', 'ageGroup'])
             ->withCount(['lessonStudents as active_count' => fn ($q) => $q->where('status', LessonStudentStatus::Active->value)])
             ->where('package_id', $package->id)
             ->where('status', LessonStatus::Active->value)
@@ -98,16 +114,26 @@ class QuickEnrollmentService
             ->filter(fn (Lesson $l) => LessonPolicy::ownsOrManages($actor, $l)
                 && $l->active_count < $l->capacity
                 && GenderRules::teacherMatches($l->teacher_id, $package->gender))
-            ->map(fn (Lesson $l) => [
-                'id' => $l->id,
-                'name' => $l->name,
-                'teacher' => $l->teacher?->name,
-                'location' => $l->location?->name,
-                'days' => $l->days,
-                'start_time' => substr((string) $l->start_time, 0, 5),
-                'end_time' => substr((string) $l->end_time, 0, 5),
-                'free_seats' => $l->capacity - $l->active_count,
-            ]);
+            ->map(fn (Lesson $l) => $this->circleRow($l, $l->capacity - $l->active_count) + ['age_group' => $l->ageGroup?->name(), 'recommended' => false])
+            ->values();
+    }
+
+    private function circleRow(Lesson $l, int $free): array
+    {
+        [$min, $max] = CircleMatcher::range($l);
+
+        return [
+            'id' => $l->id,
+            'name' => $l->name,
+            'teacher' => $l->teacher?->name,
+            'location' => $l->location?->name,
+            'days' => $l->days,
+            'start_time' => substr((string) $l->start_time, 0, 5),
+            'end_time' => substr((string) $l->end_time, 0, 5),
+            'free_seats' => $free,
+            'min_age' => $min,
+            'max_age' => $max,
+        ];
     }
 
     /**
@@ -194,7 +220,7 @@ class QuickEnrollmentService
                 $errors['lesson_id'] = __('enrollment.errors.lesson_required');
             } elseif (! LessonPolicy::ownsOrManages($actor, $lesson)) {
                 $errors['lesson_id'] = __('enrollment.errors.not_your_circle');
-            } elseif (! $this->eligibleCircles($actor, $package)->contains('id', $lesson->id)) {
+            } elseif (! $this->eligibleCircles($actor, $package, Carbon::parse($data['birth_date']), Gender::from($data['gender']))->contains('id', $lesson->id)) {
                 $errors['lesson_id'] = __('enrollment.errors.lesson_unavailable');
             }
             if (! $hasPhoto && (bool) setting('registration.photo_required', false)) {
@@ -258,13 +284,9 @@ class QuickEnrollmentService
             ]);
             $student = $this->accept->createStudent($request, $actor->id);
 
-            // Re-check the seat under a row lock: two staff may be filling the same circle.
-            $lesson = Lesson::whereKey($data['lesson_id'])->lockForUpdate()->firstOrFail();
-            $active = $lesson->lessonStudents()->where('status', LessonStudentStatus::Active->value)->count();
-            if ($active >= $lesson->capacity) {
-                throw ValidationException::withMessages(['lesson_id' => __('enrollment.errors.lesson_unavailable')]);
-            }
-            LessonStudent::create(['lesson_id' => $lesson->id, 'student_id' => $student->id, 'status' => LessonStudentStatus::Active, 'joined_at' => today()]);
+            // Re-checks gender, age range and the seat under a row lock: two staff may be filling the same circle.
+            $this->circles->join(Lesson::findOrFail($data['lesson_id']), $student, $actor);
+            $request->update(['lesson_id' => (int) $data['lesson_id']]);
 
             $payment = null;
             if (! empty($data['record_payment'])) {

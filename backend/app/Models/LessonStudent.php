@@ -25,4 +25,14 @@ class LessonStudent extends Model
     {
         return $this->belongsTo(Student::class);
     }
+
+    public function mover(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'moved_by');
+    }
+
+    public function movedTo(): BelongsTo
+    {
+        return $this->belongsTo(Lesson::class, 'moved_to_lesson_id');
+    }
 }

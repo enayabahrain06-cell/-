@@ -47,6 +47,16 @@ class LessonPolicy
         return $this->manages($user, $lesson);
     }
 
+    /**
+     * Add existing students to the circle: managers within their track, or teachers with
+     * enrollment.quick in their own circles only (the same reach as quick enrollment).
+     * Removing students stays with enroll() above.
+     */
+    public function addStudents(User $user, Lesson $lesson): bool
+    {
+        return ($user->can('lessons.manage') || $user->can('enrollment.quick')) && self::ownsOrManages($user, $lesson);
+    }
+
     public function changeLocation(User $user, Lesson $lesson): bool
     {
         return $this->manages($user, $lesson);

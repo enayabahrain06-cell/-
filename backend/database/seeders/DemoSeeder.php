@@ -96,6 +96,8 @@ class DemoSeeder extends Seeder
         $this->history($boysCircle, 'male', ['عباس', 'كاظم', 'رضا', 'صادق', 'جواد', 'مرتضى'], $maleTeacher);
         $this->history($girlsCircle, 'female', ['نرجس', 'سكينة', 'معصومة', 'خديجة', 'بتول', 'حوراء'], $femaleTeacher);
         $this->history($earlyCircle, 'mixed', [], $earlyTeacher); // the sibling children above only
+
+        $this->call(EngagementDemoSeeder::class); // honor boards, competitions and challenges (sections 13-14)
     }
 
     /**

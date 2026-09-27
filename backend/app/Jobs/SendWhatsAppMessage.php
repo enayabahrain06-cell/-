@@ -4,6 +4,7 @@ namespace App\Jobs;
 
 use App\Enums\MessageStatus;
 use App\Models\MessageLog;
+use App\Services\Messaging\DeliveryGuard;
 use App\Services\WhatsApp\WhatsAppManager;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Queue\Queueable;
@@ -27,7 +28,8 @@ class SendWhatsAppMessage implements ShouldQueue
     public function handle(WhatsAppManager $whatsapp): void
     {
         $log = MessageLog::find($this->messageLogId);
-        if (! $log || $log->status === MessageStatus::Sent) {
+        // Only queued rows go out: a reminder cancelled (session time changed) while waiting for its slot stays cancelled.
+        if (! $log || $log->status !== MessageStatus::Queued) {
             return;
         }
 
@@ -50,11 +52,15 @@ class SendWhatsAppMessage implements ShouldQueue
         ]);
     }
 
+    /** All tries exhausted: one failed delivery for the number (invalid after N in a row). */
     public function failed(?Throwable $e): void
     {
-        MessageLog::where('id', $this->messageLogId)->update([
-            'status' => MessageStatus::Failed->value,
-            'error' => $e ? mb_substr($e->getMessage(), 0, 2000) : 'failed',
-        ]);
+        $log = MessageLog::find($this->messageLogId);
+        if (! $log) {
+            return;
+        }
+        $error = $e ? mb_substr($e->getMessage(), 0, 2000) : 'failed';
+        $log->update(['status' => MessageStatus::Failed, 'error' => $error]);
+        app(DeliveryGuard::class)->recordFailure($log->recipient_phone, $error);
     }
 }

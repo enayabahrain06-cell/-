@@ -33,7 +33,6 @@ Route::get('exams/{exam}/results', [ExamResultController::class, 'show']);
 Route::get('exams/{exam}/results.xlsx', [ExamResultController::class, 'excel'])->name('exams.results.xlsx');
 Route::post('exams/{exam}/results/send', [ExamResultController::class, 'send']);
 Route::post('exams/{exam}/certificates', [ExamResultController::class, 'certificates']);
-Route::get('certificates/{certificate}/pdf', [ExamResultController::class, 'certificatePdf'])->name('certificates.pdf');
 
 // Student / guardian portal
 Route::prefix('me/exams')->group(function () {

@@ -176,3 +176,34 @@ The demo also creates four halls (قاعة مأتم سار الكبير for boys
 a boys package, a girls package and one mixed early-years package for ages 4–6, each with a circle,
 four sibling families under one guardian login each (المحروس, الستراوي, آل عباس, السماهيجي),
 six extra students in the boys and girls circles, and three weeks of sessions with attendance, daily scores and memorization history.
+
+Engagement demo (sections 13–14, `EngagementDemoSeeder`, called by `DemoSeeder`): this month's honor boards for both tracks (computed and published),
+a boys' Juz Amma competition in judging (two judges, first round scored), a girls' tajweed competition open for registration,
+and one challenge per track with every eligible student joined.
+
+### Honor board TV display
+
+The centre screen opens `/display/honor?key=<key>&gender=male|female&lang=ar|en` without a login. It refreshes every minute
+and shows only a published board, with first and second names and no photos.
+The key is the `honor.display_key` setting (Settings → Honor board); an empty key turns the screen off.
+The demo key is `demo-tv-2026`, for example `http://127.0.0.1:5180/display/honor?key=demo-tv-2026&gender=male`.
+
+### Scheduled jobs added in Group C/D
+
+| Command | When | What |
+|---|---|---|
+| `engagement:run daily` | 01:30 daily | Recompute this month's honor boards (per track), close last month on day 1, refresh challenges, send challenge nudges |
+| `engagement:run reminders` | hourly | Competition registration opened / closing within 24 h, round the next day (each once) |
+| `lessons:send-reminders` | existing | Now plans the two section 23 reminders (long 2 h, short 1 h) and releases due scheduled messages |
+
+### WhatsApp inbound replies (section 23)
+
+Replies from families arrive at `POST /api/public/whatsapp/inbound` with the header `X-Webhook-Secret`.
+
+| Variable | Meaning |
+|---|---|
+| `WHATSAPP_INBOUND_SECRET` | Shared secret for the inbound webhook (empty disables it). The open-wa bridge sends it as `INBOUND_WEBHOOK_SECRET`; for the Cloud API it is also the verify token. |
+| `WHATSAPP_CLOUD_APP_SECRET` | Cloud API app secret used to check the `X-Hub-Signature-256` of inbound calls. |
+
+Keywords: «حاضر / yes» confirms attendance (the short reminder is then skipped), «عذر / excuse» records an excuse,
+«إيقاف / stop» and «تشغيل / start» turn messages off and on. Anything else goes to Messages → Inbox & excuses.

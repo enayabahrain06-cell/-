@@ -33,11 +33,14 @@ it('sends pre-lesson reminders only for sessions starting inside the window, onc
         ->and($outside->fresh()->reminder_sent_at)->toBeNull()
         ->and($gone->fresh()->reminder_sent_at)->toBeNull();
 
-    $logs = MessageLog::where('type', 'pre_lesson_reminder')->get();
+    // Section 23: the long reminder (due 2 h before) goes out now; the short one (1 h before) is scheduled.
+    $logs = MessageLog::where('type', 'attendance_reminder_long')->get();
+    expect(MessageLog::where('type', 'attendance_reminder_short')->where('status', 'scheduled')->count())->toBe(1);
     expect($logs)->toHaveCount(1)
         ->and($logs->first()->recipient_phone)->toBe('+97336300001')
         ->and($logs->first()->body)->toContain('حلقة الفجر')->toContain('سورة الملك')->toContain($soon->format('H:i'));
 
     $this->artisan('lessons:send-reminders', ['--hours' => 2])->assertSuccessful();
-    expect(MessageLog::where('type', 'pre_lesson_reminder')->count())->toBe(1);
+    expect(MessageLog::where('type', 'attendance_reminder_long')->count())->toBe(1)
+        ->and(MessageLog::where('type', 'attendance_reminder_short')->count())->toBe(1);
 });
