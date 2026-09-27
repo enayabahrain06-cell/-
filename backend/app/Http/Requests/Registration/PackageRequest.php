@@ -13,7 +13,12 @@ class PackageRequest extends FormRequest
 {
     public function authorize(): bool
     {
-        return $this->user()?->can('packages.manage') ?? false;
+        $package = $this->route('package');
+
+        // Existing packages go through the track-aware policy; creation needs packages.manage.
+        return $package instanceof \App\Models\Package
+            ? ($this->user()?->can('update', $package) ?? false)
+            : ($this->user()?->can('packages.manage') ?? false);
     }
 
     protected function prepareForValidation(): void

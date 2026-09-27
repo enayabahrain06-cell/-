@@ -21,3 +21,6 @@ Route::post('payments/{payment}/resend-receipt', [PaymentController::class, 'res
 
 Route::get('refunds', [PaymentController::class, 'refunds']);
 Route::post('refunds', [PaymentController::class, 'storeRefund']);
+
+// Finance report (JSON, or ?format=xlsx|pdf)
+Route::get('reports/finance', [\App\Http\Controllers\Api\Wallet\FinanceReportController::class, 'show']);

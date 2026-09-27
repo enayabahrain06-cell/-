@@ -1,0 +1,33 @@
+<?php
+
+return [
+    'summary' => 'الملخص',
+    'item' => 'البند',
+    'value' => 'القيمة',
+    'no_rows' => 'لا توجد بيانات في هذه الفترة.',
+    'period' => 'الفترة: من :from إلى :to',
+    'student' => 'الطالب',
+    'student_no' => 'رقم الطالب',
+    'phone' => 'هاتف ولي الأمر',
+    'finance' => [
+        'title' => 'التقرير المالي',
+        'collected' => 'المحصّل',
+        'refunded' => 'المسترد',
+        'net' => 'صافي التحصيل',
+        'invoiced' => 'المفوتر',
+        'payments_count' => 'عدد الدفعات',
+        'students_due' => 'طلاب عليهم مستحقات',
+        'outstanding' => 'المستحق',
+        'by_package' => 'التحصيل حسب الباقة',
+        'by_method' => 'طرق الدفع',
+        'by_month' => 'التحصيل الشهري',
+        'outstanding_students' => 'المستحق على كل طالب',
+        'package' => 'الباقة',
+        'method' => 'الطريقة',
+        'count' => 'العدد',
+        'month' => 'الشهر',
+        'balance' => 'الرصيد',
+        'credit' => 'رصيد غير مخصص',
+        'other_invoices' => 'فواتير أخرى',
+    ],
+];

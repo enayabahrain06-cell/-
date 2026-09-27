@@ -19,6 +19,10 @@ import AppLayout from '../layouts/AppLayout'
 import { StarSpinner } from '../components/ornaments'
 import OrnamentsDemo from '../features/design/OrnamentsDemo'
 import QuickEnrollPage from '../features/enrollment/QuickEnrollPage'
+import PublicRegisterPage from '../features/registration/PublicRegisterPage'
+import TrackRequestPage from '../features/registration/TrackRequestPage'
+import PackagesHomePage from '../features/registration/PackagesHomePage'
+import PaymentsHomePage from '../features/payments/PaymentsHomePage'
 
 function FullScreenLoader() {
   const { t } = useTranslation()
@@ -62,6 +66,8 @@ const BUILT: Record<string, React.ReactNode> = {
   attendance: <AttendanceDayPage />,
   evaluation: <EvaluationHomePage />,
   lessons: <LessonsHomePage />,
+  packages: <PackagesHomePage />,
+  payments: <PaymentsHomePage />,
 }
 
 /** Detail pages under a section: [path, permissions (any), element]. */
@@ -84,6 +90,10 @@ export const router = createBrowserRouter([
   { element: <GuestOnly />, children: [{ path: '/login', element: <LoginPage /> }] },
   // Public design reference for the ornament system (no data, no login).
   { path: '/design/ornaments', element: <OrnamentsDemo /> },
+  // Public self-registration and request tracking (3.1), reachable with or without a session.
+  { path: '/register', element: <PublicRegisterPage /> },
+  { path: '/track', element: <TrackRequestPage /> },
+  { path: '/track/:no', element: <TrackRequestPage /> },
   {
     element: <RequireAuth />,
     children: [

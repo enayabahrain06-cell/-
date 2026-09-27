@@ -50,10 +50,10 @@ export function Badge({ tone = 'muted', children, className = '' }: { tone?: Ton
   return <span className={`inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-medium ${TONES[tone]} ${className}`}>{children}</span>
 }
 
-export function PrimaryButton({ children, className = '', loading, ...rest }: ButtonHTMLAttributes<HTMLButtonElement> & { loading?: boolean }) {
+export function PrimaryButton({ children, className = '', loading, tone = 'brand', ...rest }: ButtonHTMLAttributes<HTMLButtonElement> & { loading?: boolean; tone?: 'brand' | 'danger' }) {
   return (
     <button type="button" {...rest} disabled={rest.disabled || loading} aria-busy={loading}
-      className={`inline-flex items-center justify-center gap-2 rounded-xl bg-brand-700 px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:bg-brand-800 disabled:cursor-not-allowed disabled:opacity-60 ${className}`}>
+      className={`inline-flex items-center justify-center gap-2 rounded-xl px-4 py-2 text-sm font-semibold text-white shadow-sm transition disabled:cursor-not-allowed disabled:opacity-60 ${tone === 'danger' ? 'bg-danger hover:bg-danger/90' : 'bg-brand-700 hover:bg-brand-800'} ${className}`}>
       {loading && <StarSpinner className="size-4 text-white" />}
       {children}
     </button>

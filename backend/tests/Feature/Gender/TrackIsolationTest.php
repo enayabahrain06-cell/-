@@ -94,3 +94,37 @@ it('lessons page: a girls-track supervisor sees only girls circles, halls of her
         ->and($items->every(fn ($i) => $i['masked'] === true && $i['kind'] === 'occupied' && $i['lesson_id'] === null))->toBeTrue()
         ->and($items->pluck('title')->unique()->all())->not->toContain('حلقة البنين');
 });
+
+it('packages and registration page: a girls-track supervisor sees only girls packages and requests and cannot decide boys requests', function () {
+    $boyReq = \App\Models\RegistrationRequest::factory()->create(['package_id' => $this->boysPackage->id, 'gender' => 'male', 'status' => 'pending']);
+    $girlReq = \App\Models\RegistrationRequest::factory()->create(['package_id' => $this->girlsPackage->id, 'gender' => 'female', 'status' => 'pending']);
+    girlsSupervisor();
+
+    $pkgs = collect(test()->getJson('/api/packages')->assertOk()->json('data'))->pluck('id');
+    expect($pkgs)->toContain($this->girlsPackage->id)->not->toContain($this->boysPackage->id);
+    test()->getJson("/api/packages/{$this->boysPackage->id}")->assertForbidden();
+    test()->putJson("/api/packages/{$this->boysPackage->id}", ['seats' => 5])->assertForbidden();
+
+    expect(collect(test()->getJson('/api/registrations?status=pending')->assertOk()->json('data'))->pluck('request_no')->all())->toBe([$girlReq->request_no]);
+    test()->getJson("/api/registrations/{$boyReq->id}")->assertForbidden();
+    test()->postJson("/api/registrations/{$boyReq->id}/accept")->assertForbidden();
+    test()->postJson("/api/registrations/{$boyReq->id}/reject", ['reason' => 'غير مناسب'])->assertForbidden();
+    test()->postJson('/api/registrations/bulk-accept', ['package_id' => $this->boysPackage->id])->assertForbidden();
+});
+
+it('payments page: a girls-track supervisor sees only girls payments, invoices and finance totals and cannot charge a boy', function () {
+    $w = app(\App\Services\Wallet\WalletService::class);
+    $w->createInvoice($this->boy, $this->boysPackage, 20000, now()->addWeek(), 'رسوم');
+    $w->createInvoice($this->girl, $this->girlsPackage, 30000, now()->addWeek(), 'رسوم');
+    $w->recordPayment($this->boy, 20000, \App\Enums\PaymentMethod::Cash, ['notify' => false]);
+    $w->recordPayment($this->girl, 5000, \App\Enums\PaymentMethod::Cash, ['notify' => false]);
+    girlsSupervisor();
+
+    expect(collect(test()->getJson('/api/payments')->assertOk()->json('data'))->pluck('student.id')->unique()->all())->toBe([$this->girl->id])
+        ->and(collect(test()->getJson('/api/invoices')->assertOk()->json('data'))->pluck('student.id')->unique()->all())->toBe([$this->girl->id])
+        ->and(test()->getJson('/api/reports/finance')->assertOk()->json('data.totals.collected'))->toBe(5000);
+
+    test()->postJson('/api/payments', ['student_id' => $this->boy->id, 'amount' => '5', 'method' => 'cash'])->assertForbidden();
+    test()->postJson("/api/students/{$this->boy->id}/wallet/adjust", ['amount' => '-1', 'note' => 'خصم'])->assertForbidden();
+    test()->postJson('/api/invoices', ['student_id' => $this->boy->id, 'amount_fils' => 1000, 'due_date' => today()->toDateString(), 'description' => 'x'])->assertForbidden();
+});

@@ -32,5 +32,10 @@
         "to": "to",
         "remove": "Remove range",
         "add": "Add memorized or revised range"
+    },
+    "picker": {
+        "change": "Change",
+        "placeholder": "Search by name, number or phone",
+        "none": "No results"
     }
 }

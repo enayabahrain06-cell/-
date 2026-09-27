@@ -1,0 +1,33 @@
+<?php
+
+return [
+    'summary' => 'Summary',
+    'item' => 'Item',
+    'value' => 'Value',
+    'no_rows' => 'No data for this period.',
+    'period' => 'Period: :from to :to',
+    'student' => 'Student',
+    'student_no' => 'Student no',
+    'phone' => 'Guardian phone',
+    'finance' => [
+        'title' => 'Finance report',
+        'collected' => 'Collected',
+        'refunded' => 'Refunded',
+        'net' => 'Net collected',
+        'invoiced' => 'Invoiced',
+        'payments_count' => 'Payments',
+        'students_due' => 'Students with dues',
+        'outstanding' => 'Outstanding',
+        'by_package' => 'Collected per package',
+        'by_method' => 'Payment methods',
+        'by_month' => 'Collected per month',
+        'outstanding_students' => 'Outstanding per student',
+        'package' => 'Package',
+        'method' => 'Method',
+        'count' => 'Count',
+        'month' => 'Month',
+        'balance' => 'Balance',
+        'credit' => 'Unallocated credit',
+        'other_invoices' => 'Other invoices',
+    ],
+];

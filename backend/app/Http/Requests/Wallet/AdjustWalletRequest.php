@@ -9,7 +9,11 @@ class AdjustWalletRequest extends FormRequest
 {
     public function authorize(): bool
     {
-        return $this->user()?->can('wallets.adjust') ?? false;
+        // Track-aware: WalletPolicy::adjust also checks the student's gender track.
+        $student = $this->route('student');
+
+        return $student instanceof \App\Models\Student
+            && ($this->user()?->can('adjust', [\App\Models\Wallet::class, $student]) ?? false);
     }
 
     protected function prepareForValidation(): void
