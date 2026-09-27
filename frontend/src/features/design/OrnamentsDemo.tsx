@@ -156,7 +156,7 @@ function CertificateSample({ dark }: { dark: boolean }) {
           <div className={`grid size-20 place-items-center rounded-lg border border-dashed text-xs ${dark ? 'border-gold-300/40 text-white/70' : 'border-brand-900/30 text-ink/60'}`}>{t('photo')}</div>
           <div className="max-w-md">
             <p className={dark ? 'text-white/85' : 'text-ink/75'}>{t('cert_body')}</p>
-            <p className="mt-2 font-display text-2xl">أحمد محمد الدوسري</p>
+            <p className="mt-2 font-display text-2xl">حسين علي المحروس</p>
           </div>
           <div className={`grid size-20 place-items-center rounded-lg border border-dashed text-xs ${dark ? 'border-gold-300/40 text-white/70' : 'border-brand-900/30 text-ink/60'}`}>QR</div>
         </div>

@@ -16,4 +16,5 @@ enum MediaCollection: string
     case Recitation = 'recitation';
     case Certificate = 'certificate';
     case Logo = 'logo';
+    case Signature = 'signature';
 }

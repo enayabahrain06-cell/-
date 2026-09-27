@@ -1,0 +1,26 @@
+<?php
+
+return [
+    'done_enrolled' => 'Student enrolled. The welcome message with the login code is on its way.',
+    'done_waitlist' => 'The package is full: the student was added to the waitlist.',
+    'import_done' => ':count students enrolled.',
+    'payment_note' => 'Cash payment at quick enrollment',
+    'col_circle' => 'Circle',
+    'col_package' => 'Package',
+    'col_teacher' => 'Teacher',
+    'col_free_seats' => 'Free seats',
+    'errors' => [
+        'package_required' => 'Choose a package.',
+        'package_full' => 'The package is full. Choose "Add to waitlist" instead.',
+        'lesson_required' => 'Choose a circle of this package.',
+        'lesson_unavailable' => 'This circle is full, inactive, or its teacher does not match the package.',
+        'not_your_circle' => 'You can only enroll students into your own circles.',
+        'cannot_record_payment' => 'You are not allowed to record payments.',
+        'no_payment_on_waitlist' => 'A payment cannot be recorded for a waitlisted student.',
+        'duplicate' => 'Possible duplicate: :names. Check, then confirm to save anyway.',
+    ],
+    'warnings' => [
+        'same_name_birth_date' => 'A student with the same name and birth date exists (:name, :no).',
+        'same_name_guardian' => 'This guardian already has a child with the same name (:name, :no).',
+    ],
+];

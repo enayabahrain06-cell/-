@@ -45,74 +45,90 @@ class AcceptRegistrationAction
             throw ValidationException::withMessages(['package_id' => __('registration.errors.full')]);
         }
 
-        $student = DB::transaction(function () use ($request, $package, $by) {
-            $guardian = $this->findOrCreateUser($request->guardian_phone, $request->guardian_name, 'guardian', $request->locale->value);
-
-            $studentUser = null;
-            if ($request->student_phone && $request->student_phone !== $request->guardian_phone) {
-                $studentUser = $this->findOrCreateUser($request->student_phone, $request->full_name, 'student', $request->locale->value, $request->gender->value);
-            }
-
-            $student = Student::create([
-                'student_no' => Student::nextStudentNo(),
-                'user_id' => $studentUser?->id,
-                'guardian_user_id' => $guardian->id,
-                'full_name' => $request->full_name,
-                'birth_date' => $request->birth_date,
-                'gender' => $request->gender,
-                'student_phone' => $studentUser?->phone,
-                'guardian_name' => $request->guardian_name,
-                'guardian_phone' => $guardian->phone,
-                'memorization_level' => $request->memorization_level,
-                'locale' => $request->locale,
-                'status' => StudentStatus::Active,
-            ]);
-
-            $wasWaitlist = $request->status === RegistrationStatus::Waitlist;
-            $request->update([
-                'status' => RegistrationStatus::Accepted,
-                'student_id' => $student->id,
-                'waitlist_position' => null,
-                'decided_by' => $by ?? auth()->id(),
-                'decided_at' => now(),
-            ]);
-            if ($wasWaitlist) {
-                $this->registrations->repackWaitlist($package);
-            }
-
-            $this->wallets->ensure($student);
-
-            if ($package->price_fils > 0) {
-                $this->wallets->createInvoice(
-                    $student,
-                    $package,
-                    $package->price_fils,
-                    $package->start_date->isFuture() ? $package->start_date : now()->addDays(7),
-                    __('wallet.invoice.package_fee', ['package' => $package->name], $request->locale->value),
-                    $package->term,
-                    $by ?? auth()->id(),
-                );
-            }
-
-            // Lottery pool: join any draft lottery of this package.
-            Lottery::where('package_id', $package->id)->where('status', LotteryStatus::Draft->value)->get()
-                ->each(fn (Lottery $l) => LotteryStudent::firstOrCreate(['lottery_id' => $l->id, 'student_id' => $student->id]));
-
-            return $student;
-        });
+        $student = DB::transaction(fn () => $this->createStudent($request, $by));
 
         $this->transferPhoto($request, $student);
 
         $this->audit->record('registration.accepted', $request, ['status' => 'pending'], ['status' => 'accepted', 'student_id' => $student->id]);
         $this->registrations->refreshPendingAlert($package);
 
+        $this->notifyAccepted($request);
+
+        return $student;
+    }
+
+    /**
+     * The transactional part of acceptance (no messages, photo or audit), so callers such as
+     * quick enrollment can run it inside a larger transaction. Call it inside DB::transaction.
+     */
+    public function createStudent(RegistrationRequest $request, ?int $by = null): Student
+    {
+        $package = $request->package;
+
+        $guardian = $this->findOrCreateUser($request->guardian_phone, $request->guardian_name, 'guardian', $request->locale->value);
+
+        $studentUser = null;
+        if ($request->student_phone && $request->student_phone !== $request->guardian_phone) {
+            $studentUser = $this->findOrCreateUser($request->student_phone, $request->full_name, 'student', $request->locale->value, $request->gender->value);
+        }
+
+        $student = Student::create([
+            'student_no' => Student::nextStudentNo(),
+            'user_id' => $studentUser?->id,
+            'guardian_user_id' => $guardian->id,
+            'full_name' => $request->full_name,
+            'birth_date' => $request->birth_date,
+            'gender' => $request->gender,
+            'student_phone' => $studentUser?->phone,
+            'guardian_name' => $request->guardian_name,
+            'guardian_phone' => $guardian->phone,
+            'memorization_level' => $request->memorization_level,
+            'locale' => $request->locale,
+            'status' => StudentStatus::Active,
+        ]);
+
+        $wasWaitlist = $request->status === RegistrationStatus::Waitlist;
+        $request->update([
+            'status' => RegistrationStatus::Accepted,
+            'student_id' => $student->id,
+            'waitlist_position' => null,
+            'decided_by' => $by ?? auth()->id(),
+            'decided_at' => now(),
+        ]);
+        if ($wasWaitlist) {
+            $this->registrations->repackWaitlist($package);
+        }
+
+        $this->wallets->ensure($student);
+
+        if ($package->price_fils > 0) {
+            $this->wallets->createInvoice(
+                $student,
+                $package,
+                $package->price_fils,
+                $package->start_date->isFuture() ? $package->start_date : now()->addDays(7),
+                __('wallet.invoice.package_fee', ['package' => $package->name], $request->locale->value),
+                $package->term,
+                $by ?? auth()->id(),
+            );
+        }
+
+        // Lottery pool: join any draft lottery of this package.
+        Lottery::where('package_id', $package->id)->where('status', LotteryStatus::Draft->value)->get()
+            ->each(fn (Lottery $l) => LotteryStudent::firstOrCreate(['lottery_id' => $l->id, 'student_id' => $student->id]));
+
+        return $student;
+    }
+
+    /** Welcome message with the login link, to the guardian and the student phone. */
+    public function notifyAccepted(RegistrationRequest $request): void
+    {
+        $package = $request->package;
         $this->registrations->notify($request->fresh(), MessageType::RegistrationAccepted, [
             'package' => $package->localizedName($request->locale->value),
             'link' => config('ahl.frontend_url').'/login',
             'amount' => Money::format($package->price_fils, $request->locale->value),
         ]);
-
-        return $student;
     }
 
     private function findOrCreateUser(string $phone, string $name, string $role, string $locale, ?string $gender = null): User

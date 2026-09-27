@@ -18,6 +18,7 @@ import HallCalendarPage from '../features/lessons/HallCalendarPage'
 import AppLayout from '../layouts/AppLayout'
 import { StarSpinner } from '../components/ornaments'
 import OrnamentsDemo from '../features/design/OrnamentsDemo'
+import QuickEnrollPage from '../features/enrollment/QuickEnrollPage'
 
 function FullScreenLoader() {
   const { t } = useTranslation()
@@ -57,6 +58,7 @@ function Guard({ permissions, children }: { permissions: string[]; children: Rea
 /** Screens built so far; every other section shows the placeholder. */
 const BUILT: Record<string, React.ReactNode> = {
   students: <StudentsListPage />,
+  enrollment: <QuickEnrollPage />,
   attendance: <AttendanceDayPage />,
   evaluation: <EvaluationHomePage />,
   lessons: <LessonsHomePage />,

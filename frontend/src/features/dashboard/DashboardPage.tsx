@@ -148,7 +148,7 @@ function TodayList({ sessions, locale }: { sessions: TodaySession[]; locale: str
                   {s.location && <> · {s.location}</>}
                 </p>
               </div>
-              <div className="flex flex-wrap items-center gap-2">
+              <div className="flex basis-full flex-wrap items-center gap-2 ps-24 sm:basis-auto sm:ps-0">
                 <span className={`inline-flex items-center gap-1 rounded-full px-2.5 py-1 text-xs font-medium ${STATUS_STYLE[s.location_status]}`}>
                   <Icon name={STATUS_ICON[s.location_status]} className="size-3.5" />
                   {t(`today.status.${s.location_status}`)}

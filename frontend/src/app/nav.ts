@@ -1,4 +1,4 @@
-/** The 13 staff sections of the sidebar. A section shows when the user holds any of its permissions. */
+/** The staff sections of the sidebar. A section shows when the user holds any of its permissions. */
 export interface NavSection {
   key: string
   path: string
@@ -10,6 +10,7 @@ export const NAV_SECTIONS: NavSection[] = [
   { key: 'dashboard', path: '/', icon: 'dashboard', permissions: ['dashboard.view'] },
   { key: 'lessons', path: '/lessons', icon: 'lessons', permissions: ['lessons.view', 'locations.view'] },
   { key: 'students', path: '/students', icon: 'students', permissions: ['students.view'] },
+  { key: 'enrollment', path: '/enrollment', icon: 'enroll', permissions: ['enrollment.quick'] },
   { key: 'teachers', path: '/teachers', icon: 'teachers', permissions: ['teachers.view'] },
   { key: 'attendance', path: '/attendance', icon: 'attendance', permissions: ['attendance.view', 'attendance.record'] },
   { key: 'evaluation', path: '/evaluation', icon: 'evaluation', permissions: ['evaluations.view', 'evaluations.record'] },

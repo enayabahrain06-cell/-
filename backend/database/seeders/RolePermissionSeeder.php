@@ -14,7 +14,7 @@ class RolePermissionSeeder extends Seeder
         'dashboard.view',
         'users.view', 'users.manage', 'roles.manage',
         'packages.view', 'packages.manage',
-        'registrations.view', 'registrations.manage',
+        'registrations.view', 'registrations.manage', 'enrollment.quick',
         'students.view', 'students.manage', 'students.photo',
         'teachers.view', 'teachers.manage',
         'locations.view', 'locations.manage',
@@ -35,7 +35,7 @@ class RolePermissionSeeder extends Seeder
         'supervisor' => [
             'dashboard.view',
             'packages.view', 'packages.manage',
-            'registrations.view', 'registrations.manage',
+            'registrations.view', 'registrations.manage', 'enrollment.quick',
             'students.view', 'students.manage', 'students.photo',
             'teachers.view',
             'locations.view', 'locations.manage',
@@ -51,6 +51,7 @@ class RolePermissionSeeder extends Seeder
         'teacher' => [
             'dashboard.view',
             'lessons.view', 'students.view',
+            'enrollment.quick', // own circles only, no payments
             'attendance.view', 'attendance.record',
             'evaluations.view', 'evaluations.record',
             'exams.view', 'exams.grade',

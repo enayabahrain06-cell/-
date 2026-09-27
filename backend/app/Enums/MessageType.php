@@ -24,5 +24,6 @@ enum MessageType: string
     case Otp = 'otp';
     case WeeklyReport = 'weekly_report';
     case StudentProgressUpdate = 'student_progress_update';
+    case CertificateIssued = 'certificate_issued';
     case Custom = 'custom';
 }

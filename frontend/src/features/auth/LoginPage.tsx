@@ -3,7 +3,7 @@ import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { useTranslation } from 'react-i18next'
-import { useNavigate, useLocation } from 'react-router-dom'
+import { Link, useNavigate, useLocation } from 'react-router-dom'
 import AuthLayout from '../../layouts/AuthLayout'
 import FormField from '../../components/FormField'
 import Button from '../../components/Button'
@@ -58,12 +58,12 @@ export default function LoginPage() {
       </section>
 
       <div className="mt-8 space-y-2 border-t border-stone-200 pt-6 text-center text-sm">
-        <a href="/register" className="block font-medium text-brand-700 hover:underline">
+        <Link to="/register" className="block font-medium text-brand-700 hover:underline">
           {t('register_cta')}
-        </a>
-        <a href="/track" className="block text-stone-500 hover:text-stone-700 hover:underline">
+        </Link>
+        <Link to="/track" className="block text-stone-500 hover:text-stone-700 hover:underline">
           {t('track_cta')}
-        </a>
+        </Link>
       </div>
     </AuthLayout>
   )

@@ -4,7 +4,7 @@ return [
     'dashboard.view' => 'View dashboard',
     'users.view' => 'View users', 'users.manage' => 'Manage users', 'roles.manage' => 'Manage roles and permissions',
     'packages.view' => 'View packages', 'packages.manage' => 'Manage packages',
-    'registrations.view' => 'View registration requests', 'registrations.manage' => 'Decide registration requests',
+    'registrations.view' => 'View registration requests', 'registrations.manage' => 'Decide registration requests', 'enrollment.quick' => 'Quick enrollment into circles',
     'students.view' => 'View students', 'students.manage' => 'Manage students', 'students.photo' => 'Edit student photos',
     'teachers.view' => 'View teachers', 'teachers.manage' => 'Manage teachers',
     'locations.view' => 'View halls', 'locations.manage' => 'Manage halls and bookings',

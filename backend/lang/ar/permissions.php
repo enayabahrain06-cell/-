@@ -4,7 +4,7 @@ return [
     'dashboard.view' => 'عرض لوحة التحكم',
     'users.view' => 'عرض المستخدمين', 'users.manage' => 'إدارة المستخدمين', 'roles.manage' => 'إدارة الأدوار والصلاحيات',
     'packages.view' => 'عرض الباقات', 'packages.manage' => 'إدارة الباقات',
-    'registrations.view' => 'عرض طلبات التسجيل', 'registrations.manage' => 'البت في طلبات التسجيل',
+    'registrations.view' => 'عرض طلبات التسجيل', 'registrations.manage' => 'البت في طلبات التسجيل', 'enrollment.quick' => 'التسجيل السريع في الحلقات',
     'students.view' => 'عرض الطلاب', 'students.manage' => 'إدارة الطلاب', 'students.photo' => 'تعديل صور الطلاب',
     'teachers.view' => 'عرض المعلمين', 'teachers.manage' => 'إدارة المعلمين',
     'locations.view' => 'عرض القاعات', 'locations.manage' => 'إدارة القاعات والحجوزات',
