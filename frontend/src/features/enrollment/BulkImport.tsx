@@ -5,6 +5,7 @@ import { parseApiError } from '../../api/client'
 import Alert from '../../components/Alert'
 import Button from '../../components/Button'
 import { formatNumber } from '../../lib/format'
+import { SURFACE } from '../../components/ui'
 
 /** Upload an Excel sheet, review every row (errors in red, possible duplicates in gold), then enroll the valid rows. */
 export default function BulkImport() {
@@ -66,7 +67,7 @@ export default function BulkImport() {
 
   return (
     <div className="space-y-5">
-      <div className="rounded-2xl border border-ink/8 bg-white p-5 shadow-sm">
+      <div className={`${SURFACE} p-4 sm:p-5`}>
         <p className="text-sm text-ink/70">{t('import_intro')}</p>
         <div className="mt-4 flex flex-wrap gap-3">
           <button type="button" onClick={() => void downloadTemplate()} className="rounded-lg border border-ink/15 bg-white px-3 py-2 text-sm font-medium text-ink/75 hover:bg-ink/5">
@@ -88,7 +89,7 @@ export default function BulkImport() {
       )}
 
       {preview && (
-        <section className="rounded-2xl border border-ink/8 bg-white shadow-sm" aria-labelledby="preview-title">
+        <section className={SURFACE} aria-labelledby="preview-title">
           <div className="flex flex-wrap items-center gap-3 border-b border-ink/8 px-5 py-4">
             <h2 id="preview-title" className="font-semibold text-ink">{t('preview')}</h2>
             <span className="rounded-full bg-brand-50 px-2.5 py-0.5 text-xs font-medium text-brand-700">{t('count_valid', { count: preview.valid })}</span>

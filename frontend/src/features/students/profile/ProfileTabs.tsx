@@ -9,11 +9,12 @@ import Pagination from '../../../components/Pagination'
 import SelectField from '../../../components/SelectField'
 import FormField from '../../../components/FormField'
 import { EmptyState, StarSpinner } from '../../../components/ornaments'
+import { PrimaryButton, SURFACE } from '../../../components/ui'
 import { formatDate, formatMoney, formatNumber, formatPercent } from '../../../lib/format'
 import JuzMap from './JuzMap'
 import TrendChart from './TrendChart'
 
-const card = 'rounded-2xl border border-ink/8 bg-white p-4 shadow-sm sm:p-5'
+const card = `${SURFACE} p-4 sm:p-5`
 
 function Loading() {
   return <div className="grid place-items-center py-16"><StarSpinner className="size-9 text-brand-600" /></div>
@@ -222,7 +223,7 @@ export function IssuesTab({ profile }: { profile: StudentProfile }) {
 }
 
 /* ---------------------------------------------------------------- Attendance */
-const ATT_STYLE: Record<string, string> = { present: 'bg-brand-50 text-brand-700', late: 'bg-gold-500/12 text-gold-700', absent: 'bg-danger/10 text-danger', excused: 'bg-[#3F74C0]/10 text-[#2F5E9E]' }
+const ATT_STYLE: Record<string, string> = { present: 'bg-brand-50 text-brand-700', late: 'bg-gold-500/12 text-gold-700', absent: 'bg-danger/10 text-danger', excused: 'bg-info/10 text-info-700' }
 
 export function AttendanceTab({ studentId }: { studentId: number }) {
   const { t, i18n } = useTranslation('students')
@@ -399,7 +400,7 @@ export function DetailsTab({ student, canEdit, canPhoto }: { student: StudentDet
                 className="block w-full rounded-xl border border-ink/15 bg-white px-3 py-2 text-sm shadow-sm focus:border-brand-500 focus:outline-none focus:ring-4 focus:ring-brand-100" />
             </div>
             <div className="flex gap-2 sm:col-span-2">
-              <button type="submit" disabled={save.isPending} className="rounded-xl bg-brand-700 px-4 py-2 text-sm font-semibold text-white hover:bg-brand-800 disabled:opacity-60">{t('details.save')}</button>
+              <PrimaryButton type="submit" loading={save.isPending}>{t('details.save')}</PrimaryButton>
               <button type="button" onClick={() => setEditing(false)} className="rounded-xl border border-ink/10 px-4 py-2 text-sm text-ink/75 hover:bg-ink/5">{t('details.cancel')}</button>
             </div>
           </form>

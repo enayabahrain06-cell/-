@@ -30,7 +30,7 @@ export default function AuditLogPage() {
   const filtered = KEYS.some((k) => k !== 'page' && f[k])
 
   return (
-    <div className="mx-auto max-w-7xl space-y-5">
+    <div className="space-y-5">
       <PageBand title={t('title')} subtitle={t('subtitle')} />
       <section aria-label={t('title')} className={`${SURFACE} grid gap-3 p-4 sm:grid-cols-2 lg:grid-cols-5`}>
         <SelectField label={t('group')} value={f.action} onChange={(e) => setFilter('action', e.target.value)}

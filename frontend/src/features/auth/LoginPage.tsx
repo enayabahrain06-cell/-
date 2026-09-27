@@ -31,9 +31,9 @@ export default function LoginPage() {
     <AuthLayout>
       <h1 className="font-display text-3xl text-ink sm:text-4xl">{t('title')}</h1>
       <OrnamentDivider className="mt-2 text-gold-500" />
-      <p className="mt-3 text-stone-600">{t('subtitle')}</p>
+      <p className="mt-3 text-ink/65">{t('subtitle')}</p>
 
-      <div role="tablist" aria-label={t('title')} className="mt-8 grid grid-cols-2 gap-1 rounded-2xl bg-stone-200/70 p-1">
+      <div role="tablist" aria-label={t('title')} className="mt-8 grid grid-cols-2 gap-1 rounded-2xl bg-ink/5 p-1">
         {(['password', 'otp'] as const).map((m) => (
           <button
             key={m}
@@ -44,7 +44,7 @@ export default function LoginPage() {
             aria-controls={`panel-${m}`}
             onClick={() => setMode(m)}
             className={`rounded-xl px-3 py-2.5 text-sm font-semibold transition focus-visible:outline-2 focus-visible:outline-brand-500 ${
-              mode === m ? 'bg-white text-ink shadow-sm' : 'text-stone-600 hover:text-stone-900'
+              mode === m ? 'bg-white text-ink shadow-sm' : 'text-ink/65 hover:text-ink'
             }`}
           >
             {t(`tabs.${m}`)}
@@ -53,15 +53,15 @@ export default function LoginPage() {
       </div>
 
       <section id={`panel-${mode}`} role="tabpanel" aria-labelledby={`tab-${mode}`} className="mt-6">
-        <p className="mb-5 text-sm text-stone-500">{t(`tab_hints.${mode}`)}</p>
+        <p className="mb-5 text-sm text-ink/55">{t(`tab_hints.${mode}`)}</p>
         {mode === 'password' ? <PasswordForm /> : <OtpForm />}
       </section>
 
-      <div className="mt-8 space-y-2 border-t border-stone-200 pt-6 text-center text-sm">
+      <div className="mt-8 space-y-2 border-t border-ink/10 pt-6 text-center text-sm">
         <Link to="/register" className="block font-medium text-brand-700 hover:underline">
           {t('register_cta')}
         </Link>
-        <Link to="/track" className="block text-stone-500 hover:text-stone-700 hover:underline">
+        <Link to="/track" className="block text-ink/55 hover:text-ink/80 hover:underline">
           {t('track_cta')}
         </Link>
       </div>
@@ -122,7 +122,7 @@ function PasswordForm() {
           <button
             type="button"
             onClick={() => setShow((s) => !s)}
-            className="rounded-lg px-2.5 py-1.5 text-sm font-medium text-stone-500 hover:bg-stone-100 hover:text-stone-800"
+            className="rounded-lg px-2.5 py-1.5 text-sm font-medium text-ink/55 hover:bg-ink/5 hover:text-ink"
           >
             {show ? t('hide_password') : t('show_password')}
           </button>
@@ -240,14 +240,14 @@ function OtpForm() {
         {t('verify')}
       </Button>
       <div className="flex items-center justify-between text-sm">
-        <button type="button" onClick={() => setSent(null)} className="font-medium text-stone-600 hover:text-stone-900 hover:underline">
+        <button type="button" onClick={() => setSent(null)} className="font-medium text-ink/65 hover:text-ink hover:underline">
           {t('change_phone')}
         </button>
         <button
           type="button"
           disabled={cooldown > 0}
           onClick={() => requestCode(sent.phone)}
-          className="font-medium text-brand-700 hover:underline disabled:cursor-not-allowed disabled:text-stone-400 disabled:no-underline"
+          className="font-medium text-brand-700 hover:underline disabled:cursor-not-allowed disabled:text-ink/40 disabled:no-underline"
         >
           {cooldown > 0 ? t('resend_in', { seconds: cooldown }) : t('resend')}
         </button>

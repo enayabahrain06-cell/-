@@ -6,6 +6,7 @@ import { lessonsApi, studentsApi, type StudentFilters, type StudentSummary } fro
 import { useAuth } from '../../app/AuthContext'
 import Avatar from '../../components/Avatar'
 import Icon from '../../components/Icon'
+import { SearchInput, TableWrap, TABLE_HEAD, SURFACE } from '../../components/ui'
 import Pagination from '../../components/Pagination'
 import SelectField from '../../components/SelectField'
 import { EmptyState, PageBand, StarSpinner } from '../../components/ornaments'
@@ -57,23 +58,12 @@ export default function StudentsListPage() {
   const n = (v: number) => formatNumber(v, locale)
 
   return (
-    <div className="mx-auto max-w-7xl space-y-5">
+    <div className="space-y-5">
       <PageBand title={t('title')} subtitle={query.data ? t('subtitle', { n: n(query.data.meta.total) }) : undefined} />
 
       {/* Filters: one row above the list */}
       <section aria-label={t('filters.clear')} className="grid gap-3 rounded-2xl border border-ink/8 bg-white p-4 shadow-sm sm:grid-cols-2 lg:grid-cols-6">
-        <div className="relative sm:col-span-2">
-          <label htmlFor="student-search" className="sr-only">{t('search')}</label>
-          <Icon name="search" className="pointer-events-none absolute inset-y-0 start-3 my-auto size-4 text-ink/40" />
-          <input
-            id="student-search"
-            type="search"
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            placeholder={t('search')}
-            className="block w-full rounded-xl border border-ink/15 bg-white py-2.5 pe-3 ps-9 text-sm shadow-sm placeholder:text-ink/40 focus:border-brand-500 focus:outline-none focus:ring-4 focus:ring-brand-100"
-          />
-        </div>
+        <SearchInput id="student-search" className="sm:col-span-2" label={t('search')} value={search} onChange={(e) => setSearch(e.target.value)} />
         {bothTracks && (
           <SelectField
             label={t('filters.gender')}
@@ -149,7 +139,7 @@ export default function StudentsListPage() {
           <button type="button" onClick={() => void query.refetch()} className="mt-3 rounded-lg bg-white px-3 py-1.5 text-sm font-medium text-ink shadow-sm">{t('retry')}</button>
         </div>
       ) : query.data.data.length === 0 ? (
-        <div className="rounded-2xl border border-ink/8 bg-white shadow-sm">
+        <div className={SURFACE}>
           <EmptyState icon="students" title={t('empty')} body={t('empty_body')} />
         </div>
       ) : (
@@ -189,9 +179,9 @@ function StudentsTable({ rows, locale }: { rows: StudentSummary[]; locale: strin
   return (
     <>
       {/* ≥ 640px: table */}
-      <div className="hidden overflow-hidden rounded-2xl border border-ink/8 bg-white shadow-sm sm:block">
-        <table className="w-full text-sm">
-          <thead className="bg-page/60 text-ink/55">
+      <TableWrap surface className="hidden sm:block">
+        <table className="w-full min-w-[34rem] text-sm">
+          <thead className={TABLE_HEAD}>
             <tr>
               <th scope="col" className="px-4 py-3 text-start font-medium">{t('columns.student')}</th>
               <th scope="col" className="px-4 py-3 text-start font-medium">{t('columns.circle')}</th>
@@ -229,7 +219,7 @@ function StudentsTable({ rows, locale }: { rows: StudentSummary[]; locale: strin
             ))}
           </tbody>
         </table>
-      </div>
+      </TableWrap>
 
       {/* < 640px: cards */}
       <ul className="space-y-3 sm:hidden">

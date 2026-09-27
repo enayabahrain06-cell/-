@@ -8,7 +8,7 @@ import type { StudentSummary } from '../../api/students'
 import Avatar from '../../components/Avatar'
 import Icon from '../../components/Icon'
 import QuranRangePicker from '../../components/QuranRangePicker'
-import { Badge, Notice, SecondaryButton, TextInput } from '../../components/ui'
+import { Badge, Notice, SecondaryButton, TextInput, SURFACE } from '../../components/ui'
 import { formatNumber } from '../../lib/format'
 import IssueDialog from './IssueDialog'
 import ScoreSelect from './ScoreSelect'
@@ -64,7 +64,7 @@ export default function ScoreGrid({ students, drafts, saved, suggestions, thresh
           const sug = byStudent.get(st.id) ?? []
 
           return (
-            <li key={st.id} className="rounded-2xl border border-ink/8 bg-white p-4 shadow-sm">
+            <li key={st.id} className={`${SURFACE} p-4`}>
               <div className="flex flex-wrap items-center gap-3">
                 <Avatar name={st.full_name} initial={st.initial} src={st.photo_url} gender={st.gender} size="sm" />
                 <Link to={`/students/${st.id}`} dir="auto" className="min-w-0 flex-1 truncate font-semibold text-ink hover:text-brand-700">{st.full_name}</Link>

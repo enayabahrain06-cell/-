@@ -27,6 +27,9 @@
   --color-paper: #fbf6ea;
   --color-ink: #1b2b28;
   --color-danger: #a63d32;
+  /* informational blue (badges, notices) */
+  --color-info: #3f74c0;
+  --color-info-700: #2f5e9e;
 }
 
 /*

@@ -8,7 +8,7 @@ import Icon from '../../components/Icon'
 import Pagination from '../../components/Pagination'
 import SelectField from '../../components/SelectField'
 import { EmptyState, PageBand } from '../../components/ornaments'
-import { Badge, ErrorState, LoadingState, Notice, PrimaryButton, SecondaryButton, Segmented, type Tone } from '../../components/ui'
+import { Badge, ErrorState, FilterBar, LoadingState, Notice, PrimaryButton, SecondaryButton, SearchInput, Segmented, type Tone } from '../../components/ui'
 import { formatDate, formatNumber, formatTime } from '../../lib/format'
 import { BookingDialog, HallFormDialog } from './HallDialogs'
 import LessonFormDialog from './LessonFormDialog'
@@ -23,7 +23,7 @@ export default function LessonsHomePage() {
   const tab = (['circles', 'halls', 'bookings'] as const).includes(params.get('tab') as Tab) ? (params.get('tab') as Tab) : 'circles'
 
   return (
-    <div className="mx-auto max-w-7xl space-y-5">
+    <div className="space-y-5">
       <PageBand title={t('title')} subtitle={t('subtitle')} />
       <Segmented name="lessons-tab" label={t('title')} value={tab}
         options={(['circles', 'halls', 'bookings'] as const).map((k) => ({ value: k, label: t(`tabs.${k}`) }))}
@@ -51,18 +51,15 @@ function Circles() {
 
   return (
     <div className="space-y-4">
-      <div className="flex flex-wrap items-end gap-3 rounded-2xl border border-ink/8 bg-white p-4 shadow-sm">
-        <div className="min-w-48 flex-1">
-          <label htmlFor="lesson-search" className="sr-only">{t('filters.search')}</label>
-          <input id="lesson-search" type="search" defaultValue={filters.search} placeholder={t('filters.search')} onKeyDown={(e) => e.key === 'Enter' && set('search', (e.target as HTMLInputElement).value)}
-            onBlur={(e) => set('search', e.target.value)} className="w-full rounded-xl border border-ink/15 px-3 py-2.5 text-sm shadow-sm" />
-        </div>
-        {both && <SelectField label={t('filters.all_tracks')} hideLabel className="w-44" value={filters.gender ?? ''} onChange={(e) => set('gender', e.target.value)}
+      <FilterBar>
+        <SearchInput id="lesson-search" className="sm:min-w-48 sm:flex-1" label={t('filters.search')} defaultValue={filters.search} onKeyDown={(e) => e.key === 'Enter' && set('search', (e.target as HTMLInputElement).value)}
+          onBlur={(e) => set('search', e.target.value)} />
+        {both && <SelectField label={t('filters.all_tracks')} hideLabel className="sm:w-44" value={filters.gender ?? ''} onChange={(e) => set('gender', e.target.value)}
           options={[{ value: '', label: t('filters.all_tracks') }, ...(['male', 'female', 'mixed'] as const).map((g) => ({ value: g, label: t(`gender.${g}`) }))]} />}
-        <SelectField label={t('filters.all_statuses')} hideLabel className="w-40" value={filters.status ?? ''} onChange={(e) => set('status', e.target.value)}
+        <SelectField label={t('filters.all_statuses')} hideLabel className="sm:w-40" value={filters.status ?? ''} onChange={(e) => set('status', e.target.value)}
           options={[{ value: '', label: t('filters.all_statuses') }, ...(['active', 'paused', 'ended'] as const).map((s) => ({ value: s, label: t(`status.${s}`) }))]} />
-        {can('lessons.manage') && <PrimaryButton className="ms-auto" onClick={() => setDialog(true)}>+ {t('new_circle')}</PrimaryButton>}
-      </div>
+        {can('lessons.manage') && <PrimaryButton className="sm:ms-auto" onClick={() => setDialog(true)}>+ {t('new_circle')}</PrimaryButton>}
+      </FilterBar>
 
       {conflicts && conflicts.length > 0 && (
         <Notice tone="error"><b>{t('form.conflicts')}.</b> {t('form.conflicts_body')}</Notice>
@@ -72,7 +69,7 @@ function Circles() {
         <div className="rounded-2xl border border-ink/8 bg-white shadow-sm"><EmptyState icon="lessons" title={t('empty')} /></div>
       ) : (
         <>
-          <ul className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
+          <ul className="grid gap-3 *:min-w-0 md:grid-cols-2 xl:grid-cols-3">
             {q.data.data.map((l) => (
               <li key={l.id}>
                 <Link to={`/lessons/${l.id}`} className="block h-full rounded-2xl border border-ink/8 bg-white p-4 shadow-sm transition hover:border-brand-500/40 hover:shadow">
@@ -116,7 +113,7 @@ function Halls() {
       {q.isLoading ? <LoadingState /> : !q.data?.length ? (
         <div className="rounded-2xl border border-ink/8 bg-white shadow-sm"><EmptyState icon="pin" title={t('empty_halls')} /></div>
       ) : (
-        <ul className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
+        <ul className="grid gap-3 *:min-w-0 md:grid-cols-2 xl:grid-cols-3">
           {q.data.map((h) => (
             <li key={h.id} className={`rounded-2xl border bg-white p-4 shadow-sm ${h.is_active ? 'border-ink/8' : 'border-dashed border-ink/20 opacity-75'}`}>
               <div className="flex items-start justify-between gap-2">

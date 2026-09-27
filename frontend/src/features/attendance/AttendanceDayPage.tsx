@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next'
 import { attendanceApi } from '../../api/attendance'
 import Icon from '../../components/Icon'
 import { EmptyState, PageBand } from '../../components/ornaments'
-import { Badge, ErrorState, LoadingState, SecondaryButton } from '../../components/ui'
+import { Badge, ErrorState, LoadingState, SecondaryButton, SURFACE } from '../../components/ui'
 import { formatDate, formatHijri, formatNumber, formatTime } from '../../lib/format'
 
 const todayIso = () => new Intl.DateTimeFormat('en-CA', { timeZone: 'Asia/Bahrain' }).format(new Date())
@@ -25,7 +25,7 @@ export default function AttendanceDayPage({ basePath = '/attendance', title, sub
   }
 
   return (
-    <div className="mx-auto max-w-5xl space-y-5">
+    <div className="space-y-5">
       {!embedded && <PageBand title={title ?? t('title')} subtitle={subtitle ?? t('subtitle')} />}
 
       <div className="flex flex-wrap items-center gap-2 rounded-2xl border border-ink/8 bg-white p-3 shadow-sm">
@@ -39,12 +39,12 @@ export default function AttendanceDayPage({ basePath = '/attendance', title, sub
       </div>
 
       {q.isLoading ? <LoadingState /> : q.isError || !q.data ? <ErrorState onRetry={() => void q.refetch()} /> : q.data.length === 0 ? (
-        <div className="rounded-2xl border border-ink/8 bg-white shadow-sm"><EmptyState icon="attendance" title={t('no_sessions')} body={t('no_sessions_body')} /></div>
+        <div className={SURFACE}><EmptyState icon="attendance" title={t('no_sessions')} body={t('no_sessions_body')} /></div>
       ) : (
-        <ul className="grid gap-3 md:grid-cols-2">
+        <ul className="grid gap-3 *:min-w-0 md:grid-cols-2">
           {q.data.map((s) => (
             <li key={s.id}>
-              <Link to={`${basePath}/${s.id}`} className="block rounded-2xl border border-ink/8 bg-white p-4 shadow-sm transition hover:border-brand-500/40 hover:shadow">
+              <Link to={`${basePath}/${s.id}`} className={`${SURFACE} block p-4 transition hover:border-brand-500/40 hover:shadow`}>
                 <div className="flex items-start justify-between gap-3">
                   <div className="min-w-0">
                     <p dir="auto" className="truncate font-semibold text-ink">{s.lesson?.name}</p>

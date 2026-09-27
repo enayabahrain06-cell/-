@@ -2,12 +2,16 @@ import type { ButtonHTMLAttributes, ReactNode, TextareaHTMLAttributes } from 're
 import { forwardRef, useEffect, useId } from 'react'
 import { useTranslation } from 'react-i18next'
 import { StarSpinner } from './ornaments'
+import Icon from './Icon'
 
 /** Shared building blocks for staff pages (cards, states, badges, segmented controls, text areas). */
 
+/** White card surface; add padding at the call site (`p-4 sm:p-5` is the standard). */
+export const SURFACE = 'rounded-2xl border border-ink/8 bg-white shadow-sm'
+
 export function Card({ children, className = '', as: Tag = 'section', ...rest }: { children: ReactNode; className?: string; as?: 'section' | 'div' | 'article' } & Record<string, unknown>) {
   return (
-    <Tag className={`rounded-2xl border border-ink/8 bg-white p-4 shadow-sm sm:p-5 ${className}`} {...rest}>
+    <Tag className={`${SURFACE} p-4 sm:p-5 ${className}`} {...rest}>
       {children}
     </Tag>
   )
@@ -41,7 +45,7 @@ const TONES = {
   brand: 'bg-brand-50 text-brand-700',
   gold: 'bg-gold-500/12 text-gold-700',
   danger: 'bg-danger/10 text-danger',
-  info: 'bg-[#3F74C0]/10 text-[#2F5E9E]',
+  info: 'bg-info/10 text-info-700',
   muted: 'bg-ink/6 text-ink/65',
 } as const
 export type Tone = keyof typeof TONES
@@ -50,10 +54,25 @@ export function Badge({ tone = 'muted', children, className = '' }: { tone?: Ton
   return <span className={`inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-medium ${TONES[tone]} ${className}`}>{children}</span>
 }
 
+const BUTTON_BASE = 'inline-flex items-center justify-center rounded-xl text-sm transition focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-500 disabled:cursor-not-allowed'
+const BUTTONS = {
+  primary: `${BUTTON_BASE} gap-2 bg-brand-700 px-4 py-2 font-semibold text-white shadow-sm hover:bg-brand-800 active:bg-brand-900 disabled:opacity-60`,
+  danger: `${BUTTON_BASE} gap-2 bg-danger px-4 py-2 font-semibold text-white shadow-sm hover:bg-danger/90 disabled:opacity-60`,
+  secondary: `${BUTTON_BASE} gap-1.5 border border-ink/12 bg-white px-3 py-2 font-medium text-ink/80 hover:bg-ink/5 disabled:opacity-50`,
+  /** White button on the deep PageBand surface. */
+  onDeep: `${BUTTON_BASE} gap-2 bg-white px-4 py-2 font-semibold text-brand-800 shadow-sm hover:bg-white/90 disabled:opacity-60`,
+} as const
+export type ButtonVariant = keyof typeof BUTTONS
+
+/** Button look for elements that cannot be a <button> (router <Link>, <a>, <label>). */
+export function buttonClass(variant: ButtonVariant = 'primary', className = '') {
+  return `${BUTTONS[variant]} ${className}`
+}
+
 export function PrimaryButton({ children, className = '', loading, tone = 'brand', ...rest }: ButtonHTMLAttributes<HTMLButtonElement> & { loading?: boolean; tone?: 'brand' | 'danger' }) {
   return (
     <button type="button" {...rest} disabled={rest.disabled || loading} aria-busy={loading}
-      className={`inline-flex items-center justify-center gap-2 rounded-xl px-4 py-2 text-sm font-semibold text-white shadow-sm transition disabled:cursor-not-allowed disabled:opacity-60 ${tone === 'danger' ? 'bg-danger hover:bg-danger/90' : 'bg-brand-700 hover:bg-brand-800'} ${className}`}>
+      className={buttonClass(tone === 'danger' ? 'danger' : 'primary', className)}>
       {loading && <StarSpinner className="size-4 text-white" />}
       {children}
     </button>
@@ -63,7 +82,7 @@ export function PrimaryButton({ children, className = '', loading, tone = 'brand
 export function SecondaryButton({ children, className = '', ...rest }: ButtonHTMLAttributes<HTMLButtonElement>) {
   return (
     <button type="button" {...rest}
-      className={`inline-flex items-center justify-center gap-1.5 rounded-xl border border-ink/12 bg-white px-3 py-2 text-sm font-medium text-ink/80 transition hover:bg-ink/5 disabled:cursor-not-allowed disabled:opacity-50 ${className}`}>
+      className={buttonClass('secondary', className)}>
       {children}
     </button>
   )
@@ -93,6 +112,9 @@ export function Segmented<T extends string>({ name, value, options, onChange, la
   )
 }
 
+const INPUT_LOOK = 'block w-full rounded-xl border border-ink/15 bg-white text-sm shadow-sm placeholder:text-ink/40 focus:border-brand-500 focus:outline-none focus:ring-4 focus:ring-brand-100'
+const INPUT = `${INPUT_LOOK} px-3 py-2`
+
 export const TextArea = forwardRef<HTMLTextAreaElement, TextareaHTMLAttributes<HTMLTextAreaElement> & { label: string; hideLabel?: boolean }>(
   function TextArea({ label, hideLabel, className = '', id, ...rest }, ref) {
     const auto = useId()
@@ -101,7 +123,7 @@ export const TextArea = forwardRef<HTMLTextAreaElement, TextareaHTMLAttributes<H
       <div className={className}>
         <label htmlFor={tid} className={hideLabel ? 'sr-only' : 'mb-1.5 block text-sm font-medium text-ink/75'}>{label}</label>
         <textarea ref={ref} id={tid} rows={3} {...rest}
-          className="block w-full rounded-xl border border-ink/15 bg-white px-3 py-2 text-sm shadow-sm placeholder:text-ink/40 focus:border-brand-500 focus:outline-none focus:ring-4 focus:ring-brand-100" />
+          className={INPUT} />
       </div>
     )
   },
@@ -115,20 +137,27 @@ export const TextInput = forwardRef<HTMLInputElement, React.InputHTMLAttributes<
       <div className={className}>
         <label htmlFor={tid} className={hideLabel ? 'sr-only' : 'mb-1.5 block text-sm font-medium text-ink/75'}>{label}</label>
         <input ref={ref} id={tid} {...rest}
-          className="block w-full rounded-xl border border-ink/15 bg-white px-3 py-2 text-sm shadow-sm placeholder:text-ink/40 focus:border-brand-500 focus:outline-none focus:ring-4 focus:ring-brand-100" />
+          className={INPUT} />
       </div>
     )
   },
 )
 
+export const NOTICE_TONES = {
+  error: 'border-danger/25 bg-danger/5 text-danger',
+  info: 'border-info/20 bg-info/5 text-info-700',
+  success: 'border-brand-100 bg-brand-50 text-brand-800',
+} as const
+
 /** Status line under a form after save (role=status so screen readers announce it). */
 export function Notice({ tone = 'success', children }: { tone?: 'success' | 'error' | 'info'; children: ReactNode }) {
-  const cls = tone === 'error' ? 'border-danger/25 bg-danger/5 text-danger' : tone === 'info' ? 'border-[#3F74C0]/20 bg-[#3F74C0]/5 text-[#2F5E9E]' : 'border-brand-100 bg-brand-50 text-brand-800'
+  const cls = NOTICE_TONES[tone]
   return <div role={tone === 'error' ? 'alert' : 'status'} className={`rounded-xl border px-4 py-2.5 text-sm ${cls}`}>{children}</div>
 }
 
 /** Accessible modal: overlay click and Esc close it; the first focusable field receives focus. */
 export function Modal({ title, onClose, children, footer, wide = false }: { title: string; onClose: () => void; children: ReactNode; footer?: ReactNode; wide?: boolean }) {
+  const { t } = useTranslation()
   const titleId = useId()
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => e.key === 'Escape' && onClose()
@@ -144,11 +173,49 @@ export function Modal({ title, onClose, children, footer, wide = false }: { titl
       <div data-modal className={`relative my-8 w-full ${wide ? 'max-w-2xl' : 'max-w-lg'} rounded-2xl bg-white shadow-2xl`}>
         <div className="flex items-center justify-between gap-3 border-b border-ink/8 px-5 py-4">
           <h2 id={titleId} className="text-lg font-semibold text-ink">{title}</h2>
-          <button type="button" onClick={onClose} className="rounded-lg p-1.5 text-ink/50 hover:bg-ink/5 hover:text-ink" aria-label="×">✕</button>
+          <button type="button" onClick={onClose} className="rounded-lg p-1.5 text-ink/50 hover:bg-ink/5 hover:text-ink" aria-label={t('close')}><Icon name="close" className="size-5" /></button>
         </div>
         <div className="space-y-4 px-5 py-4">{children}</div>
         {footer && <div className="flex flex-wrap justify-end gap-2 border-t border-ink/8 px-5 py-3">{footer}</div>}
       </div>
     </div>
   )
+}
+
+/** Search box with a leading icon; the label is visually hidden and reused as the placeholder. */
+export const SearchInput = forwardRef<HTMLInputElement, React.InputHTMLAttributes<HTMLInputElement> & { label: string }>(
+  function SearchInput({ label, className = '', id, placeholder, ...rest }, ref) {
+    const auto = useId()
+    const sid = id ?? auto
+    return (
+      <div className={`relative min-w-0 ${className}`}>
+        <label htmlFor={sid} className="sr-only">{label}</label>
+        <Icon name="search" className="pointer-events-none absolute inset-y-0 start-3 my-auto size-4 text-ink/40" />
+        <input ref={ref} id={sid} type="search" autoComplete="off" placeholder={placeholder ?? label} {...rest}
+          className={`${INPUT_LOOK} py-2.5 pe-3 ps-9`} />
+      </div>
+    )
+  },
+)
+
+/** Filter toolbar surface: controls stack full-width on phones, then wrap in a row from sm up. */
+export function FilterBar({ children, className = '', label }: { children: ReactNode; className?: string; label?: string }) {
+  return (
+    <section aria-label={label} className={`${SURFACE} flex flex-col gap-3 p-4 sm:flex-row sm:flex-wrap sm:items-end ${className}`}>
+      {children}
+    </section>
+  )
+}
+
+/** Header row style shared by data tables. */
+export const TABLE_HEAD = 'bg-page/60 text-start text-xs text-ink/60'
+
+/**
+ * Horizontal scroll container for tables. `surface` draws the white table card;
+ * without it the table bleeds to the edges of the Card it sits in.
+ */
+export function TableWrap({ children, surface = false, className = '' }: { children: ReactNode; surface?: boolean; className?: string }) {
+  return surface
+    ? <div className={`${SURFACE} overflow-hidden ${className}`}><div className="overflow-x-auto">{children}</div></div>
+    : <div className={`-mx-4 overflow-x-auto px-4 sm:-mx-5 sm:px-5 ${className}`}>{children}</div>
 }

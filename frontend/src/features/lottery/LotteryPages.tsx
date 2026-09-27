@@ -10,7 +10,7 @@ import Avatar from '../../components/Avatar'
 import Icon from '../../components/Icon'
 import SelectField from '../../components/SelectField'
 import { EmptyState, OrnamentDivider, PageBand } from '../../components/ornaments'
-import { Badge, Card, CardTitle, ErrorState, LoadingState, Modal, Notice, PrimaryButton, SecondaryButton, TextInput, type Tone } from '../../components/ui'
+import { Badge, buttonClass, Card, CardTitle, ErrorState, LoadingState, Modal, Notice, PrimaryButton, SecondaryButton, TextInput, type Tone, SURFACE } from '../../components/ui'
 import { formatDate, formatNumber } from '../../lib/format'
 import { GENDER_TONE } from '../lessons/LessonsHomePage'
 
@@ -27,12 +27,12 @@ export function LotteryListPage() {
   const n = (v: number) => formatNumber(v, locale)
 
   return (
-    <div className="mx-auto max-w-6xl space-y-5">
-      <PageBand title={t('title')} subtitle={t('subtitle')} actions={can('lottery.manage') ? <button type="button" onClick={() => setOpen(true)} className="rounded-xl bg-white px-4 py-2 text-sm font-semibold text-brand-800 shadow-sm hover:bg-white/90">+ {t('new')}</button> : undefined} />
+    <div className="space-y-5">
+      <PageBand title={t('title')} subtitle={t('subtitle')} actions={can('lottery.manage') ? <button type="button" onClick={() => setOpen(true)} className={buttonClass('onDeep')}>+ {t('new')}</button> : undefined} />
       {q.isLoading ? <LoadingState /> : q.isError || !q.data ? <ErrorState onRetry={() => void q.refetch()} /> : q.data.data.length === 0 ? (
-        <div className="rounded-2xl border border-ink/8 bg-white shadow-sm"><EmptyState icon="lottery" title={t('empty')} /></div>
+        <div className={SURFACE}><EmptyState icon="lottery" title={t('empty')} /></div>
       ) : (
-        <ul className="grid gap-3 md:grid-cols-2">
+        <ul className="grid gap-3 *:min-w-0 md:grid-cols-2">
           {q.data.data.map((l) => (
             <li key={l.id}>
               <Link to={`/lottery/${l.id}`} className="block rounded-2xl border border-ink/8 bg-white p-4 shadow-sm hover:border-brand-500/40">
@@ -150,9 +150,9 @@ export function LotteryDetailPage() {
   const editable = manage && (l.status === 'draft' || l.status === 'run')
 
   return (
-    <div className="mx-auto max-w-7xl space-y-5">
+    <div className="space-y-5">
       <Link to="/lottery" className="inline-flex items-center gap-1 text-sm font-medium text-brand-700 hover:underline"><Icon name="chevron" className="size-4 ltr:rotate-180" />{t('detail.back')}</Link>
-      <header className="rounded-2xl border border-ink/8 bg-white p-5 shadow-sm">
+      <header className={`${SURFACE} p-4 sm:p-5`}>
         <div className="flex flex-wrap items-start gap-3">
           <div className="min-w-0 flex-1">
             <div className="flex flex-wrap items-center gap-2">

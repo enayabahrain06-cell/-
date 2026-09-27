@@ -8,7 +8,7 @@ import type { StudentSummary } from '../../api/students'
 import { useAuth } from '../../app/AuthContext'
 import SelectField from '../../components/SelectField'
 import { EmptyState, PageBand } from '../../components/ornaments'
-import { Badge, LoadingState } from '../../components/ui'
+import { Badge, buttonClass, LoadingState, SURFACE } from '../../components/ui'
 import FamilyLayout from '../../layouts/FamilyLayout'
 import { formatDate, formatNumber } from '../../lib/format'
 
@@ -25,7 +25,7 @@ export default function MyExamsPage() {
   const dt = (iso: string) => formatDate(iso, locale, { weekday: 'short', day: 'numeric', month: 'short', hour: 'numeric', minute: '2-digit' })
 
   const card = (e: MyExam, kind: 'open' | 'upcoming' | 'finished') => (
-    <li key={e.id} className="rounded-2xl border border-ink/8 bg-white p-4 shadow-sm">
+    <li key={e.id} className={`${SURFACE} p-4`}>
       <div className="flex items-start justify-between gap-2">
         <p dir="auto" className="font-semibold text-ink">{e.name}</p>
         <Badge>{t(`type.${e.type}`)}</Badge>
@@ -35,7 +35,7 @@ export default function MyExamsPage() {
       </p>
       <div className="mt-3 flex flex-wrap items-center gap-2">
         {kind === 'open' && e.type === 'online' && (
-          <Link to={`/my/exams/${e.id}${studentId ? `?student=${studentId}` : ''}`} className="rounded-xl bg-brand-700 px-4 py-2 text-sm font-semibold text-white hover:bg-brand-800">
+          <Link to={`/my/exams/${e.id}${studentId ? `?student=${studentId}` : ''}`} className={buttonClass('primary', 'shrink-0')}>
             {e.attempt ? t('my.resume') : t('my.start')}
           </Link>
         )}

@@ -10,7 +10,7 @@ import Icon from '../../components/Icon'
 import Pagination from '../../components/Pagination'
 import SelectField from '../../components/SelectField'
 import { EmptyState, PageBand } from '../../components/ornaments'
-import { Badge, Card, CardTitle, ErrorState, LoadingState, Modal, Notice, PrimaryButton, SecondaryButton, Segmented, TextArea, TextInput, type Tone } from '../../components/ui'
+import { Badge, Card, CardTitle, ErrorState, LoadingState, Modal, Notice, PrimaryButton, SecondaryButton, Segmented, TableWrap, TextArea, TextInput, type Tone } from '../../components/ui'
 import { formatDate, formatMoney, formatNumber } from '../../lib/format'
 import { AdjustDialog, InvoiceDialog, RecordPaymentDialog, RefundDialog } from './PaymentDialogs'
 
@@ -29,7 +29,7 @@ export default function PaymentsHomePage() {
   const done = (m?: string) => { setDialog(null); setNotice(m ?? null) }
 
   return (
-    <div className="mx-auto max-w-7xl space-y-5">
+    <div className="space-y-5">
       <PageBand title={t('title')} subtitle={t('subtitle')}
         actions={<div className="flex flex-wrap gap-2">
           {can('payments.record') && (
@@ -253,10 +253,12 @@ function ReportBody({ r, m, locale, asTable, setAsTable }: { r: FinanceReport; m
           {SERIES.map((s) => <li key={s.key} className="inline-flex items-center gap-1.5"><span aria-hidden className="size-2.5 rounded-sm" style={{ background: s.color }} />{t(`report.${s.key}`)}</li>)}
         </ul>
         {d.by_month.length === 0 ? <EmptyState size="sm" icon="payments" title={t('report.empty')} /> : asTable ? (
-          <table className="w-full text-sm">
-            <thead><tr className="border-b border-ink/10 text-ink/55"><th className="py-2 text-start font-medium">{t('report.month')}</th><th className="py-2 text-end font-medium">{t('report.collected')}</th><th className="py-2 text-end font-medium">{t('report.refunded')}</th></tr></thead>
-            <tbody>{d.by_month.map((x) => <tr key={x.period} className="border-b border-ink/5"><td className="py-2">{formatDate(`${x.period}-15`, locale, { month: 'long', year: 'numeric' })}</td><td className="py-2 text-end tabular-nums">{m(x.collected)}</td><td className="py-2 text-end tabular-nums">{m(x.refunded)}</td></tr>)}</tbody>
-          </table>
+          <TableWrap>
+            <table className="w-full min-w-[20rem] text-sm">
+              <thead><tr className="border-b border-ink/10 text-ink/55"><th className="py-2 text-start font-medium">{t('report.month')}</th><th className="py-2 text-end font-medium">{t('report.collected')}</th><th className="py-2 text-end font-medium">{t('report.refunded')}</th></tr></thead>
+              <tbody>{d.by_month.map((x) => <tr key={x.period} className="border-b border-ink/5"><td className="py-2">{formatDate(`${x.period}-15`, locale, { month: 'long', year: 'numeric' })}</td><td className="py-2 text-end tabular-nums">{m(x.collected)}</td><td className="py-2 text-end tabular-nums">{m(x.refunded)}</td></tr>)}</tbody>
+            </table>
+          </TableWrap>
         ) : (
           <div className="h-64" dir="ltr">
             <ResponsiveContainer width="100%" height="100%">
@@ -275,17 +277,21 @@ function ReportBody({ r, m, locale, asTable, setAsTable }: { r: FinanceReport; m
       <div className="grid gap-5 lg:grid-cols-2">
         <Card>
           <CardTitle>{t('report.by_package')}</CardTitle>
-          <table className="w-full text-sm">
-            <thead><tr className="border-b border-ink/10 text-ink/55"><th className="py-2 text-start font-medium">{t('report.package')}</th><th className="py-2 text-end font-medium">{t('report.collected')}</th><th className="py-2 text-end font-medium">{t('report.outstanding')}</th></tr></thead>
-            <tbody>{d.by_package.map((p) => <tr key={p.name} className="border-b border-ink/5"><td dir="auto" className="py-2">{p.name}</td><td className="py-2 text-end tabular-nums">{m(p.collected)}</td><td className="py-2 text-end tabular-nums">{m(p.outstanding)}</td></tr>)}</tbody>
-          </table>
+          <TableWrap>
+            <table className="w-full min-w-[20rem] text-sm">
+              <thead><tr className="border-b border-ink/10 text-ink/55"><th className="py-2 text-start font-medium">{t('report.package')}</th><th className="py-2 text-end font-medium">{t('report.collected')}</th><th className="py-2 text-end font-medium">{t('report.outstanding')}</th></tr></thead>
+              <tbody>{d.by_package.map((p) => <tr key={p.name} className="border-b border-ink/5"><td dir="auto" className="py-2">{p.name}</td><td className="py-2 text-end tabular-nums">{m(p.collected)}</td><td className="py-2 text-end tabular-nums">{m(p.outstanding)}</td></tr>)}</tbody>
+            </table>
+          </TableWrap>
         </Card>
         <Card>
           <CardTitle>{t('report.by_method')}</CardTitle>
-          <table className="w-full text-sm">
-            <thead><tr className="border-b border-ink/10 text-ink/55"><th className="py-2 text-start font-medium">{t('report.method')}</th><th className="py-2 text-end font-medium">{t('report.count')}</th><th className="py-2 text-end font-medium">{t('report.collected')}</th></tr></thead>
-            <tbody>{d.by_method.map((x) => <tr key={x.method} className="border-b border-ink/5"><td className="py-2">{t(`methods.${x.method}`)}</td><td className="py-2 text-end tabular-nums">{formatNumber(x.count, locale)}</td><td className="py-2 text-end tabular-nums">{m(x.amount)}</td></tr>)}</tbody>
-          </table>
+          <TableWrap>
+            <table className="w-full min-w-[20rem] text-sm">
+              <thead><tr className="border-b border-ink/10 text-ink/55"><th className="py-2 text-start font-medium">{t('report.method')}</th><th className="py-2 text-end font-medium">{t('report.count')}</th><th className="py-2 text-end font-medium">{t('report.collected')}</th></tr></thead>
+              <tbody>{d.by_method.map((x) => <tr key={x.method} className="border-b border-ink/5"><td className="py-2">{t(`methods.${x.method}`)}</td><td className="py-2 text-end tabular-nums">{formatNumber(x.count, locale)}</td><td className="py-2 text-end tabular-nums">{m(x.amount)}</td></tr>)}</tbody>
+            </table>
+          </TableWrap>
         </Card>
       </div>
 

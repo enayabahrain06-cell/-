@@ -96,7 +96,10 @@ export default function AppLayout() {
           </div>
         </header>
         <main className="min-w-0 flex-1 px-4 py-6 sm:px-6 lg:px-8">
-          <Outlet />
+          {/* One content width for every staff page (ui-design-system: page container). */}
+          <div className="mx-auto w-full max-w-7xl">
+            <Outlet />
+          </div>
         </main>
       </div>
     </div>

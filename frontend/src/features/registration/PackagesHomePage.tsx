@@ -9,7 +9,7 @@ import Icon from '../../components/Icon'
 import Pagination from '../../components/Pagination'
 import SelectField from '../../components/SelectField'
 import { EmptyState, PageBand } from '../../components/ornaments'
-import { Badge, ErrorState, LoadingState, Modal, Notice, PrimaryButton, SecondaryButton, Segmented, TextArea, type Tone } from '../../components/ui'
+import { Badge, ErrorState, FilterBar, LoadingState, Modal, Notice, PrimaryButton, SearchInput, SecondaryButton, Segmented, TextArea, type Tone } from '../../components/ui'
 import { formatDate, formatMoney, formatNumber } from '../../lib/format'
 import { GENDER_TONE } from '../lessons/LessonsHomePage'
 import PackageFormDialog from './PackageFormDialog'
@@ -23,7 +23,7 @@ export default function PackagesHomePage() {
   const tab = params.get('tab') === 'requests' || !can('packages.view') ? 'requests' : 'packages'
 
   return (
-    <div className="mx-auto max-w-7xl space-y-5">
+    <div className="space-y-5">
       <PageBand title={t('admin.title')} subtitle={t('admin.subtitle')}
         actions={<a href="/register" target="_blank" rel="noreferrer" className="inline-flex items-center gap-1.5 rounded-xl bg-white/90 px-3 py-2 text-sm font-medium text-brand-800 hover:bg-white"><Icon name="packages" className="size-4" />{t('admin.open_public')}</a>} />
       <Segmented name="pkg-tab" label={t('admin.title')} value={tab}
@@ -50,7 +50,7 @@ function Packages() {
       {q.isLoading ? <LoadingState /> : q.isError || !q.data ? <ErrorState onRetry={() => void q.refetch()} /> : q.data.data.length === 0 ? (
         <div className="rounded-2xl border border-ink/8 bg-white shadow-sm"><EmptyState icon="packages" title={t('admin.empty_packages')} /></div>
       ) : (
-        <ul className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
+        <ul className="grid gap-3 *:min-w-0 md:grid-cols-2 xl:grid-cols-3">
           {q.data.data.map((p) => {
             const pct = Math.min(100, Math.round((p.seats_taken * 100) / Math.max(1, p.seats)))
             return (
@@ -106,16 +106,15 @@ function Requests() {
 
   return (
     <div className="space-y-4">
-      <div className="flex flex-wrap items-end gap-3 rounded-2xl border border-ink/8 bg-white p-4 shadow-sm">
+      <FilterBar>
         <Segmented name="req-status" label={t('admin.tabs.requests')} value={status} size="sm"
           options={(['pending', 'waitlist', 'accepted', 'rejected', 'all'] as const).map((s) => ({ value: s, label: t(`admin.status_filter.${s}`) }))}
           onChange={(v) => set('status', v)} />
-        <SelectField label={t('admin.all_packages')} hideLabel className="w-56" value={filters.package_id ?? ''} onChange={(e) => set('package_id', e.target.value)}
+        <SelectField label={t('admin.all_packages')} hideLabel className="sm:w-56" value={filters.package_id ?? ''} onChange={(e) => set('package_id', e.target.value)}
           options={[{ value: '', label: t('admin.all_packages') }, ...(packages.data?.data ?? []).map((p) => ({ value: String(p.id), label: p.name }))]} />
-        <input type="search" defaultValue={filters.search} placeholder={t('admin.search')} aria-label={t('admin.search')} onKeyDown={(e) => e.key === 'Enter' && set('search', (e.target as HTMLInputElement).value)}
-          className="min-w-48 flex-1 rounded-xl border border-ink/15 px-3 py-2 text-sm shadow-sm" />
+        <SearchInput className="sm:min-w-48 sm:flex-1" label={t('admin.search')} defaultValue={filters.search} onKeyDown={(e) => e.key === 'Enter' && set('search', (e.target as HTMLInputElement).value)} />
         {manage && <SecondaryButton onClick={() => setBulk(true)}><Icon name="check" className="size-4" />{t('admin.bulk_accept')}</SecondaryButton>}
-      </div>
+      </FilterBar>
       {notice && <Notice tone={notice.tone}>{notice.text}</Notice>}
 
       {q.isLoading ? <LoadingState /> : q.isError || !q.data ? <ErrorState onRetry={() => void q.refetch()} /> : q.data.data.length === 0 ? (

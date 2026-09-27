@@ -7,7 +7,7 @@ import { parseApiError, type FieldErrors } from '../../api/client'
 import Icon from '../../components/Icon'
 import SelectField from '../../components/SelectField'
 import { OrnamentDivider, OrnamentFrame } from '../../components/ornaments'
-import { Badge, LoadingState, Notice, PrimaryButton, SecondaryButton, TextArea, TextInput } from '../../components/ui'
+import { Badge, buttonClass, LoadingState, Notice, PrimaryButton, SecondaryButton, TextArea, TextInput } from '../../components/ui'
 import PublicLayout from '../../layouts/PublicLayout'
 import { formatDate, formatMoney, formatNumber, formatTime } from '../../lib/format'
 import { toLatinDigits } from '../../lib/phone'
@@ -104,7 +104,7 @@ export default function PublicRegisterPage() {
             <h2 className="text-lg font-semibold text-ink">{t('public.choose_package')}</h2>
             {err('package_id') && <Notice tone="error">{err('package_id')}</Notice>}
             {packages.isLoading ? <LoadingState /> : (packages.data ?? []).length === 0 ? <Notice tone="info">{t('public.no_packages')}</Notice> : (
-              <ul className="grid gap-3 sm:grid-cols-2">
+              <ul className="grid gap-3 *:min-w-0 sm:grid-cols-2">
                 {packages.data!.map((p) => {
                   const suit = p.suitability
                   const locked = suit && !suit.suitable
@@ -181,7 +181,7 @@ export default function PublicRegisterPage() {
               {result.waitlist_position && <p className="text-gold-700">{t('public.done_waitlist', { n: n(result.waitlist_position) })}</p>}
               <p className="font-mono text-2xl tracking-widest text-ink" dir="ltr">{result.request_no}</p>
               <div className="flex flex-wrap justify-center gap-2 pt-2">
-                <Link to={`/track/${result.request_no}`} className="rounded-xl bg-brand-700 px-4 py-2 text-sm font-semibold text-white hover:bg-brand-800">{t('public.track_link')}</Link>
+                <Link to={`/track/${result.request_no}`} className={buttonClass()}>{t('public.track_link')}</Link>
                 <SecondaryButton onClick={() => { setStep('who'); setResult(null); setPkg(null); setPhoto(null); setForm({ ...form, full_name: '', notes: '' }) }}>{t('public.new_request')}</SecondaryButton>
               </div>
             </div>

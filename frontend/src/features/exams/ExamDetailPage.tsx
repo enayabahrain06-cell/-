@@ -8,7 +8,7 @@ import { parseApiError } from '../../api/client'
 import { useAuth } from '../../app/AuthContext'
 import Icon from '../../components/Icon'
 import { EmptyState, OrnamentDivider } from '../../components/ornaments'
-import { Badge, Card, CardTitle, ErrorState, LoadingState, Notice, PrimaryButton, SecondaryButton, Segmented } from '../../components/ui'
+import { Badge, Card, CardTitle, ErrorState, LoadingState, Notice, PrimaryButton, SecondaryButton, Segmented, SURFACE } from '../../components/ui'
 import { formatDate, formatNumber, formatPercent } from '../../lib/format'
 import ExamFormDialog from './ExamFormDialog'
 import { EXAM_STATUS_TONE } from './ExamsHomePage'
@@ -47,9 +47,9 @@ export default function ExamDetailPage() {
   const dt = (iso: string) => formatDate(iso, locale, { weekday: 'short', day: 'numeric', month: 'short', hour: 'numeric', minute: '2-digit' })
 
   return (
-    <div className="mx-auto max-w-6xl space-y-5">
+    <div className="space-y-5">
       <Link to="/exams" className="inline-flex items-center gap-1 text-sm font-medium text-brand-700 hover:underline"><Icon name="chevron" className="size-4 ltr:rotate-180" />{t('actions.back')}</Link>
-      <header className="rounded-2xl border border-ink/8 bg-white p-5 shadow-sm">
+      <header className={`${SURFACE} p-4 sm:p-5`}>
         <div className="flex flex-wrap items-start gap-3">
           <div className="min-w-0 flex-1">
             <div className="flex flex-wrap items-center gap-2">
@@ -83,7 +83,7 @@ export default function ExamDetailPage() {
         <div className="space-y-5">
           <div className="grid grid-cols-2 gap-3 sm:grid-cols-5">
             {([['eligible', n(stats.eligible)], ['graded', n(stats.graded)], ['passed', n(stats.passed)], ['pass_rate', formatPercent(stats.pass_rate, locale)], ['average', formatNumber(stats.average, locale, { maximumFractionDigits: 1 })]] as const).map(([k, v]) => (
-              <div key={k} className="rounded-2xl border border-ink/8 bg-white p-4 shadow-sm"><p className="text-sm text-ink/60">{t(`stats.${k}`)}</p><p className="mt-1 text-2xl font-semibold tabular-nums text-ink">{v}</p></div>
+              <div key={k} className={`${SURFACE} p-4`}><p className="text-sm text-ink/60">{t(`stats.${k}`)}</p><p className="mt-1 text-2xl font-semibold tabular-nums text-ink">{v}</p></div>
             ))}
           </div>
           {exam.syllabus && <Card><CardTitle>{t('form.syllabus')}</CardTitle><p dir="auto" className="whitespace-pre-line text-ink/80">{exam.syllabus}</p></Card>}
@@ -118,11 +118,11 @@ function Questions({ exam, editable }: { exam: Exam; editable: boolean }) {
         {editable && <PrimaryButton className="ms-auto" onClick={() => setEdit('new')}>+ {t('questions.add')}</PrimaryButton>}
       </div>
       {q.isLoading ? <LoadingState /> : !q.data?.length ? (
-        <div className="rounded-2xl border border-ink/8 bg-white shadow-sm"><EmptyState icon="exams" title={t('questions.empty')} /></div>
+        <div className={SURFACE}><EmptyState icon="exams" title={t('questions.empty')} /></div>
       ) : (
         <ol className="space-y-3">
           {q.data.map((qq, i) => (
-            <li key={qq.id} className="rounded-2xl border border-ink/8 bg-white p-4 shadow-sm">
+            <li key={qq.id} className={`${SURFACE} p-4`}>
               <div className="flex flex-wrap items-start gap-3">
                 <span className="grid size-8 shrink-0 place-items-center rounded-full bg-brand-50 text-sm font-semibold text-brand-700">{n(i + 1)}</span>
                 <div className="min-w-0 flex-1">
@@ -176,7 +176,7 @@ function PaperGrading({ exam, onSaved }: { exam: Exam; onSaved: () => void }) {
     <div className="space-y-4">
       <p className="text-sm text-ink/60">{t('grading.paper_hint')}</p>
       {msg && <Notice tone={msg.tone}>{msg.text}</Notice>}
-      <ul className="divide-y divide-ink/6 rounded-2xl border border-ink/8 bg-white shadow-sm">
+      <ul className={`${SURFACE} divide-y divide-ink/6`}>
         {(r.data?.rows ?? []).map((row) => (
           <li key={row.student_id} className="flex flex-wrap items-center gap-3 px-4 py-2.5">
             <span dir="auto" className="min-w-0 flex-1 font-medium text-ink">{row.full_name}<span className="block text-xs tabular-nums text-ink/50">{row.student_no}</span></span>
@@ -204,12 +204,12 @@ function OnlineGrading({ exam, onSaved }: { exam: Exam; onSaved: () => void }) {
   const q = useQuery({ queryKey: ['exam-attempts', exam.id], queryFn: () => examsApi.attempts(exam.id) })
   const [grading, setGrading] = useState<number | null>(null)
   if (q.isLoading) return <LoadingState />
-  if (!q.data?.length) return <div className="rounded-2xl border border-ink/8 bg-white shadow-sm"><EmptyState icon="exams" title={t('grading.no_attempts')} /></div>
+  if (!q.data?.length) return <div className={SURFACE}><EmptyState icon="exams" title={t('grading.no_attempts')} /></div>
   const n = (v: number | null) => (v === null ? '—' : formatNumber(v, i18n.language))
 
   return (
     <>
-      <ul className="divide-y divide-ink/6 rounded-2xl border border-ink/8 bg-white shadow-sm">
+      <ul className={`${SURFACE} divide-y divide-ink/6`}>
         {q.data.map((a) => (
           <li key={a.id} className="flex flex-wrap items-center gap-3 px-4 py-3 text-sm">
             <span dir="auto" className="min-w-0 flex-1 font-medium text-ink">{a.student?.full_name}</span>
@@ -259,7 +259,7 @@ function Results({ exam }: { exam: Exam }) {
           </ol>
         </Card>
       )}
-      {rows.length === 0 ? <div className="rounded-2xl border border-ink/8 bg-white shadow-sm"><EmptyState icon="exams" title={t('results.empty')} /></div> : (
+      {rows.length === 0 ? <div className={SURFACE}><EmptyState icon="exams" title={t('results.empty')} /></div> : (
         <div className="overflow-x-auto rounded-2xl border border-ink/8 bg-white shadow-sm">
           <table className="w-full min-w-[32rem] text-sm">
             <thead className="bg-page/60 text-ink/55"><tr><th className="px-4 py-2.5 text-start font-medium">{t('results.rank')}</th><th className="px-4 py-2.5 text-start font-medium">{t('results.student')}</th><th className="px-4 py-2.5 text-end font-medium">{t('results.score')}</th><th className="px-4 py-2.5 text-start font-medium">{t('results.result')}</th></tr></thead>

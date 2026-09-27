@@ -12,13 +12,13 @@ export default function QuickEnrollPage() {
   const [tab, setTab] = useState<Tab>('single')
 
   return (
-    <div className="mx-auto max-w-4xl space-y-6">
+    <div className="space-y-6">
       <div>
         <PageTitle>{t('title')}</PageTitle>
         <p className="mt-2 text-sm text-ink/60">{t('subtitle')}</p>
       </div>
 
-      <div role="tablist" aria-label={t('title')} className="inline-grid grid-cols-2 gap-1 rounded-2xl bg-stone-200/70 p-1">
+      <div role="tablist" aria-label={t('title')} className="inline-grid grid-cols-2 gap-1 rounded-2xl bg-ink/5 p-1">
         {(['single', 'import'] as const).map((k) => (
           <button
             key={k}
@@ -28,7 +28,7 @@ export default function QuickEnrollPage() {
             aria-selected={tab === k}
             aria-controls={`panel-${k}`}
             onClick={() => setTab(k)}
-            className={`rounded-xl px-4 py-2 text-sm font-semibold transition focus-visible:outline-2 focus-visible:outline-brand-500 ${tab === k ? 'bg-white text-ink shadow-sm' : 'text-stone-600 hover:text-stone-900'}`}
+            className={`rounded-xl px-4 py-2 text-sm font-semibold transition focus-visible:outline-2 focus-visible:outline-brand-500 ${tab === k ? 'bg-white text-ink shadow-sm' : 'text-ink/65 hover:text-ink'}`}
           >
             {t(`tab_${k}`)}
           </button>

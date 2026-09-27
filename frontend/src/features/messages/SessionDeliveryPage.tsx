@@ -33,7 +33,7 @@ export default function SessionDeliveryPage() {
   const d = q.data
 
   return (
-    <div className="mx-auto max-w-7xl space-y-5">
+    <div className="space-y-5">
       <Link to="/messages" className="inline-flex items-center gap-1 text-sm text-brand-700 hover:underline"><Icon name="chevron" className="size-4 ltr:rotate-180" /> {t('delivery.back')}</Link>
       <header className="flex flex-wrap items-start gap-4">
         <div className="min-w-0 flex-1 space-y-1">

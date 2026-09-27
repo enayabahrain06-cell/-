@@ -41,7 +41,7 @@ export default function AuthLayout({ children }: { children: ReactNode }) {
               <LogoMark className="size-9" />
               <span className="font-display text-lg text-brand-900">{t('app_name')}</span>
             </div>
-            <LanguageSwitcher className="text-stone-600" />
+            <LanguageSwitcher className="text-ink/65" />
           </div>
           <div className="flex flex-1 items-center justify-center py-10">
             <div className="w-full max-w-md">{children}</div>

@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next'
 import { myExamsApi, type Attempt, type Question } from '../../api/exams'
 import { parseApiError } from '../../api/client'
 import { OrnamentFrame } from '../../components/ornaments'
-import { ErrorState, LoadingState, Notice, PrimaryButton, SecondaryButton } from '../../components/ui'
+import { buttonClass, ErrorState, LoadingState, Notice, PrimaryButton, SecondaryButton, SURFACE } from '../../components/ui'
 import FamilyLayout from '../../layouts/FamilyLayout'
 import { formatNumber } from '../../lib/format'
 
@@ -93,7 +93,7 @@ export default function ExamPlayerPage() {
             <h1 className="font-display text-3xl text-ink">{t('player.submitted')}</h1>
             {done === 'time_up' && <Notice tone="info">{t('player.time_up')}</Notice>}
             <p className="text-ink/70">{t('player.submitted_body')}</p>
-            <Link to="/my/exams" className="inline-block rounded-xl bg-brand-700 px-4 py-2 text-sm font-semibold text-white">{t('player.back')}</Link>
+            <Link to="/my/exams" className={buttonClass()}>{t('player.back')}</Link>
           </div>
         </OrnamentFrame>
       </FamilyLayout>
@@ -129,7 +129,7 @@ export default function ExamPlayerPage() {
         </nav>
 
         {q && (
-          <section className="rounded-2xl border border-ink/8 bg-white p-5 shadow-sm" aria-labelledby={`q-${q.id}`}>
+          <section className={`${SURFACE} p-4 sm:p-5`} aria-labelledby={`q-${q.id}`}>
             <p id={`q-${q.id}`} dir="auto" className="font-display text-2xl leading-relaxed text-ink">{q.prompt}</p>
             <div className="mt-4"><QuestionInput q={q} value={answers[q.id]} onChange={(v) => setAnswer(q.id, v)} examId={examId} studentId={studentId} /></div>
           </section>
