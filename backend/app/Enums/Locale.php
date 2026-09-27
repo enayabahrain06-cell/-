@@ -4,6 +4,8 @@ namespace App\Enums;
 
 enum Locale: string
 {
+    use \App\Enums\Concerns\HasLabel;
+
     case Arabic = 'ar';
     case English = 'en';
 

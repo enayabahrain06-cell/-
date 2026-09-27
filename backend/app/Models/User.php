@@ -18,6 +18,9 @@ class User extends Authenticatable
     /** @use HasFactory<UserFactory> */
     use HasApiTokens, HasFactory, HasRoles, Notifiable, SoftDeletes;
 
+    /** spatie/permission: roles and permissions always use the web guard, whatever guard authenticated the request. */
+    protected string $guard_name = 'web';
+
     protected $fillable = [
         'name',
         'phone',
