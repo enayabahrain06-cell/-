@@ -27,7 +27,7 @@ export default function FormField({ label, error, hint, end, id, className = '',
             end ? 'pe-20' : ''
           } ${
             error
-              ? 'border-red-400 focus:border-red-500 focus:ring-red-100'
+              ? 'border-danger/60 focus:border-danger focus:ring-danger/15'
               : 'border-stone-300 focus:border-brand-500 focus:ring-brand-100'
           }`}
           {...input}
@@ -35,7 +35,7 @@ export default function FormField({ label, error, hint, end, id, className = '',
         {end && <div className="absolute inset-y-0 end-0 flex items-center pe-2">{end}</div>}
       </div>
       {(error || hint) && (
-        <p id={msgId} className={`mt-1.5 text-sm ${error ? 'text-red-600' : 'text-stone-500'}`}>
+        <p id={msgId} className={`mt-1.5 text-sm ${error ? 'text-danger' : 'text-stone-500'}`}>
           {error || hint}
         </p>
       )}

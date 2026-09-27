@@ -28,7 +28,7 @@ export default function LoginPage() {
 
   return (
     <AuthLayout>
-      <h1 className="font-display text-3xl text-brand-900 sm:text-4xl">{t('title')}</h1>
+      <h1 className="font-display text-3xl text-ink sm:text-4xl">{t('title')}</h1>
       <p className="mt-2 text-stone-600">{t('subtitle')}</p>
 
       <div role="tablist" aria-label={t('title')} className="mt-8 grid grid-cols-2 gap-1 rounded-2xl bg-stone-200/70 p-1">
@@ -42,7 +42,7 @@ export default function LoginPage() {
             aria-controls={`panel-${m}`}
             onClick={() => setMode(m)}
             className={`rounded-xl px-3 py-2.5 text-sm font-semibold transition focus-visible:outline-2 focus-visible:outline-brand-500 ${
-              mode === m ? 'bg-white text-brand-900 shadow-sm' : 'text-stone-600 hover:text-stone-900'
+              mode === m ? 'bg-white text-ink shadow-sm' : 'text-stone-600 hover:text-stone-900'
             }`}
           >
             {t(`tabs.${m}`)}

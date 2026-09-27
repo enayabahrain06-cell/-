@@ -1,14 +1,15 @@
 import type { ReactNode } from 'react'
 import { useTranslation } from 'react-i18next'
 import LanguageSwitcher from '../components/LanguageSwitcher'
+import { formatNumber } from '../lib/format'
 
 /** Split screen: brand panel (hidden on small screens) and the form column. */
 export default function AuthLayout({ children }: { children: ReactNode }) {
-  const { t } = useTranslation()
+  const { t, i18n } = useTranslation()
 
   return (
     <div className="grid min-h-screen lg:grid-cols-[minmax(0,5fr)_minmax(0,6fr)]">
-      <aside className="relative hidden overflow-hidden bg-brand-900 text-gold-300 lg:flex lg:flex-col lg:justify-between lg:p-12">
+      <aside className="relative hidden overflow-hidden bg-brand-700 text-gold-300 lg:flex lg:flex-col lg:justify-between lg:p-12">
         <div
           aria-hidden
           className="pointer-events-none absolute inset-0 opacity-[0.09]"
@@ -32,7 +33,7 @@ export default function AuthLayout({ children }: { children: ReactNode }) {
             سورة القمر — ١٧
           </footer>
         </blockquote>
-        <p className="relative text-xs text-gold-300/50">© {new Date().getFullYear()} {t('authority')}</p>
+        <p className="relative text-xs text-gold-300/50">© {formatNumber(new Date().getFullYear(), i18n.language, { useGrouping: false })} {t('authority')}</p>
       </aside>
 
       <main className="flex flex-col px-4 py-6 sm:px-8">
