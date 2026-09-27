@@ -14,6 +14,11 @@ Route::prefix('auth')->group(function () {
     Route::post('otp/verify', [AuthController::class, 'verifyOtp'])->middleware('throttle:otp-verify');
 });
 
+// Module route files may register their own public routes (e.g. registration) outside this group.
+foreach (glob(__DIR__.'/api/public/*.php') ?: [] as $file) {
+    require $file;
+}
+
 // ---------------------------------------------------------------------------
 // Authenticated
 // ---------------------------------------------------------------------------
@@ -30,4 +35,9 @@ Route::middleware(['auth:sanctum', 'active', 'throttle:api'])->group(function ()
         Route::put('roles/{role}/permissions', [RoleController::class, 'updatePermissions']);
         Route::apiResource('users', UserController::class);
     });
+
+    // One file per module: routes/api/<module>.php (already inside the auth group).
+    foreach (glob(__DIR__.'/api/*.php') ?: [] as $file) {
+        require $file;
+    }
 });
