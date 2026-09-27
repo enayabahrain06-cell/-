@@ -8,6 +8,10 @@ import arNav from '../locales/ar/nav.json'
 import enNav from '../locales/en/nav.json'
 import arDashboard from '../locales/ar/dashboard.json'
 import enDashboard from '../locales/en/dashboard.json'
+import arDesign from '../locales/ar/design.json'
+import enDesign from '../locales/en/design.json'
+import arStudents from '../locales/ar/students.json'
+import enStudents from '../locales/en/students.json'
 
 export type AppLocale = 'ar' | 'en'
 const STORAGE_KEY = 'ahl.locale'
@@ -40,8 +44,8 @@ export function setLocale(locale: AppLocale) {
 
 void i18n.use(initReactI18next).init({
   resources: {
-    ar: { common: arCommon, auth: arAuth, nav: arNav, dashboard: arDashboard },
-    en: { common: enCommon, auth: enAuth, nav: enNav, dashboard: enDashboard },
+    ar: { common: arCommon, auth: arAuth, nav: arNav, dashboard: arDashboard, design: arDesign, students: arStudents },
+    en: { common: enCommon, auth: enAuth, nav: enNav, dashboard: enDashboard, design: enDesign, students: enStudents },
   },
   lng: readStoredLocale(),
   fallbackLng: 'ar',

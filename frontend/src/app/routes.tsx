@@ -6,11 +6,19 @@ import LoginPage from '../features/auth/LoginPage'
 import HomePage from '../features/home/HomePage'
 import DashboardPage from '../features/dashboard/DashboardPage'
 import ComingSoon from '../features/common/ComingSoon'
+import StudentsListPage from '../features/students/StudentsListPage'
+import StudentProfilePage from '../features/students/StudentProfilePage'
 import AppLayout from '../layouts/AppLayout'
+import { StarSpinner } from '../components/ornaments'
+import OrnamentsDemo from '../features/design/OrnamentsDemo'
 
 function FullScreenLoader() {
   const { t } = useTranslation()
-  return <div className="grid min-h-screen place-items-center text-ink/50">{t('loading')}</div>
+  return (
+    <div className="grid min-h-screen place-items-center text-ink/60">
+      <StarSpinner className="size-10 text-brand-600" label={t('loading')} />
+    </div>
+  )
 }
 
 function RequireAuth() {
@@ -33,6 +41,17 @@ function StaffOrFamily() {
   return can('dashboard.view') ? <AppLayout /> : <HomePage />
 }
 
+/** Guards a built page by the same permissions as its sidebar entry. */
+function Guard({ permissions, children }: { permissions: string[]; children: React.ReactNode }) {
+  const { can } = useAuth()
+  return can(...permissions) ? <>{children}</> : <Navigate to="/" replace />
+}
+
+/** Screens built so far; every other section shows the placeholder. */
+const BUILT: Record<string, React.ReactNode> = {
+  students: <StudentsListPage />,
+}
+
 /** A section the user has no permission for bounces back to the dashboard. */
 function Section({ keyName, icon, permissions }: { keyName: string; icon: string; permissions: string[] }) {
   const { can } = useAuth()
@@ -42,6 +61,8 @@ function Section({ keyName, icon, permissions }: { keyName: string; icon: string
 
 export const router = createBrowserRouter([
   { element: <GuestOnly />, children: [{ path: '/login', element: <LoginPage /> }] },
+  // Public design reference for the ornament system (no data, no login).
+  { path: '/design/ornaments', element: <OrnamentsDemo /> },
   {
     element: <RequireAuth />,
     children: [
@@ -52,8 +73,9 @@ export const router = createBrowserRouter([
           { index: true, element: <DashboardPage /> },
           ...NAV_SECTIONS.filter((s) => s.path !== '/').map((s) => ({
             path: s.path.slice(1),
-            element: <Section keyName={s.key} icon={s.icon} permissions={s.permissions} />,
+            element: BUILT[s.key] ? <Guard permissions={s.permissions}>{BUILT[s.key]}</Guard> : <Section keyName={s.key} icon={s.icon} permissions={s.permissions} />,
           })),
+          { path: 'students/:id', element: <Guard permissions={['students.view']}><StudentProfilePage /></Guard> },
         ],
       },
     ],

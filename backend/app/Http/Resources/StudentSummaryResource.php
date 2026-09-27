@@ -28,6 +28,15 @@ class StudentSummaryResource extends JsonResource
             'photo_urls' => $this->photoUrls(),
             'balance_fils' => $this->whenLoaded('wallet', fn () => $this->wallet?->balance_fils ?? 0),
             'is_due' => $this->whenLoaded('wallet', fn () => ($this->wallet?->balance_fils ?? 0) < 0),
+            // Cached position (recomputed from the memorization ledger on every change).
+            'progress' => [
+                'juz' => $this->progress_juz,
+                'surah' => $this->progress_surah,
+                'surah_name' => $this->progress_surah ? \App\Support\Quran::name($this->progress_surah, app()->getLocale()) : null,
+                'ayah' => $this->progress_ayah,
+                'memorized_ayahs' => (int) $this->memorized_ayahs,
+            ],
+            'circle' => $this->whenLoaded('activeLessons', fn () => ($l = $this->activeLessons->first()) ? ['id' => $l->id, 'name' => $l->name, 'teacher' => $l->relationLoaded('teacher') ? $l->teacher?->name : null] : null),
         ];
     }
 }

@@ -1,19 +1,25 @@
 {
-  "app_name": "Ahl Al-Quran System",
-  "authority": "Religious Education Authority — Sar, Kingdom of Bahrain",
-  "language": "Language",
-  "switch_to": "العربية",
-  "loading": "Loading…",
-  "logout": "Sign out",
-  "errors": {
-    "network": "Could not reach the server. Make sure it is running and try again.",
-    "unexpected": "Something went wrong."
-  },
-  "roles": {
-    "super_admin": "Super admin",
-    "supervisor": "Supervisor",
-    "teacher": "Teacher",
-    "student": "Student",
-    "guardian": "Guardian"
-  }
+    "app_name": "Ahl Al-Quran System",
+    "authority": "Religious Education Authority — Sar, Kingdom of Bahrain",
+    "language": "Language",
+    "switch_to": "العربية",
+    "loading": "Loading…",
+    "logout": "Sign out",
+    "errors": {
+        "network": "Could not reach the server. Make sure it is running and try again.",
+        "unexpected": "Something went wrong."
+    },
+    "roles": {
+        "super_admin": "Super admin",
+        "supervisor": "Supervisor",
+        "teacher": "Teacher",
+        "student": "Student",
+        "guardian": "Guardian"
+    },
+    "pagination": {
+        "label": "Pagination",
+        "summary": "Page {{page}} of {{last}} · {{total}} records",
+        "previous": "Previous",
+        "next": "Next"
+    }
 }

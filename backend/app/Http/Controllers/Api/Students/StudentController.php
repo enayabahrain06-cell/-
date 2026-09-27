@@ -26,7 +26,7 @@ class StudentController extends Controller
         $this->authorize('viewAny', Student::class);
         $user = $request->user();
 
-        $q = Student::with(['wallet', 'guardian'])
+        $q = Student::with(['wallet', 'guardian', 'activeLessons.teacher:id,name'])
             ->tap(fn ($q) => \App\Support\Track::scope($q, $user))
             ->when($user->hasRole('teacher') && ! $user->can('students.manage'), fn ($q) => $q->whereHas('lessonStudents', fn ($w) => $w->where('status', 'active')->whereIn('lesson_id', $user->lessons()->select('id'))))
             ->when($request->filled('search'), function ($q) use ($request) {
@@ -39,7 +39,16 @@ class StudentController extends Controller
             ->when($request->filled('lesson_id'), fn ($q) => $q->whereHas('lessonStudents', fn ($w) => $w->where('status', 'active')->where('lesson_id', $request->integer('lesson_id'))))
             ->when($request->filled('package_id'), fn ($q) => $q->whereHas('lessonStudents', fn ($w) => $w->where('status', 'active')->whereIn('lesson_id', \App\Models\Lesson::where('package_id', $request->integer('package_id'))->select('id'))))
             ->when($request->boolean('due'), fn ($q) => $q->whereHas('wallet', fn ($w) => $w->where('balance_fils', '<', 0)))
-            ->orderBy('full_name');
+            ->when($request->filled('juz'), fn ($q) => $request->integer('juz') === 0 ? $q->whereNull('progress_juz') : $q->where('progress_juz', $request->integer('juz')))
+            ->when($request->boolean('no_photo'), fn ($q) => $q->whereNull('photo_path'));
+
+        // Sort: name (default), student_no, memorized (most first), newest.
+        match ($request->string('sort')->toString()) {
+            'student_no' => $q->orderBy('student_no'),
+            'memorized' => $q->orderByDesc('memorized_ayahs')->orderBy('full_name'),
+            'newest' => $q->orderByDesc('id'),
+            default => $q->orderBy('full_name'),
+        };
 
         return StudentSummaryResource::collection($q->paginate((int) $request->integer('per_page', 25)))->response();
     }
@@ -60,6 +69,47 @@ class StudentController extends Controller
         $audit->record('student.updated', $student, $old, $student->only(array_keys($old)));
 
         return new StudentResource($student->fresh(['wallet', 'guardian', 'user', 'lessons.teacher', 'lessons.package', 'lessons.location']));
+    }
+
+    /**
+     * Attendance history of one student (newest first) with totals. Filters: from, to, status.
+     * Visible to whoever may view the student (staff in track, their teacher, the student, the guardian).
+     */
+    public function attendance(Request $request, Student $student): JsonResponse
+    {
+        $this->authorize('view', $student);
+
+        $base = \App\Models\Attendance::where('student_id', $student->id)
+            ->when($request->filled('from'), fn ($q) => $q->whereHas('session', fn ($s) => $s->where('session_date', '>=', $request->date('from')->toDateString())))
+            ->when($request->filled('to'), fn ($q) => $q->whereHas('session', fn ($s) => $s->where('session_date', '<=', $request->date('to')->toDateString())));
+
+        $totals = (clone $base)->get(['status'])->countBy(fn ($a) => $a->status->value);
+        $counted = $totals->sum() - ($totals['excused'] ?? 0);
+
+        $page = (clone $base)->with(['session:id,lesson_id,session_date,start_time', 'session.lesson:id,name'])
+            ->when($request->filled('status'), fn ($q) => $q->where('status', $request->string('status')))
+            ->orderByDesc(\App\Models\LessonSession::select('session_date')->whereColumn('lesson_sessions.id', 'attendances.lesson_session_id'))
+            ->paginate((int) $request->integer('per_page', 20));
+
+        return response()->json([
+            'totals' => [
+                'present' => (int) ($totals['present'] ?? 0),
+                'late' => (int) ($totals['late'] ?? 0),
+                'absent' => (int) ($totals['absent'] ?? 0),
+                'excused' => (int) ($totals['excused'] ?? 0),
+                'percent' => $counted > 0 ? (int) round((($totals['present'] ?? 0) + ($totals['late'] ?? 0)) * 100 / $counted) : null,
+            ],
+            'data' => collect($page->items())->map(fn ($a) => [
+                'id' => $a->id,
+                'date' => $a->session?->session_date?->toDateString(),
+                'lesson' => $a->session?->lesson?->name,
+                'status' => $a->status->value,
+                'memorization_assignment' => $a->memorization_assignment,
+                'revision_assignment' => $a->revision_assignment,
+                'note' => $a->note,
+            ]),
+            'meta' => ['current_page' => $page->currentPage(), 'last_page' => $page->lastPage(), 'total' => $page->total()],
+        ]);
     }
 
     /** The authenticated student's own record, or a guardian's children. */

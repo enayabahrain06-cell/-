@@ -24,6 +24,10 @@ const PATHS: Record<string, string> = {
   chevron: 'm9 6 6 6-6 6',
   table: 'M4 5h16v14H4zM4 10h16M4 14.5h16M10 5v14',
   chart: 'M4 20h16M7 16v-5m5 5V7m5 9v-3',
+  search: 'M11 18a7 7 0 1 0 0-14 7 7 0 0 0 0 14zm9 2-4-4',
+  camera: 'M4 8h3l2-3h6l2 3h3v11H4zm8 9a4 4 0 1 0 0-8 4 4 0 0 0 0 8z',
+  phone: 'M6 3h4l2 5-2.5 1.5a11 11 0 0 0 5 5L16 12l5 2v4a2 2 0 0 1-2 2A16 16 0 0 1 4 5a2 2 0 0 1 2-2z',
+  edit: 'M4 20h4L19 9l-4-4L4 16zm11-15 4 4',
   refresh: 'M20 11a8 8 0 0 0-14.9-3M4 5v4h4m-4 4a8 8 0 0 0 14.9 3M20 19v-4h-4',
 }
 
