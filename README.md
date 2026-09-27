@@ -6,7 +6,7 @@ Quran circles (halaqat) management system for the Religious Education Authority 
 | Part | Path | Stack |
 |------|------|-------|
 | API | `backend/` | Laravel 12 (PHP 8.2+), Sanctum, spatie/permission, dompdf, maatwebsite/excel, Intervention Image, Scribe, Pest |
-| Web app | `frontend/` | React 18, Vite, TypeScript, TanStack Query, RHF + Zod, Tailwind (RTL/LTR), Recharts, i18next |
+| Web app | `frontend/` | React 19, Vite, TypeScript, TanStack Query, RHF + Zod, Tailwind (RTL/LTR), Recharts, i18next |
 | WhatsApp bridge | `whatsapp/` | Node + open-wa/wa-automate |
 | Docs | `docs/` | ERD, migrations, work plan |
 
@@ -28,8 +28,11 @@ php artisan queue:work          # في نافذة أخرى
 php artisan schedule:work       # في نافذة أخرى (بديل cron محلياً)
 
 cd ../frontend
-npm install && npm run dev      # http://localhost:5173
+cp .env.example .env            # VITE_API_PROXY_TARGET = عنوان الخادم
+npm install && npm run dev      # http://localhost:5173  ← صفحة الدخول
 ```
+
+إذا كان المنفذ 8000 أو 5173 مستخدماً: `php artisan serve --port=8010` وعدّل `VITE_API_PROXY_TARGET`، و `npm run dev -- --port 5180`.
 
 ### التبديل إلى MySQL أو PostgreSQL
 
@@ -90,8 +93,11 @@ php artisan queue:work          # second terminal
 php artisan schedule:work       # third terminal (local stand-in for cron)
 
 cd ../frontend
-npm install && npm run dev      # http://localhost:5173
+cp .env.example .env            # VITE_API_PROXY_TARGET = backend URL
+npm install && npm run dev      # http://localhost:5173  (login page)
 ```
+
+If port 8000 or 5173 is already taken: run `php artisan serve --port=8010`, set `VITE_API_PROXY_TARGET` to match, and run `npm run dev -- --port 5180`.
 
 ### Switch to MySQL 8 or PostgreSQL 15
 

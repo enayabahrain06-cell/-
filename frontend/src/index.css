@@ -1,0 +1,27 @@
+@import "tailwindcss";
+
+/* Theme tokens. Logical properties (ps/pe, ms/me, start/end) keep RTL and LTR symmetric. */
+@theme {
+  --font-sans: "IBM Plex Sans Arabic", system-ui, sans-serif;
+  --font-display: "Amiri", "IBM Plex Sans Arabic", serif;
+
+  --color-brand-50: #eef7f1;
+  --color-brand-100: #d5ecdd;
+  --color-brand-500: #198754;
+  --color-brand-600: #14704a;
+  --color-brand-700: #0f5132;
+  --color-brand-900: #07301d;
+  --color-gold-300: #f4e3b5;
+  --color-gold-500: #c9a24a;
+}
+
+@layer base {
+  html,
+  body,
+  #root {
+    min-height: 100%;
+  }
+  body {
+    @apply bg-stone-50 font-sans text-stone-800 antialiased;
+  }
+}
