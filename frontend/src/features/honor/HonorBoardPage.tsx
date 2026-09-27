@@ -103,7 +103,7 @@ export default function HonorBoardPage() {
             <>
               {level === 'track' && <Podium rows={board.rows.slice(0, 3)} />}
               <div className="grid gap-4 lg:grid-cols-3">
-                <Card className="lg:col-span-2">
+                <Card className="min-w-0 lg:col-span-2">
                   <CardTitle actions={<Segmented name="honor-level" size="sm" label="" value={level} onChange={setLevel} options={(['track', 'package', 'circle'] as const).map((v) => ({ value: v, label: t(`honor.level.${v}`) }))} />}>
                     {t('honor.breakdown')}
                   </CardTitle>
