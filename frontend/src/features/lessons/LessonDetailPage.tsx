@@ -8,7 +8,7 @@ import { useAuth } from '../../app/AuthContext'
 import Avatar from '../../components/Avatar'
 import Icon from '../../components/Icon'
 import { EmptyState, OrnamentDivider } from '../../components/ornaments'
-import { Badge, Card, CardTitle, ErrorState, LoadingState, Notice, SecondaryButton } from '../../components/ui'
+import { Badge, Card, CardTitle, ErrorState, LoadingState, Notice, SecondaryButton, SURFACE } from '../../components/ui'
 import { formatDate, formatNumber, formatTime } from '../../lib/format'
 import AddStudentDialog from './AddStudentDialog'
 import ChangeLocationDialog from './ChangeLocationDialog'
@@ -43,7 +43,7 @@ export default function LessonDetailPage() {
     <div className="space-y-5">
       <Link to="/lessons" className="inline-flex items-center gap-1 text-sm font-medium text-brand-700 hover:underline"><Icon name="chevron" className="size-4 ltr:rotate-180" />{t('detail.back')}</Link>
 
-      <header className="rounded-2xl border border-ink/8 bg-white p-5 shadow-sm">
+      <header className={`${SURFACE} p-4 sm:p-5`}>
         <div className="flex flex-wrap items-start gap-3">
           <div className="min-w-0 flex-1">
             <div className="flex flex-wrap items-center gap-2">

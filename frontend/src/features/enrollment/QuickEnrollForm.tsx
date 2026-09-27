@@ -10,6 +10,7 @@ import FormField from '../../components/FormField'
 import SelectField from '../../components/SelectField'
 import { formatMoney, formatNumber, formatTime } from '../../lib/format'
 import { toLatinDigits } from '../../lib/phone'
+import { SURFACE, buttonClass } from '../../components/ui'
 
 interface StudentFields {
   full_name: string
@@ -200,10 +201,10 @@ export default function QuickEnrollForm({ lock, onEnrolled }: { lock?: LockedCir
           required
         />
         <div>
-          <span id="gender-label" className="mb-1.5 block text-sm font-medium text-stone-700">{t('gender')}</span>
+          <span id="gender-label" className="mb-1.5 block text-sm font-medium text-ink/75">{t('gender')}</span>
           <div role="radiogroup" aria-labelledby="gender-label" className="grid grid-cols-2 gap-2">
             {(['male', 'female'] as const).map((g) => (
-              <label key={g} className={`flex cursor-pointer items-center justify-center gap-2 rounded-xl border px-3 py-3 text-sm font-medium transition focus-within:ring-4 focus-within:ring-brand-100 ${f.gender === g ? 'border-brand-600 bg-brand-50 text-brand-800' : 'border-stone-300 bg-white text-ink/70'}`}>
+              <label key={g} className={`flex cursor-pointer items-center justify-center gap-2 rounded-xl border px-3 py-3 text-sm font-medium transition focus-within:ring-4 focus-within:ring-brand-100 ${f.gender === g ? 'border-brand-600 bg-brand-50 text-brand-800' : 'border-ink/15 bg-white text-ink/70'}`}>
                 <input type="radio" name="gender" value={g} checked={f.gender === g} onChange={() => set('gender', g)} className="sr-only" />
                 {t(`gender_${g}`)}
               </label>
@@ -220,15 +221,15 @@ export default function QuickEnrollForm({ lock, onEnrolled }: { lock?: LockedCir
         />
         <FormField label={t('student_phone')} type="tel" inputMode="tel" dir="ltr" value={f.student_phone} onChange={(e) => set('student_phone', e.target.value)} error={err('student_phone')} hint={t('optional')} placeholder="3xxxxxxx" />
         <div className="sm:col-span-2">
-          <span className="mb-1.5 block text-sm font-medium text-stone-700">
+          <span className="mb-1.5 block text-sm font-medium text-ink/75">
             {t('photo')} <span className="font-normal text-ink/50">({t('optional')})</span>
           </span>
           <div className="flex flex-wrap items-center gap-3">
             {photoPreview && <img src={photoPreview} alt="" className="size-16 rounded-xl object-cover ring-1 ring-ink/10" />}
             <input ref={cameraRef} type="file" accept="image/*" capture="environment" className="sr-only" tabIndex={-1} onChange={(e) => setPhoto(e.target.files?.[0] ?? null)} />
             <input ref={uploadRef} type="file" accept="image/jpeg,image/png,image/heic,image/heif" className="sr-only" tabIndex={-1} onChange={(e) => setPhoto(e.target.files?.[0] ?? null)} />
-            <button type="button" onClick={() => cameraRef.current?.click()} className="rounded-lg border border-ink/15 bg-white px-3 py-2 text-sm font-medium text-ink/75 hover:bg-ink/5">{t('photo_camera')}</button>
-            <button type="button" onClick={() => uploadRef.current?.click()} className="rounded-lg border border-ink/15 bg-white px-3 py-2 text-sm font-medium text-ink/75 hover:bg-ink/5">{t('photo_upload')}</button>
+            <button type="button" onClick={() => cameraRef.current?.click()} className={buttonClass('secondary')}>{t('photo_camera')}</button>
+            <button type="button" onClick={() => uploadRef.current?.click()} className={buttonClass('secondary')}>{t('photo_upload')}</button>
             {photo && <button type="button" onClick={() => setPhoto(null)} className="text-sm text-danger hover:underline">{t('photo_remove')}</button>}
           </div>
           {err('photo') && <p className="mt-1.5 text-sm text-danger">{err('photo')}</p>}
@@ -338,7 +339,7 @@ export default function QuickEnrollForm({ lock, onEnrolled }: { lock?: LockedCir
               <div role="radiogroup" aria-label={t('circle')} className="grid gap-2 sm:grid-cols-2">
                 {selected.circles.length === 0 && <p className="text-sm text-ink/55 sm:col-span-2">{t('no_circles')}</p>}
                 {selected.circles.map((c) => (
-                  <label key={c.id} className={`cursor-pointer rounded-xl border px-4 py-3 transition focus-within:ring-4 focus-within:ring-brand-100 ${lessonId === c.id ? 'border-brand-600 bg-brand-50' : 'border-stone-300 bg-white hover:border-brand-500/50'}`}>
+                  <label key={c.id} className={`cursor-pointer rounded-xl border px-4 py-3 transition focus-within:ring-4 focus-within:ring-brand-100 ${lessonId === c.id ? 'border-brand-600 bg-brand-50' : 'border-ink/15 bg-white hover:border-brand-500/50'}`}>
                     <input type="radio" name="lesson" value={c.id} checked={lessonId === c.id} onChange={() => setLessonId(c.id)} className="sr-only" />
                     <span className="block font-medium text-ink">{c.name}</span>
                     <span className="mt-0.5 block text-sm text-ink/60">
@@ -390,7 +391,7 @@ export default function QuickEnrollForm({ lock, onEnrolled }: { lock?: LockedCir
 /** A form section: a fieldset whose legend sits inside the card (float trick) and which may shrink below its content width. */
 function Section({ title, className = '', children }: { title: string; className?: string; children: ReactNode }) {
   return (
-    <fieldset className="min-w-0 rounded-2xl border border-ink/8 bg-white p-5 shadow-sm">
+    <fieldset className={`${SURFACE} min-w-0 p-5`}>
       <legend className="float-start mb-4 w-full text-sm font-semibold text-ink/70">{title}</legend>
       <div className={`clear-both ${className}`}>{children}</div>
     </fieldset>

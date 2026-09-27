@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next'
 import type { Cell, ColumnType, ReportSection } from '../../api/reports'
 import Icon from '../../components/Icon'
 import { formatDate, formatNumber, formatPercent } from '../../lib/format'
+import { TABLE_HEAD_STICKY } from '../../components/ui'
 
 const NUMERIC: ColumnType[] = ['number', 'percent', 'score']
 const PAGE = 50
@@ -66,7 +67,7 @@ export default function ReportTable({ section, locale }: { section: ReportSectio
     <div>
       <div className="max-h-[32rem] overflow-auto rounded-xl border border-ink/8">
         <table className="w-full min-w-max text-sm">
-          <thead className="sticky top-0 z-10 bg-[#F6F7F5] shadow-[0_1px_0_rgba(27,43,40,0.08)]">
+          <thead className={TABLE_HEAD_STICKY}>
             <tr>
               {section.headings.map((h, i) => {
                 const active = sort?.col === i

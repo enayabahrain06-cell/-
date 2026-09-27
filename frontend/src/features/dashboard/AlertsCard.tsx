@@ -7,7 +7,7 @@ import { dashboardApi, type AlertConflict, type DashboardAlert } from '../../api
 import { useAuth } from '../../app/AuthContext'
 import Icon from '../../components/Icon'
 import Pagination from '../../components/Pagination'
-import { Modal } from '../../components/ui'
+import { Modal, TABLE_HEAD_STICKY, SURFACE, IconButton } from '../../components/ui'
 import { EmptyState } from '../../components/ornaments'
 import { formatDate, formatNumber, formatTime, formatWeekday } from '../../lib/format'
 import { relativeTime } from './relativeTime'
@@ -129,7 +129,7 @@ export default function AlertsCard() {
   const chip = (active: boolean) => `rounded-full px-2.5 py-1 text-xs font-medium ${active ? 'bg-brand-600 text-white' : 'bg-ink/6 text-ink/70 hover:bg-ink/10'}`
 
   return (
-    <section className="flex min-w-0 flex-col rounded-2xl border border-ink/8 bg-white shadow-sm" aria-labelledby="alerts-title">
+    <section className={`${SURFACE} flex min-w-0 flex-col`} aria-labelledby="alerts-title">
       <h2 id="alerts-title" className="flex items-center gap-2 border-b border-ink/8 px-5 py-4 text-base font-semibold text-ink">
         <Icon name="alert" className="size-5 text-gold-700" />
         {t('alerts.title')}
@@ -145,7 +145,7 @@ export default function AlertsCard() {
         <div role="status" className={`mx-3 mt-3 flex items-start gap-2 rounded-lg px-3 py-2 text-sm ${notice.tone === 'ok' ? 'bg-brand-50 text-brand-800' : 'bg-danger/10 text-danger'}`}>
           <Icon name={notice.tone === 'ok' ? 'check' : 'alert'} className="mt-0.5 size-4 shrink-0" />
           <span className="flex-1">{notice.text}</span>
-          <button type="button" className="text-ink/50 hover:text-ink" aria-label="×" onClick={() => setNotice(null)}>✕</button>
+          <IconButton icon="close" label={t('common:close')} onClick={() => setNotice(null)} />
         </div>
       )}
 
@@ -246,7 +246,7 @@ function SessionsModal({ alert, conflict, locale, onClose }: { alert: DashboardA
       <p dir="auto" className="text-sm text-ink/70">{alert.title}</p>
       <div className="max-h-[60vh] overflow-y-auto rounded-xl border border-ink/8">
         <table className="w-full text-sm">
-          <thead className="sticky top-0 bg-white">
+          <thead className={TABLE_HEAD_STICKY}>
             <tr className="border-b border-ink/10 text-ink/55">
               <th className="px-3 py-2 text-start font-medium">{t('alerts.col_date')}</th>
               <th className="px-3 py-2 text-start font-medium">{t('alerts.col_time')}</th>

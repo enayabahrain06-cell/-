@@ -9,7 +9,7 @@ import Pagination from '../../../components/Pagination'
 import SelectField from '../../../components/SelectField'
 import FormField from '../../../components/FormField'
 import { EmptyState, StarSpinner } from '../../../components/ornaments'
-import { PrimaryButton, SURFACE } from '../../../components/ui'
+import { PrimaryButton, SURFACE, inputClass } from '../../../components/ui'
 import { formatDate, formatMoney, formatNumber, formatPercent } from '../../../lib/format'
 import JuzMap from './JuzMap'
 import TrendChart from './TrendChart'
@@ -22,7 +22,7 @@ function Loading() {
 
 function Stat({ value, label }: { value: string; label: string }) {
   return (
-    <div className="rounded-2xl border border-ink/8 bg-white px-4 py-3 shadow-sm">
+    <div className={`${SURFACE} px-4 py-3`}>
       <p className="text-2xl font-semibold tabular-nums text-ink">{value}</p>
       <p className="text-sm text-ink/60">{label}</p>
     </div>
@@ -42,7 +42,7 @@ export function OverviewTab({ profile }: { profile: StudentProfile }) {
         <Stat value={formatNumber(p.quran_percent / 100, locale, { style: 'percent', maximumFractionDigits: 1 })} label={t('progress.quran')} />
         <Stat value={n(p.memorized_ayahs)} label={t('progress.memorized_ayahs')} />
         <Stat value={n(p.completed_juz)} label={t('progress.completed_juz')} />
-        <div className="rounded-2xl border border-ink/8 bg-white px-4 py-3 shadow-sm">
+        <div className={`${SURFACE} px-4 py-3`}>
           <p className="text-2xl font-semibold tabular-nums text-ink">{p.plan.percent === null ? '—' : formatPercent(p.plan.percent, locale)}</p>
           <p className="text-sm text-ink/60">{p.plan.target_ayahs ? t('progress.plan') : t('progress.no_plan')}</p>
           {p.plan.target_ayahs > 0 && (
@@ -397,7 +397,7 @@ export function DetailsTab({ student, canEdit, canPhoto }: { student: StudentDet
             <div className="sm:col-span-2">
               <label htmlFor="student-notes" className="mb-1.5 block text-sm font-medium text-ink/75">{t('details.notes')}</label>
               <textarea id="student-notes" rows={3} value={form.notes} onChange={(e) => setForm({ ...form, notes: e.target.value })}
-                className="block w-full rounded-xl border border-ink/15 bg-white px-3 py-2 text-sm shadow-sm focus:border-brand-500 focus:outline-none focus:ring-4 focus:ring-brand-100" />
+                className={inputClass('md', 'w-full')} />
             </div>
             <div className="flex gap-2 sm:col-span-2">
               <PrimaryButton type="submit" loading={save.isPending}>{t('details.save')}</PrimaryButton>

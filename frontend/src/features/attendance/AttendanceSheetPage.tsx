@@ -7,8 +7,8 @@ import { parseApiError } from '../../api/client'
 import Avatar from '../../components/Avatar'
 import Icon from '../../components/Icon'
 import QuranRangePicker from '../../components/QuranRangePicker'
-import { EmptyState, OrnamentDivider } from '../../components/ornaments'
-import { Badge, ErrorState, LoadingState, Notice, PrimaryButton, SecondaryButton, Segmented, TextInput, type Tone, SURFACE } from '../../components/ui'
+import { OrnamentDivider } from '../../components/ornaments'
+import { Badge, ErrorState, LoadingState, Notice, PrimaryButton, SecondaryButton, Segmented, TextInput, type Tone, SURFACE, EmptyCard } from '../../components/ui'
 import { formatDate, formatNumber, formatTime } from '../../lib/format'
 
 const STATUSES: { value: AttendanceStatus; tone: Tone }[] = [
@@ -131,7 +131,7 @@ export default function AttendanceSheetPage() {
       )}
 
       {roster.length === 0 ? (
-        <div className={SURFACE}><EmptyState icon="students" title={t('empty_roster')} /></div>
+        <EmptyCard icon="students" title={t('empty_roster')} />
       ) : (
         <ul className="space-y-3">
           {roster.map((r) => {

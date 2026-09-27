@@ -4,7 +4,7 @@ import { Link, useParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { publicApi, type RegistrationRequest } from '../../api/registration'
 import { OrnamentDivider } from '../../components/ornaments'
-import { Badge, Notice, PrimaryButton, TextInput, type Tone } from '../../components/ui'
+import { Badge, Notice, PrimaryButton, TextInput, type Tone, SURFACE } from '../../components/ui'
 import PublicLayout from '../../layouts/PublicLayout'
 import { formatDate, formatNumber } from '../../lib/format'
 import { toLatinDigits } from '../../lib/phone'
@@ -35,14 +35,14 @@ export default function TrackRequestPage() {
           <p className="mt-1 text-ink/60">{t('track.subtitle')}</p>
           <OrnamentDivider align="center" className="mx-auto mt-3 text-gold-500" />
         </div>
-        <form className="space-y-4 rounded-2xl border border-ink/8 bg-white p-6 shadow-sm" onSubmit={(e) => { e.preventDefault(); search.mutate() }}>
+        <form className={`${SURFACE} space-y-4 p-6`} onSubmit={(e) => { e.preventDefault(); search.mutate() }}>
           <TextInput label={t('track.request_no')} value={requestNo} onChange={(e) => setRequestNo(e.target.value.toUpperCase())} dir="ltr" required className="[&_input]:font-mono [&_input]:tracking-wider" />
           <TextInput label={t('track.phone')} type="tel" inputMode="tel" dir="ltr" placeholder="3xxxxxxx" value={phone} onChange={(e) => setPhone(e.target.value)} required />
           <PrimaryButton type="submit" className="w-full" loading={search.isPending}>{t('track.search')}</PrimaryButton>
         </form>
         {notFound && <Notice tone="error">{t('track.not_found')}</Notice>}
         {found && (
-          <section className="space-y-3 rounded-2xl border border-ink/8 bg-white p-6 shadow-sm" aria-live="polite">
+          <section className={`${SURFACE} space-y-3 p-6`} aria-live="polite">
             <div className="flex items-center justify-between gap-2">
               <p dir="auto" className="text-lg font-semibold text-ink">{found.full_name}</p>
               <Badge tone={TONE[found.status]}>{t(`status.${found.status}`)}</Badge>

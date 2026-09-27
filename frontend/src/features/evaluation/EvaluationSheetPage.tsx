@@ -6,8 +6,8 @@ import { CRITERIA, evaluationsApi, type Criterion, type SavedScore, type Suggest
 import { parseApiError } from '../../api/client'
 import Icon from '../../components/Icon'
 import SelectField from '../../components/SelectField'
-import { EmptyState, OrnamentDivider } from '../../components/ornaments'
-import { ErrorState, LoadingState, Notice, PrimaryButton, SURFACE } from '../../components/ui'
+import { OrnamentDivider } from '../../components/ornaments'
+import { ErrorState, LoadingState, Notice, PrimaryButton, SURFACE, EmptyCard } from '../../components/ui'
 import { formatDate, formatNumber, formatTime } from '../../lib/format'
 import ScoreGrid, { emptyDraft, isComplete, type Draft } from './ScoreGrid'
 
@@ -89,7 +89,7 @@ export default function EvaluationSheetPage() {
       {suggestions.length > 0 && <Notice tone="info"><b>{t('suggest.title')}.</b> {t('suggest.body', { n: formatNumber(sheet.threshold, locale) })}</Notice>}
 
       {sheet.data.length === 0 ? (
-        <div className={SURFACE}><EmptyState icon="students" title={t('empty_roster')} /></div>
+        <EmptyCard icon="students" title={t('empty_roster')} />
       ) : (
         <ScoreGrid students={sheet.data.map((r) => r.student)} drafts={drafts} saved={saved} suggestions={suggestions} threshold={sheet.threshold} withProgress
           onChange={(sid, patch) => { setDrafts((ds) => ({ ...ds, [sid]: { ...ds[sid], ...patch } })); setDirty(true); setMsg(null) }}

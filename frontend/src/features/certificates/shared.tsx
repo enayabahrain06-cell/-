@@ -77,7 +77,7 @@ export function CertificateThumb({ c, className = '' }: { c: Certificate; classN
   const revoked = c.status === 'revoked'
   const draft = c.status === 'draft'
   return (
-    <div aria-hidden className={`relative aspect-[1.414/1] w-full overflow-hidden rounded-lg bg-[#fbf7ee] p-1.5 shadow-inner ${className}`}>
+    <div aria-hidden className={`relative aspect-[1.414/1] w-full overflow-hidden rounded-lg bg-paper p-1.5 shadow-inner ${className}`}>
       <div className="h-full rounded-[5px] border-2 border-gold-500 p-[3px]">
         <div className="relative flex h-full flex-col items-center justify-center gap-0.5 rounded-[3px] border border-gold-400/80 px-2 text-center">
           <span className="absolute start-1 top-1 size-1.5 rotate-45 bg-gold-400" />

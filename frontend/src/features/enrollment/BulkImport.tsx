@@ -5,7 +5,7 @@ import { parseApiError } from '../../api/client'
 import Alert from '../../components/Alert'
 import Button from '../../components/Button'
 import { formatNumber } from '../../lib/format'
-import { SURFACE } from '../../components/ui'
+import { SURFACE, TABLE_HEAD, buttonClass } from '../../components/ui'
 
 /** Upload an Excel sheet, review every row (errors in red, possible duplicates in gold), then enroll the valid rows. */
 export default function BulkImport() {
@@ -70,7 +70,7 @@ export default function BulkImport() {
       <div className={`${SURFACE} p-4 sm:p-5`}>
         <p className="text-sm text-ink/70">{t('import_intro')}</p>
         <div className="mt-4 flex flex-wrap gap-3">
-          <button type="button" onClick={() => void downloadTemplate()} className="rounded-lg border border-ink/15 bg-white px-3 py-2 text-sm font-medium text-ink/75 hover:bg-ink/5">
+          <button type="button" onClick={() => void downloadTemplate()} className={buttonClass('secondary')}>
             {t('download_template')}
           </button>
           <input ref={fileRef} type="file" accept=".xlsx,.xls,.csv" className="sr-only" id="import-file" onChange={(e) => void onFile(e.target.files?.[0])} />
@@ -98,7 +98,7 @@ export default function BulkImport() {
           </div>
           <div className="overflow-x-auto">
             <table className="w-full min-w-[40rem] text-sm">
-              <thead className="bg-page/60 text-start text-xs text-ink/60">
+              <thead className={TABLE_HEAD}>
                 <tr>
                   <th scope="col" className="px-4 py-2 text-start font-medium">{t('col_row')}</th>
                   <th scope="col" className="px-4 py-2 text-start font-medium">{t('full_name')}</th>

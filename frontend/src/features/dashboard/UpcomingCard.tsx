@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router-dom'
 import { dashboardFeedApi, type UpcomingItem, type UpcomingType } from '../../api/dashboard-feed'
 import Icon from '../../components/Icon'
-import { Badge, type Tone } from '../../components/ui'
+import { Badge, type Tone, SURFACE } from '../../components/ui'
 import { EmptyState } from '../../components/ornaments'
 import { formatDate, formatNumber, formatWeekday } from '../../lib/format'
 import { useDashboardFilters } from './useDashboardFilters'
@@ -25,7 +25,7 @@ export default function UpcomingCard() {
   const days = q.data ? groupByDate(q.data.items) : []
 
   return (
-    <section className="flex flex-col rounded-2xl border border-ink/8 bg-white shadow-sm" aria-labelledby="upcoming-title" aria-busy={q.isLoading}>
+    <section className={`${SURFACE} flex flex-col`} aria-labelledby="upcoming-title" aria-busy={q.isLoading}>
       <h2 id="upcoming-title" className="flex items-center gap-2 border-b border-ink/8 px-5 py-4 text-base font-semibold text-ink">
         <Icon name="clock" className="size-5 text-brand-700" />
         {t('upcoming.title')}

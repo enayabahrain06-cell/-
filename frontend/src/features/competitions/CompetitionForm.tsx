@@ -6,7 +6,7 @@ import { hallsApi, lessonsApi, optionsApi } from '../../api/lessons'
 import { parseApiError } from '../../api/client'
 import { useAuth } from '../../app/AuthContext'
 import SelectField from '../../components/SelectField'
-import { Modal, Notice, PrimaryButton, SecondaryButton, TextArea, TextInput } from '../../components/ui'
+import { Modal, Notice, PrimaryButton, SecondaryButton, TextArea, TextInput, inputClass, IconButton } from '../../components/ui'
 import { formatNumber } from '../../lib/format'
 
 const STEPS = ['basics', 'eligibility', 'criteria', 'rounds'] as const
@@ -71,7 +71,7 @@ export default function CompetitionForm({ competition, onClose, onSaved }: { com
     f.rounds.length > 0 && f.rounds.every((r) => r.name.trim() && r.round_date),
   ]
   const num = (v: string) => (v === '' ? null : Number(v))
-  const input = 'w-full rounded-lg border border-ink/15 px-2 py-1.5 text-sm'
+  const input = inputClass('sm', 'w-full')
 
   return (
     <Modal wide title={competition ? t('form.edit') : t('form.new')} onClose={onClose}
@@ -139,7 +139,7 @@ export default function CompetitionForm({ competition, onClose, onSaved }: { com
                       <td className="p-1"><input aria-label="EN" dir="ltr" className={input} value={c.name_en ?? ''} onChange={(e) => upd({ name_en: e.target.value })} /></td>
                       <td className="p-1"><input aria-label={t('competitions.weight')} type="number" min={1} max={100} className={`${input} tabular-nums`} value={c.weight} onChange={(e) => upd({ weight: Number(e.target.value) })} /></td>
                       <td className="p-1"><input aria-label={t('competitions.max')} type="number" min={1} max={100} className={`${input} tabular-nums`} value={c.max} onChange={(e) => upd({ max: Number(e.target.value) })} /></td>
-                      <td className="p-1"><button type="button" aria-label={t('form.remove')} className="rounded p-1 text-ink/40 hover:text-danger" onClick={() => set('criteria', criteria.filter((_, j) => j !== i))}>×</button></td>
+                      <td className="p-1"><IconButton icon="close" tone="remove" label={t('form.remove')} onClick={() => set('criteria', criteria.filter((_, j) => j !== i))} /></td>
                     </tr>
                   )
                 })}
@@ -170,7 +170,7 @@ export default function CompetitionForm({ competition, onClose, onSaved }: { com
                     <option value="">{t('form.location')}</option>
                     {(halls.data ?? []).filter((h) => h.gender === 'shared' || h.gender === f.gender).map((h) => <option key={h.id} value={h.id}>{h.name}</option>)}
                   </select>
-                  <button type="button" aria-label={t('form.remove')} disabled={f.rounds.length === 1} className="rounded px-2 text-ink/40 hover:text-danger disabled:opacity-30" onClick={() => set('rounds', f.rounds.filter((_, j) => j !== i))}>×</button>
+                  <IconButton icon="close" tone="remove" label={t('form.remove')} disabled={f.rounds.length === 1} onClick={() => set('rounds', f.rounds.filter((_, j) => j !== i))} />
                 </div>
               )
             })}
@@ -189,7 +189,7 @@ export default function CompetitionForm({ competition, onClose, onSaved }: { com
                     {(badges.data ?? []).map((b) => <option key={b.id} value={b.id}>{b.name}</option>)}
                   </select>
                   <input aria-label={t('form.prize_points')} title={t('form.prize_points')} type="number" min={0} max={1000} className={`${input} tabular-nums`} value={p.points ?? 0} onChange={(e) => upd({ points: Number(e.target.value) })} />
-                  <button type="button" aria-label={t('form.remove')} className="rounded px-2 text-ink/40 hover:text-danger" onClick={() => set('prizes', f.prizes.filter((_, j) => j !== i))}>×</button>
+                  <IconButton icon="close" tone="remove" label={t('form.remove')} onClick={() => set('prizes', f.prizes.filter((_, j) => j !== i))} />
                 </div>
               )
             })}

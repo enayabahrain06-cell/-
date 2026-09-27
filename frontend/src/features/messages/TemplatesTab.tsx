@@ -4,8 +4,7 @@ import { useTranslation } from 'react-i18next'
 import { parseApiError } from '../../api/client'
 import { messagesApi, type MessageTemplate } from '../../api/messages'
 import { useAuth } from '../../app/AuthContext'
-import { EmptyState } from '../../components/ornaments'
-import { Badge, Card, CardTitle, ErrorState, LoadingState, Notice, PrimaryButton, SearchInput, SecondaryButton, Segmented, SURFACE, TextArea, TextInput } from '../../components/ui'
+import { Badge, Card, CardTitle, ErrorState, LoadingState, Notice, PrimaryButton, SearchInput, SecondaryButton, Segmented, SURFACE, TextArea, TextInput, EmptyCard } from '../../components/ui'
 import { formatDate } from '../../lib/format'
 
 type Draft = Pick<MessageTemplate, 'name_ar' | 'name_en' | 'body_ar' | 'body_en' | 'is_active'>
@@ -25,7 +24,7 @@ export default function TemplatesTab() {
 
   if (q.isLoading) return <LoadingState />
   if (q.isError) return <ErrorState message={t('error')} onRetry={() => void q.refetch()} />
-  if (!q.data?.length) return <div className={SURFACE}><EmptyState icon="messages" title={t('templates.empty')} /></div>
+  if (!q.data?.length) return <EmptyCard icon="messages" title={t('templates.empty')} />
 
   return (
     <div className="grid items-start gap-5 lg:grid-cols-3">
@@ -51,7 +50,7 @@ export default function TemplatesTab() {
 
       <div className="lg:col-span-2">
         {current ? <Editor key={current.id} template={current} locale={locale} /> : (
-          <div className={SURFACE}><EmptyState size="sm" icon="edit" title={t('templates.pick')} /></div>
+          <EmptyCard size="sm" icon="edit" title={t('templates.pick')} />
         )}
       </div>
     </div>

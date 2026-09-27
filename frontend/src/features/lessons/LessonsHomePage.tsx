@@ -7,8 +7,8 @@ import { useAuth } from '../../app/AuthContext'
 import Icon from '../../components/Icon'
 import Pagination from '../../components/Pagination'
 import SelectField from '../../components/SelectField'
-import { EmptyState, PageBand } from '../../components/ornaments'
-import { Badge, ErrorState, FilterBar, LoadingState, Notice, PrimaryButton, SecondaryButton, SearchInput, Segmented, type Tone } from '../../components/ui'
+import { PageBand } from '../../components/ornaments'
+import { Badge, ErrorState, FilterBar, LoadingState, Notice, PrimaryButton, SecondaryButton, SearchInput, Segmented, type Tone, SURFACE, EmptyCard } from '../../components/ui'
 import { formatDate, formatNumber, formatTime } from '../../lib/format'
 import { BookingDialog, HallFormDialog } from './HallDialogs'
 import LessonFormDialog from './LessonFormDialog'
@@ -66,13 +66,13 @@ function Circles() {
       )}
 
       {q.isLoading ? <LoadingState /> : q.isError || !q.data ? <ErrorState onRetry={() => void q.refetch()} /> : q.data.data.length === 0 ? (
-        <div className="rounded-2xl border border-ink/8 bg-white shadow-sm"><EmptyState icon="lessons" title={t('empty')} /></div>
+        <EmptyCard icon="lessons" title={t('empty')} />
       ) : (
         <>
           <ul className="grid gap-3 *:min-w-0 md:grid-cols-2 xl:grid-cols-3">
             {q.data.data.map((l) => (
               <li key={l.id}>
-                <Link to={`/lessons/${l.id}`} className="block h-full rounded-2xl border border-ink/8 bg-white p-4 shadow-sm transition hover:border-brand-500/40 hover:shadow">
+                <Link to={`/lessons/${l.id}`} className={`${SURFACE} block h-full p-4 transition hover:border-brand-500/40 hover:shadow`}>
                   <div className="flex items-start justify-between gap-2">
                     <p dir="auto" className="font-semibold text-ink">{l.name}</p>
                     {l.gender && <Badge tone={GENDER_TONE[l.gender]}>{t(`gender.${l.gender}`)}</Badge>}
@@ -111,7 +111,7 @@ function Halls() {
     <div className="space-y-4">
       {can('locations.manage') && <div className="flex justify-end"><PrimaryButton onClick={() => setEdit('new')}>+ {t('new_hall')}</PrimaryButton></div>}
       {q.isLoading ? <LoadingState /> : !q.data?.length ? (
-        <div className="rounded-2xl border border-ink/8 bg-white shadow-sm"><EmptyState icon="pin" title={t('empty_halls')} /></div>
+        <EmptyCard icon="pin" title={t('empty_halls')} />
       ) : (
         <ul className="grid gap-3 *:min-w-0 md:grid-cols-2 xl:grid-cols-3">
           {q.data.map((h) => (
@@ -159,10 +159,10 @@ function Bookings() {
     <div className="space-y-4">
       {can('locations.manage') && <div className="flex justify-end"><PrimaryButton onClick={() => setOpen(true)}>+ {t('new_booking')}</PrimaryButton></div>}
       {q.isLoading ? <LoadingState /> : !q.data?.data.length ? (
-        <div className="rounded-2xl border border-ink/8 bg-white shadow-sm"><EmptyState icon="attendance" title={t('empty_bookings')} /></div>
+        <EmptyCard icon="attendance" title={t('empty_bookings')} />
       ) : (
         <>
-          <ul className="divide-y divide-ink/6 rounded-2xl border border-ink/8 bg-white shadow-sm">
+          <ul className={`${SURFACE} divide-y divide-ink/6`}>
             {q.data.data.map((b) => (
               <li key={b.id} className="flex flex-wrap items-center gap-3 px-4 py-3 text-sm">
                 <span className="w-32 text-ink/70">{formatDate(b.booking_date, locale, { weekday: 'short', day: 'numeric', month: 'short' })}</span>

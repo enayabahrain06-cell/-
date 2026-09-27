@@ -11,7 +11,7 @@ import Icon from '../../components/Icon'
 import SelectField from '../../components/SelectField'
 import StudentPicker from '../../components/StudentPicker'
 import { StarSpinner } from '../../components/ornaments'
-import { Modal, Notice, PrimaryButton, SecondaryButton, TextArea, TextInput } from '../../components/ui'
+import { Modal, Notice, PrimaryButton, SecondaryButton, TextArea, TextInput, SURFACE } from '../../components/ui'
 import { formatDate, formatNumber } from '../../lib/format'
 import { IssuedDate, StatusBadge, displayTitle, useInvalidateCertificates, useObjectUrl } from './shared'
 
@@ -333,14 +333,14 @@ function CertificateDrawer({ c: initial, onClose, run, busy, notice, locale }: {
           <ActionButtons c={c} run={run} busy={busy} readOnly={readOnly} exclude={['view']} />
 
           <div className="grid gap-4 lg:grid-cols-[1fr_18rem]">
-            <section aria-label={t('detail.preview')} className="overflow-hidden rounded-2xl border border-ink/8 bg-white shadow-sm">
+            <section aria-label={t('detail.preview')} className={`${SURFACE} overflow-hidden`}>
               {pdf.loading ? <div className="grid h-[28rem] place-items-center"><StarSpinner className="size-9 text-brand-600" /></div>
                 : pdf.url ? <iframe title={t('detail.preview')} src={pdf.url} className="h-[28rem] w-full lg:h-[34rem]" />
                   : <p className="grid h-40 place-items-center text-sm text-ink/55">{t('detail.preview_error')}</p>}
             </section>
 
             <div className="space-y-4">
-              <section className="rounded-2xl border border-ink/8 bg-white p-4 shadow-sm">
+              <section className={`${SURFACE} p-4`}>
                 <h3 className="mb-2 text-sm font-semibold text-ink">{t('detail.info')}</h3>
                 <dl className="space-y-2 text-sm">
                   <Row label={t('detail.student')}>
@@ -359,7 +359,7 @@ function CertificateDrawer({ c: initial, onClose, run, busy, notice, locale }: {
                 </dl>
               </section>
 
-              <section className="rounded-2xl border border-ink/8 bg-white p-4 shadow-sm">
+              <section className={`${SURFACE} p-4`}>
                 <h3 className="mb-2 text-sm font-semibold text-ink">{t('detail.history')}</h3>
                 <ol className="space-y-2.5 border-s-2 border-gold-400/50 ps-3 text-sm">
                   <HistoryItem label={t('detail.issued_by')} value={c.issued_by ?? t('detail.system')} when={c.issued_on ? formatDate(c.issued_on, locale, { day: 'numeric', month: 'short', year: 'numeric' }) : null} />

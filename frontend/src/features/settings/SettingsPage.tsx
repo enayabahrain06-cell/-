@@ -27,7 +27,7 @@ export default function SettingsPage() {
   }, [query.data])
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-5">
       <PageBand title={t('title')} subtitle={t('subtitle')} />
 
       {query.isLoading ? (

@@ -7,7 +7,7 @@ import { parseApiError, type FieldErrors } from '../../api/client'
 import Icon from '../../components/Icon'
 import SelectField from '../../components/SelectField'
 import { OrnamentDivider, OrnamentFrame } from '../../components/ornaments'
-import { Badge, buttonClass, LoadingState, Notice, PrimaryButton, SecondaryButton, TextArea, TextInput } from '../../components/ui'
+import { Badge, buttonClass, LoadingState, Notice, PrimaryButton, SecondaryButton, TextArea, TextInput, SURFACE } from '../../components/ui'
 import PublicLayout from '../../layouts/PublicLayout'
 import { formatDate, formatMoney, formatNumber, formatTime } from '../../lib/format'
 import { toLatinDigits } from '../../lib/phone'
@@ -58,7 +58,7 @@ export default function PublicRegisterPage() {
 
   return (
     <PublicLayout>
-      <div className="space-y-6">
+      <div className="space-y-5">
         <div className="text-center">
           <h1 className="font-display text-3xl text-ink sm:text-4xl">{t('public.title')}</h1>
           <p className="mt-2 text-ink/60">{t('public.subtitle')}</p>
@@ -81,7 +81,7 @@ export default function PublicRegisterPage() {
         {message && step !== 'done' && Object.keys(errors).length === 0 && <Notice tone="error">{message}</Notice>}
 
         {step === 'who' && (
-          <section className="mx-auto max-w-lg space-y-5 rounded-2xl border border-ink/8 bg-white p-6 shadow-sm">
+          <section className={`${SURFACE} mx-auto max-w-lg space-y-5 p-6`}>
             <fieldset>
               <legend className="mb-2 text-sm font-medium text-ink/75">{t('public.gender_q')}</legend>
               <div className="grid grid-cols-2 gap-3">
@@ -139,7 +139,7 @@ export default function PublicRegisterPage() {
         )}
 
         {step === 'details' && pkg && (
-          <form className="mx-auto max-w-2xl space-y-4 rounded-2xl border border-ink/8 bg-white p-6 shadow-sm" onSubmit={(e) => { e.preventDefault(); submit.mutate() }}>
+          <form className={`${SURFACE} mx-auto max-w-2xl space-y-4 p-6`} onSubmit={(e) => { e.preventDefault(); submit.mutate() }}>
             <p className="text-sm text-ink/60"><span dir="auto" className="font-medium text-ink">{pkg.name}</span></p>
             <div className="grid gap-4 sm:grid-cols-2">
               <Field err={err('full_name')}><TextInput label={t('public.full_name')} value={form.full_name} onChange={(e) => setForm({ ...form, full_name: e.target.value })} required minLength={3} dir="auto" autoComplete="name" /></Field>

@@ -7,6 +7,7 @@ import { OrnamentDivider } from '../../components/ornaments'
 import { LoadingState, SecondaryButton } from '../../components/ui'
 import PublicLayout from '../../layouts/PublicLayout'
 import { formatDate } from '../../lib/format'
+import Icon from '../../components/Icon'
 
 /** Public QR verification (no login): valid, revoked or not found. */
 export default function VerifyCertificatePage() {
@@ -41,7 +42,7 @@ export default function VerifyCertificatePage() {
         ) : (
           <section aria-live="polite" className={`overflow-hidden rounded-2xl border-2 bg-white shadow-sm ${c.valid ? 'border-brand-600/40' : 'border-danger/40'}`}>
             <div className={`flex items-center gap-4 px-6 py-5 ${c.valid ? 'bg-brand-50' : 'bg-danger/5'}`}>
-              <span aria-hidden className={`grid size-14 shrink-0 place-items-center rounded-full text-3xl font-bold text-white ${c.valid ? 'bg-brand-700' : 'bg-danger'}`}>{c.valid ? '✓' : '✗'}</span>
+              <span aria-hidden className={`grid size-14 shrink-0 place-items-center rounded-full text-white ${c.valid ? 'bg-brand-700' : 'bg-danger'}`}><Icon name={c.valid ? 'check' : 'close'} className="size-8" /></span>
               <div>
                 <p className={`text-xl font-semibold ${c.valid ? 'text-brand-800' : 'text-danger'}`}>{c.status_label || t(c.valid ? 'verify.valid' : 'verify.revoked')}</p>
                 <p className="text-sm text-ink/65">{t(c.valid ? 'verify.valid_body' : 'verify.revoked_body')}</p>

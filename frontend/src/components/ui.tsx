@@ -1,7 +1,7 @@
 import type { ButtonHTMLAttributes, ReactNode, TextareaHTMLAttributes } from 'react'
 import { forwardRef, useEffect, useId } from 'react'
 import { useTranslation } from 'react-i18next'
-import { StarSpinner } from './ornaments'
+import { EmptyState, StarSpinner } from './ornaments'
 import Icon from './Icon'
 
 /** Shared building blocks for staff pages (cards, states, badges, segmented controls, text areas). */
@@ -88,6 +88,24 @@ export function SecondaryButton({ children, className = '', ...rest }: ButtonHTM
   )
 }
 
+/**
+ * Small icon-only button (remove a row, dismiss a notice). `label` is required: it is the
+ * accessible name and the tooltip. `remove` is muted until hover, then danger.
+ */
+export function IconButton({ icon, label, tone = 'muted', className = '', ...rest }: ButtonHTMLAttributes<HTMLButtonElement> & { icon: string; label: string; tone?: 'muted' | 'remove' | 'danger' }) {
+  const tones = {
+    muted: 'text-ink/50 hover:bg-ink/5 hover:text-ink',
+    remove: 'text-ink/40 hover:bg-danger/5 hover:text-danger',
+    danger: 'text-danger hover:bg-danger/5',
+  }
+  return (
+    <button type="button" aria-label={label} title={label} {...rest}
+      className={`inline-grid shrink-0 place-items-center rounded-lg p-1.5 transition focus-visible:outline-2 focus-visible:outline-brand-500 disabled:cursor-not-allowed disabled:opacity-30 ${tones[tone]} ${className}`}>
+      <Icon name={icon} className="size-4" />
+    </button>
+  )
+}
+
 /** Radio-group styled as a segmented control (keyboard: arrow keys via native radios). */
 export function Segmented<T extends string>({ name, value, options, onChange, label, size = 'md' }: {
   name: string; value: T | null; options: { value: T; label: string; tone?: Tone }[]; onChange: (v: T) => void; label: string; size?: 'sm' | 'md'
@@ -112,8 +130,25 @@ export function Segmented<T extends string>({ name, value, options, onChange, la
   )
 }
 
-const INPUT_LOOK = 'block w-full rounded-xl border border-ink/15 bg-white text-sm shadow-sm placeholder:text-ink/40 focus:border-brand-500 focus:outline-none focus:ring-4 focus:ring-brand-100'
-const INPUT = `${INPUT_LOOK} px-3 py-2`
+const FIELD_LOOK = 'block border shadow-sm placeholder:text-ink/40 focus:outline-none focus:ring-4 disabled:cursor-not-allowed disabled:opacity-60 aria-invalid:border-danger/50 aria-invalid:bg-danger/5 aria-invalid:text-danger aria-invalid:focus:ring-danger/15'
+const FIELD_TONE = {
+  normal: 'border-ink/15 bg-white text-ink focus:border-brand-500 focus:ring-brand-100',
+  /** A warning value (for example a score below the pass mark); not the same as invalid. */
+  danger: 'border-danger/50 bg-danger/5 text-danger focus:border-danger focus:ring-danger/15',
+} as const
+const FIELD_SIZE = { md: 'rounded-xl px-3 py-2', sm: 'rounded-lg px-2 py-1.5' } as const
+
+/**
+ * Look of a bare <input>/<select>/<textarea> for places a labelled TextInput cannot go
+ * (table cells, inline rows, date pickers). Width and font size come from `className`
+ * (default `text-sm`). Invalid values set aria-invalid; `danger` marks a valid but alarming value.
+ */
+export function inputClass(size: keyof typeof FIELD_SIZE = 'md', className = '', danger = false) {
+  const text = /(^|\s)text-(xs|sm|base|lg|xl|2xl)\b/.test(className) ? '' : 'text-sm'
+  return `${FIELD_LOOK} ${FIELD_TONE[danger ? 'danger' : 'normal']} ${FIELD_SIZE[size]} ${text} ${className}`
+}
+
+const INPUT = inputClass('md', 'w-full')
 
 export const TextArea = forwardRef<HTMLTextAreaElement, TextareaHTMLAttributes<HTMLTextAreaElement> & { label: string; hideLabel?: boolean }>(
   function TextArea({ label, hideLabel, className = '', id, ...rest }, ref) {
@@ -192,7 +227,7 @@ export const SearchInput = forwardRef<HTMLInputElement, React.InputHTMLAttribute
         <label htmlFor={sid} className="sr-only">{label}</label>
         <Icon name="search" className="pointer-events-none absolute inset-y-0 start-3 my-auto size-4 text-ink/40" />
         <input ref={ref} id={sid} type="search" autoComplete="off" placeholder={placeholder ?? label} {...rest}
-          className={`${INPUT_LOOK} py-2.5 pe-3 ps-9`} />
+          className={`${FIELD_LOOK} ${FIELD_TONE.normal} w-full rounded-xl py-2.5 pe-3 ps-9 text-sm`} />
       </div>
     )
   },
@@ -207,8 +242,15 @@ export function FilterBar({ children, className = '', label }: { children: React
   )
 }
 
+/** Empty state inside the standard white card (list pages with no rows). */
+export function EmptyCard(props: Parameters<typeof EmptyState>[0]) {
+  return <div className={SURFACE}><EmptyState {...props} /></div>
+}
+
 /** Header row style shared by data tables. */
 export const TABLE_HEAD = 'bg-page/60 text-start text-xs text-ink/60'
+/** Same header for tables that scroll inside a fixed-height box (opaque, stays on top). */
+export const TABLE_HEAD_STICKY = 'sticky top-0 z-10 bg-page text-start text-xs text-ink/60 shadow-[0_1px_0_rgba(27,43,40,0.08)]'
 
 /**
  * Horizontal scroll container for tables. `surface` draws the white table card;

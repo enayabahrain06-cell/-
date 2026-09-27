@@ -2,11 +2,12 @@ import type { ReactNode } from 'react'
 import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import Icon from '../../components/Icon'
+import { SURFACE } from '../../components/ui'
 
 /** Card shell matching TodayList / AlertsBox: header row with a bottom border, optional footer link. */
 export function PanelCard({ id, title, icon, children, footer }: { id: string; title: string; icon: string; children: ReactNode; footer?: { to: string; label: string } }) {
   return (
-    <section className="@container flex min-w-0 flex-col rounded-2xl border border-ink/8 bg-white shadow-sm" aria-labelledby={id}>
+    <section className={`${SURFACE} @container flex min-w-0 flex-col`} aria-labelledby={id}>
       <h2 id={id} className="flex items-center gap-2 border-b border-ink/8 px-5 py-4 text-base font-semibold text-ink">
         <Icon name={icon} className="size-5 text-brand-700" />
         {title}

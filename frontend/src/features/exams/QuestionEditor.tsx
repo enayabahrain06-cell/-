@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next'
 import { QUESTION_TYPES, examsApi, type Question, type QuestionInput, type QuestionOption, type QuestionType } from '../../api/exams'
 import { parseApiError } from '../../api/client'
 import SelectField from '../../components/SelectField'
-import { Modal, Notice, PrimaryButton, SecondaryButton, TextArea, TextInput } from '../../components/ui'
+import { Modal, Notice, PrimaryButton, SecondaryButton, TextArea, TextInput, inputClass, IconButton } from '../../components/ui'
 
 const KEYS = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h']
 
@@ -65,8 +65,8 @@ export default function QuestionEditor({ examId, question, onClose, onSaved }: {
             <div key={o.key} className="flex items-center gap-2">
               <input type="radio" name="correct" aria-label={`${t('questions.correct')} ${o.key}`} checked={correctKey === o.key} onChange={() => setCorrectKey(o.key)} className="size-4 accent-brand-600" />
               <input aria-label={`${t('questions.options')} ${i + 1}`} dir="auto" value={o.text} onChange={(e) => setOptions(options.map((x, j) => (j === i ? { ...x, text: e.target.value } : x)))}
-                className="flex-1 rounded-xl border border-ink/15 px-3 py-2 text-sm" />
-              {options.length > 2 && <button type="button" className="text-sm text-danger" aria-label={t('questions.delete')} onClick={() => setOptions(options.filter((_, j) => j !== i))}>✕</button>}
+                className={inputClass('md', 'min-w-0 flex-1')} />
+              {options.length > 2 && <IconButton icon="close" tone="remove" label={t('questions.delete')} onClick={() => setOptions(options.filter((_, j) => j !== i))} />}
             </div>
           ))}
           {options.length < KEYS.length && <button type="button" className="text-sm font-medium text-brand-700 hover:underline" onClick={() => setOptions([...options, { key: KEYS.find((k) => !options.some((o) => o.key === k))!, text: '' }])}>+ {t('questions.add_option')}</button>}
@@ -97,8 +97,8 @@ export default function QuestionEditor({ examId, question, onClose, onSaved }: {
           {verses.map((v, i) => (
             <div key={i} className="flex items-center gap-2">
               <span className="w-6 text-center text-sm tabular-nums text-ink/50">{i + 1}</span>
-              <input aria-label={`${i + 1}`} dir="rtl" value={v} onChange={(e) => setVerses(verses.map((x, j) => (j === i ? e.target.value : x)))} className="flex-1 rounded-xl border border-ink/15 px-3 py-2 font-display text-lg" />
-              {verses.length > 2 && <button type="button" className="text-sm text-danger" aria-label={t('questions.delete')} onClick={() => setVerses(verses.filter((_, j) => j !== i))}>✕</button>}
+              <input aria-label={`${i + 1}`} dir="rtl" value={v} onChange={(e) => setVerses(verses.map((x, j) => (j === i ? e.target.value : x)))} className={inputClass('md', 'min-w-0 flex-1 font-display text-lg')} />
+              {verses.length > 2 && <IconButton icon="close" tone="remove" label={t('questions.delete')} onClick={() => setVerses(verses.filter((_, j) => j !== i))} />}
             </div>
           ))}
           {verses.length < KEYS.length && <button type="button" className="text-sm font-medium text-brand-700 hover:underline" onClick={() => setVerses([...verses, ''])}>+ {t('questions.add_option')}</button>}

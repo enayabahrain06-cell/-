@@ -19,6 +19,7 @@ Runs after `ui-audit` has listed the systemic findings. It uses the specs in `ui
 | Link styled as a button | `buttonClass(variant)` + `<Link className>` | `components/ui.tsx` |
 | Large full-width form submit (auth/public) | `Button` | `components/Button.tsx` |
 | Text input (dense, staff) | `TextInput` | `components/ui.tsx` |
+| Bare field in a table cell, inline row or date picker | `className={inputClass(size, className, danger?)}`: `md`/`sm`, caller sets width and font size; `aria-invalid` for invalid, `danger` for a valid but alarming value | `components/ui.tsx` |
 | Text input with error/hint (forms) | `FormField` | `components/FormField.tsx` |
 | Search input with icon | `SearchInput` | `components/ui.tsx` |
 | Select | `SelectField` | `components/SelectField.tsx` |
@@ -28,12 +29,14 @@ Runs after `ui-audit` has listed the systemic findings. It uses the specs in `ui
 | Badge | `Badge tone=` | `components/ui.tsx` |
 | Inline message | `Notice` (staff) / `Alert` (auth/public) with the same tones | `ui.tsx` / `Alert.tsx` |
 | Data table (list pages) | `<TableWrap surface>` + `thead className={TABLE_HEAD}`, rows `divide-y divide-ink/6`, cells `px-4 py-3` | `components/ui.tsx` |
+| Table scrolling inside a fixed-height box | `thead className={TABLE_HEAD_STICKY}` | `components/ui.tsx` |
 | Compact table inside a `Card` (reports, profile tabs) | `<TableWrap>` (bleeds to card edges), head row `border-b border-ink/10 text-ink/55`, cells `py-2` | `components/ui.tsx` |
-| Modal | `Modal` | `components/ui.tsx` |
+| Modal | `Modal` (put a `<form id>` in the body and give the footer submit `form={id}`) | `components/ui.tsx` |
+| Icon-only button (remove row, dismiss) | `IconButton` (`icon`, `label`, `tone`: muted / remove / danger), never a ✕/× glyph | `components/ui.tsx` |
 | Pagination | `Pagination` | `components/Pagination.tsx` |
 | Page header (list/home) | `PageBand` | `components/ornaments/PageBand.tsx` |
 | Page header (light) | `PageTitle` | same |
-| States | `LoadingState`, `ErrorState`, `EmptyState` | `ui.tsx`, `ornaments/EmptyState.tsx` |
+| States | `LoadingState`, `ErrorState`, `EmptyState`; `EmptyCard` for an empty list inside the white card | `ui.tsx`, `ornaments/EmptyState.tsx` |
 
 If a concept is missing from the table, add it to `ui.tsx` and document it here. Do not create a page-local version.
 

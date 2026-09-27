@@ -11,6 +11,7 @@ import { formatMoney, formatNumber, formatPercent } from '../../lib/format'
 import { AttendanceTab, DetailsTab, EvaluationTab, IssuesTab, OverviewTab, WalletTab } from './profile/ProfileTabs'
 import StudentCertificatesTab from '../certificates/StudentCertificatesTab'
 import { openObjectUrl, studentReportObjectUrl } from '../../api/certificates'
+import { ErrorState, SURFACE } from '../../components/ui'
 
 const TABS = ['overview', 'evaluation', 'issues', 'attendance', 'wallet', 'certificates', 'details'] as const
 type Tab = (typeof TABS)[number]
@@ -36,9 +37,9 @@ export default function StudentProfilePage() {
   }
   if (profile.isError || !profile.data || !detail.data) {
     return (
-      <div className="space-y-4">
+      <div className="space-y-5">
         <BackLink />
-        <div role="alert" className="rounded-2xl border border-danger/25 bg-danger/5 p-6 text-center text-danger">{t('error')}</div>
+        <ErrorState message={t('error')} />
       </div>
     )
   }
@@ -64,7 +65,7 @@ export default function StudentProfilePage() {
     <div className="space-y-5">
       <BackLink />
 
-      <header className="relative overflow-hidden rounded-2xl border border-ink/8 bg-white shadow-sm">
+      <header className={`${SURFACE} relative overflow-hidden`}>
         <div className="flex flex-col gap-5 p-5 sm:flex-row sm:items-center sm:p-6">
           <Avatar name={h.full_name} initial={h.initial} src={h.photo_url} gender={h.gender} size="lg" />
           <div className="min-w-0 flex-1">

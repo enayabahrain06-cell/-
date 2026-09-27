@@ -5,7 +5,7 @@ import { Link } from 'react-router-dom'
 import { dashboardApi, type DashboardData, type LocationStatus, type TodaySession } from '../../api/dashboard'
 import { useAuth } from '../../app/AuthContext'
 import Icon from '../../components/Icon'
-import { Notice } from '../../components/ui'
+import { Notice, SURFACE } from '../../components/ui'
 import { formatDate, formatHijri, formatMoney, formatNumber, formatPercent, formatTime, formatWeekday } from '../../lib/format'
 import { RecordPaymentDialog } from '../payments/PaymentDialogs'
 import AgeDonut from './AgeDonut'
@@ -26,7 +26,7 @@ export default function DashboardPage() {
   const today = query.data?.date ?? new Date().toISOString().slice(0, 10)
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-5">
       <PageBand
         title={t('greeting', { name: user?.name })}
         subtitle={
@@ -195,7 +195,7 @@ function Kpi({ label, value, icon, hint, tone, to }: { label: string; value: str
       {hint && <p className="mt-1 text-xs leading-snug text-ink/55">{hint}</p>}
     </>
   )
-  const cls = 'rounded-2xl border border-ink/8 bg-white p-4 shadow-sm'
+  const cls = `${SURFACE} p-4`
 
   return to ? (
     <Link to={to} className={`${cls} block transition hover:border-brand-600/30 hover:shadow-md focus-visible:outline-2 focus-visible:outline-brand-600`}>
@@ -222,7 +222,7 @@ function TodayList({ sessions, locale }: { sessions: TodaySession[]; locale: str
   const canLessons = can('lessons.view')
 
   return (
-    <section className="min-w-0 rounded-2xl border border-ink/8 bg-white shadow-sm" aria-labelledby="today-title">
+    <section className={`${SURFACE} min-w-0`} aria-labelledby="today-title">
       <h2 id="today-title" className="border-b border-ink/8 px-5 py-4 text-base font-semibold text-ink">
         {t('today.title')} <span className="ms-1 text-ink/45">({formatNumber(sessions.length, locale)})</span>
       </h2>
@@ -314,7 +314,7 @@ function SessionAction({ session: s, locale }: { session: TodaySession; locale: 
 
 function Skeleton() {
   return (
-    <div className="space-y-6" aria-busy="true">
+    <div className="space-y-5" aria-busy="true">
       <div className="grid grid-cols-2 gap-3 md:grid-cols-3 2xl:grid-cols-6">
         {Array.from({ length: 6 }).map((_, i) => <div key={i} className="h-28 animate-pulse rounded-2xl bg-white/70" />)}
       </div>

@@ -4,6 +4,7 @@ import LanguageSwitcher from '../../components/LanguageSwitcher'
 import Button from '../../components/Button'
 import { LogoMark, PageBand } from '../../components/ornaments'
 import FamilyCertificates from '../certificates/FamilyCertificates'
+import { SURFACE } from '../../components/ui'
 
 /** Temporary landing screen after sign-in, until the role dashboards (Phase 3.2 to 3.4) are built. */
 export default function HomePage() {
@@ -13,12 +14,12 @@ export default function HomePage() {
 
   return (
     <div className="min-h-screen">
-      <header className="flex items-center justify-between gap-3 border-b border-stone-200 bg-white px-4 py-3 sm:px-8">
+      <header className="flex items-center justify-between gap-3 border-b border-ink/8 bg-white px-4 py-3 sm:px-8">
         <div className="flex items-center gap-2">
           <LogoMark className="size-9" />
           <span className="font-display text-lg text-brand-900">{t('app_name')}</span>
         </div>
-        <LanguageSwitcher className="text-stone-600" />
+        <LanguageSwitcher className="text-ink/65" />
       </header>
       <main className="mx-auto max-w-5xl space-y-6 px-4 py-8 sm:px-8">
         <PageBand
@@ -29,7 +30,7 @@ export default function HomePage() {
             </span>
           }
         />
-        <div className="rounded-2xl border border-stone-200 bg-white p-6 shadow-sm sm:p-8">
+        <div className={`${SURFACE} p-6 sm:p-8`}>
           <div className="flex flex-wrap gap-2">
             {user.roles.map((r) => (
               <span key={r} className="rounded-full bg-brand-50 px-3 py-1 text-sm font-medium text-brand-700">
@@ -37,7 +38,7 @@ export default function HomePage() {
               </span>
             ))}
           </div>
-          <Button variant="ghost" className="mt-8 border border-stone-200 sm:w-auto" onClick={() => void signOut()}>
+          <Button variant="ghost" className="mt-8 border border-ink/10 sm:w-auto" onClick={() => void signOut()}>
             {t('logout')}
           </Button>
         </div>

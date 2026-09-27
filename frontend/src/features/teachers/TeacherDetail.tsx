@@ -7,7 +7,7 @@ import { parseApiError } from '../../api/client'
 import Avatar from '../../components/Avatar'
 import Icon from '../../components/Icon'
 import { EmptyState } from '../../components/ornaments'
-import { Badge, buttonClass, Card, CardTitle, ErrorState, LoadingState, Modal, Notice, PrimaryButton, SecondaryButton, TextArea, TextInput, type Tone } from '../../components/ui'
+import { Badge, buttonClass, Card, CardTitle, ErrorState, LoadingState, Modal, Notice, PrimaryButton, SecondaryButton, TextArea, TextInput, type Tone, SURFACE } from '../../components/ui'
 import { formatDate, formatNumber, formatPercent } from '../../lib/format'
 import { initialOf } from './initial'
 
@@ -61,7 +61,7 @@ export default function TeacherDetailView({ id }: { id: number }) {
 
       <dl className="grid grid-cols-2 gap-3 sm:grid-cols-4 lg:grid-cols-7">
         {kpis.map(([label, value]) => (
-          <div key={label} className="rounded-2xl border border-ink/8 bg-white p-4 shadow-sm">
+          <div key={label} className={`${SURFACE} p-4`}>
             <dt className="text-xs text-ink/60">{label}</dt>
             <dd className="mt-1 text-2xl font-semibold tabular-nums text-ink">{value}</dd>
           </div>

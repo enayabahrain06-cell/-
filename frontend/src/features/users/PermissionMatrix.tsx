@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next'
 import { parseApiError } from '../../api/client'
 import { usersApi, type RoleRow } from '../../api/users'
 import { useAuth } from '../../app/AuthContext'
-import { ErrorState, LoadingState, Notice, PrimaryButton, SecondaryButton } from '../../components/ui'
+import { ErrorState, LoadingState, Notice, PrimaryButton, SecondaryButton, SURFACE } from '../../components/ui'
 import { formatNumber } from '../../lib/format'
 
 /** The Super Admin always holds every permission; the server refuses edits to it. */
@@ -72,7 +72,7 @@ export default function PermissionMatrix({ onNotice }: { onNotice: (m: string | 
       <Notice tone="info">{editable ? t('matrix.intro') : t('matrix.read_only')}</Notice>
       {error && <Notice tone="error">{error}</Notice>}
 
-      <section className="overflow-hidden rounded-2xl border border-ink/8 bg-white shadow-sm" aria-label={t('tabs.roles')}>
+      <section className={`${SURFACE} overflow-hidden`} aria-label={t('tabs.roles')}>
         <div className="max-h-[70vh] overflow-auto">
           <table className="w-full min-w-[40rem] border-separate border-spacing-0 text-sm">
             <thead>
@@ -91,7 +91,7 @@ export default function PermissionMatrix({ onNotice }: { onNotice: (m: string | 
             {groups.map(([module, perms]) => (
               <tbody key={module}>
                 <tr className="bg-ink/[0.03]">
-                  <th scope="rowgroup" className="sticky start-0 z-[5] border-b border-ink/6 bg-[#f6f7f6] px-4 py-2 text-start text-xs font-semibold uppercase tracking-wide text-ink/60">
+                  <th scope="rowgroup" className="sticky start-0 z-[5] border-b border-ink/6 bg-page px-4 py-2 text-start text-xs font-semibold uppercase tracking-wide text-ink/60">
                     {t(`modules.${module}`, { defaultValue: module })}
                   </th>
                   {roles.map((r) => {
@@ -108,12 +108,12 @@ export default function PermissionMatrix({ onNotice }: { onNotice: (m: string | 
                 </tr>
                 {perms.map((p) => (
                   <tr key={p.name} className="group">
-                    <th scope="row" className="sticky start-0 z-[5] border-b border-ink/5 bg-white px-4 py-2 text-start font-normal text-ink/80 group-hover:bg-[#f1f7f3]">
+                    <th scope="row" className="sticky start-0 z-[5] border-b border-ink/5 bg-white px-4 py-2 text-start font-normal text-ink/80 group-hover:bg-brand-50">
                       {p.label}
                       <span dir="ltr" className="block text-start font-mono text-[11px] text-ink/35">{p.name}</span>
                     </th>
                     {roles.map((r) => (
-                      <td key={r.id} className="border-b border-ink/5 px-2 py-2 text-center group-hover:bg-[#f1f7f3]">
+                      <td key={r.id} className="border-b border-ink/5 px-2 py-2 text-center group-hover:bg-brand-50">
                         <input type="checkbox" className="size-4 accent-brand-600 disabled:opacity-40" aria-label={`${p.label} — ${r.label}`}
                           checked={has(r, p.name)} disabled={locked(r)} onChange={(e) => setMany(r, [p.name], e.target.checked)} />
                       </td>

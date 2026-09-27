@@ -16,7 +16,7 @@ export default function FamilyCertificates() {
   if (list.length === 0) return null
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-5">
       {list.map((s) => (
         <section key={s.id} aria-labelledby={`certs-${s.id}`} className="space-y-3">
           <h2 id={`certs-${s.id}`} className="flex items-center gap-2 font-display text-xl text-ink">

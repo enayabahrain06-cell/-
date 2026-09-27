@@ -8,8 +8,7 @@ import { useAuth } from '../../app/AuthContext'
 import Icon from '../../components/Icon'
 import Pagination from '../../components/Pagination'
 import SelectField from '../../components/SelectField'
-import { EmptyState } from '../../components/ornaments'
-import { ErrorState, FilterBar, LoadingState, Modal, Notice, PrimaryButton, SearchInput, SecondaryButton, SURFACE, TextInput } from '../../components/ui'
+import { ErrorState, FilterBar, LoadingState, Modal, Notice, PrimaryButton, SearchInput, SecondaryButton, SURFACE, TextInput, EmptyCard } from '../../components/ui'
 import { formatNumber } from '../../lib/format'
 import { formatDateTime, STATUS_META, StatusBadge } from './status'
 
@@ -103,7 +102,7 @@ export default function LogTab() {
       ) : logs.isError ? (
         <ErrorState message={t('error')} onRetry={() => void logs.refetch()} />
       ) : !logs.data?.data.length ? (
-        <div className={SURFACE}><EmptyState icon="messages" title={t('log.empty')} body={t('log.empty_hint')} /></div>
+        <EmptyCard icon="messages" title={t('log.empty')} body={t('log.empty_hint')} />
       ) : (
         <>
           <ul className={`${SURFACE} divide-y divide-ink/6 ${logs.isFetching ? 'opacity-70' : ''}`}>

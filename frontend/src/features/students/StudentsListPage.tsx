@@ -62,7 +62,7 @@ export default function StudentsListPage() {
       <PageBand title={t('title')} subtitle={query.data ? t('subtitle', { n: n(query.data.meta.total) }) : undefined} />
 
       {/* Filters: one row above the list */}
-      <section aria-label={t('filters.clear')} className="grid gap-3 rounded-2xl border border-ink/8 bg-white p-4 shadow-sm sm:grid-cols-2 lg:grid-cols-6">
+      <section aria-label={t('filters.clear')} className={`${SURFACE} grid gap-3 p-4 sm:grid-cols-2 lg:grid-cols-6`}>
         <SearchInput id="student-search" className="sm:col-span-2" label={t('search')} value={search} onChange={(e) => setSearch(e.target.value)} />
         {bothTracks && (
           <SelectField
@@ -225,7 +225,7 @@ function StudentsTable({ rows, locale }: { rows: StudentSummary[]; locale: strin
       <ul className="space-y-3 sm:hidden">
         {rows.map((s) => (
           <li key={s.id}>
-            <Link to={`/students/${s.id}`} className="block rounded-2xl border border-ink/8 bg-white p-4 shadow-sm active:bg-brand-50/50">
+            <Link to={`/students/${s.id}`} className={`${SURFACE} block p-4 active:bg-brand-50/50`}>
               <div className="flex items-center gap-3">
                 <Avatar name={s.full_name} initial={s.initial} src={s.photo_url} gender={s.gender} size="md" />
                 <div className="min-w-0 flex-1">

@@ -5,6 +5,7 @@ import type { AttendanceDay } from '../../api/dashboard'
 import Icon from '../../components/Icon'
 import { EmptyState } from '../../components/ornaments'
 import { formatDate, formatNumber, formatPercent, formatWeekday } from '../../lib/format'
+import { SURFACE } from '../../components/ui'
 
 /**
  * Stacked daily attendance. Palette validated (dataviz validator, light surface): all checks pass;
@@ -30,7 +31,7 @@ export default function AttendanceChart({ days }: { days: AttendanceDay[] }) {
   const data = rtl ? [...days].reverse() : days
 
   return (
-    <section className="rounded-2xl border border-ink/8 bg-white p-4 shadow-sm sm:p-5" aria-labelledby="attendance-chart-title">
+    <section className={`${SURFACE} p-4 sm:p-5`} aria-labelledby="attendance-chart-title">
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
           <h2 id="attendance-chart-title" className="text-base font-semibold text-ink">{t('chart.title')}</h2>

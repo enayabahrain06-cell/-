@@ -6,8 +6,8 @@ import { evaluationsApi, type SavedScore, type Suggestion } from '../../api/eval
 import { lessonsApi, studentsApi } from '../../api/students'
 import { parseApiError } from '../../api/client'
 import SelectField from '../../components/SelectField'
-import { EmptyState, PageBand } from '../../components/ornaments'
-import { LoadingState, Notice, PrimaryButton, Segmented, TextInput } from '../../components/ui'
+import { PageBand } from '../../components/ornaments'
+import { LoadingState, Notice, PrimaryButton, Segmented, TextInput, EmptyCard, SURFACE } from '../../components/ui'
 import { formatNumber } from '../../lib/format'
 import AttendanceDayPage from '../attendance/AttendanceDayPage'
 import ScoreGrid, { emptyDraft, isComplete, type Draft } from './ScoreGrid'
@@ -69,7 +69,7 @@ function Monthly() {
 
   return (
     <div className="space-y-4">
-      <div className="grid gap-3 rounded-2xl border border-ink/8 bg-white p-4 shadow-sm sm:grid-cols-3">
+      <div className={`${SURFACE} grid gap-3 p-4 sm:grid-cols-3`}>
         <SelectField label={t('monthly.circle')} value={lessonId ?? ''} onChange={(e) => setLessonId(Number(e.target.value))}
           options={(lessons.data ?? []).map((l) => ({ value: String(l.id), label: l.name }))} />
         <TextInput label={t('monthly.period')} type="month" value={period} max={new Date().toISOString().slice(0, 7)} onChange={(e) => e.target.value && setPeriod(e.target.value)} />
@@ -77,9 +77,9 @@ function Monthly() {
       </div>
       {msg && <Notice tone={msg.tone}>{msg.text}</Notice>}
       {!lessonId ? (
-        <div className="rounded-2xl border border-ink/8 bg-white shadow-sm"><EmptyState icon="lessons" title={t('monthly.choose_circle')} /></div>
+        <EmptyCard icon="lessons" title={t('monthly.choose_circle')} />
       ) : roster.isLoading || existing.isLoading ? <LoadingState /> : (roster.data?.data.length ?? 0) === 0 ? (
-        <div className="rounded-2xl border border-ink/8 bg-white shadow-sm"><EmptyState icon="students" title={t('empty_roster')} /></div>
+        <EmptyCard icon="students" title={t('empty_roster')} />
       ) : (
         <>
           <ScoreGrid students={roster.data!.data} drafts={drafts} saved={saved} suggestions={suggestions} threshold={6} withProgress={false}

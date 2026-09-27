@@ -6,8 +6,8 @@ import { auditApi, type AuditRow } from '../../api/audit'
 import Icon from '../../components/Icon'
 import Pagination from '../../components/Pagination'
 import SelectField from '../../components/SelectField'
-import { EmptyState, PageBand } from '../../components/ornaments'
-import { ErrorState, LoadingState, SecondaryButton, SURFACE, TABLE_HEAD, TableWrap, TextInput } from '../../components/ui'
+import { PageBand } from '../../components/ornaments'
+import { ErrorState, LoadingState, SecondaryButton, SURFACE, TABLE_HEAD, TableWrap, TextInput, EmptyCard } from '../../components/ui'
 import { formatDate } from '../../lib/format'
 
 const KEYS = ['action', 'user_id', 'from', 'to', 'page'] as const
@@ -43,7 +43,7 @@ export default function AuditLogPage() {
       </section>
 
       {q.isLoading ? <LoadingState /> : q.isError || !q.data ? <ErrorState onRetry={() => void q.refetch()} /> : q.data.data.length === 0 ? (
-        <div className={SURFACE}><EmptyState icon="eye" title={t('empty')} body={t('empty_body')} /></div>
+        <EmptyCard icon="eye" title={t('empty')} body={t('empty_body')} />
       ) : (
         <>
           <TableWrap surface>

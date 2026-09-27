@@ -6,8 +6,8 @@ import { examsApi } from '../../api/exams'
 import { useAuth } from '../../app/AuthContext'
 import Pagination from '../../components/Pagination'
 import SelectField from '../../components/SelectField'
-import { EmptyState, PageBand } from '../../components/ornaments'
-import { Badge, ErrorState, LoadingState, PrimaryButton, type Tone } from '../../components/ui'
+import { PageBand } from '../../components/ornaments'
+import { Badge, ErrorState, LoadingState, PrimaryButton, type Tone, EmptyCard, SURFACE, FilterBar } from '../../components/ui'
 import { formatDate, formatNumber } from '../../lib/format'
 import { GENDER_TONE } from '../lessons/LessonsHomePage'
 import ExamFormDialog from './ExamFormDialog'
@@ -31,21 +31,21 @@ export default function ExamsHomePage() {
   return (
     <div className="space-y-5">
       <PageBand title={t('title')} subtitle={t('subtitle')} />
-      <div className="flex flex-wrap items-end gap-3 rounded-2xl border border-ink/8 bg-white p-4 shadow-sm">
-        <SelectField className="w-40" label={t('filters.all_types')} hideLabel value={filters.type ?? ''} onChange={(e) => set('type', e.target.value)}
+      <FilterBar>
+        <SelectField className="sm:w-40" label={t('filters.all_types')} hideLabel value={filters.type ?? ''} onChange={(e) => set('type', e.target.value)}
           options={[{ value: '', label: t('filters.all_types') }, { value: 'online', label: t('type.online') }, { value: 'paper', label: t('type.paper') }]} />
-        <SelectField className="w-40" label={t('filters.all_statuses')} hideLabel value={filters.status ?? ''} onChange={(e) => set('status', e.target.value)}
+        <SelectField className="sm:w-40" label={t('filters.all_statuses')} hideLabel value={filters.status ?? ''} onChange={(e) => set('status', e.target.value)}
           options={[{ value: '', label: t('filters.all_statuses') }, ...(['draft', 'published', 'closed', 'graded'] as const).map((s) => ({ value: s, label: t(`status.${s}`) }))]} />
-        {can('exams.manage') && <PrimaryButton className="ms-auto" onClick={() => setOpen(true)}>+ {t('new')}</PrimaryButton>}
-      </div>
+        {can('exams.manage') && <PrimaryButton className="sm:ms-auto" onClick={() => setOpen(true)}>+ {t('new')}</PrimaryButton>}
+      </FilterBar>
       {q.isLoading ? <LoadingState /> : q.isError || !q.data ? <ErrorState onRetry={() => void q.refetch()} /> : q.data.data.length === 0 ? (
-        <div className="rounded-2xl border border-ink/8 bg-white shadow-sm"><EmptyState icon="exams" title={t('empty')} /></div>
+        <EmptyCard icon="exams" title={t('empty')} />
       ) : (
         <>
           <ul className="grid gap-3 *:min-w-0 md:grid-cols-2 xl:grid-cols-3">
             {q.data.data.map((e) => (
               <li key={e.id}>
-                <Link to={`/exams/${e.id}`} className="block h-full rounded-2xl border border-ink/8 bg-white p-4 shadow-sm transition hover:border-brand-500/40 hover:shadow">
+                <Link to={`/exams/${e.id}`} className={`${SURFACE} block h-full p-4 transition hover:border-brand-500/40 hover:shadow`}>
                   <div className="flex items-start justify-between gap-2">
                     <p dir="auto" className="font-semibold text-ink">{e.name}</p>
                     <div className="flex flex-wrap justify-end gap-1">

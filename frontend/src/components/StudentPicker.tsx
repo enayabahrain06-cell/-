@@ -3,6 +3,7 @@ import { useQuery } from '@tanstack/react-query'
 import { useTranslation } from 'react-i18next'
 import { studentsApi, type StudentSummary } from '../api/students'
 import Avatar from './Avatar'
+import { inputClass } from './ui'
 
 /** Search-as-you-type student picker (name, number or phone). Results are track-scoped by the API. */
 export default function StudentPicker({ value, onChange, label, gender }: { value: StudentSummary | null; onChange: (s: StudentSummary | null) => void; label: string; gender?: string }) {
@@ -30,7 +31,7 @@ export default function StudentPicker({ value, onChange, label, gender }: { valu
     <div className="relative">
       <label htmlFor="student-picker" className="mb-1.5 block text-sm font-medium text-ink/75">{label}</label>
       <input id="student-picker" type="search" autoComplete="off" value={q} onChange={(e) => setQ(e.target.value)} placeholder={t('picker.placeholder')}
-        className="block w-full rounded-xl border border-ink/15 bg-white px-3 py-2 text-sm shadow-sm focus:border-brand-500 focus:outline-none focus:ring-4 focus:ring-brand-100" />
+        className={inputClass('md', 'w-full')} />
       {results.data && q.trim().length >= 2 && (
         <ul role="listbox" className="absolute inset-x-0 z-10 mt-1 max-h-64 overflow-y-auto rounded-xl border border-ink/10 bg-white shadow-lg">
           {results.data.data.length === 0 ? <li className="px-3 py-2 text-sm text-ink/50">{t('picker.none')}</li> : results.data.data.map((s) => (

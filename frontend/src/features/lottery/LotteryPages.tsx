@@ -10,7 +10,7 @@ import Avatar from '../../components/Avatar'
 import Icon from '../../components/Icon'
 import SelectField from '../../components/SelectField'
 import { EmptyState, OrnamentDivider, PageBand } from '../../components/ornaments'
-import { Badge, buttonClass, Card, CardTitle, ErrorState, LoadingState, Modal, Notice, PrimaryButton, SecondaryButton, TextInput, type Tone, SURFACE } from '../../components/ui'
+import { Badge, buttonClass, Card, CardTitle, ErrorState, LoadingState, Modal, Notice, PrimaryButton, SecondaryButton, TextInput, type Tone, SURFACE, inputClass, EmptyCard } from '../../components/ui'
 import { formatDate, formatNumber } from '../../lib/format'
 import { GENDER_TONE } from '../lessons/LessonsHomePage'
 
@@ -30,12 +30,12 @@ export function LotteryListPage() {
     <div className="space-y-5">
       <PageBand title={t('title')} subtitle={t('subtitle')} actions={can('lottery.manage') ? <button type="button" onClick={() => setOpen(true)} className={buttonClass('onDeep')}>+ {t('new')}</button> : undefined} />
       {q.isLoading ? <LoadingState /> : q.isError || !q.data ? <ErrorState onRetry={() => void q.refetch()} /> : q.data.data.length === 0 ? (
-        <div className={SURFACE}><EmptyState icon="lottery" title={t('empty')} /></div>
+        <EmptyCard icon="lottery" title={t('empty')} />
       ) : (
         <ul className="grid gap-3 *:min-w-0 md:grid-cols-2">
           {q.data.data.map((l) => (
             <li key={l.id}>
-              <Link to={`/lottery/${l.id}`} className="block rounded-2xl border border-ink/8 bg-white p-4 shadow-sm hover:border-brand-500/40">
+              <Link to={`/lottery/${l.id}`} className={`${SURFACE} block p-4 hover:border-brand-500/40`}>
                 <div className="flex items-start justify-between gap-2">
                   <p dir="auto" className="font-semibold text-ink">{l.name}</p>
                   <span className="flex gap-1"><Badge tone={STATUS_TONE[l.status]}>{t(`status.${l.status}`)}</Badge>{l.gender && <Badge tone={GENDER_TONE[l.gender]}>{tl(`gender.${l.gender}`)}</Badge>}</span>
@@ -107,7 +107,7 @@ function LotteryDialog({ lottery, onClose, onSaved }: { lottery?: LotteryDetail;
                     <input type="checkbox" className="size-4 accent-brand-600" aria-label={t('form.include')} checked={r.on} onChange={(e) => setRows({ ...rows, [l.id]: { ...r, on: e.target.checked } })} />
                     <span dir="auto" className="min-w-0 flex-1 text-ink">{l.name}<span className="block text-xs text-ink/50">{l.teacher?.name}</span></span>
                     <label className="flex items-center gap-1 text-xs text-ink/60">{t('form.capacity')}
-                      <input type="number" min={1} max={500} value={r.capacity} disabled={!r.on} onChange={(e) => setRows({ ...rows, [l.id]: { ...r, capacity: Number(e.target.value) } })} className="w-16 rounded-lg border border-ink/15 px-2 py-1 text-center tabular-nums" />
+                      <input type="number" min={1} max={500} value={r.capacity} disabled={!r.on} onChange={(e) => setRows({ ...rows, [l.id]: { ...r, capacity: Number(e.target.value) } })} className={inputClass('sm', 'w-16 text-center tabular-nums')} />
                     </label>
                   </li>
                 )
@@ -202,7 +202,7 @@ export function LotteryDetailPage() {
                     <span className="min-w-0 flex-1"><span dir="auto" className="block truncate text-ink">{s.student.full_name}</span>
                       <span className="block text-xs text-ink/50">{s.age_at_start !== null && t('detail.age', { n: n(s.age_at_start) })}{s.student.memorization_level && ` · ${s.student.memorization_level}`}</span></span>
                     {editable && l.teachers.length > 1 && (
-                      <select aria-label={t('detail.move_to')} className="rounded-lg border border-ink/15 px-1 py-1 text-xs" value="" onChange={(e) => e.target.value && move.mutate({ rid: s.result_id, to: Number(e.target.value) })}>
+                      <select aria-label={t('detail.move_to')} className={inputClass('sm', 'text-xs')} value="" onChange={(e) => e.target.value && move.mutate({ rid: s.result_id, to: Number(e.target.value) })}>
                         <option value="">{t('detail.move_to')}</option>
                         {l.teachers.filter((x) => x.lottery_teacher_id !== tc.lottery_teacher_id).map((x) => <option key={x.lottery_teacher_id} value={x.lottery_teacher_id}>{x.teacher.name}</option>)}
                       </select>

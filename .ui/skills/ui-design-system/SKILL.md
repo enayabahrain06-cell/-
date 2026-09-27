@@ -71,7 +71,7 @@ Forbidden in TSX: Tailwind default palettes (`stone-*`, `gray-*`, `slate-*`, `sk
 
 ### Spacing
 
-- Page stack `space-y-5`. Inside a card `space-y-4`. Form grids `gap-3` or `gap-4`.
+- Page stack `space-y-5`. Tab panels and sub-sections under a page, and the inside of a card: `space-y-4`. Form grids `gap-3` or `gap-4`.
 - Card padding `p-4 sm:p-5`. Filter bar `p-4`. Table cells `px-4 py-3`. Modal sections `px-5 py-4`.
 - Main gutter and width come from `AppLayout` (`px-4 sm:px-6 lg:px-8`, `max-w-7xl`). Pages must not add their own outer padding or width cap.
 

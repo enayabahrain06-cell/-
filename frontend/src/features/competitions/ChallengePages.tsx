@@ -13,7 +13,7 @@ import Icon from '../../components/Icon'
 import SelectField from '../../components/SelectField'
 import StudentPicker from '../../components/StudentPicker'
 import { EmptyState } from '../../components/ornaments'
-import { Badge, Card, CardTitle, ErrorState, LoadingState, Modal, Notice, PrimaryButton, SecondaryButton, SURFACE, TextArea, TextInput, type Tone } from '../../components/ui'
+import { Badge, Card, CardTitle, ErrorState, LoadingState, Modal, Notice, PrimaryButton, SecondaryButton, TextArea, TextInput, type Tone, EmptyCard, SURFACE } from '../../components/ui'
 import type { StudentSummary } from '../../api/students'
 import { formatDate, formatNumber } from '../../lib/format'
 
@@ -51,14 +51,14 @@ export function ChallengesPanel({ creating, onCloseCreate }: { creating: boolean
   return (
     <>
       {q.isLoading ? <LoadingState /> : q.isError || !q.data ? <ErrorState onRetry={() => void q.refetch()} /> : q.data.data.length === 0 ? (
-        <div className={SURFACE}><EmptyState icon="flag" title={t('challenges.empty')} body={t('challenges.empty_body')} /></div>
+        <EmptyCard icon="flag" title={t('challenges.empty')} body={t('challenges.empty_body')} />
       ) : (
-        <ul className="grid gap-3 md:grid-cols-2">
+        <ul className="grid gap-3 *:min-w-0 md:grid-cols-2">
           {q.data.data.map((c) => {
             const pct = c.participants_count ? Math.round(((c.completed_count ?? 0) * 100) / c.participants_count) : 0
             return (
               <li key={c.id}>
-                <Link to={`/competitions/challenges/${c.id}`} className="block h-full rounded-2xl border border-ink/8 bg-white p-4 shadow-sm hover:border-brand-500/40">
+                <Link to={`/competitions/challenges/${c.id}`} className={`${SURFACE} block h-full p-4 hover:border-brand-500/40`}>
                   <div className="flex items-start justify-between gap-2">
                     <p dir="auto" className="font-semibold text-ink">{c.name}</p>
                     <span className="flex shrink-0 gap-1"><Badge tone={CH_TONE[c.status]}>{t(`challenges.status.${c.status}`)}</Badge><Badge tone={c.gender === 'female' ? 'gold' : 'brand'}>{c.gender === 'female' ? t('display.girls') : t('display.boys')}</Badge></span>

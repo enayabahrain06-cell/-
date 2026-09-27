@@ -7,8 +7,8 @@ import { api } from '../../api/client'
 import type { StudentSummary } from '../../api/students'
 import { useAuth } from '../../app/AuthContext'
 import SelectField from '../../components/SelectField'
-import { EmptyState, PageBand } from '../../components/ornaments'
-import { Badge, buttonClass, LoadingState, SURFACE } from '../../components/ui'
+import { PageBand } from '../../components/ornaments'
+import { Badge, buttonClass, LoadingState, SURFACE, EmptyCard } from '../../components/ui'
 import FamilyLayout from '../../layouts/FamilyLayout'
 import { formatDate, formatNumber } from '../../lib/format'
 
@@ -59,7 +59,7 @@ export default function MyExamsPage() {
         {q.isLoading ? <LoadingState /> : !q.data ? null : (['open', 'upcoming', 'finished'] as const).map((k) => (
           <section key={k} aria-labelledby={`my-${k}`} className="space-y-3">
             <h2 id={`my-${k}`} className="text-lg font-semibold text-ink">{t(`my.${k}`)}</h2>
-            {q.data[k].length === 0 ? <div className="rounded-2xl border border-ink/8 bg-white"><EmptyState size="sm" icon="exams" title={t('my.none')} /></div> : <ul className="grid gap-3 sm:grid-cols-2">{q.data[k].map((e) => card(e, k))}</ul>}
+            {q.data[k].length === 0 ? <EmptyCard size="sm" icon="exams" title={t('my.none')} /> : <ul className="grid gap-3 *:min-w-0 sm:grid-cols-2">{q.data[k].map((e) => card(e, k))}</ul>}
           </section>
         ))}
       </div>

@@ -201,7 +201,7 @@ function SignatureImage({ template, slot, onChanged, onError }: {
     <div>
       <p className="mb-1.5 text-sm font-medium text-ink/75">{t('templates.sig_image')}</p>
       <div className="flex flex-wrap items-center gap-3">
-        <div className="grid h-16 w-40 place-items-center rounded-lg border border-dashed border-ink/20 bg-[#fbf7ee]">
+        <div className="grid h-16 w-40 place-items-center rounded-lg border border-dashed border-ink/20 bg-paper">
           {img.loading ? <StarSpinner className="size-5 text-brand-600" /> : img.url ? <img src={img.url} alt={t('templates.signature_n', { n: slot })} className="max-h-14 max-w-36 object-contain" /> : <span className="text-xs text-ink/40">{t('templates.no_image')}</span>}
         </div>
         <div className="flex flex-wrap gap-2">

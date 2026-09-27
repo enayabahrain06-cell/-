@@ -6,8 +6,8 @@ import { parseApiError } from '../../api/client'
 import { useAuth } from '../../app/AuthContext'
 import Avatar from '../../components/Avatar'
 import Icon from '../../components/Icon'
-import { EmptyState, OrnamentDivider, PageBand } from '../../components/ornaments'
-import { Badge, buttonClass, Card, CardTitle, ErrorState, LoadingState, Modal, Notice, PrimaryButton, SecondaryButton, Segmented, SURFACE, TABLE_HEAD, TableWrap, type Tone } from '../../components/ui'
+import { OrnamentDivider, PageBand } from '../../components/ornaments'
+import { Badge, buttonClass, Card, CardTitle, ErrorState, LoadingState, Modal, Notice, PrimaryButton, SecondaryButton, Segmented, SURFACE, TABLE_HEAD, TableWrap, type Tone, inputClass, EmptyCard } from '../../components/ui'
 import { formatDate, formatNumber } from '../../lib/format'
 
 /** Categorical order from the validated palette: attendance, evaluation, memorization, bonus. */
@@ -73,7 +73,7 @@ export default function HonorBoardPage() {
       <div className="flex flex-wrap items-end gap-3">
         <label className="text-sm text-ink/70">
           <span className="mb-1 block font-medium">{t('honor.month')}</span>
-          <input type="month" value={period} max={currentMonth()} onChange={(e) => e.target.value && setPeriod(e.target.value)} className="rounded-xl border border-ink/15 bg-white px-3 py-2 text-ink" />
+          <input type="month" value={period} max={currentMonth()} onChange={(e) => e.target.value && setPeriod(e.target.value)} className={inputClass('md')} />
         </label>
         {both && <Segmented name="honor-gender" label={t('honor.track')} value={gender} onChange={setGender} options={[{ value: 'male', label: t('display.boys') }, { value: 'female', label: t('display.girls') }]} />}
         <Segmented name="honor-tab" label="" value={tab} onChange={setTab} options={[{ value: 'board', label: t('honor.tab_board') }, { value: 'badges', label: t('honor.tab_badges') }]} />
@@ -98,7 +98,7 @@ export default function HonorBoardPage() {
           </div>
 
           {board.rows.length === 0 ? (
-            <div className={SURFACE}><EmptyState icon="medal" title={t('honor.empty')} body={t('honor.empty_body')} /></div>
+            <EmptyCard icon="medal" title={t('honor.empty')} body={t('honor.empty_body')} />
           ) : (
             <>
               {level === 'track' && <Podium rows={board.rows.slice(0, 3)} />}
@@ -294,7 +294,7 @@ function BadgesPanel({ manage }: { manage: boolean }) {
   const n = (v: number) => formatNumber(v, i18n.language)
   const ruleText = (b: BadgeRow) => t(`honor.badge.rules.${b.rule_type}`, { v: b.rule_type === 'tajweed_average' && b.rule_value ? n(b.rule_value / 100) : n(b.rule_value ?? 0) })
   return (
-    <ul className="grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+    <ul className="grid gap-3 *:min-w-0 sm:grid-cols-2 lg:grid-cols-3">
       {q.data.map((b) => (
         <li key={b.id} className={`${SURFACE} flex gap-3 p-4 ${b.is_active ? '' : 'opacity-60'}`}>
           <span className="grid size-11 shrink-0 place-items-center rounded-full bg-gold-500/15 text-gold-700"><Icon name={['medal', 'star', 'calendar', 'flag', 'trophy'].includes(b.icon) ? (b.icon === 'star' ? 'evaluation' : b.icon === 'calendar' ? 'attendance' : b.icon) : 'medal'} /></span>

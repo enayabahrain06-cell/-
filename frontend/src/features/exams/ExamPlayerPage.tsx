@@ -5,9 +5,10 @@ import { useTranslation } from 'react-i18next'
 import { myExamsApi, type Attempt, type Question } from '../../api/exams'
 import { parseApiError } from '../../api/client'
 import { OrnamentFrame } from '../../components/ornaments'
-import { buttonClass, ErrorState, LoadingState, Notice, PrimaryButton, SecondaryButton, SURFACE } from '../../components/ui'
+import { buttonClass, ErrorState, LoadingState, Notice, PrimaryButton, SecondaryButton, SURFACE, inputClass } from '../../components/ui'
 import FamilyLayout from '../../layouts/FamilyLayout'
 import { formatNumber } from '../../lib/format'
+import Icon from '../../components/Icon'
 
 type AnswerMap = Record<number, unknown>
 
@@ -183,7 +184,7 @@ function QuestionInput({ q, value, onChange, examId, studentId }: { q: Question;
         <div>
           <label htmlFor={`a-${q.id}`} className="mb-1.5 block text-sm font-medium text-ink/75">{t('player.your_answer')}</label>
           <textarea id={`a-${q.id}`} dir="rtl" rows={3} value={String(v.text ?? '')} onChange={(e) => onChange({ text: e.target.value })}
-            className="block w-full rounded-xl border border-ink/15 px-3 py-2 font-display text-xl focus:border-brand-500 focus:outline-none focus:ring-4 focus:ring-brand-100" />
+            className={inputClass('md', 'w-full font-display text-xl')} />
         </div>
       )
     case 'order_verses': {
@@ -247,7 +248,7 @@ function Recorder({ examId, questionId, studentId, already, onUploaded }: { exam
           ? <PrimaryButton tone="danger" onClick={() => rec.current?.stop()}>■ {t('player.stop')}</PrimaryButton>
           : <PrimaryButton disabled={state === 'uploading'} onClick={() => void start()}>● {state === 'done' ? t('player.re_record') : t('player.record')}</PrimaryButton>}
         {state === 'recording' && <span className="animate-pulse text-sm text-danger" aria-live="polite">{t('player.recording')}</span>}
-        {state === 'done' && <span className="text-sm text-brand-700" aria-live="polite">✓ {t('player.uploaded')}</span>}
+        {state === 'done' && <span className="inline-flex items-center gap-1 text-sm text-brand-700" aria-live="polite"><Icon name="check" className="size-4" />{t('player.uploaded')}</span>}
       </div>
       {state === 'denied' && <Notice tone="error">{t('player.mic_denied')}</Notice>}
       {preview && <audio controls src={preview} className="w-full" />}

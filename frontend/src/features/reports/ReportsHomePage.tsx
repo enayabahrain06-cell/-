@@ -6,7 +6,7 @@ import { reportsApi, type CatalogEntry, type Cell, type Report, type ReportCatal
 import { saveBlob } from '../../api/payments'
 import Icon from '../../components/Icon'
 import SelectField from '../../components/SelectField'
-import { Card, ErrorState, LoadingState, SecondaryButton, TextInput } from '../../components/ui'
+import { Card, ErrorState, LoadingState, SecondaryButton, TextInput, SURFACE } from '../../components/ui'
 import { EmptyState, PageBand } from '../../components/ornaments'
 import { formatNumber, formatPercent } from '../../lib/format'
 import AttendanceRateChart from './AttendanceRateChart'
@@ -21,7 +21,7 @@ export default function ReportsHomePage() {
   const entry = catalog.data?.data.find((r) => r.key === key)
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-5">
       <PageBand
         title={entry ? entry.title : t('title')}
         subtitle={entry ? entry.description : t('subtitle')}
@@ -57,12 +57,12 @@ function Catalog({ catalog }: { catalog: ReportCatalog }) {
       {groups.map((g) => (
         <section key={g.key} aria-labelledby={`group-${g.key}`}>
           <h2 id={`group-${g.key}`} className="mb-3 text-sm font-semibold uppercase tracking-wide text-ink/55">{g.label}</h2>
-          <ul className="grid gap-3 sm:grid-cols-2 xl:grid-cols-3">
+          <ul className="grid gap-3 *:min-w-0 sm:grid-cols-2 xl:grid-cols-3">
             {g.reports.map((r) => (
               <li key={r.key}>
                 <Link
                   to={`/reports?report=${r.key}`}
-                  className="group flex h-full items-start gap-3 rounded-2xl border border-ink/8 bg-white p-4 shadow-sm transition hover:border-brand-600/30 hover:shadow-md focus-visible:outline-2 focus-visible:outline-brand-600"
+                  className={`${SURFACE} group flex h-full items-start gap-3 p-4 transition hover:border-brand-600/30 hover:shadow-md focus-visible:outline-2 focus-visible:outline-brand-600`}
                 >
                   <span className="rounded-xl bg-brand-50 p-2.5 text-brand-700">
                     <Icon name={r.icon} className="size-5" />
@@ -146,7 +146,7 @@ function Viewer({ entry, catalog }: { entry: CatalogEntry; catalog: ReportCatalo
 
   return (
     <div className="space-y-5">
-      <div className="flex flex-wrap items-end gap-3 rounded-2xl border border-ink/8 bg-white p-4 shadow-sm">
+      <div className={`${SURFACE} flex flex-wrap items-end gap-3 p-4`}>
         {has('period') && (
           <>
             <TextInput className="w-full sm:w-40" label={t('filters.from')} type="date" value={values.from} max={values.to} onChange={(e) => set({ from: e.target.value })} />
@@ -242,7 +242,7 @@ function ReportBody({ report, entry, locale, busy }: { report: Report; entry: Ca
       {report.summary.length > 0 && (
         <section aria-label={t('summary')} className="grid grid-cols-2 gap-3 sm:grid-cols-[repeat(auto-fit,minmax(9.5rem,1fr))]">
           {report.summary.map(([label, value]) => (
-            <div key={label} className="rounded-2xl border border-ink/8 bg-white p-4 shadow-sm">
+            <div key={label} className={`${SURFACE} p-4`}>
               <p className="text-sm leading-snug text-ink/60">{label}</p>
               <p className="mt-1.5 text-xl font-semibold tabular-nums text-ink" dir="auto">{summaryValue(value, locale)}</p>
             </div>

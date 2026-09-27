@@ -4,6 +4,7 @@ import { CartesianGrid, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YA
 import type { StudentProfile } from '../../../api/students'
 import Icon from '../../../components/Icon'
 import { formatDate, formatNumber } from '../../../lib/format'
+import { SURFACE } from '../../../components/ui'
 
 /**
  * 8-week trend, one line per criterion (0–10). Same validated 4-slot palette as the attendance chart
@@ -28,7 +29,7 @@ export default function TrendChart({ weeks }: { weeks: Week[] }) {
   const num = (v: number | null) => (v === null ? '—' : formatNumber(v, locale, { maximumFractionDigits: 1 }))
 
   return (
-    <section className="rounded-2xl border border-ink/8 bg-white p-4 shadow-sm sm:p-5" aria-labelledby="trend-title">
+    <section className={`${SURFACE} p-4 sm:p-5`} aria-labelledby="trend-title">
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
           <h3 id="trend-title" className="font-semibold text-ink">{t('evaluation.trend')}</h3>

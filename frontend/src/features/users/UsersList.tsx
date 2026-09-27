@@ -8,8 +8,7 @@ import Avatar from '../../components/Avatar'
 import Icon from '../../components/Icon'
 import Pagination from '../../components/Pagination'
 import SelectField from '../../components/SelectField'
-import { EmptyState } from '../../components/ornaments'
-import { Badge, ErrorState, LoadingState, Modal, Notice, PrimaryButton, SecondaryButton, TextInput, type Tone } from '../../components/ui'
+import { Badge, ErrorState, LoadingState, Modal, Notice, PrimaryButton, SecondaryButton, type Tone, SURFACE, FilterBar, SearchInput, EmptyCard } from '../../components/ui'
 import { formatDate, formatNumber } from '../../lib/format'
 
 const ROLE_TONE: Record<string, Tone> = { super_admin: 'gold', supervisor: 'info', teacher: 'brand' }
@@ -51,22 +50,22 @@ export default function UsersList({ onEdit, onNotice }: { onEdit: (u: AdminUser)
 
   return (
     <div className="space-y-4">
-      <div className="flex flex-wrap items-end gap-3 rounded-2xl border border-ink/8 bg-white p-4 shadow-sm">
-        <TextInput className="min-w-56 flex-1" label={t('list.search')} hideLabel placeholder={t('list.search')} type="search" value={search} onChange={(e) => setSearch(e.target.value)} />
+      <FilterBar>
+        <SearchInput className="sm:min-w-56 sm:flex-1" label={t('list.search')} value={search} onChange={(e) => setSearch(e.target.value)} />
         <SelectField className="w-full sm:w-44" label={t('list.role')} hideLabel value={filters.role ?? ''} onChange={(e) => set({ role: e.target.value || undefined })}
           options={[{ value: '', label: t('list.all_roles') }, ...ALL_ROLES.map((r) => ({ value: r, label: t(`roles.${r}`) }))]} />
         <SelectField className="w-full sm:w-40" label={t('list.status')} hideLabel value={filters.active ?? ''} onChange={(e) => set({ active: (e.target.value || undefined) as UserFilters['active'] })}
           options={[{ value: '', label: t('list.any_status') }, { value: '1', label: t('list.active') }, { value: '0', label: t('list.inactive') }]} />
-      </div>
+      </FilterBar>
 
       {q.isLoading ? (
         <LoadingState />
       ) : q.isError || !q.data ? (
         <ErrorState onRetry={() => void q.refetch()} />
       ) : q.data.data.length === 0 ? (
-        <EmptyState icon="users" title={t('list.empty')} />
+        <EmptyCard icon="users" title={t('list.empty')} />
       ) : (
-        <section className={`rounded-2xl border border-ink/8 bg-white shadow-sm ${q.isFetching ? 'opacity-70' : ''}`} aria-label={t('tabs.users')}>
+        <section className={`${SURFACE} ${q.isFetching ? 'opacity-70' : ''}`} aria-label={t('tabs.users')}>
           <p className="border-b border-ink/8 px-5 py-3 text-sm text-ink/55">{t('list.count', { n: formatNumber(q.data.meta.total, locale) })}</p>
           <ul className="divide-y divide-ink/6">
             {q.data.data.map((u) => {

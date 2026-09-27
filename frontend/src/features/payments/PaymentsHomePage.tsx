@@ -10,7 +10,7 @@ import Icon from '../../components/Icon'
 import Pagination from '../../components/Pagination'
 import SelectField from '../../components/SelectField'
 import { EmptyState, PageBand } from '../../components/ornaments'
-import { Badge, Card, CardTitle, ErrorState, LoadingState, Modal, Notice, PrimaryButton, SecondaryButton, Segmented, TableWrap, TextArea, TextInput, type Tone } from '../../components/ui'
+import { Badge, Card, CardTitle, ErrorState, LoadingState, Modal, Notice, PrimaryButton, SecondaryButton, Segmented, TableWrap, TextArea, TextInput, type Tone, SURFACE, EmptyCard, FilterBar } from '../../components/ui'
 import { formatDate, formatMoney, formatNumber } from '../../lib/format'
 import { AdjustDialog, InvoiceDialog, RecordPaymentDialog, RefundDialog } from './PaymentDialogs'
 
@@ -62,11 +62,11 @@ export default function PaymentsHomePage() {
 function Period({ from, to, onChange, children }: { from: string; to: string; onChange: (from: string, to: string) => void; children?: React.ReactNode }) {
   const { t } = useTranslation('payments')
   return (
-    <div className="flex flex-wrap items-end gap-3 rounded-2xl border border-ink/8 bg-white p-4 shadow-sm">
-      <TextInput className="w-40" label={t('from')} type="date" value={from} onChange={(e) => onChange(e.target.value, to)} />
-      <TextInput className="w-40" label={t('to')} type="date" value={to} onChange={(e) => onChange(from, e.target.value)} />
+    <FilterBar>
+      <TextInput className="sm:w-40" label={t('from')} type="date" value={from} onChange={(e) => onChange(e.target.value, to)} />
+      <TextInput className="sm:w-40" label={t('to')} type="date" value={to} onChange={(e) => onChange(from, e.target.value)} />
       {children}
-    </div>
+    </FilterBar>
   )
 }
 
@@ -88,10 +88,10 @@ function Payments() {
       </Period>
       {msg && <Notice>{msg}</Notice>}
       {q.isLoading ? <LoadingState /> : q.isError || !q.data ? <ErrorState onRetry={() => void q.refetch()} /> : q.data.data.length === 0 ? (
-        <div className="rounded-2xl border border-ink/8 bg-white shadow-sm"><EmptyState icon="payments" title={t('empty')} /></div>
+        <EmptyCard icon="payments" title={t('empty')} />
       ) : (
         <>
-          <ul className="divide-y divide-ink/6 rounded-2xl border border-ink/8 bg-white shadow-sm">
+          <ul className={`${SURFACE} divide-y divide-ink/6`}>
             {q.data.data.map((p) => (
               <li key={p.id} className="flex flex-wrap items-center gap-x-4 gap-y-1 px-4 py-3 text-sm">
                 <span className="w-24 text-ink/60">{formatDate(p.paid_at, locale, { day: 'numeric', month: 'short' })}</span>
@@ -134,16 +134,16 @@ function Invoices() {
 
   return (
     <div className="space-y-4">
-      <div className="flex flex-wrap items-center gap-3 rounded-2xl border border-ink/8 bg-white p-4 shadow-sm">
+      <div className={`${SURFACE} flex flex-wrap items-center gap-3 p-4`}>
         <SelectField className="w-48" label={t('invoices.all')} hideLabel value={status} onChange={(e) => { setStatus(e.target.value); setPage(1) }}
           options={[{ value: '', label: t('invoices.all') }, ...(['open', 'partial', 'paid', 'cancelled'] as const).map((s) => ({ value: s, label: t(`invoices.status.${s}`) }))]} />
         <label className="flex items-center gap-2 text-sm text-ink/80"><input type="checkbox" className="size-4 accent-brand-600" checked={overdue} onChange={(e) => { setOverdue(e.target.checked); setPage(1) }} />{t('invoices.overdue')}</label>
       </div>
       {q.isLoading ? <LoadingState /> : !q.data?.data.length ? (
-        <div className="rounded-2xl border border-ink/8 bg-white shadow-sm"><EmptyState icon="payments" title={t('empty')} /></div>
+        <EmptyCard icon="payments" title={t('empty')} />
       ) : (
         <>
-          <ul className="divide-y divide-ink/6 rounded-2xl border border-ink/8 bg-white shadow-sm">
+          <ul className={`${SURFACE} divide-y divide-ink/6`}>
             {q.data.data.map((inv) => (
               <li key={inv.id} className="flex flex-wrap items-center gap-x-4 gap-y-1 px-4 py-3 text-sm">
                 <span className="min-w-0 flex-1">
@@ -176,10 +176,10 @@ function Refunds() {
   const [page, setPage] = useState(1)
   const q = useQuery({ queryKey: ['refunds', page], queryFn: () => paymentsApi.refunds({ page, per_page: 20 }) })
   if (q.isLoading) return <LoadingState />
-  if (!q.data?.data.length) return <div className="rounded-2xl border border-ink/8 bg-white shadow-sm"><EmptyState icon="payments" title={t('empty')} /></div>
+  if (!q.data?.data.length) return <EmptyCard icon="payments" title={t('empty')} />
   return (
     <div className="space-y-3">
-      <ul className="divide-y divide-ink/6 rounded-2xl border border-ink/8 bg-white shadow-sm">
+      <ul className={`${SURFACE} divide-y divide-ink/6`}>
         {q.data.data.map((r) => (
           <li key={r.id} className="flex flex-wrap items-center gap-x-4 gap-y-1 px-4 py-3 text-sm">
             <span className="w-24 text-ink/60">{formatDate(r.paid_at, locale, { day: 'numeric', month: 'short' })}</span>
@@ -239,7 +239,7 @@ function ReportBody({ r, m, locale, asTable, setAsTable }: { r: FinanceReport; m
     <div className="space-y-5">
       <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
         {tiles.map(([label, value, hint]) => (
-          <div key={label} className="rounded-2xl border border-ink/8 bg-white p-4 shadow-sm">
+          <div key={label} className={`${SURFACE} p-4`}>
             <p className="text-sm text-ink/60">{label}</p>
             <p className="mt-1 text-xl font-semibold tabular-nums text-ink">{value}</p>
             {hint && <p className="text-xs text-ink/50">{hint}</p>}

@@ -9,8 +9,8 @@ import Avatar from '../../components/Avatar'
 import Icon from '../../components/Icon'
 import Pagination from '../../components/Pagination'
 import SelectField from '../../components/SelectField'
-import { EmptyState, PageBand } from '../../components/ornaments'
-import { ErrorState, LoadingState, Notice, PrimaryButton, SecondaryButton, Segmented, TextInput } from '../../components/ui'
+import { PageBand } from '../../components/ornaments'
+import { ErrorState, LoadingState, Notice, PrimaryButton, SecondaryButton, Segmented, TextInput, TableWrap, TABLE_HEAD, EmptyCard, SURFACE } from '../../components/ui'
 import { formatNumber } from '../../lib/format'
 import { ActionButtons, IssueCertificateDialog, useCertificateActions, useCertificateOptions } from './CertificateDialogs'
 import { IssuedDate, StatusBadge, useInvalidateCertificates } from './shared'
@@ -116,7 +116,7 @@ function CertificateList() {
         })}
       </div>
 
-      <div className="grid gap-3 rounded-2xl border border-ink/8 bg-white p-4 shadow-sm sm:grid-cols-2 lg:grid-cols-[2fr_1fr_1fr_1fr_auto] lg:items-end">
+      <div className={`${SURFACE} grid gap-3 p-4 sm:grid-cols-2 lg:grid-cols-[2fr_1fr_1fr_1fr_auto] lg:items-end`}>
         <TextInput type="search" label={t('filters.search')} placeholder={t('filters.search_placeholder')} value={search} onChange={(e) => setSearch(e.target.value)} />
         <SelectField label={t('filters.type')} value={type} onChange={(e) => set({ type: e.target.value })} options={[{ value: '', label: t('filters.all_types') }, ...(options.data?.types ?? [])]} />
         <TextInput type="date" label={t('filters.from')} value={from} max={to || undefined} onChange={(e) => set({ from: e.target.value })} dir="ltr" />
@@ -144,13 +144,13 @@ function CertificateList() {
       )}
 
       {q.isLoading ? <LoadingState /> : q.isError || !q.data ? <ErrorState onRetry={() => void q.refetch()} /> : rows.length === 0 ? (
-        <div className="rounded-2xl border border-ink/8 bg-white shadow-sm"><EmptyState icon="certificate" title={t('empty')} body={t('empty_body')} /></div>
+        <EmptyCard icon="certificate" title={t('empty')} body={t('empty_body')} />
       ) : (
         <>
           {/* Wide screens: table */}
-          <div className="hidden overflow-x-auto rounded-2xl border border-ink/8 bg-white shadow-sm lg:block">
+          <TableWrap surface className="hidden lg:block">
             <table className="w-full text-sm">
-              <thead className="bg-ink/[0.03] text-start text-xs text-ink/55">
+              <thead className={TABLE_HEAD}>
                 <tr>
                   <th scope="col" className="w-10 px-3 py-2.5"><span className="sr-only">{t('table.select_all')}</span></th>
                   <th scope="col" className="px-3 py-2.5 text-start font-medium">{t('table.student')}</th>
@@ -183,10 +183,10 @@ function CertificateList() {
                 ))}
               </tbody>
             </table>
-          </div>
+          </TableWrap>
 
           {/* Phones and tablets: cards */}
-          <ul className="grid gap-3 sm:grid-cols-2 lg:hidden">
+          <ul className="grid gap-3 *:min-w-0 sm:grid-cols-2 lg:hidden">
             {rows.map((c) => (
               <li key={c.id} className={`rounded-2xl border bg-white p-4 shadow-sm ${selected.has(c.id) ? 'border-brand-600/40' : 'border-ink/8'}`}>
                 <div className="flex items-start gap-3">

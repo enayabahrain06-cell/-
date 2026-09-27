@@ -12,7 +12,7 @@ export default function QuickEnrollPage() {
   const [tab, setTab] = useState<Tab>('single')
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-5">
       <div>
         <PageTitle>{t('title')}</PageTitle>
         <p className="mt-2 text-sm text-ink/60">{t('subtitle')}</p>

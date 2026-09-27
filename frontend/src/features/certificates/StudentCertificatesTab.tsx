@@ -4,8 +4,7 @@ import { useTranslation } from 'react-i18next'
 import { certificatesApi } from '../../api/certificates'
 import type { StudentSummary } from '../../api/students'
 import Icon from '../../components/Icon'
-import { EmptyState } from '../../components/ornaments'
-import { ErrorState, LoadingState, Notice, PrimaryButton } from '../../components/ui'
+import { ErrorState, LoadingState, Notice, PrimaryButton, EmptyCard, SURFACE } from '../../components/ui'
 import { formatDate, formatNumber } from '../../lib/format'
 import { ActionButtons, IssueCertificateDialog, useCertificateActions } from './CertificateDialogs'
 import { CertificateThumb, IssuedDate, StatusBadge } from './shared'
@@ -32,7 +31,7 @@ export default function StudentCertificatesTab({ studentId, student }: { student
 
   return (
     <div className="space-y-4">
-      <section aria-label={t('student.title')} className="flex flex-wrap items-center gap-x-6 gap-y-3 rounded-2xl border border-ink/8 bg-white px-5 py-4 shadow-sm">
+      <section aria-label={t('student.title')} className={`${SURFACE} flex flex-wrap items-center gap-x-6 gap-y-3 px-5 py-4`}>
         <SummaryStat value={n(summary.total)} label={t('student.total')} />
         <SummaryStat value={n(summary.memorization)} label={t('student.memorization')} />
         <SummaryStat value={n(summary.excellence)} label={t('student.excellence')} />
@@ -57,9 +56,9 @@ export default function StudentCertificatesTab({ studentId, student }: { student
       {actions.notice && <Notice tone={actions.notice.tone}>{actions.notice.text}</Notice>}
 
       {data.length === 0 ? (
-        <div className="rounded-2xl border border-ink/8 bg-white shadow-sm"><EmptyState size="sm" icon="certificate" title={t('student.empty')} body={t('student.empty_body')} /></div>
+        <EmptyCard size="sm" icon="certificate" title={t('student.empty')} body={t('student.empty_body')} />
       ) : (
-        <ul className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+        <ul className="grid gap-4 *:min-w-0 sm:grid-cols-2 xl:grid-cols-3">
           {data.map((c) => {
             const revoked = c.status === 'revoked'
             return (

@@ -7,8 +7,8 @@ import { saveBlob } from '../../api/payments'
 import { parseApiError } from '../../api/client'
 import { useAuth } from '../../app/AuthContext'
 import Icon from '../../components/Icon'
-import { EmptyState, OrnamentDivider } from '../../components/ornaments'
-import { Badge, Card, CardTitle, ErrorState, LoadingState, Notice, PrimaryButton, SecondaryButton, Segmented, SURFACE } from '../../components/ui'
+import { OrnamentDivider } from '../../components/ornaments'
+import { Badge, Card, CardTitle, ErrorState, LoadingState, Notice, PrimaryButton, SecondaryButton, Segmented, SURFACE, inputClass, TableWrap, TABLE_HEAD, EmptyCard, IconButton } from '../../components/ui'
 import { formatDate, formatNumber, formatPercent } from '../../lib/format'
 import ExamFormDialog from './ExamFormDialog'
 import { EXAM_STATUS_TONE } from './ExamsHomePage'
@@ -118,7 +118,7 @@ function Questions({ exam, editable }: { exam: Exam; editable: boolean }) {
         {editable && <PrimaryButton className="ms-auto" onClick={() => setEdit('new')}>+ {t('questions.add')}</PrimaryButton>}
       </div>
       {q.isLoading ? <LoadingState /> : !q.data?.length ? (
-        <div className={SURFACE}><EmptyState icon="exams" title={t('questions.empty')} /></div>
+        <EmptyCard icon="exams" title={t('questions.empty')} />
       ) : (
         <ol className="space-y-3">
           {q.data.map((qq, i) => (
@@ -141,7 +141,7 @@ function Questions({ exam, editable }: { exam: Exam; editable: boolean }) {
                       <button type="button" disabled={i === 0} className="rounded p-1 hover:bg-ink/5 disabled:opacity-30" aria-label={t('questions.move_up')} onClick={() => move.mutate({ from: i, to: i - 1 })}>↑</button>
                       <button type="button" disabled={i === q.data.length - 1} className="rounded p-1 hover:bg-ink/5 disabled:opacity-30" aria-label={t('questions.move_down')} onClick={() => move.mutate({ from: i, to: i + 1 })}>↓</button>
                       <button type="button" className="rounded p-1 hover:bg-ink/5" aria-label={t('questions.edit')} onClick={() => setEdit(qq)}><Icon name="edit" className="size-4" /></button>
-                      <button type="button" className="rounded p-1 text-danger hover:bg-danger/5" aria-label={t('questions.delete')} onClick={() => del.mutate(qq.id)}>✕</button>
+                      <IconButton icon="trash" tone="danger" label={t('questions.delete')} onClick={() => del.mutate(qq.id)} />
                     </span>
                   )}
                 </div>
@@ -182,7 +182,7 @@ function PaperGrading({ exam, onSaved }: { exam: Exam; onSaved: () => void }) {
             <span dir="auto" className="min-w-0 flex-1 font-medium text-ink">{row.full_name}<span className="block text-xs tabular-nums text-ink/50">{row.student_no}</span></span>
             <label className="sr-only" htmlFor={`score-${row.student_id}`}>{t('grading.score')}</label>
             <input id={`score-${row.student_id}`} type="number" min={0} max={exam.total_marks} inputMode="numeric" value={scores[row.student_id] ?? ''} onChange={(e) => setScores({ ...scores, [row.student_id]: e.target.value })}
-              className={`w-24 rounded-lg border px-2 py-1.5 text-center tabular-nums ${scores[row.student_id] !== '' && Number(scores[row.student_id]) < exam.pass_mark ? 'border-danger/50 text-danger' : 'border-ink/15'}`} />
+              className={inputClass('sm', 'w-24 text-center tabular-nums', scores[row.student_id] !== '' && Number(scores[row.student_id]) < exam.pass_mark)} />
             <span className="w-12 text-xs text-ink/50">/ {formatNumber(exam.total_marks, i18n.language)}</span>
             {row.attempt_id && (sheetOf(row.attempt_id) ? <Badge tone="brand"><Icon name="check" className="size-3.5" />{t('grading.sheet_uploaded')}</Badge> : (
               <label className="cursor-pointer rounded-lg border border-ink/12 px-2.5 py-1 text-xs text-ink/70 hover:bg-ink/5">
@@ -204,7 +204,7 @@ function OnlineGrading({ exam, onSaved }: { exam: Exam; onSaved: () => void }) {
   const q = useQuery({ queryKey: ['exam-attempts', exam.id], queryFn: () => examsApi.attempts(exam.id) })
   const [grading, setGrading] = useState<number | null>(null)
   if (q.isLoading) return <LoadingState />
-  if (!q.data?.length) return <div className={SURFACE}><EmptyState icon="exams" title={t('grading.no_attempts')} /></div>
+  if (!q.data?.length) return <EmptyCard icon="exams" title={t('grading.no_attempts')} />
   const n = (v: number | null) => (v === null ? '—' : formatNumber(v, i18n.language))
 
   return (
@@ -259,10 +259,10 @@ function Results({ exam }: { exam: Exam }) {
           </ol>
         </Card>
       )}
-      {rows.length === 0 ? <div className={SURFACE}><EmptyState icon="exams" title={t('results.empty')} /></div> : (
-        <div className="overflow-x-auto rounded-2xl border border-ink/8 bg-white shadow-sm">
+      {rows.length === 0 ? <EmptyCard icon="exams" title={t('results.empty')} /> : (
+        <TableWrap surface>
           <table className="w-full min-w-[32rem] text-sm">
-            <thead className="bg-page/60 text-ink/55"><tr><th className="px-4 py-2.5 text-start font-medium">{t('results.rank')}</th><th className="px-4 py-2.5 text-start font-medium">{t('results.student')}</th><th className="px-4 py-2.5 text-end font-medium">{t('results.score')}</th><th className="px-4 py-2.5 text-start font-medium">{t('results.result')}</th></tr></thead>
+            <thead className={TABLE_HEAD}><tr><th className="px-4 py-2.5 text-start font-medium">{t('results.rank')}</th><th className="px-4 py-2.5 text-start font-medium">{t('results.student')}</th><th className="px-4 py-2.5 text-end font-medium">{t('results.score')}</th><th className="px-4 py-2.5 text-start font-medium">{t('results.result')}</th></tr></thead>
             <tbody className="divide-y divide-ink/6">
               {rows.map((row, i) => (
                 <tr key={row.student_id}>
@@ -274,7 +274,7 @@ function Results({ exam }: { exam: Exam }) {
               ))}
             </tbody>
           </table>
-        </div>
+        </TableWrap>
       )}
     </div>
   )

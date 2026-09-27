@@ -5,6 +5,7 @@ import type { AgeBand, AgeDistribution } from '../../api/dashboard'
 import Icon from '../../components/Icon'
 import { EmptyState } from '../../components/ornaments'
 import { formatNumber, formatPercent } from '../../lib/format'
+import { SURFACE } from '../../components/ui'
 
 /**
  * Ordinal one-hue ramp (brand green, light → dark = young → old). Validated with the dataviz
@@ -25,7 +26,7 @@ export default function AgeDonut({ data }: { data: AgeDistribution }) {
   const shown = active !== null ? bands[active] : null
 
   return (
-    <section className="flex flex-col rounded-2xl border border-ink/8 bg-white p-4 shadow-sm sm:p-5" aria-labelledby="age-title">
+    <section className={`${SURFACE} flex flex-col p-4 sm:p-5`} aria-labelledby="age-title">
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
           <h2 id="age-title" className="text-base font-semibold text-ink">{t('age.title')}</h2>

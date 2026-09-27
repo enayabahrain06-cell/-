@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next'
 import { hallsApi, type CalendarItem, type Hall } from '../../api/lessons'
 import Icon from '../../components/Icon'
 import { PageBand } from '../../components/ornaments'
-import { Badge, ErrorState, LoadingState, SecondaryButton, type Tone } from '../../components/ui'
+import { Badge, ErrorState, LoadingState, SecondaryButton, type Tone, SURFACE } from '../../components/ui'
 import { formatDate, formatTime } from '../../lib/format'
 import { GENDER_TONE } from './LessonsHomePage'
 
@@ -44,7 +44,7 @@ export default function HallCalendarPage() {
         {days.map((d) => {
           const items = q.data.items.filter((i) => i.date === d)
           return (
-            <li key={d} className="rounded-2xl border border-ink/8 bg-white p-3 shadow-sm">
+            <li key={d} className={`${SURFACE} p-3`}>
               <p className="mb-2 text-sm font-semibold text-ink">{formatDate(d, locale, { weekday: 'short', day: 'numeric' })}</p>
               {items.length === 0 ? <p className="text-xs text-ink/40">{t('calendar.empty_day')}</p> : (
                 <ul className="space-y-2">

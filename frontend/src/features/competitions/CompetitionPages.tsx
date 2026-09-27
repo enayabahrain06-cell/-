@@ -9,7 +9,7 @@ import Avatar from '../../components/Avatar'
 import Icon from '../../components/Icon'
 import SelectField from '../../components/SelectField'
 import { EmptyState, OrnamentDivider, PageBand } from '../../components/ornaments'
-import { Badge, buttonClass, Card, CardTitle, ErrorState, LoadingState, Modal, Notice, PrimaryButton, SecondaryButton, Segmented, SURFACE, TABLE_HEAD, TableWrap, TextInput, type Tone } from '../../components/ui'
+import { Badge, buttonClass, Card, CardTitle, ErrorState, LoadingState, Modal, Notice, PrimaryButton, SecondaryButton, Segmented, TABLE_HEAD, TableWrap, TextInput, type Tone, inputClass, EmptyCard, SURFACE } from '../../components/ui'
 import { formatDate, formatNumber } from '../../lib/format'
 import CompetitionForm from './CompetitionForm'
 import { ChallengesPanel } from './ChallengePages'
@@ -52,12 +52,12 @@ function CompetitionList() {
   const d = (v: string) => formatDate(v, locale, { day: 'numeric', month: 'short' })
   if (q.isLoading) return <LoadingState />
   if (q.isError || !q.data) return <ErrorState onRetry={() => void q.refetch()} />
-  if (q.data.data.length === 0) return <div className={SURFACE}><EmptyState icon="trophy" title={t('competitions.empty')} body={t('competitions.empty_body')} /></div>
+  if (q.data.data.length === 0) return <EmptyCard icon="trophy" title={t('competitions.empty')} body={t('competitions.empty_body')} />
   return (
-    <ul className="grid gap-3 md:grid-cols-2">
+    <ul className="grid gap-3 *:min-w-0 md:grid-cols-2">
       {q.data.data.map((c) => (
         <li key={c.id}>
-          <Link to={`/competitions/${c.id}`} className="block h-full rounded-2xl border border-ink/8 bg-white p-4 shadow-sm hover:border-brand-500/40">
+          <Link to={`/competitions/${c.id}`} className={`${SURFACE} block h-full p-4 hover:border-brand-500/40`}>
             <div className="flex items-start justify-between gap-2">
               <p dir="auto" className="font-semibold text-ink">{c.name}</p>
               <span className="flex shrink-0 gap-1"><Badge tone={COMP_TONE[c.status]}>{t(`competitions.status.${c.status}`)}</Badge><Badge tone={GENDER_TONE[c.gender]}>{c.gender === 'female' ? t('display.girls') : t('display.boys')}</Badge></span>
@@ -139,7 +139,7 @@ export function CompetitionDetailPage() {
             </ol>
             <OrnamentDivider className="my-4 text-gold-500" />
             <CardTitle>{t('competitions.criteria')}</CardTitle>
-            <ul className="grid gap-2 sm:grid-cols-2">
+            <ul className="grid gap-2 *:min-w-0 sm:grid-cols-2">
               {c.criteria.map((cr) => (
                 <li key={cr.key} className="flex items-center justify-between rounded-xl bg-page/60 px-3 py-2 text-sm">
                   <span dir="auto">{locale === 'en' && cr.name_en ? cr.name_en : cr.name_ar}</span>
@@ -332,7 +332,7 @@ function ScoreRow({ p, sheet, competitionId, locale }: { p: JudgingSheet['partic
           <label key={c.key} className="text-xs text-ink/60">
             <span dir="auto" className="mb-1 block">{locale === 'en' && c.name_en ? c.name_en : c.name_ar} <span className="tabular-nums">({formatNumber(c.weight, locale)}٪)</span></span>
             <input type="number" inputMode="numeric" min={0} max={c.max} disabled={sheet.locked} value={scores[c.key]} onChange={(e) => setScores({ ...scores, [c.key]: e.target.value === '' ? '' : Math.max(0, Math.min(c.max, Number(e.target.value))) })}
-              className="w-full rounded-lg border border-ink/15 px-2 py-2 text-center text-base tabular-nums text-ink" aria-describedby={`max-${p.id}-${c.key}`} />
+              className={inputClass('sm', 'w-full text-center text-base tabular-nums')} aria-describedby={`max-${p.id}-${c.key}`} />
             <span id={`max-${p.id}-${c.key}`} className="sr-only">/ {c.max}</span>
           </label>
         ))}

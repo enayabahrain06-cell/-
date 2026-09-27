@@ -54,7 +54,7 @@ export default function TeachersList() {
     <div className="space-y-5">
       <PageBand title={t('title')} subtitle={query.data ? t('subtitle', { n: formatNumber(query.data.meta.total, locale) }) : undefined} />
 
-      <section aria-label={t('filters.label')} className="grid gap-3 rounded-2xl border border-ink/8 bg-white p-4 shadow-sm sm:grid-cols-2 lg:grid-cols-4">
+      <section aria-label={t('filters.label')} className={`${SURFACE} grid gap-3 p-4 sm:grid-cols-2 lg:grid-cols-4`}>
         <SearchInput id="teacher-search" className="sm:col-span-2" label={t('search')} value={search} onChange={(e) => setSearch(e.target.value)} />
         {bothTracks && (
           <SelectField
@@ -160,7 +160,7 @@ function TeachersTable({ rows, locale }: { rows: TeacherRow[]; locale: string })
       <ul className="space-y-3 sm:hidden">
         {rows.map((r) => (
           <li key={r.id}>
-            <Link to={href(r.id)} className="block rounded-2xl border border-ink/8 bg-white p-4 shadow-sm active:bg-brand-50/50">
+            <Link to={href(r.id)} className={`${SURFACE} block p-4 active:bg-brand-50/50`}>
               <div className="flex items-center gap-3">
                 <Avatar name={r.name} initial={initialOf(r.name)} gender={r.gender} size="md" />
                 <div className="min-w-0 flex-1">

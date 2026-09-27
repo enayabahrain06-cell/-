@@ -8,8 +8,8 @@ import { useAuth } from '../../app/AuthContext'
 import Icon from '../../components/Icon'
 import Pagination from '../../components/Pagination'
 import SelectField from '../../components/SelectField'
-import { EmptyState, PageBand } from '../../components/ornaments'
-import { Badge, ErrorState, FilterBar, LoadingState, Modal, Notice, PrimaryButton, SearchInput, SecondaryButton, Segmented, TextArea, type Tone } from '../../components/ui'
+import { PageBand } from '../../components/ornaments'
+import { Badge, ErrorState, FilterBar, LoadingState, Modal, Notice, PrimaryButton, SearchInput, SecondaryButton, Segmented, TextArea, type Tone, SURFACE, EmptyCard } from '../../components/ui'
 import { formatDate, formatMoney, formatNumber } from '../../lib/format'
 import { GENDER_TONE } from '../lessons/LessonsHomePage'
 import PackageFormDialog from './PackageFormDialog'
@@ -48,13 +48,13 @@ function Packages() {
     <div className="space-y-4">
       {can('packages.manage') && <div className="flex justify-end"><PrimaryButton onClick={() => setEdit('new')}>+ {t('admin.new_package')}</PrimaryButton></div>}
       {q.isLoading ? <LoadingState /> : q.isError || !q.data ? <ErrorState onRetry={() => void q.refetch()} /> : q.data.data.length === 0 ? (
-        <div className="rounded-2xl border border-ink/8 bg-white shadow-sm"><EmptyState icon="packages" title={t('admin.empty_packages')} /></div>
+        <EmptyCard icon="packages" title={t('admin.empty_packages')} />
       ) : (
         <ul className="grid gap-3 *:min-w-0 md:grid-cols-2 xl:grid-cols-3">
           {q.data.data.map((p) => {
             const pct = Math.min(100, Math.round((p.seats_taken * 100) / Math.max(1, p.seats)))
             return (
-              <li key={p.id} className="flex flex-col rounded-2xl border border-ink/8 bg-white p-4 shadow-sm">
+              <li key={p.id} className={`${SURFACE} flex flex-col p-4`}>
                 <div className="flex items-start justify-between gap-2">
                   <p dir="auto" className="font-semibold text-ink">{p.name}</p>
                   <div className="flex gap-1"><Badge tone={GENDER_TONE[p.gender]}>{t(`gender.${p.gender}`)}</Badge><Badge tone={STATUS_TONE[p.status] ?? 'muted'}>{p.status_label}</Badge></div>
@@ -118,12 +118,12 @@ function Requests() {
       {notice && <Notice tone={notice.tone}>{notice.text}</Notice>}
 
       {q.isLoading ? <LoadingState /> : q.isError || !q.data ? <ErrorState onRetry={() => void q.refetch()} /> : q.data.data.length === 0 ? (
-        <div className="rounded-2xl border border-ink/8 bg-white shadow-sm"><EmptyState icon="packages" title={t('admin.empty_requests')} /></div>
+        <EmptyCard icon="packages" title={t('admin.empty_requests')} />
       ) : (
         <>
           <ul className="space-y-3">
             {q.data.data.map((r) => (
-              <li key={r.request_no} className="rounded-2xl border border-ink/8 bg-white p-4 shadow-sm">
+              <li key={r.request_no} className={`${SURFACE} p-4`}>
                 <div className="flex flex-wrap items-start gap-3">
                   <div className="min-w-0 flex-1">
                     <div className="flex flex-wrap items-center gap-2">

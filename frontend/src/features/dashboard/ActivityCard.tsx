@@ -5,7 +5,7 @@ import { Link } from 'react-router-dom'
 import { dashboardFeedApi, type ActivityItem, type ActivityType } from '../../api/dashboard-feed'
 import Icon from '../../components/Icon'
 import Pagination from '../../components/Pagination'
-import { Modal } from '../../components/ui'
+import { Modal, SURFACE } from '../../components/ui'
 import { EmptyState } from '../../components/ornaments'
 import { formatMoney, formatNumber } from '../../lib/format'
 import { relativeTime } from './relativeTime'
@@ -29,7 +29,7 @@ export default function ActivityCard() {
   const q = useQuery({ queryKey: ['dashboard', 'activity', filters, locale], queryFn: () => dashboardFeedApi.activity(filters), refetchInterval: 60_000 })
 
   return (
-    <section className="flex flex-col rounded-2xl border border-ink/8 bg-white shadow-sm" aria-labelledby="activity-title" aria-busy={q.isLoading}>
+    <section className={`${SURFACE} flex flex-col`} aria-labelledby="activity-title" aria-busy={q.isLoading}>
       <h2 id="activity-title" className="flex items-center gap-2 border-b border-ink/8 px-5 py-4 text-base font-semibold text-ink">
         <Icon name="refresh" className="size-5 text-brand-700" />
         {t('activity.title')}
