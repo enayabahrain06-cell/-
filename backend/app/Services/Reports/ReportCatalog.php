@@ -27,6 +27,7 @@ class ReportCatalog
         ['key' => 'teachers', 'group' => 'staff', 'icon' => 'teachers', 'filters' => ['period', 'package', 'teacher', 'gender']],
         ['key' => 'messages', 'group' => 'communication', 'icon' => 'messages', 'filters' => ['period', 'gender']],
         ['key' => 'finance', 'group' => 'finance', 'icon' => 'payments', 'filters' => ['period', 'package', 'gender'], 'endpoint' => 'reports/finance'],
+        ['key' => 'engagement', 'group' => 'overview', 'icon' => 'trophy', 'filters' => ['period', 'gender'], 'endpoint' => 'reports/engagement'],
         ['key' => 'tracks', 'group' => 'overview', 'icon' => 'reports', 'filters' => ['period']],
     ];
 

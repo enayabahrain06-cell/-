@@ -21,3 +21,4 @@ Schedule::command('progress:send-monthly-updates')->dailyAt('17:00')->withoutOve
 // honor board (monthly periods per track), challenge progress and nudges, competition reminders
 Schedule::command('engagement:run daily')->dailyAt('01:30')->withoutOverlapping();
 Schedule::command('engagement:run reminders')->hourly()->withoutOverlapping();
+Schedule::command('reports:weekly')->dailyAt('20:00')->withoutOverlapping(); // acts only on reminders.weekly_report_day

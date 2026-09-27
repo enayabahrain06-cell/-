@@ -41,6 +41,7 @@ return [
         'staff' => 'Teachers', 'communication' => 'Messages', 'finance' => 'Finance', 'overview' => 'Overview',
     ],
     'catalog' => [
+        'engagement' => ['title' => 'Honor board, competitions and challenges', 'description' => 'Participation, published results, challenge completion and the monthly top performers.'],
         'attendance' => ['title' => 'Attendance', 'description' => 'Present, late, absent and excused per circle, per student and per day, with the attendance rate.'],
         'absence' => ['title' => 'Repeated absence', 'description' => 'Students absent more often than the set limit in the period, with the guardian phone.'],
         'evaluation' => ['title' => 'Evaluation and memorization', 'description' => 'Average scores per criterion and new ayahs memorized, per circle and per student.'],
@@ -101,4 +102,5 @@ return [
         'open_packages' => 'Open packages', 'avg_memorized_ayahs' => 'Average ayahs memorized', 'open_issues' => 'Open difficulties',
         'high_issues' => 'Serious difficulties', 'attendance_percent' => 'Attendance (%)', 'collected_fils' => 'Collected',
     ],
+    'weekly' => ['period' => 'Week :from to :to', 'more' => 'Full reports with Excel and PDF are in the Reports screen.'],
 ];
