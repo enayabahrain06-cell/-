@@ -3,6 +3,7 @@ import { useAuth } from '../../app/AuthContext'
 import LanguageSwitcher from '../../components/LanguageSwitcher'
 import Button from '../../components/Button'
 import { LogoMark, PageBand } from '../../components/ornaments'
+import FamilyCertificates from '../certificates/FamilyCertificates'
 
 /** Temporary landing screen after sign-in, until the role dashboards (Phase 3.2 to 3.4) are built. */
 export default function HomePage() {
@@ -19,7 +20,7 @@ export default function HomePage() {
         </div>
         <LanguageSwitcher className="text-stone-600" />
       </header>
-      <main className="mx-auto max-w-2xl space-y-6 px-4 py-8 sm:px-8">
+      <main className="mx-auto max-w-5xl space-y-6 px-4 py-8 sm:px-8">
         <PageBand
           title={user.name}
           subtitle={
@@ -40,6 +41,7 @@ export default function HomePage() {
             {t('logout')}
           </Button>
         </div>
+        <FamilyCertificates />
       </main>
     </div>
   )

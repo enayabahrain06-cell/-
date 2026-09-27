@@ -1,7 +1,11 @@
 {
   "title": "لوحة التحكم",
   "greeting": "مرحباً، {{name}}",
-  "track": { "male": "مسار البنين", "female": "مسار البنات", "both": "المساران" },
+  "track": {
+    "male": "مسار البنين",
+    "female": "مسار البنات",
+    "both": "المساران"
+  },
   "own_circles": "حلقاتك فقط",
   "refresh": "تحديث",
   "error": "تعذر تحميل لوحة التحكم.",
@@ -30,7 +34,10 @@
       "conflict": "تعارض في القاعة",
       "no_hall": "لا توجد قاعة",
       "cancelled": "ملغاة"
-    }
+    },
+    "take_attendance": "سجّل الحضور",
+    "evaluate": "التقييم",
+    "fix_hall": "افتح الحلقة لتغيير القاعة"
   },
   "chart": {
     "title": "الحضور — آخر ١٤ يوماً",
@@ -50,6 +57,75 @@
     "empty": "لا توجد تنبيهات مفتوحة.",
     "resolve": "تم التعامل",
     "resolving": "جارٍ الحفظ…",
-    "severity": { "danger": "عاجل", "warning": "تنبيه", "info": "معلومة" }
+    "severity": {
+      "danger": "عاجل",
+      "warning": "تنبيه",
+      "info": "معلومة"
+    },
+    "filter": "تصفية التنبيهات حسب النوع",
+    "all": "الكل",
+    "view_all": "عرض كل التنبيهات ({{n}})",
+    "loading": "جارٍ التحميل…",
+    "types": {
+      "location_conflict": "تعارض قاعة",
+      "registration_request": "طلبات التسجيل",
+      "repeated_absence": "غياب متكرر",
+      "lottery_pending": "قرعة بانتظار الاعتماد",
+      "exam_upcoming": "اختبار قريب",
+      "invoice_overdue": "فاتورة متأخرة",
+      "lesson_no_teacher": "حلقة بلا معلم"
+    },
+    "priority": {
+      "danger": "عاجل",
+      "warning": "مهم",
+      "info": "متابعة"
+    },
+    "view_all_short": "عرض الكل",
+    "show_less": "عرض أقل",
+    "error": "تعذّر تحميل التنبيهات.",
+    "empty_hint": "ستظهر هنا تعارضات القاعات والغياب المتكرر والحلقات بلا معلم.",
+    "action_failed": "لم تنجح العملية، حاول مرة أخرى.",
+    "handled_by": "تم التعامل بواسطة {{name}} الساعة {{time}}.",
+    "no_phone": "لا يوجد رقم لولي الأمر",
+    "sessions_title": "الجلسات المتعارضة ({{n}})",
+    "col_date": "التاريخ",
+    "col_time": "الوقت",
+    "col_with": "تتعارض مع",
+    "actions": {
+      "resolve_conflict": "حل التعارض",
+      "view_sessions": "عرض الجلسات ({{n}})",
+      "message_parents": "مراسلة ولي الأمر",
+      "open_student": "ملف الطالب",
+      "assign_teacher": "تعيين معلم",
+      "circle_students": "طلاب الحلقة",
+      "review_requests": "مراجعة الطلبات",
+      "open_wallet": "فتح المحفظة",
+      "invoices": "الفواتير",
+      "review_lottery": "مراجعة القرعة",
+      "open_exam": "فتح الاختبار"
+    },
+    "conflict_line": "مع {{with}} — {{count}} جلسة بين {{from}} و{{to}}، كل {{days}} من {{start}} إلى {{end}}"
+  },
+  "updated_at": "آخر تحديث {{time}}",
+  "actions": {
+    "title": "إجراءات سريعة",
+    "attendance": "تسجيل الحضور",
+    "enroll": "تسجيل سريع",
+    "requests": "طلبات التسجيل",
+    "halls": "الحلقات والقاعات",
+    "payment": "تسجيل دفعة"
+  },
+  "age": {
+    "title": "الطلاب حسب العمر",
+    "subtitle": "متوسط العمر {{avg}} سنة",
+    "subtitle_empty": "الطلاب النشطون",
+    "empty": "لا يوجد طلاب نشطون بعد.",
+    "band": "{{min}}–{{max}}",
+    "band_upto": "{{max}} فأقل",
+    "band_plus": "{{min}} فأكثر",
+    "age": "العمر (بالسنوات)",
+    "students": "الطلاب",
+    "share": "النسبة",
+    "tooltip": "{{count}} طالب · {{share}}"
   }
 }

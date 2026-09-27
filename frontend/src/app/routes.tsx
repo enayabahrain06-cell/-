@@ -23,11 +23,25 @@ import PublicRegisterPage from '../features/registration/PublicRegisterPage'
 import TrackRequestPage from '../features/registration/TrackRequestPage'
 import PackagesHomePage from '../features/registration/PackagesHomePage'
 import PaymentsHomePage from '../features/payments/PaymentsHomePage'
+import CertificatesPage from '../features/certificates/CertificatesPage'
+import VerifyCertificatePage from '../features/certificates/VerifyCertificatePage'
 import ExamsHomePage from '../features/exams/ExamsHomePage'
 import ExamDetailPage from '../features/exams/ExamDetailPage'
 import MyExamsPage from '../features/exams/MyExamsPage'
 import ExamPlayerPage from '../features/exams/ExamPlayerPage'
 import { LotteryDetailPage, LotteryListPage } from '../features/lottery/LotteryPages'
+import UsersHomePage from '../features/users/UsersHomePage'
+import SettingsPage from '../features/settings/SettingsPage'
+import ReportsHomePage from '../features/reports/ReportsHomePage'
+import MessagesHomePage from '../features/messages/MessagesHomePage'
+import TeachersHomePage from '../features/teachers/TeachersHomePage'
+import HonorBoardPage from '../features/honor/HonorBoardPage'
+import HonorDisplayPage from '../features/honor/HonorDisplayPage'
+import MyEngagementPage from '../features/honor/MyEngagementPage'
+import { CompetitionDetailPage, CompetitionsHomePage } from '../features/competitions/CompetitionPages'
+import { ChallengeDetailPage } from '../features/competitions/ChallengePages'
+import SessionDeliveryPage from '../features/messages/SessionDeliveryPage'
+import AuditLogPage from '../features/audit/AuditLogPage'
 
 function FullScreenLoader() {
   const { t } = useTranslation()
@@ -65,6 +79,7 @@ function Guard({ permissions, children }: { permissions: string[]; children: Rea
 }
 
 /** Screens built so far; every other section shows the placeholder. */
+
 const BUILT: Record<string, React.ReactNode> = {
   students: <StudentsListPage />,
   enrollment: <QuickEnrollPage />,
@@ -73,14 +88,26 @@ const BUILT: Record<string, React.ReactNode> = {
   lessons: <LessonsHomePage />,
   packages: <PackagesHomePage />,
   payments: <PaymentsHomePage />,
+  certificates: <CertificatesPage />,
   exams: <ExamsHomePage />,
   lottery: <LotteryListPage />,
+  honor: <HonorBoardPage />,
+  competitions: <CompetitionsHomePage />,
+  audit: <AuditLogPage />,
+  users: <UsersHomePage />,
+  settings: <SettingsPage />,
+  reports: <ReportsHomePage />,
+  messages: <MessagesHomePage />,
+  teachers: <TeachersHomePage />,
 }
 
 /** Detail pages under a section: [path, permissions (any), element]. */
 const DETAIL: [string, string[], React.ReactNode][] = [
   ['exams/:id', ['exams.view'], <ExamDetailPage />],
   ['lottery/:id', ['lottery.view'], <LotteryDetailPage />],
+  ['competitions/challenges/:id', ['challenges.view'], <ChallengeDetailPage />],
+  ['messages/sessions/:sessionId', ['messages.view', 'attendance.view'], <SessionDeliveryPage />],
+  ['competitions/:id', ['competitions.view'], <CompetitionDetailPage />],
   ['students/:id', ['students.view'], <StudentProfilePage />],
   ['attendance/:sessionId', ['attendance.view', 'attendance.record'], <AttendanceSheetPage />],
   ['evaluation/:sessionId', ['evaluations.record'], <EvaluationSheetPage />],
@@ -103,12 +130,17 @@ export const router = createBrowserRouter([
   { path: '/register', element: <PublicRegisterPage /> },
   { path: '/track', element: <TrackRequestPage /> },
   { path: '/track/:no', element: <TrackRequestPage /> },
+  // Public certificate verification from the QR code (16).
+  { path: '/verify/:token', element: <VerifyCertificatePage /> },
+  // Public TV screen of the published honor board (13), needs the display key.
+  { path: '/display/honor', element: <HonorDisplayPage /> },
   {
     element: <RequireAuth />,
     children: [
       // Student / guardian portal pages (outside the staff shell).
       { path: '/my/exams', element: <MyExamsPage /> },
       { path: '/my/exams/:id', element: <ExamPlayerPage /> },
+      { path: '/my/honor', element: <MyEngagementPage /> },
       {
         path: '/',
         element: <StaffOrFamily />,

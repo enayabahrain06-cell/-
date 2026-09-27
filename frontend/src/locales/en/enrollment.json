@@ -62,5 +62,9 @@
   "row_ok": "Ready",
   "include_warnings": "Also enroll rows with a duplicate warning",
   "enroll_rows": "Enroll {{count}} students",
-  "skipped_rows": "Rows not enrolled: {{rows}}"
+  "skipped_rows": "Rows not enrolled: {{rows}}",
+  "locked_circle": "Circle",
+  "locked_hint": "Enter the birth date and gender to check that the student fits this circle.",
+  "locked_not_suitable": "This student does not fit the circle: the age or gender is outside its package, or the package is not open for enrollment.",
+  "locked_no_seat": "This circle cannot take new students right now (it is full or not active)."
 }

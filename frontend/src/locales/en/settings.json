@@ -1,0 +1,247 @@
+{
+  "title": "Settings",
+  "subtitle": "System-wide options for the authority, reminders, attendance and printing.",
+  "index": "Settings sections",
+  "save": "Save changes",
+  "saving": "Saving…",
+  "discard": "Discard",
+  "check_fields": "Check the highlighted fields.",
+  "unsaved_one": "{{count}} unsaved change",
+  "unsaved_other": "{{count}} unsaved changes",
+  "on": "On",
+  "off": "Off",
+  "read_only": "fixed",
+  "range": "{{min}}–{{max}}",
+  "age_groups_note": "Age groups for placing students in circles are managed with the circles.",
+  "age_groups_link": "Open age groups",
+  "logo": {
+    "title": "Logo",
+    "help": "PNG, JPEG or WebP, square, up to 2 MB. Shown on the login and registration pages.",
+    "alt": "Authority logo",
+    "upload": "Upload logo",
+    "replace": "Replace",
+    "remove": "Remove",
+    "uploading": "Uploading…"
+  },
+  "groups": {
+    "authority": {
+      "title": "Authority",
+      "desc": "Name, address and contact shown on pages, messages and printouts."
+    },
+    "locale": {
+      "title": "Language and region",
+      "desc": "Time zone, phone country code, dates and the default language."
+    },
+    "reminders": {
+      "title": "Reminders",
+      "desc": "When WhatsApp reminders go out for lessons, invoices, exams and the weekly report."
+    },
+    "attendance": {
+      "title": "Attendance",
+      "desc": "When repeated absence raises an alert on the dashboard."
+    },
+    "registration": {
+      "title": "Registration",
+      "desc": "The public registration form."
+    },
+    "sessions": {
+      "title": "Lesson sessions",
+      "desc": "How far ahead lesson sessions are generated."
+    },
+    "progress": {
+      "title": "Memorization and evaluation",
+      "desc": "Memorization direction, the difficulty threshold and monthly progress messages."
+    },
+    "certificates": {
+      "title": "Certificates",
+      "desc": "Approval, family notification and automatic juz certificates."
+    },
+    "ui": {
+      "title": "Appearance",
+      "desc": "How much Islamic ornament the screens show."
+    },
+    "media": {
+      "title": "Photos and printing",
+      "desc": "Gender separation rules for printed photos."
+    },
+    "honor": {
+      "title": "Honor board",
+      "desc": "Ranking weights, full-attendance rule and the TV display."
+    }
+  },
+  "fields": {
+    "authority.name_ar": {
+      "label": "Name (Arabic)"
+    },
+    "authority.name_en": {
+      "label": "Name (English)"
+    },
+    "authority.address_ar": {
+      "label": "Address (Arabic)"
+    },
+    "authority.address_en": {
+      "label": "Address (English)"
+    },
+    "authority.phone": {
+      "label": "Phone",
+      "help": "With country code, e.g. +973 1700 0000."
+    },
+    "locale.timezone": {
+      "label": "Time zone",
+      "help": "Used for lesson times, reminders and reports."
+    },
+    "locale.country_code": {
+      "label": "Phone country code",
+      "help": "Digits only, added to local numbers (973 for Bahrain)."
+    },
+    "locale.currency": {
+      "label": "Currency",
+      "help": "Amounts are stored in fils, so the currency cannot be changed."
+    },
+    "locale.show_hijri": {
+      "label": "Show Hijri date",
+      "help": "Next to the Gregorian date on screens and certificates."
+    },
+    "locale.default": {
+      "label": "Default language",
+      "help": "For new users and the public pages."
+    },
+    "reminders.pre_lesson_hours": {
+      "label": "Lesson reminder",
+      "help": "How long before a lesson the reminder is sent."
+    },
+    "reminders.invoice_days_before": {
+      "label": "Invoice reminder before the due date",
+      "help": "0 turns the reminder off."
+    },
+    "reminders.invoice_days_after": {
+      "label": "Overdue invoice reminder",
+      "help": "Days after the due date. 0 turns it off."
+    },
+    "reminders.exam_day_before": {
+      "label": "Exam reminder a day before"
+    },
+    "reminders.exam_hour_before": {
+      "label": "Exam reminder an hour before"
+    },
+    "reminders.weekly_report_day": {
+      "label": "Weekly report day",
+      "help": "The weekly summary goes to admins on this day."
+    },
+    "attendance.repeated_absence_count": {
+      "label": "Absences that raise an alert"
+    },
+    "attendance.repeated_absence_days": {
+      "label": "Within a period of"
+    },
+    "registration.open": {
+      "label": "Registration open",
+      "help": "When off, the public form says registration is closed."
+    },
+    "registration.photo_required": {
+      "label": "Student photo required",
+      "help": "Applies to the public form, quick enrollment and accepting requests."
+    },
+    "sessions.generate_weeks_ahead": {
+      "label": "Generate sessions ahead",
+      "help": "Sessions are created this far ahead of today."
+    },
+    "progress.default_direction": {
+      "label": "Default memorization direction",
+      "help": "For packages that do not set their own."
+    },
+    "evaluation.issue_threshold": {
+      "label": "Difficulty threshold",
+      "help": "A score below this suggests recording a difficulty."
+    },
+    "messages.progress_update_enabled": {
+      "label": "Monthly progress message",
+      "help": "Sends each family a progress summary on WhatsApp."
+    },
+    "messages.progress_update_day": {
+      "label": "Day of the month",
+      "help": "The day the monthly progress message is sent."
+    },
+    "certificates.require_approval": {
+      "label": "Certificates need approval",
+      "help": "Drafts are hidden from families until approved."
+    },
+    "certificates.notify_on_approve": {
+      "label": "Notify the family on approval",
+      "help": "Sends a congratulation message on WhatsApp."
+    },
+    "certificates.auto_juz": {
+      "label": "Draft a certificate for each completed juz"
+    },
+    "certificates.link_minutes": {
+      "label": "Download link validity"
+    },
+    "ui.ornament_level": {
+      "label": "Ornament level",
+      "help": "Minimal keeps borders and headings; off removes the patterns."
+    },
+    "media.print_female_photos": {
+      "label": "Print girls’ photos",
+      "help": "When off, girls’ photos never appear on printed rosters or certificates."
+    },
+    "honor.weight_attendance": {
+      "label": "Attendance weight",
+      "help": "Share of the monthly score from attendance. The three weights are scaled to 100."
+    },
+    "honor.weight_evaluation": {
+      "label": "Evaluation weight",
+      "help": "Share from teacher evaluations."
+    },
+    "honor.weight_memorization": {
+      "label": "New memorization weight",
+      "help": "Share from newly memorized ayahs."
+    },
+    "honor.full_attendance_min_sessions": {
+      "label": "Minimum sessions for full attendance",
+      "help": "A student needs at least this many sessions in the month to count as fully attending."
+    },
+    "honor.display_key": {
+      "label": "Display screen key",
+      "help": "Letters, digits, - and _ only. Leave empty to turn the TV display off."
+    }
+  },
+  "options": {
+    "locale.default": {
+      "ar": "Arabic",
+      "en": "English"
+    },
+    "reminders.weekly_report_day": {
+      "sat": "Saturday",
+      "sun": "Sunday",
+      "mon": "Monday",
+      "tue": "Tuesday",
+      "wed": "Wednesday",
+      "thu": "Thursday",
+      "fri": "Friday"
+    },
+    "progress.default_direction": {
+      "forward": "Al-Fatiha → An-Nas",
+      "backward": "An-Nas → Al-Fatiha"
+    },
+    "ui.ornament_level": {
+      "full": "Full",
+      "minimal": "Minimal",
+      "off": "Off"
+    }
+  },
+  "units": {
+    "reminders.pre_lesson_hours": "hours before",
+    "reminders.invoice_days_before": "days before",
+    "reminders.invoice_days_after": "days after",
+    "attendance.repeated_absence_count": "absences",
+    "attendance.repeated_absence_days": "days",
+    "sessions.generate_weeks_ahead": "weeks",
+    "evaluation.issue_threshold": "out of 10",
+    "messages.progress_update_day": "of the month",
+    "certificates.link_minutes": "minutes",
+    "honor.weight_attendance": "%",
+    "honor.weight_evaluation": "%",
+    "honor.weight_memorization": "%",
+    "honor.full_attendance_min_sessions": "sessions"
+  }
+}

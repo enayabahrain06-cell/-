@@ -1,0 +1,80 @@
+{
+  "title": "Teachers",
+  "subtitle": "{{n}} teachers",
+  "search": "Search by name or phone",
+  "filters": {
+    "label": "Filters",
+    "gender": "Track",
+    "all_tracks": "All tracks",
+    "boys": "Boys",
+    "girls": "Girls",
+    "status": "Status",
+    "active": "Active",
+    "inactive": "Inactive",
+    "clear": "Clear filters"
+  },
+  "columns": {
+    "teacher": "Teacher",
+    "circles": "Circles",
+    "students": "Students",
+    "taken_rate": "Attendance taken",
+    "avg_evaluation": "Average score",
+    "status": "Status"
+  },
+  "active": "Active",
+  "inactive": "Inactive",
+  "no_circles": "No circle yet",
+  "no_specialization": "No specialization set",
+  "card_line": "{{circles}} circles · {{students}} students",
+  "empty": "No teachers yet",
+  "empty_body": "Teachers are added from Users & permissions with the teacher role.",
+  "empty_filtered": "No teacher matches these filters.",
+  "error": "Could not load teachers.",
+  "detail": {
+    "back": "Teachers",
+    "phone": "Phone",
+    "email": "Email",
+    "last_login": "Last sign-in {{date}}",
+    "never": "Never signed in",
+    "edit": "Edit profile",
+    "edit_account": "Edit account",
+    "specialization": "Specialization",
+    "bio": "About",
+    "save": "Save",
+    "cancel": "Cancel",
+    "saved": "Saved.",
+    "kpi": {
+      "students": "Active students",
+      "sessions": "Sessions this month",
+      "taken_rate": "Attendance taken",
+      "on_time": "Taken on time",
+      "avg_evaluation": "Average score",
+      "attendance_rate": "Student attendance",
+      "evaluations": "Evaluations (30 days)"
+    },
+    "circles": "Circles",
+    "no_circles": "This teacher has no circles.",
+    "capacity": "{{students}} of {{capacity}}",
+    "status": {
+      "active": "Active",
+      "paused": "Paused",
+      "ended": "Ended"
+    },
+    "timetable": "Weekly timetable",
+    "free": "—",
+    "upcoming": "Next 7 days",
+    "no_upcoming": "No sessions in the next 7 days.",
+    "taken": "Taken",
+    "take": "Take attendance",
+    "days": {
+      "sat": "Saturday",
+      "sun": "Sunday",
+      "mon": "Monday",
+      "tue": "Tuesday",
+      "wed": "Wednesday",
+      "thu": "Thursday",
+      "fri": "Friday"
+    },
+    "messages": "Messages for this session"
+  }
+}

@@ -59,6 +59,10 @@
         "open_issues": "Open difficulties",
         "none": "—",
         "read_only": "Read only",
+        "certificates": "Certificates",
+        "badges": "Badges",
+        "print_report": "Print report",
+        "report_error": "The report could not be prepared. Please try again.",
         "direction": {
             "forward": "Forward from Al-Fatihah",
             "backward": "Backward from An-Nas"
@@ -70,7 +74,8 @@
         "issues": "Difficulties",
         "attendance": "Attendance",
         "wallet": "Wallet",
-        "details": "Details"
+        "details": "Details",
+        "certificates": "Certificates"
     },
     "juz_map": {
         "title": "Juz map",

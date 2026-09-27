@@ -1,0 +1,251 @@
+{
+  "title": "الإعدادات",
+  "subtitle": "خيارات عامة للهيئة والتذكيرات والحضور والطباعة.",
+  "index": "أقسام الإعدادات",
+  "save": "حفظ التغييرات",
+  "saving": "جارٍ الحفظ…",
+  "discard": "تجاهل",
+  "check_fields": "راجع الحقول المظللة.",
+  "unsaved_zero": "لا تغييرات",
+  "unsaved_one": "تغيير واحد غير محفوظ",
+  "unsaved_two": "تغييران غير محفوظين",
+  "unsaved_few": "{{count}} تغييرات غير محفوظة",
+  "unsaved_many": "{{count}} تغييرًا غير محفوظ",
+  "unsaved_other": "{{count}} تغيير غير محفوظ",
+  "on": "مفعّل",
+  "off": "متوقف",
+  "read_only": "ثابت",
+  "range": "{{min}}–{{max}}",
+  "age_groups_note": "تُدار الفئات العمرية لتوزيع الطلاب على الحلقات من قسم الحلقات.",
+  "age_groups_link": "فتح الفئات العمرية",
+  "logo": {
+    "title": "الشعار",
+    "help": "PNG أو JPEG أو WebP، مربع، حتى ٢ ميغابايت. يظهر في صفحتي الدخول والتسجيل.",
+    "alt": "شعار الهيئة",
+    "upload": "رفع الشعار",
+    "replace": "استبدال",
+    "remove": "إزالة",
+    "uploading": "جارٍ الرفع…"
+  },
+  "groups": {
+    "authority": {
+      "title": "الهيئة",
+      "desc": "الاسم والعنوان وبيانات التواصل في الصفحات والرسائل والمطبوعات."
+    },
+    "locale": {
+      "title": "اللغة والمنطقة",
+      "desc": "المنطقة الزمنية ورمز الدولة للهاتف والتاريخ واللغة الافتراضية."
+    },
+    "reminders": {
+      "title": "التذكيرات",
+      "desc": "متى تُرسل تذكيرات واتساب للدروس والفواتير والاختبارات والتقرير الأسبوعي."
+    },
+    "attendance": {
+      "title": "الحضور",
+      "desc": "متى يُنشئ الغياب المتكرر تنبيهًا في لوحة التحكم."
+    },
+    "registration": {
+      "title": "التسجيل",
+      "desc": "نموذج التسجيل العام."
+    },
+    "sessions": {
+      "title": "جلسات الحلقات",
+      "desc": "إلى أي مدى تُنشأ الجلسات مسبقًا."
+    },
+    "progress": {
+      "title": "الحفظ والتقييم",
+      "desc": "اتجاه الحفظ وحد الصعوبة ورسائل التقدم الشهرية."
+    },
+    "certificates": {
+      "title": "الشهادات",
+      "desc": "الاعتماد وإشعار الأسرة وشهادات الأجزاء التلقائية."
+    },
+    "ui": {
+      "title": "المظهر",
+      "desc": "مقدار الزخرفة الإسلامية في الشاشات."
+    },
+    "media": {
+      "title": "الصور والطباعة",
+      "desc": "قواعد الفصل بين الجنسين في الصور المطبوعة."
+    },
+    "honor": {
+      "title": "لوحة التميز",
+      "desc": "أوزان الترتيب وشرط الحضور الكامل وشاشة العرض."
+    }
+  },
+  "fields": {
+    "authority.name_ar": {
+      "label": "الاسم (عربي)"
+    },
+    "authority.name_en": {
+      "label": "الاسم (إنجليزي)"
+    },
+    "authority.address_ar": {
+      "label": "العنوان (عربي)"
+    },
+    "authority.address_en": {
+      "label": "العنوان (إنجليزي)"
+    },
+    "authority.phone": {
+      "label": "الهاتف",
+      "help": "مع رمز الدولة، مثل 97317000000+."
+    },
+    "locale.timezone": {
+      "label": "المنطقة الزمنية",
+      "help": "تُستخدم لمواعيد الدروس والتذكيرات والتقارير."
+    },
+    "locale.country_code": {
+      "label": "رمز الدولة للهاتف",
+      "help": "أرقام فقط، يُضاف إلى الأرقام المحلية (973 للبحرين)."
+    },
+    "locale.currency": {
+      "label": "العملة",
+      "help": "المبالغ مخزنة بالفلس، لذا لا يمكن تغيير العملة."
+    },
+    "locale.show_hijri": {
+      "label": "إظهار التاريخ الهجري",
+      "help": "بجانب التاريخ الميلادي في الشاشات والشهادات."
+    },
+    "locale.default": {
+      "label": "اللغة الافتراضية",
+      "help": "للمستخدمين الجدد والصفحات العامة."
+    },
+    "reminders.pre_lesson_hours": {
+      "label": "تذكير الدرس",
+      "help": "كم قبل بدء الدرس يُرسل التذكير."
+    },
+    "reminders.invoice_days_before": {
+      "label": "تذكير الفاتورة قبل الاستحقاق",
+      "help": "صفر يوقف التذكير."
+    },
+    "reminders.invoice_days_after": {
+      "label": "تذكير الفاتورة المتأخرة",
+      "help": "أيام بعد تاريخ الاستحقاق. صفر يوقفه."
+    },
+    "reminders.exam_day_before": {
+      "label": "تذكير الاختبار قبل يوم"
+    },
+    "reminders.exam_hour_before": {
+      "label": "تذكير الاختبار قبل ساعة"
+    },
+    "reminders.weekly_report_day": {
+      "label": "يوم التقرير الأسبوعي",
+      "help": "يُرسل الملخص الأسبوعي للمديرين في هذا اليوم."
+    },
+    "attendance.repeated_absence_count": {
+      "label": "عدد الغيابات الذي يُنشئ تنبيهًا"
+    },
+    "attendance.repeated_absence_days": {
+      "label": "خلال مدة"
+    },
+    "registration.open": {
+      "label": "التسجيل مفتوح",
+      "help": "عند الإيقاف يُظهر النموذج العام أن التسجيل مغلق."
+    },
+    "registration.photo_required": {
+      "label": "صورة الطالب إلزامية",
+      "help": "في النموذج العام والتسجيل السريع وقبول الطلبات."
+    },
+    "sessions.generate_weeks_ahead": {
+      "label": "إنشاء الجلسات مسبقًا",
+      "help": "تُنشأ الجلسات لهذه المدة من اليوم."
+    },
+    "progress.default_direction": {
+      "label": "اتجاه الحفظ الافتراضي",
+      "help": "للباقات التي لم تحدد اتجاهها."
+    },
+    "evaluation.issue_threshold": {
+      "label": "حد الصعوبة",
+      "help": "الدرجة الأقل من هذا الحد تقترح تسجيل صعوبة."
+    },
+    "messages.progress_update_enabled": {
+      "label": "رسالة التقدم الشهرية",
+      "help": "تُرسل لكل أسرة ملخص التقدم عبر واتساب."
+    },
+    "messages.progress_update_day": {
+      "label": "يوم الشهر",
+      "help": "اليوم الذي تُرسل فيه رسالة التقدم الشهرية."
+    },
+    "certificates.require_approval": {
+      "label": "الشهادات تحتاج إلى اعتماد",
+      "help": "لا تظهر المسودات للأسر قبل اعتمادها."
+    },
+    "certificates.notify_on_approve": {
+      "label": "إشعار الأسرة عند الاعتماد",
+      "help": "تُرسل رسالة تهنئة عبر واتساب."
+    },
+    "certificates.auto_juz": {
+      "label": "إنشاء مسودة شهادة لكل جزء مكتمل"
+    },
+    "certificates.link_minutes": {
+      "label": "مدة صلاحية رابط التنزيل"
+    },
+    "ui.ornament_level": {
+      "label": "مستوى الزخرفة",
+      "help": "البسيطة تُبقي الإطارات والعناوين؛ «بدون» تزيل الزخارف."
+    },
+    "media.print_female_photos": {
+      "label": "طباعة صور الطالبات",
+      "help": "عند الإيقاف لا تظهر صور الطالبات في الكشوف والشهادات المطبوعة."
+    },
+    "honor.weight_attendance": {
+      "label": "وزن الحضور",
+      "help": "نصيب الحضور من الدرجة الشهرية، وتُحوَّل الأوزان الثلاثة إلى ١٠٠."
+    },
+    "honor.weight_evaluation": {
+      "label": "وزن التقييم",
+      "help": "نصيب تقييمات المعلم."
+    },
+    "honor.weight_memorization": {
+      "label": "وزن الحفظ الجديد",
+      "help": "نصيب الآيات المحفوظة حديثاً."
+    },
+    "honor.full_attendance_min_sessions": {
+      "label": "أدنى عدد جلسات للحضور الكامل",
+      "help": "يُحتسب الطالب كامل الحضور إذا حضر هذا العدد من الجلسات على الأقل في الشهر."
+    },
+    "honor.display_key": {
+      "label": "مفتاح شاشة العرض",
+      "help": "حروف لاتينية وأرقام و- و_ فقط. اتركه فارغاً لإيقاف شاشة العرض."
+    }
+  },
+  "options": {
+    "locale.default": {
+      "ar": "العربية",
+      "en": "الإنجليزية"
+    },
+    "reminders.weekly_report_day": {
+      "sat": "السبت",
+      "sun": "الأحد",
+      "mon": "الاثنين",
+      "tue": "الثلاثاء",
+      "wed": "الأربعاء",
+      "thu": "الخميس",
+      "fri": "الجمعة"
+    },
+    "progress.default_direction": {
+      "forward": "من الفاتحة إلى الناس",
+      "backward": "من الناس إلى الفاتحة"
+    },
+    "ui.ornament_level": {
+      "full": "كاملة",
+      "minimal": "بسيطة",
+      "off": "بدون"
+    }
+  },
+  "units": {
+    "reminders.pre_lesson_hours": "ساعة قبل الدرس",
+    "reminders.invoice_days_before": "يوم قبل",
+    "reminders.invoice_days_after": "يوم بعد",
+    "attendance.repeated_absence_count": "غيابات",
+    "attendance.repeated_absence_days": "يومًا",
+    "sessions.generate_weeks_ahead": "أسابيع",
+    "evaluation.issue_threshold": "من 10",
+    "messages.progress_update_day": "من الشهر",
+    "certificates.link_minutes": "دقيقة",
+    "honor.weight_attendance": "٪",
+    "honor.weight_evaluation": "٪",
+    "honor.weight_memorization": "٪",
+    "honor.full_attendance_min_sessions": "جلسات"
+  }
+}

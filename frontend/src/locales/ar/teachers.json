@@ -1,0 +1,80 @@
+{
+  "title": "المعلمون",
+  "subtitle": "{{n}} معلمًا",
+  "search": "ابحث بالاسم أو الهاتف",
+  "filters": {
+    "label": "التصفية",
+    "gender": "المسار",
+    "all_tracks": "كل المسارات",
+    "boys": "البنين",
+    "girls": "البنات",
+    "status": "الحالة",
+    "active": "نشط",
+    "inactive": "غير نشط",
+    "clear": "مسح التصفية"
+  },
+  "columns": {
+    "teacher": "المعلم",
+    "circles": "الحلقات",
+    "students": "الطلاب",
+    "taken_rate": "تسجيل الحضور",
+    "avg_evaluation": "متوسط الدرجات",
+    "status": "الحالة"
+  },
+  "active": "نشط",
+  "inactive": "غير نشط",
+  "no_circles": "بلا حلقة بعد",
+  "no_specialization": "لم يُحدَّد التخصص",
+  "card_line": "{{circles}} حلقات · {{students}} طالبًا",
+  "empty": "لا يوجد معلمون بعد",
+  "empty_body": "يُضاف المعلمون من شاشة المستخدمين والصلاحيات بدور معلم.",
+  "empty_filtered": "لا يوجد معلم يطابق هذه التصفية.",
+  "error": "تعذّر تحميل المعلمين.",
+  "detail": {
+    "back": "المعلمون",
+    "phone": "الهاتف",
+    "email": "البريد",
+    "last_login": "آخر دخول {{date}}",
+    "never": "لم يسجّل الدخول بعد",
+    "edit": "تعديل الملف",
+    "edit_account": "تعديل الحساب",
+    "specialization": "التخصص",
+    "bio": "نبذة",
+    "save": "حفظ",
+    "cancel": "إلغاء",
+    "saved": "تم الحفظ.",
+    "kpi": {
+      "students": "الطلاب النشطون",
+      "sessions": "حلقات هذا الشهر",
+      "taken_rate": "تسجيل الحضور",
+      "on_time": "التسجيل في الوقت",
+      "avg_evaluation": "متوسط الدرجات",
+      "attendance_rate": "حضور الطلاب",
+      "evaluations": "التقييمات (30 يومًا)"
+    },
+    "circles": "الحلقات",
+    "no_circles": "لا توجد حلقات لهذا المعلم.",
+    "capacity": "{{students}} من {{capacity}}",
+    "status": {
+      "active": "نشطة",
+      "paused": "موقوفة",
+      "ended": "منتهية"
+    },
+    "timetable": "الجدول الأسبوعي",
+    "free": "—",
+    "upcoming": "الأيام السبعة القادمة",
+    "no_upcoming": "لا حلقات في الأيام السبعة القادمة.",
+    "taken": "سُجّل",
+    "take": "تسجيل الحضور",
+    "days": {
+      "sat": "السبت",
+      "sun": "الأحد",
+      "mon": "الاثنين",
+      "tue": "الثلاثاء",
+      "wed": "الأربعاء",
+      "thu": "الخميس",
+      "fri": "الجمعة"
+    },
+    "messages": "رسائل هذه الحلقة"
+  }
+}

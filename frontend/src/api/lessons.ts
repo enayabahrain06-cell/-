@@ -27,6 +27,24 @@ export interface Lesson {
   status_label: string
   students?: { id: number; student: StudentSummary; status: string; joined_at: string | null; current_memorization: string | null }[]
   next_sessions?: SessionInfo[]
+  /** Detail view only: whether this user may add students here (LessonPolicy::addStudents). */
+  can_add_students?: boolean
+}
+
+/** Why a searched student cannot join the circle (server-side rules; see LessonService::ineligibility). */
+export type CandidateReason = 'inactive' | 'gender' | 'age' | 'already_in' | 'full' | 'other_circle_locked'
+
+export interface LessonCandidate {
+  id: number
+  student_no: string
+  full_name: string
+  initial: string
+  gender: 'male' | 'female' | null
+  photo_url: string | null
+  age_at_start: number | null
+  circles: { id: number; name: string; teacher: string | null; movable: boolean }[]
+  reason: CandidateReason | null
+  action: 'add' | 'move' | null
 }
 
 export interface Conflict {
@@ -105,7 +123,9 @@ export const lessonsApi = {
   remove: (id: number) => api.delete(`/lessons/${id}`),
   conflicts: (id: number) => api.get<{ conflicts: Conflict[] }>(`/lessons/${id}/conflicts`).then((r) => r.data.conflicts),
   sessions: (id: number, from?: string, to?: string) => api.get<{ data: SessionInfo[] }>(`/lessons/${id}/sessions`, { params: { from, to } }).then((r) => r.data.data),
-  enroll: (id: number, studentIds: number[]) => api.post(`/lessons/${id}/students`, { student_ids: studentIds }).then((r) => r.data),
+  candidates: (id: number, search: string) => api.get<{ data: LessonCandidate[]; free_seats: number }>(`/lessons/${id}/candidates`, { params: { search } }).then((r) => r.data),
+  enroll: (id: number, studentIds: number[], move = false) =>
+    api.post<{ message: string; added: number[]; moved: { student_id: number; from_lesson_id: number }[] }>(`/lessons/${id}/students`, { student_ids: studentIds, move }).then((r) => r.data),
   unenroll: (id: number, studentId: number) => api.delete(`/lessons/${id}/students/${studentId}`),
   changeLocation: (id: number, d: { mode: 'one_day' | 'all_upcoming'; date?: string | null; location_id: number; notify: boolean; reason?: string | null }) =>
     api.post<{ message: string; notified: number; dates: string[] }>(`/lessons/${id}/change-location`, d).then((r) => r.data),

@@ -51,10 +51,33 @@
     "conflicts": "Hall conflicts",
     "no_conflicts": "No conflicts.",
     "full": "The circle is full",
-    "search_students": "Search a student to add",
-    "add": "Add",
-    "added": "Student added.",
-    "hall_changed_on": "Different hall"
+    "hall_changed_on": "Different hall",
+    "add_student": "Add student"
+  },
+  "add": {
+    "title": "Add a student to {{name}}",
+    "close": "Close",
+    "mode": "How to add",
+    "mode_existing": "Existing student",
+    "mode_new": "New student",
+    "search_label": "Find a student",
+    "search_hint": "Name, student number or phone",
+    "type_more": "Type at least two letters or digits to search.",
+    "searching": "Searching…",
+    "no_results": "No matching students in your track.",
+    "free_seats": "{{n}} seats left in this circle",
+    "age": "{{n}} yrs at package start",
+    "in_circle": "In: {{name}}",
+    "move": "Move here",
+    "move_confirm": "{{name}} is in {{from}}. Move them to {{to}}? They will leave the old circle today.",
+    "reasons": {
+      "inactive": "Not active",
+      "gender": "Other gender",
+      "age": "Outside age range",
+      "already_in": "Already in this circle",
+      "full": "The circle is full",
+      "other_circle_locked": "In a circle you do not manage"
+    }
   },
   "change": {
     "title": "Change the circle's hall",

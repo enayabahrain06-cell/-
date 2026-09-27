@@ -1,7 +1,11 @@
 {
   "title": "Dashboard",
   "greeting": "Welcome, {{name}}",
-  "track": { "male": "Boys track", "female": "Girls track", "both": "Both tracks" },
+  "track": {
+    "male": "Boys track",
+    "female": "Girls track",
+    "both": "Both tracks"
+  },
   "own_circles": "Your circles only",
   "refresh": "Refresh",
   "error": "Could not load the dashboard.",
@@ -30,7 +34,10 @@
       "conflict": "Hall conflict",
       "no_hall": "No hall",
       "cancelled": "Cancelled"
-    }
+    },
+    "take_attendance": "Take attendance",
+    "evaluate": "Evaluate",
+    "fix_hall": "Open the circle to change its hall"
   },
   "chart": {
     "title": "Attendance — last 14 days",
@@ -50,6 +57,75 @@
     "empty": "No open alerts.",
     "resolve": "Handled",
     "resolving": "Saving…",
-    "severity": { "danger": "Urgent", "warning": "Warning", "info": "Info" }
+    "severity": {
+      "danger": "Urgent",
+      "warning": "Warning",
+      "info": "Info"
+    },
+    "filter": "Filter alerts by type",
+    "all": "All",
+    "view_all": "View all {{n}} alerts",
+    "loading": "Loading…",
+    "types": {
+      "location_conflict": "Hall conflict",
+      "registration_request": "Registration requests",
+      "repeated_absence": "Repeated absence",
+      "lottery_pending": "Lottery awaiting approval",
+      "exam_upcoming": "Upcoming exam",
+      "invoice_overdue": "Overdue invoice",
+      "lesson_no_teacher": "Circle without a teacher"
+    },
+    "priority": {
+      "danger": "Urgent",
+      "warning": "Important",
+      "info": "Follow-up"
+    },
+    "view_all_short": "View all",
+    "show_less": "Show less",
+    "error": "Could not load alerts.",
+    "empty_hint": "Conflicts, repeated absences and circles without a teacher will appear here.",
+    "action_failed": "That did not work. Try again.",
+    "handled_by": "Marked as handled by {{name}} at {{time}}.",
+    "no_phone": "No guardian phone number",
+    "sessions_title": "Clashing sessions ({{n}})",
+    "col_date": "Date",
+    "col_time": "Time",
+    "col_with": "Clashes with",
+    "actions": {
+      "resolve_conflict": "Resolve conflict",
+      "view_sessions": "View sessions ({{n}})",
+      "message_parents": "Message parents",
+      "open_student": "Student profile",
+      "assign_teacher": "Assign a teacher",
+      "circle_students": "Circle students",
+      "review_requests": "Review requests",
+      "open_wallet": "Open wallet",
+      "invoices": "Invoices",
+      "review_lottery": "Review lottery",
+      "open_exam": "Open exam"
+    },
+    "conflict_line": "With {{with}} — {{count}} sessions between {{from}} and {{to}}, every {{days}}, {{start}}–{{end}}"
+  },
+  "updated_at": "Updated {{time}}",
+  "actions": {
+    "title": "Quick actions",
+    "attendance": "Take attendance",
+    "enroll": "Quick enrollment",
+    "requests": "Registration requests",
+    "halls": "Circles and halls",
+    "payment": "Record payment"
+  },
+  "age": {
+    "title": "Students by age",
+    "subtitle": "Average age {{avg}} years",
+    "subtitle_empty": "Active students",
+    "empty": "No active students yet.",
+    "band": "{{min}}–{{max}}",
+    "band_upto": "0–{{max}}",
+    "band_plus": "{{min}}+",
+    "age": "Age (years)",
+    "students": "Students",
+    "share": "Share",
+    "tooltip": "{{count}} students · {{share}}"
   }
 }

@@ -59,6 +59,10 @@
         "open_issues": "صعوبات مفتوحة",
         "none": "—",
         "read_only": "عرض فقط",
+        "certificates": "الشهادات",
+        "badges": "الأوسمة",
+        "print_report": "طباعة التقرير",
+        "report_error": "تعذّر إعداد التقرير، حاول مرة أخرى.",
         "direction": {
             "forward": "تصاعدي من الفاتحة",
             "backward": "تنازلي من الناس"
@@ -70,7 +74,8 @@
         "issues": "الصعوبات",
         "attendance": "الحضور",
         "wallet": "المحفظة",
-        "details": "البيانات"
+        "details": "البيانات",
+        "certificates": "الشهادات"
     },
     "juz_map": {
         "title": "خريطة الأجزاء",

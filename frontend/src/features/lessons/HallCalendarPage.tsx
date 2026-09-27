@@ -32,7 +32,7 @@ export default function HallCalendarPage() {
   const days = Array.from({ length: 7 }, (_, i) => { const d = new Date(`${start}T12:00:00`); d.setDate(d.getDate() + i); return d.toISOString().slice(0, 10) })
 
   return (
-    <div className="mx-auto max-w-6xl space-y-5">
+    <div className="space-y-5">
       <Link to="/lessons?tab=halls" className="inline-flex items-center gap-1 text-sm font-medium text-brand-700 hover:underline"><Icon name="chevron" className="size-4 ltr:rotate-180" />{t('calendar.back')}</Link>
       <PageBand title={t('calendar.title', { name: hall.name })} subtitle={t(`gender.${hall.gender}`)}
         actions={<div className="flex gap-2">
@@ -40,7 +40,7 @@ export default function HallCalendarPage() {
           <SecondaryButton onClick={() => move(7)} aria-label={t('calendar.next')}><Icon name="chevron" className="size-4 rtl:rotate-180" /></SecondaryButton>
         </div>} />
       <p className="text-sm text-ink/60">{t('calendar.week', { date: formatDate(start, locale, { day: 'numeric', month: 'long', year: 'numeric' }) })}</p>
-      <ul className="grid gap-3 md:grid-cols-7">
+      <ul className="grid gap-3 *:min-w-0 md:grid-cols-7">
         {days.map((d) => {
           const items = q.data.items.filter((i) => i.date === d)
           return (

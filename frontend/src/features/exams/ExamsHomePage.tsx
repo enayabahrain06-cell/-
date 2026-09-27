@@ -29,7 +29,7 @@ export default function ExamsHomePage() {
   const dt = (iso: string) => formatDate(iso, locale, { day: 'numeric', month: 'short', hour: 'numeric', minute: '2-digit' })
 
   return (
-    <div className="mx-auto max-w-7xl space-y-5">
+    <div className="space-y-5">
       <PageBand title={t('title')} subtitle={t('subtitle')} />
       <div className="flex flex-wrap items-end gap-3 rounded-2xl border border-ink/8 bg-white p-4 shadow-sm">
         <SelectField className="w-40" label={t('filters.all_types')} hideLabel value={filters.type ?? ''} onChange={(e) => set('type', e.target.value)}
@@ -42,7 +42,7 @@ export default function ExamsHomePage() {
         <div className="rounded-2xl border border-ink/8 bg-white shadow-sm"><EmptyState icon="exams" title={t('empty')} /></div>
       ) : (
         <>
-          <ul className="grid gap-3 md:grid-cols-2 xl:grid-cols-3">
+          <ul className="grid gap-3 *:min-w-0 md:grid-cols-2 xl:grid-cols-3">
             {q.data.data.map((e) => (
               <li key={e.id}>
                 <Link to={`/exams/${e.id}`} className="block h-full rounded-2xl border border-ink/8 bg-white p-4 shadow-sm transition hover:border-brand-500/40 hover:shadow">

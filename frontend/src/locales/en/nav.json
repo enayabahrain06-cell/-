@@ -10,7 +10,12 @@
   "attendance": "Attendance",
   "evaluation": "Evaluation & memorization",
   "exams": "Exams",
+  "certificates": "Certificates",
   "lottery": "Lottery",
+  "honor": "Honor board",
+  "competitions": "Competitions & challenges",
+  "my_honor": "Honor & challenges",
+  "my_competitions": "Competitions & challenges",
   "packages": "Packages & registration",
   "payments": "Payments & wallets",
   "messages": "Messages",
@@ -18,5 +23,6 @@
   "users": "Users & permissions",
   "settings": "Settings",
   "coming_soon": "This page is being built",
-  "coming_soon_body": "The backend for this section is ready; its screens come in the next step."
+  "coming_soon_body": "The backend for this section is ready; its screens come in the next step.",
+  "audit": "Audit log"
 }

@@ -3,7 +3,6 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { Link, useParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { lessonsApi } from '../../api/lessons'
-import { studentsApi } from '../../api/students'
 import { parseApiError } from '../../api/client'
 import { useAuth } from '../../app/AuthContext'
 import Avatar from '../../components/Avatar'
@@ -11,6 +10,7 @@ import Icon from '../../components/Icon'
 import { EmptyState, OrnamentDivider } from '../../components/ornaments'
 import { Badge, Card, CardTitle, ErrorState, LoadingState, Notice, SecondaryButton } from '../../components/ui'
 import { formatDate, formatNumber, formatTime } from '../../lib/format'
+import AddStudentDialog from './AddStudentDialog'
 import ChangeLocationDialog from './ChangeLocationDialog'
 import LessonFormDialog from './LessonFormDialog'
 import { GENDER_TONE } from './LessonsHomePage'
@@ -27,31 +27,20 @@ export default function LessonDetailPage() {
   const [edit, setEdit] = useState(false)
   const [change, setChange] = useState(false)
   const [notice, setNotice] = useState<{ tone: 'success' | 'error'; text: string } | null>(null)
-  const [search, setSearch] = useState('')
+  const [adding, setAdding] = useState(false)
 
   const lesson = q.data
-  const candidates = useQuery({
-    queryKey: ['enroll-candidates', lessonId, search],
-    queryFn: () => studentsApi.list({ search, gender: lesson?.gender === 'mixed' ? undefined : lesson?.gender ?? undefined, per_page: 8 }),
-    enabled: !!lesson && search.trim().length >= 2,
-  })
   const refresh = () => { void qc.invalidateQueries({ queryKey: ['lesson', lessonId] }); void qc.invalidateQueries({ queryKey: ['lessons'] }) }
-  const enroll = useMutation({
-    mutationFn: (sid: number) => lessonsApi.enroll(lessonId, [sid]),
-    onSuccess: () => { setSearch(''); setNotice({ tone: 'success', text: t('detail.added') }); refresh() },
-    onError: (e) => setNotice({ tone: 'error', text: parseApiError(e).message }),
-  })
   const unenroll = useMutation({ mutationFn: (sid: number) => lessonsApi.unenroll(lessonId, sid), onSuccess: refresh })
 
   if (q.isLoading) return <LoadingState />
   if (q.isError || !lesson) return <ErrorState message={parseApiError(q.error).message} onRetry={() => void q.refetch()} />
   const n = (v: number) => formatNumber(v, locale)
-  const enrolledIds = new Set((lesson.students ?? []).map((s) => s.student.id))
   const full = lesson.student_count >= lesson.capacity
   const manage = can('lessons.manage')
 
   return (
-    <div className="mx-auto max-w-6xl space-y-5">
+    <div className="space-y-5">
       <Link to="/lessons" className="inline-flex items-center gap-1 text-sm font-medium text-brand-700 hover:underline"><Icon name="chevron" className="size-4 ltr:rotate-180" />{t('detail.back')}</Link>
 
       <header className="rounded-2xl border border-ink/8 bg-white p-5 shadow-sm">
@@ -90,25 +79,9 @@ export default function LessonDetailPage() {
 
       <div className="grid gap-5 lg:grid-cols-5">
         <Card className="lg:col-span-3">
-          <CardTitle>{t('detail.roster')} <span className="text-ink/45">({n(lesson.student_count)})</span></CardTitle>
-          {manage && (
-            <div className="mb-3">
-              <label htmlFor="enroll-search" className="sr-only">{t('detail.search_students')}</label>
-              <input id="enroll-search" type="search" value={search} disabled={full} onChange={(e) => setSearch(e.target.value)} placeholder={full ? t('detail.full') : t('detail.search_students')}
-                className="w-full rounded-xl border border-ink/15 px-3 py-2 text-sm shadow-sm disabled:bg-ink/5" />
-              {candidates.data && search.trim().length >= 2 && (
-                <ul className="mt-2 divide-y divide-ink/6 rounded-xl border border-ink/10">
-                  {candidates.data.data.filter((s) => !enrolledIds.has(s.id)).map((s) => (
-                    <li key={s.id} className="flex items-center gap-3 px-3 py-2 text-sm">
-                      <Avatar name={s.full_name} initial={s.initial} src={s.photo_url} gender={s.gender} size="sm" />
-                      <span dir="auto" className="flex-1 text-ink">{s.full_name}<span className="block text-xs text-ink/50">{s.circle?.name ?? ''}</span></span>
-                      <SecondaryButton disabled={enroll.isPending} onClick={() => enroll.mutate(s.id)}>{t('detail.add')}</SecondaryButton>
-                    </li>
-                  ))}
-                </ul>
-              )}
-            </div>
-          )}
+          <CardTitle actions={lesson.can_add_students && (
+            <SecondaryButton onClick={() => setAdding(true)} disabled={full} title={full ? t('detail.full') : undefined}><Icon name="enroll" className="size-4" />{t('detail.add_student')}</SecondaryButton>
+          )}>{t('detail.roster')} <span className="text-ink/45">({n(lesson.student_count)})</span></CardTitle>
           {(lesson.students ?? []).length === 0 ? <EmptyState size="sm" icon="students" title={t('detail.empty_roster')} /> : (
             <ul className="divide-y divide-ink/6">
               {lesson.students!.map((ls) => (
@@ -140,6 +113,7 @@ export default function LessonDetailPage() {
       </div>
 
       {edit && <LessonFormDialog lesson={lesson} onClose={() => setEdit(false)} onSaved={(_l, c) => { setEdit(false); refresh(); void conflicts.refetch(); setNotice(c.length ? { tone: 'error', text: t('form.conflicts_body') } : { tone: 'success', text: t('form.saved') }) }} />}
+      {adding && <AddStudentDialog lesson={lesson} canQuickEnroll={can('enrollment.quick')} onClose={() => setAdding(false)} onChanged={refresh} />}
       {change && <ChangeLocationDialog lesson={lesson} onClose={() => setChange(false)} onDone={(m) => { setChange(false); setNotice({ tone: 'success', text: m }) }} />}
     </div>
   )

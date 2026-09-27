@@ -6,7 +6,7 @@ import Icon from '../components/Icon'
 import LanguageSwitcher from '../components/LanguageSwitcher'
 import { LogoMark, OrnamentStrip } from '../components/ornaments'
 
-/** Student / guardian pages: brand header with a small section nav (home, exams). */
+/** Student / guardian pages: brand header with a small section nav (home, exams, honor board). */
 export default function FamilyLayout({ children }: { children: ReactNode }) {
   const { t } = useTranslation()
   const { t: tn } = useTranslation('nav')
@@ -20,9 +20,10 @@ export default function FamilyLayout({ children }: { children: ReactNode }) {
         <div className="mx-auto flex max-w-5xl flex-wrap items-center gap-3 px-4 py-3">
           <LogoMark className="size-9" />
           <span className="font-display text-lg">{t('app_name')}</span>
-          <nav className="flex gap-1" aria-label={tn('main')}>
+          <nav className="flex flex-wrap gap-1" aria-label={tn('main')}>
             <NavLink to="/" end className={link}>{tn('dashboard')}</NavLink>
             <NavLink to="/my/exams" className={link}>{tn('exams')}</NavLink>
+            <NavLink to="/my/honor" className={link}>{tn('my_honor')}</NavLink>
           </nav>
           <div className="ms-auto flex items-center gap-2">
             <LanguageSwitcher className="text-white/85" />

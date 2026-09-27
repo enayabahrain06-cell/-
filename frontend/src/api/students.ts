@@ -129,6 +129,8 @@ export interface StudentProfile {
     balance_fils: number
     is_due: boolean
     open_issues: { total: number; by_severity: { low: number; medium: number; high: number } }
+    certificates_count: number
+    badges_count: number
   }
   progress: {
     memorized_ayahs: number

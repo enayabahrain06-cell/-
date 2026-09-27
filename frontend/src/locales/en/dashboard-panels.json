@@ -1,0 +1,43 @@
+{
+  "error": "Could not load this section.",
+  "retry": "Try again",
+  "memorization": {
+    "title": "Memorization progress",
+    "link": "Evaluation & Memorization",
+    "pages_week": "Pages memorized this week",
+    "pages_hint": "Approximate, from ayahs recorded since Saturday",
+    "reviews_due": "Reviews due",
+    "reviews_hint": "No revision recorded in 7 days",
+    "juz_month": "Finished a juz this month",
+    "juz_hint": "Students who completed a full juz",
+    "behind_title": "Students behind plan",
+    "behind_total": "{{n}} in total",
+    "on_track": "Every student is on plan or ahead of it.",
+    "gap": "{{pages}} pages behind",
+    "of_plan": "{{percent}} of plan",
+    "plan_aria": "Plan completed by {{name}}",
+    "empty": "No students in your circles yet.",
+    "empty_body": "Memorization figures appear once students are enrolled and their progress is recorded."
+  },
+  "fees": {
+    "title": "Fees & dues",
+    "link": "Payments & Wallets",
+    "collected": "Collected this month",
+    "vs_last_month": "vs last month",
+    "last_month": "Last month {{amount}}",
+    "overdue": "Overdue dues",
+    "students": "{{n}} students",
+    "due_week": "Due this week",
+    "invoices": "{{n}} invoices",
+    "top_title": "Top overdue",
+    "none_overdue": "No overdue dues. All families are up to date.",
+    "days_overdue_one": "{{n}} day overdue",
+    "days_overdue_other": "{{n}} days overdue",
+    "remind": "Remind",
+    "reminding": "Sending…",
+    "reminded": "Reminded",
+    "no_phone": "No phone number on file for this family",
+    "empty": "No fees activity yet.",
+    "empty_body": "Collections and dues appear here once invoices are issued."
+  }
+}

@@ -1,0 +1,24 @@
+{
+  "error": "Could not load this section.",
+  "retry": "Try again",
+  "upcoming": {
+    "title": "Coming up this week",
+    "empty": "Nothing coming up this week.",
+    "empty_body": "Exams, packages ending, certificates to approve and unread messages will show here.",
+    "today": "Today",
+    "tomorrow": "Tomorrow",
+    "draft": "draft",
+    "since": "waiting since {{date}}",
+    "students_one": "{{n}} student",
+    "students_other": "{{n}} students",
+    "type": { "exam": "Exam", "certificates": "Certificates", "messages": "Messages", "package": "Package" }
+  },
+  "activity": {
+    "title": "Recent activity",
+    "full_log": "Full log",
+    "window": "Everything recorded in the last {{days}} days, newest first.",
+    "empty": "No activity yet.",
+    "empty_body": "Attendance, evaluations, registrations, payments and schedule changes will appear here.",
+    "type": { "attendance": "Attendance", "evaluation": "Evaluation", "registration": "Registration", "payment": "Payment", "schedule": "Schedule" }
+  }
+}

@@ -18,7 +18,7 @@ export default function EvaluationHomePage() {
   const tab = params.get('tab') === 'monthly' ? 'monthly' : 'daily'
 
   return (
-    <div className="mx-auto max-w-5xl space-y-5">
+    <div className="space-y-5">
       <PageBand title={t('title')} subtitle={t('subtitle')} />
       <Segmented name="eval-tab" label={t('title')} value={tab}
         options={[{ value: 'daily', label: t('tabs.daily') }, { value: 'monthly', label: t('tabs.monthly') }]}

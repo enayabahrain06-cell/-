@@ -42,12 +42,19 @@ function useDebounced<T>(value: T, ms = 450): T {
   return v
 }
 
-export default function QuickEnrollForm() {
+/** A circle fixed in advance (the circle page's "Add student"): no package or circle choice, no waitlist. */
+export interface LockedCircle {
+  packageId: number
+  lessonId: number
+  lessonName: string
+}
+
+export default function QuickEnrollForm({ lock, onEnrolled }: { lock?: LockedCircle; onEnrolled?: (result: EnrollResult) => void } = {}) {
   const { t, i18n } = useTranslation('enrollment')
   const locale = i18n.language
   const [f, setF] = useState<StudentFields>(EMPTY_STUDENT)
-  const [packageId, setPackageId] = useState<number | null>(null)
-  const [lessonId, setLessonId] = useState<number | null>(null)
+  const [packageId, setPackageId] = useState<number | null>(lock?.packageId ?? null)
+  const [lessonId, setLessonId] = useState<number | null>(lock?.lessonId ?? null)
   const [waitlist, setWaitlist] = useState(false)
   const [recordPayment, setRecordPayment] = useState(false)
   const [amount, setAmount] = useState('')
@@ -91,17 +98,19 @@ export default function QuickEnrollForm() {
 
   const packages = options.data?.data ?? []
   const selected = packages.find((p) => p.id === packageId) ?? null
-  // Drop a package or circle that no longer fits after the age or gender changed.
+  // Drop a package or circle that no longer fits after the age or gender changed (a locked circle stays; it is reported instead).
   useEffect(() => {
-    if (packageId && options.data && !selected) {
+    if (!lock && packageId && options.data && !selected) {
       setPackageId(null)
       setLessonId(null)
     }
-  }, [packageId, options.data, selected])
+  }, [lock, packageId, options.data, selected])
   useEffect(() => {
-    if (selected && lessonId && !selected.circles.some((c) => c.id === lessonId)) setLessonId(null)
+    if (!lock && selected && lessonId && !selected.circles.some((c) => c.id === lessonId)) setLessonId(null)
     if (selected && !selected.is_full) setWaitlist(false)
-  }, [selected, lessonId])
+  }, [lock, selected, lessonId])
+  // With a locked circle: does this child fit it (age and gender via the package), and does it still have a seat?
+  const lockedFits = !lock || (!!selected && selected.circles.some((c) => c.id === lock.lessonId))
 
   const canPay = !!options.data?.can_record_payment && !waitlist
   const photoPreview = useMemo(() => (photo ? URL.createObjectURL(photo) : null), [photo])
@@ -111,8 +120,8 @@ export default function QuickEnrollForm() {
 
   const submit = async (e: FormEvent, confirmDuplicate = false) => {
     e.preventDefault()
-    if (!selected || !f.gender) {
-      setErrors((prev) => ({ ...prev, package_id: [t('pick_package')] }))
+    if (!selected || !f.gender || !lockedFits) {
+      setErrors((prev) => ({ ...prev, package_id: [lock ? t('locked_not_suitable') : t('pick_package')] }))
       return
     }
     setSaving(true)
@@ -135,10 +144,11 @@ export default function QuickEnrollForm() {
       setDone(result)
       setDuplicate(null)
       setErrors({})
+      onEnrolled?.(result)
       // "Save and add another" keeps the package and circle so a whole group goes in quickly.
       // The selection survives the empty birth date and is dropped only if the next child's age does not fit.
       setF((prev) => (addAnother.current ? { ...EMPTY_STUDENT, memorization_level: prev.memorization_level, gender: prev.gender } : EMPTY_STUDENT))
-      if (!addAnother.current) {
+      if (!addAnother.current && !lock) {
         setPackageId(null)
         setLessonId(null)
       }
@@ -270,7 +280,26 @@ export default function QuickEnrollForm() {
       </Section>
 
       <Section title={t('section_placement')} className="space-y-4">
-        {age === null || !f.gender ? (
+        {lock ? (
+          <>
+            <div className="rounded-xl border border-brand-600 bg-brand-50 px-4 py-3">
+              <span className="block text-xs text-ink/55">{t('locked_circle')}</span>
+              <span dir="auto" className="block font-medium text-ink">{lock.lessonName}</span>
+              {selected && <span dir="auto" className="mt-0.5 block text-sm text-ink/60">{selected.name} · {formatMoney(selected.price_fils, locale)}</span>}
+            </div>
+            {age === null || !f.gender ? (
+              <p className="text-sm text-ink/55">{t('locked_hint')}</p>
+            ) : options.isLoading ? (
+              <p className="text-sm text-ink/55">{t('loading')}</p>
+            ) : !selected ? (
+              <Alert>{t('locked_not_suitable')}</Alert>
+            ) : !lockedFits ? (
+              <Alert>{t('locked_no_seat')}</Alert>
+            ) : null}
+            {err('package_id') && lockedFits && <p className="text-sm text-danger">{err('package_id')}</p>}
+            {err('lesson_id') && <p className="text-sm text-danger">{err('lesson_id')}</p>}
+          </>
+        ) : age === null || !f.gender ? (
           <p className="text-sm text-ink/55">{t('placement_hint')}</p>
         ) : options.isLoading ? (
           <p className="text-sm text-ink/55">{t('loading')}</p>

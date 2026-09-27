@@ -48,13 +48,51 @@ export interface DashboardAlert {
   severity: 'danger' | 'warning' | 'info'
   title: string
   body: string | null
-  subject: { type: string; id: number } | null
+  subject: { type: string; id: number; student_id?: number } | null
   created_at: string | null
   resolvable: boolean
+  /** Hall conflicts: one-line summary plus the full list for the "View sessions" dialog. */
+  conflict?: AlertConflict
+  /** Repeated absence: current run of absences in a row. */
+  absence?: { consecutive: number; has_phone: boolean }
+}
+
+export interface AlertConflict {
+  location: string | null
+  location_id: number | null
+  with: string[]
+  count: number
+  from: string | null
+  to: string | null
+  weekdays: number[]
+  start_time: string
+  end_time: string
+  text: string
+  sessions: { date: string; start_time: string; end_time: string; title: string; kind: string }[]
+}
+
+export interface AlertsPage {
+  data: DashboardAlert[]
+  meta: { current_page: number; last_page: number; total: number; per_page: number; all_total: number; by_type: Record<string, number> }
+}
+
+export interface AgeBand {
+  key: string
+  min: number
+  max: number | null
+  count: number
+}
+
+export interface AgeDistribution {
+  total: number
+  average: number | null
+  bands: AgeBand[]
 }
 
 export interface DashboardData {
   date: string
+  generated_at: string
+  age_distribution: AgeDistribution
   scope: { track: 'male' | 'female' | 'both'; own_circles_only: boolean }
   kpis: DashboardKpis
   today: TodaySession[]
@@ -64,5 +102,9 @@ export interface DashboardData {
 
 export const dashboardApi = {
   get: () => api.get<{ data: DashboardData }>('/dashboard').then((r) => r.data.data),
-  resolveAlert: (id: number) => api.post(`/alerts/${id}/resolve`),
+  alerts: (params: { type?: string; page?: number; per_page?: number; term?: string }) =>
+    api.get<AlertsPage>('/alerts', { params }).then((r) => r.data),
+  resolveAlert: (id: number) =>
+    api.post<{ message: string; resolved_by: string; resolved_at: string }>(`/alerts/${id}/resolve`).then((r) => r.data),
+  messageGuardian: (id: number) => api.post<{ message: string }>(`/alerts/${id}/message-guardian`).then((r) => r.data),
 }

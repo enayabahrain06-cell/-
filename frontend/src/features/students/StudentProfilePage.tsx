@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { Link, useParams, useSearchParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
@@ -8,8 +9,10 @@ import Icon from '../../components/Icon'
 import { OrnamentDivider, StarSpinner } from '../../components/ornaments'
 import { formatMoney, formatNumber, formatPercent } from '../../lib/format'
 import { AttendanceTab, DetailsTab, EvaluationTab, IssuesTab, OverviewTab, WalletTab } from './profile/ProfileTabs'
+import StudentCertificatesTab from '../certificates/StudentCertificatesTab'
+import { openObjectUrl, studentReportObjectUrl } from '../../api/certificates'
 
-const TABS = ['overview', 'evaluation', 'issues', 'attendance', 'wallet', 'details'] as const
+const TABS = ['overview', 'evaluation', 'issues', 'attendance', 'wallet', 'certificates', 'details'] as const
 type Tab = (typeof TABS)[number]
 
 export default function StudentProfilePage() {
@@ -19,6 +22,7 @@ export default function StudentProfilePage() {
   const locale = i18n.language
   const { can } = useAuth()
   const [params, setParams] = useSearchParams()
+  const [report, setReport] = useState<'idle' | 'loading' | 'error'>('idle')
 
   const profile = useQuery({ queryKey: ['student-profile', studentId, locale], queryFn: () => studentsApi.profile(studentId), enabled: Number.isFinite(studentId) })
   const detail = useQuery({ queryKey: ['student', studentId, locale], queryFn: () => studentsApi.show(studentId), enabled: Number.isFinite(studentId) })
@@ -32,7 +36,7 @@ export default function StudentProfilePage() {
   }
   if (profile.isError || !profile.data || !detail.data) {
     return (
-      <div className="mx-auto max-w-3xl space-y-4">
+      <div className="space-y-4">
         <BackLink />
         <div role="alert" className="rounded-2xl border border-danger/25 bg-danger/5 p-6 text-center text-danger">{t('error')}</div>
       </div>
@@ -43,9 +47,21 @@ export default function StudentProfilePage() {
   const h = p.header
   const current = h.position.current
   const n = (v: number) => formatNumber(v, locale)
+  // Added to the profile header by the certificates module (16).
+  const awards = h as typeof h & { certificates_count?: number; badges_count?: number }
+
+  const printReport = async () => {
+    setReport('loading')
+    try {
+      openObjectUrl(await studentReportObjectUrl(studentId))
+      setReport('idle')
+    } catch {
+      setReport('error')
+    }
+  }
 
   return (
-    <div className="mx-auto max-w-6xl space-y-5">
+    <div className="space-y-5">
       <BackLink />
 
       <header className="relative overflow-hidden rounded-2xl border border-ink/8 bg-white shadow-sm">
@@ -65,6 +81,27 @@ export default function StudentProfilePage() {
               {h.lesson ? <span dir="auto">{h.lesson.name}</span> : t('no_circle')}
               {h.teacher && <> · <span dir="auto">{h.teacher}</span></>}
             </p>
+          </div>
+          <div className="flex flex-wrap items-center gap-2 sm:flex-col sm:items-end">
+            <div className="flex gap-2 text-sm">
+              <button type="button" onClick={() => { const next = new URLSearchParams(params); next.set('tab', 'certificates'); setParams(next, { replace: true }) }}
+                className="inline-flex items-center gap-1.5 rounded-full bg-gold-500/12 px-3 py-1 font-medium text-gold-700 hover:bg-gold-500/20">
+                <Icon name="certificate" className="size-4" />
+                <span className="tabular-nums">{n(awards.certificates_count ?? 0)}</span>
+                <span>{t('profile.certificates')}</span>
+              </button>
+              <span className="inline-flex items-center gap-1.5 rounded-full bg-brand-50 px-3 py-1 font-medium text-brand-700">
+                <Icon name="evaluation" className="size-4" />
+                <span className="tabular-nums">{n(awards.badges_count ?? 0)}</span>
+                <span>{t('profile.badges')}</span>
+              </span>
+            </div>
+            <button type="button" onClick={() => void printReport()} disabled={report === 'loading'} aria-busy={report === 'loading'}
+              className="inline-flex items-center gap-1.5 rounded-xl border border-ink/12 bg-white px-3 py-2 text-sm font-medium text-ink/80 hover:bg-ink/5 disabled:opacity-60">
+              {report === 'loading' ? <StarSpinner className="size-4" /> : <Icon name="printer" className="size-4" />}
+              {t('profile.print_report')}
+            </button>
+            {report === 'error' && <p role="alert" className="text-xs text-danger">{t('profile.report_error')}</p>}
           </div>
         </div>
         <OrnamentDivider className="px-5 text-gold-500/60 sm:px-6" />
@@ -113,6 +150,7 @@ export default function StudentProfilePage() {
         {tab === 'issues' && <IssuesTab profile={p} />}
         {tab === 'attendance' && <AttendanceTab studentId={studentId} />}
         {tab === 'wallet' && <WalletTab studentId={studentId} />}
+        {tab === 'certificates' && <StudentCertificatesTab studentId={studentId} student={detail.data} />}
         {tab === 'details' && <DetailsTab student={detail.data} canEdit={!readOnly && can('students.manage')} canPhoto={can('students.photo')} />}
       </div>
     </div>

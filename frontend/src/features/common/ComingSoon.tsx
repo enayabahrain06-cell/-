@@ -6,7 +6,7 @@ export default function ComingSoon({ section, icon }: { section: string; icon: s
   const { t } = useTranslation('nav')
 
   return (
-    <div className="mx-auto max-w-3xl">
+    <div>
       <PageTitle>{t(section)}</PageTitle>
       <div className="mt-6 rounded-2xl border border-dashed border-ink/15 bg-white/60">
         <EmptyState icon={icon} title={t('coming_soon')} body={t('coming_soon_body')} />
