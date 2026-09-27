@@ -36,6 +36,7 @@ class PackageResource extends JsonResource
             'end_date' => $this->end_date?->toDateString(),
             'term' => $this->term,
             'plan_ayahs' => $this->plan_ayahs,
+            'memorization_direction' => $this->memorization_direction?->value,
             'status' => $this->status->value,
             'status_label' => $this->status->label(),
             'suitability' => $this->when($this->getAttribute('suitability') !== null, fn () => $this->getAttribute('suitability')),

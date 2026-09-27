@@ -41,6 +41,7 @@ return [
         'certify' => 'certifies',
         'that' => 'that the student',
         'passed_exam' => 'has passed the exam',
+        'completed' => 'has completed',
         'with_score' => 'with a score of',
         'issued_on' => 'Issued on',
         'hijri' => 'corresponding to',

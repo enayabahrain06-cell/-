@@ -315,6 +315,52 @@ erDiagram
     }
 ```
 
+### D2. Quran position and difficulties (added 2026-09-27, section 12)
+
+```mermaid
+erDiagram
+    students ||--o{ student_issues : ""
+    lessons ||--o{ student_issues : "nullable"
+    evaluations ||--o{ student_issues : "opened from, nullable"
+    student_issues ||--o{ issue_notes : ""
+    users ||--o{ issue_notes : "added_by"
+
+    quran_surahs {
+        tinyint number PK
+        string name_ar
+        string name_en
+        smallint ayah_count
+        tinyint juz_start "index"
+    }
+    student_issues {
+        bigint id PK
+        bigint student_id FK
+        bigint lesson_id FK "nullable"
+        bigint evaluation_id FK "nullable"
+        string category "tajweed/weak_memorization/... index"
+        string subcategory "tajweed aspect, nullable"
+        text description
+        text action_plan
+        string severity "low/medium/high index"
+        string status "open/improving/resolved index"
+        bigint opened_by FK
+        datetime opened_at
+        datetime resolved_at
+        date next_follow_up_date
+    }
+    issue_notes {
+        bigint id PK
+        bigint student_issue_id FK
+        text note
+        bigint added_by FK
+        date noted_on
+    }
+```
+
+- `packages.memorization_direction` string(32) `forward` / `backward` (default backward).
+- `students.progress_surah`, `progress_ayah`, `progress_juz` (index), `memorized_ayahs`: a cache recomputed from `student_progress` on every ledger change. The ledger stays the source of truth and the position is never typed manually.
+- Juz is derived in code (`App\Support\Quran`) from the 30 juz start points; `quran_surahs` is reference data inserted by its migration.
+
 ## E. Lottery
 
 ```mermaid

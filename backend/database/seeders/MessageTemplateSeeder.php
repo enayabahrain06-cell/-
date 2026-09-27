@@ -70,6 +70,10 @@ class MessageTemplateSeeder extends Seeder
                 "التقرير الأسبوعي — {authority}\n{body}",
                 "Weekly report — {authority}\n{body}",
                 ['body', 'authority']],
+            ['student_progress_update', 'تحديث التقدم الشهري', 'Monthly progress update',
+                "تحديث شهري عن {name}:\nالموضع الحالي: {position}\nالمحفوظ: {percent} من القرآن ({juz_count} أجزاء مكتملة)\nالخطة السنوية: {plan_percent}\nمتوسطات الشهر: {averages}\nصعوبات قيد المتابعة: {issues}",
+                "Monthly update for {name}:\nCurrent position: {position}\nMemorized: {percent} of the Quran ({juz_count} complete ajza)\nYearly plan: {plan_percent}\nThis month's averages: {averages}\nDifficulties being followed: {issues}",
+                ['name', 'position', 'percent', 'juz_count', 'plan_percent', 'averages', 'issues']],
         ];
 
         foreach ($t as [$key, $nameAr, $nameEn, $bodyAr, $bodyEn, $vars]) {

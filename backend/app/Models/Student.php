@@ -31,6 +31,7 @@ class Student extends Model
             'locale' => Locale::class,
             'birth_date' => \App\Casts\DateOnly::class,
             'yearly_target_ayahs' => 'integer',
+            'progress_surah' => 'integer', 'progress_ayah' => 'integer', 'progress_juz' => 'integer', 'memorized_ayahs' => 'integer',
         ];
     }
 
@@ -97,6 +98,17 @@ class Student extends Model
     public function progress(): HasMany
     {
         return $this->hasMany(StudentProgress::class);
+    }
+
+    public function issues(): HasMany
+    {
+        return $this->hasMany(StudentIssue::class);
+    }
+
+    /** Package of the student's current circle (first active enrolment), used for direction and plan. */
+    public function currentPackage(): ?Package
+    {
+        return $this->activeLessons()->with('package')->orderBy('lesson_students.joined_at')->first()?->package;
     }
 
     public function invoices(): HasMany

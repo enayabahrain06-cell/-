@@ -39,6 +39,11 @@ class SettingsSeeder extends Seeder
             ['registration.open', true, 'registration', 'bool'],
             // sessions
             ['sessions.generate_weeks_ahead', 8, 'sessions', 'int'],
+            // memorization & evaluation
+            ['progress.default_direction', 'backward', 'progress', 'string'],
+            ['evaluation.issue_threshold', 6, 'progress', 'int'],
+            ['messages.progress_update_enabled', false, 'progress', 'bool'],
+            ['messages.progress_update_day', 1, 'progress', 'int'],
         ];
 
         foreach ($defaults as [$key, $value, $group, $type]) {

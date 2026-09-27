@@ -12,14 +12,14 @@
 </style>
 @endsection
 @section('content')
-@php $ar = $locale !== 'en'; $t = fn ($k) => __("exams.pdf.$k", [], $ar ? 'ar' : 'en'); $exam = $extra['exam'] ?? $certificate->title; @endphp
+@php $ar = $locale !== 'en'; $t = fn ($k) => __("exams.pdf.$k", [], $ar ? 'ar' : 'en'); $exam = $extra['exam'] ?? $certificate->title; $verb = isset($extra['verb']) ? $t($extra['verb']) : $t('passed_exam'); @endphp
 <div class="frame">
     @if($ar)
         {{-- Arabic: every visual line is one shaped run (pdf_ar); multi-part lines are emitted in reverse reading order. --}}
         <div class="ctitle c">{{ pdf_ar($t('certificate')) }}</div>
         <div class="line c">{{ pdf_ar($t('certify').' '.$authority.' '.$t('that')) }}</div>
         <div class="name c">{{ pdf_ar($student->full_name) }}</div>
-        <div class="line c"><b>{{ pdf_ar($exam) }}</b> {{ pdf_ar($t('passed_exam')) }}</div>
+        <div class="line c"><b>{{ pdf_ar($exam) }}</b> {{ pdf_ar($verb) }}</div>
         @if(isset($extra['score']))
             <div class="line c"><b>{{ $extra['score'] }} / {{ $extra['total'] }}</b> {{ pdf_ar($t('with_score')) }}</div>
         @endif
@@ -32,7 +32,7 @@
         <div class="ctitle en center">{{ $t('certificate') }}</div>
         <div class="line en center">{{ $authority }} {{ $t('certify') }} {{ $t('that') }}</div>
         <div class="name c">{{ pdf_ar($student->full_name) }}</div>
-        <div class="line en center">{{ $t('passed_exam') }} <b>{{ pdf_ar($exam) }}</b></div>
+        <div class="line en center">{{ $verb }} <b>{{ pdf_ar($exam) }}</b></div>
         @if(isset($extra['score']))
             <div class="line en center">{{ $t('with_score') }} <b>{{ $extra['score'] }} / {{ $extra['total'] }}</b></div>
         @endif

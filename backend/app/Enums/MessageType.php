@@ -23,5 +23,6 @@ enum MessageType: string
     case PaymentDueReminder = 'payment_due_reminder';
     case Otp = 'otp';
     case WeeklyReport = 'weekly_report';
+    case StudentProgressUpdate = 'student_progress_update';
     case Custom = 'custom';
 }

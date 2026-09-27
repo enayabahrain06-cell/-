@@ -41,6 +41,7 @@ return [
         'certify' => 'تشهد',
         'that' => 'بأن الطالب/ـة',
         'passed_exam' => 'قد اجتاز/ت اختبار',
+        'completed' => 'قد أتمّ/ت',
         'with_score' => 'بدرجة',
         'issued_on' => 'صدرت بتاريخ',
         'hijri' => 'الموافق',

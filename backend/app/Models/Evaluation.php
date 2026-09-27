@@ -40,6 +40,11 @@ class Evaluation extends Model
         return $this->belongsTo(LessonSession::class, 'lesson_session_id');
     }
 
+    public function issues(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(StudentIssue::class);
+    }
+
     public function evaluator(): BelongsTo
     {
         return $this->belongsTo(User::class, 'evaluated_by');

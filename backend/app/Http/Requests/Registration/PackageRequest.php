@@ -45,6 +45,7 @@ class PackageRequest extends FormRequest
             'end_date' => ['nullable', 'date', 'after_or_equal:start_date'],
             'term' => ['nullable', 'string', 'max:60'],
             'plan_ayahs' => ['nullable', 'integer', 'min:0'],
+            'memorization_direction' => ['sometimes', \App\Enums\MemorizationDirection::rule()],
             'status' => ['nullable', PackageStatus::rule()],
         ];
     }

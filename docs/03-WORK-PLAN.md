@@ -59,7 +59,8 @@ saar/
 | 2.3 | Lessons & locations | Locations CRUD, booking calendar, `LocationConflictDetector` (lessons × overrides × bookings), overrides (one day / all upcoming), free-halls query, `SessionGenerator` (materialises `lesson_sessions` from `days`), location-change WhatsApp with map link. |
 | 2.4 | Lottery | `LotteryService::run(seed)` with options (age balance, siblings by guardian phone, level balance), re-run, approve → `lesson_students` + messages. |
 | 2.5 | Attendance | Bulk save, mark-all-present, assignment propagation to `lesson_students`, `SendAbsenceMessages` job, `RepeatedAbsenceDetector` (3 in 30 days → alert), `SendLessonReminders` scheduled command (offset setting). |
-| 2.6 | Evaluation & progress | Daily/monthly evaluations, `student_progress`, profile stats (averages, rank in circle, % of yearly plan), send-to-guardian, completion certificate PDF. |
+| 2.6 | Evaluation & progress (+ section 12) | Daily/monthly evaluations (audited), memorization ledger with two-tap surah + ayah entry from attendance and evaluation screens, `quran_surahs` reference, per-package direction, computed position (juz / surah / ayah) and 30-cell juz map, % of Quran and of yearly plan, 8-week trend, rank in circle, latest note, difficulties (`student_issues`, `issue_notes`) with suggestion when a score is below 6, profile endpoint shared read-only with guardians, four progress/difficulty reports, optional monthly `student_progress_update` WhatsApp, completion certificate PDF. **Done.** |
+| 2.6b | Gender separation (cross-cutting) | Male/female only on packages, lessons, bookings, exams, lotteries; teacher gender enforced in Form Requests and Policies; hall gender (male / female / shared-by-schedule) in conflict detection; `users.track` scoping for staff with automatic filtering of lists, dashboards, alerts and exports; photo visibility by staff gender; `print_female_photos` setting; report track filter and Super Admin comparison; two-track seed data. |
 | 2.7 | Exams | Exams CRUD, question bank, paper roster PDF, manual score entry + sheet upload, online attempt lifecycle (window check, server timer, random order, autosave, auto-grading), recitation audio upload + manual grading, reminders 1 day / 1 hour, results + pass certificates. |
 | 2.8 | Wallet & payments | `WalletService` (transactional, `lockForUpdate`), invoices, `RecordPaymentAction` (credit → settle oldest-first → receipt PDF → WhatsApp), adjustments with audit, due badge, unpaid reminders (before/after due), finance report + Excel/PDF. |
 | 2.9 | Messages | `WhatsAppProvider` interface + `OpenWa`, `CloudApi`, `Log` providers; `SendWhatsAppMessage` job (3–5 s delay via rate-limited queue middleware, 3 tries); template rendering (AR/EN, variables); resend failed; status/QR endpoints. |
@@ -108,6 +109,10 @@ saar/
 6. **Photos**: `students.photo_path` / `photo_thumb_path` cache the two variant paths; the `media` table holds the rows (collections `photo` and `photo_thumb`).
 7. **Bilingual data**: only UI and templates are translated; user-entered content is stored once.
 8. **Marks are integers**; `evaluations` scores are 0–10 integers.
+
+## Status (2026-09-27)
+
+Done: 2.0, 2.1, 2.2, 2.3, 2.5, 2.6, 2.7, 2.8, 2.9, 2.12, plus the frontend scaffold and login page (part of 3.0 and 3.1). Next: 2.6b gender separation, then 2.4 lottery (built per gender), 2.10, 2.11, 2.13.
 
 ## Order of delivery from here
 

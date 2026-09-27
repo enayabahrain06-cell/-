@@ -51,8 +51,12 @@ Legend: `FK↓` = `cascadeOnDelete()`, `FK×` = `restrictOnDelete()`, `FK∅` = 
 | 37 | `..._create_message_templates_table` | `message_templates` | `key` string(60); `name_ar` string(150); `name_en` string(150); `body_ar` text; `body_en` text; `variables` text nullable; `is_active` boolean default true | unique(key) |
 | 38 | `..._create_message_logs_table` | `message_logs` | `recipient_phone` string(20); `recipient_type` string(20); `student_id` foreignId students FK∅ nullable; `user_id` foreignId users FK∅ nullable; `type` string(40); `template_key` string(60) nullable; `locale` string(5) default `ar`; `body` text; `status` string(32) default `queued`; `provider` string(20) nullable; `provider_message_id` string(120) nullable; `attempts` unsignedTinyInteger default 0; `error` text nullable; `sent_at` dateTime nullable | index(recipient_phone), index(type), index(status), index(sent_at), index(created_at) |
 | 39 | `..._create_alerts_table` | `alerts` | `type` string(40); `severity` string(16) default `warning`; `title` string(200); `body` text nullable; `subject_type` string(150) nullable; `subject_id` unsignedBigInteger nullable; `status` string(32) default `open`; `resolved_by` foreignId users FK∅ nullable; `resolved_at` dateTime nullable | index(type), index(status), index(subject_type, subject_id) |
+| 40 | `2026_09_27_100040_create_quran_surahs_table` | `quran_surahs` | `number` unsignedTinyInteger PK; `name_ar`, `name_en` string(40); `ayah_count` unsignedSmallInteger; `juz_start` unsignedTinyInteger. 114 rows inserted in `up()` | index(juz_start) |
+| 41 | `..._add_memorization_direction_to_packages` | `packages` | `memorization_direction` string(32) default `backward` | — |
+| 42 | `..._add_progress_cache_to_students` | `students` | `progress_surah` tinyint nullable; `progress_ayah` smallint nullable; `progress_juz` tinyint nullable; `memorized_ayahs` smallint default 0 | index(progress_juz) |
+| 43 | `..._create_student_issues_table` | `student_issues`, `issue_notes` | issues: `student_id` FK↓, `lesson_id` FK∅, `evaluation_id` FK∅, `category`/`subcategory`/`severity`/`status` string(32), `description`, `action_plan` text, `opened_by` FK∅, `opened_at`, `resolved_at`, `next_follow_up_date`. notes: `student_issue_id` FK↓, `note`, `added_by` FK∅, `noted_on` | index(category), index(severity), index(status), index(student_id, status), index(opened_at), index(resolved_at), index(next_follow_up_date), index(noted_on) |
 
-Total: **27 migration files**, **56 tables** (40 domain + Laravel/Sanctum/spatie).
+Total: **31 migration files**, **59 tables** (43 domain + Laravel/Sanctum/spatie).
 
 ## Portability notes per driver
 

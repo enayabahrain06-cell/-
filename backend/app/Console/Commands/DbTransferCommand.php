@@ -29,7 +29,7 @@ class DbTransferCommand extends Command
 
     protected $description = 'Copy all tables from one database connection to another through Eloquent/Query Builder in chunks';
 
-    /** Tables in dependency order (parents first). */
+    /** Tables in dependency order (parents first). quran_surahs is reference data filled by its migration, so it is not copied. */
     private const TABLE_ORDER = [
         'users', 'password_reset_tokens',
         'permissions', 'roles', 'model_has_permissions', 'model_has_roles', 'role_has_permissions',
@@ -38,7 +38,7 @@ class DbTransferCommand extends Command
         'locations', 'packages', 'teachers', 'students', 'registration_requests',
         'lessons', 'lesson_students', 'lesson_location_overrides',
         'exams', 'location_bookings', 'lesson_sessions', 'attendances',
-        'evaluations', 'student_progress',
+        'evaluations', 'student_progress', 'student_issues', 'issue_notes',
         'lotteries', 'lottery_teachers', 'lottery_students', 'lottery_results',
         'exam_questions', 'exam_attempts', 'exam_answers', 'certificates',
         'wallets', 'invoices', 'payments', 'invoice_payments', 'wallet_transactions', 'refunds',

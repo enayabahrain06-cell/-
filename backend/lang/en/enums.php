@@ -22,7 +22,7 @@ return [
     'transaction_type' => ['charge' => 'Charge', 'payment' => 'Payment', 'refund' => 'Refund', 'adjustment' => 'Adjustment'],
     'invoice_status' => ['open' => 'Open', 'partial' => 'Partially paid', 'paid' => 'Paid', 'cancelled' => 'Cancelled'],
     'payment_method' => ['cash' => 'Cash', 'bank_transfer' => 'Bank transfer', 'benefit' => 'Benefit', 'card' => 'Card'],
-    'message_type' => ['pre_lesson_reminder' => 'Pre-lesson reminder', 'absence' => 'Absence', 'location_change' => 'Location change', 'registration_received' => 'Registration received', 'registration_accepted' => 'Registration accepted', 'registration_waitlist' => 'Waitlist', 'registration_rejected' => 'Registration declined', 'lottery_result' => 'Circle assignment', 'evaluation_result' => 'Evaluation result', 'exam_reminder' => 'Exam reminder', 'exam_result' => 'Exam result', 'payment_receipt' => 'Payment receipt', 'payment_due_reminder' => 'Payment reminder', 'otp' => 'Login code', 'weekly_report' => 'Weekly report', 'custom' => 'Custom message'],
+    'message_type' => ['pre_lesson_reminder' => 'Pre-lesson reminder', 'absence' => 'Absence', 'location_change' => 'Location change', 'registration_received' => 'Registration received', 'registration_accepted' => 'Registration accepted', 'registration_waitlist' => 'Waitlist', 'registration_rejected' => 'Registration declined', 'lottery_result' => 'Circle assignment', 'evaluation_result' => 'Evaluation result', 'exam_reminder' => 'Exam reminder', 'exam_result' => 'Exam result', 'payment_receipt' => 'Payment receipt', 'payment_due_reminder' => 'Payment reminder', 'otp' => 'Login code', 'weekly_report' => 'Weekly report', 'student_progress_update' => 'Monthly progress update', 'custom' => 'Custom message'],
     'message_status' => ['queued' => 'Queued', 'sent' => 'Sent', 'failed' => 'Failed'],
     'recipient_type' => ['student' => 'Student', 'guardian' => 'Guardian', 'user' => 'User'],
     'alert_type' => ['location_conflict' => 'Hall conflict', 'registration_request' => 'Registration requests', 'repeated_absence' => 'Repeated absence', 'lottery_pending' => 'Lottery awaiting approval', 'exam_upcoming' => 'Upcoming exam', 'invoice_overdue' => 'Overdue invoice'],
@@ -33,4 +33,10 @@ return [
     'week_day' => ['sat' => 'Saturday', 'sun' => 'Sunday', 'mon' => 'Monday', 'tue' => 'Tuesday', 'wed' => 'Wednesday', 'thu' => 'Thursday', 'fri' => 'Friday'],
     'role' => ['super_admin' => 'Super Admin', 'supervisor' => 'Supervisor', 'teacher' => 'Teacher', 'student' => 'Student', 'guardian' => 'Guardian'],
     'locale' => ['ar' => 'العربية', 'en' => 'English'],
+
+    'memorization_direction' => ['forward' => 'Forward (Al-Fatihah to An-Nas)', 'backward' => 'Backward (An-Nas to Al-Fatihah)'],
+    'issue_severity' => ['low' => 'Low', 'medium' => 'Medium', 'high' => 'High'],
+    'issue_status' => ['open' => 'Open', 'improving' => 'Improving', 'resolved' => 'Resolved'],
+    'issue_category' => ['tajweed' => 'Tajweed', 'weak_memorization' => 'Weak memorization', 'weak_revision' => 'Weak revision', 'slow_pace' => 'Slow pace', 'mutashabihat' => 'Mixing similar verses (mutashabihat)', 'reading_fluency' => 'Reading fluency', 'concentration' => 'Concentration', 'behavior' => 'Behavior', 'attendance' => 'Attendance', 'home_support' => 'Home support', 'health_other' => 'Health / other'],
+    'tajweed_aspect' => ['makharij' => 'Makharij (articulation points)', 'madd' => 'Madd (elongation)', 'ghunnah' => 'Ghunnah (nasalisation)', 'qalqalah' => 'Qalqalah (echo)', 'idgham' => 'Idgham (merging)'],
 ];

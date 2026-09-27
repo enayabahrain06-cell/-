@@ -14,3 +14,6 @@ Schedule::command('lessons:send-reminders')->everyFiveMinutes();
 
 // exams
 Schedule::command('exams:send-reminders')->everyFiveMinutes()->withoutOverlapping();
+
+// memorization: optional monthly progress update to guardians (the command checks the enabled flag and day)
+Schedule::command('progress:send-monthly-updates')->dailyAt('17:00')->withoutOverlapping();

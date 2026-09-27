@@ -14,7 +14,10 @@ use Illuminate\Support\Facades\DB;
 
 class AttendanceService
 {
-    public function __construct(private RepeatedAbsenceDetector $repeated) {}
+    public function __construct(
+        private RepeatedAbsenceDetector $repeated,
+        private \App\Services\Progress\ProgressService $progress,
+    ) {}
 
     /** Roster: every active student with their attendance row (or null) and current assignment. */
     public function roster(LessonSession $session): array
@@ -69,6 +72,10 @@ class AttendanceService
                 ], fn ($v) => $v !== null && $v !== '');
                 if ($update) {
                     LessonStudent::where('lesson_id', $session->lesson_id)->where('student_id', $r['student_id'])->update($update);
+                }
+
+                foreach ($r['progress'] ?? [] as $entry) {
+                    $this->progress->append($attendance->student, $entry + ['lesson_id' => $session->lesson_id, 'recorded_on' => $session->session_date->toDateString()], $by->id);
                 }
 
                 if ($attendance->status === AttendanceStatus::Absent) {

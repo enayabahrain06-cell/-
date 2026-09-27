@@ -44,6 +44,17 @@ class StudentPolicy
         return $user->can('students.manage');
     }
 
+    /** Append to or correct the memorization ledger. */
+    public function recordProgress(User $user, Student $student): bool
+    {
+        return StudentIssuePolicy::canWriteFor($user, $student);
+    }
+
+    public function issueCertificate(User $user, Student $student): bool
+    {
+        return $user->can('students.manage') || ($user->can('evaluations.record') && self::isTeacherOf($user, $student));
+    }
+
     public static function isTeacherOf(User $user, Student $student): bool
     {
         return LessonStudent::where('student_id', $student->id)->where('status', 'active')

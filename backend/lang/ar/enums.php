@@ -22,7 +22,7 @@ return [
     'transaction_type' => ['charge' => 'رسوم', 'payment' => 'دفعة', 'refund' => 'استرداد', 'adjustment' => 'تسوية'],
     'invoice_status' => ['open' => 'مستحقة', 'partial' => 'مدفوعة جزئياً', 'paid' => 'مدفوعة', 'cancelled' => 'ملغاة'],
     'payment_method' => ['cash' => 'نقداً', 'bank_transfer' => 'تحويل بنكي', 'benefit' => 'بنفت', 'card' => 'بطاقة'],
-    'message_type' => ['pre_lesson_reminder' => 'تذكير قبل الحلقة', 'absence' => 'غياب', 'location_change' => 'تغيير مكان', 'registration_received' => 'استلام طلب', 'registration_accepted' => 'قبول تسجيل', 'registration_waitlist' => 'قائمة انتظار', 'registration_rejected' => 'رفض تسجيل', 'lottery_result' => 'نتيجة توزيع', 'evaluation_result' => 'نتيجة تقييم', 'exam_reminder' => 'تذكير اختبار', 'exam_result' => 'نتيجة اختبار', 'payment_receipt' => 'إيصال دفع', 'payment_due_reminder' => 'تذكير سداد', 'otp' => 'رمز دخول', 'weekly_report' => 'تقرير أسبوعي', 'custom' => 'رسالة مخصصة'],
+    'message_type' => ['pre_lesson_reminder' => 'تذكير قبل الحلقة', 'absence' => 'غياب', 'location_change' => 'تغيير مكان', 'registration_received' => 'استلام طلب', 'registration_accepted' => 'قبول تسجيل', 'registration_waitlist' => 'قائمة انتظار', 'registration_rejected' => 'رفض تسجيل', 'lottery_result' => 'نتيجة توزيع', 'evaluation_result' => 'نتيجة تقييم', 'exam_reminder' => 'تذكير اختبار', 'exam_result' => 'نتيجة اختبار', 'payment_receipt' => 'إيصال دفع', 'payment_due_reminder' => 'تذكير سداد', 'otp' => 'رمز دخول', 'weekly_report' => 'تقرير أسبوعي', 'student_progress_update' => 'تحديث التقدم الشهري', 'custom' => 'رسالة مخصصة'],
     'message_status' => ['queued' => 'في الانتظار', 'sent' => 'مرسلة', 'failed' => 'فشلت'],
     'recipient_type' => ['student' => 'طالب', 'guardian' => 'ولي أمر', 'user' => 'مستخدم'],
     'alert_type' => ['location_conflict' => 'تعارض قاعة', 'registration_request' => 'طلبات تسجيل', 'repeated_absence' => 'غياب متكرر', 'lottery_pending' => 'توزيع بانتظار الاعتماد', 'exam_upcoming' => 'اختبار قادم', 'invoice_overdue' => 'فاتورة متأخرة'],
@@ -33,4 +33,10 @@ return [
     'week_day' => ['sat' => 'السبت', 'sun' => 'الأحد', 'mon' => 'الاثنين', 'tue' => 'الثلاثاء', 'wed' => 'الأربعاء', 'thu' => 'الخميس', 'fri' => 'الجمعة'],
     'role' => ['super_admin' => 'مدير النظام', 'supervisor' => 'مشرف', 'teacher' => 'معلّم', 'student' => 'طالب', 'guardian' => 'ولي أمر'],
     'locale' => ['ar' => 'العربية', 'en' => 'English'],
+
+    'memorization_direction' => ['forward' => 'تصاعدي (من الفاتحة إلى الناس)', 'backward' => 'تنازلي (من الناس إلى الفاتحة)'],
+    'issue_severity' => ['low' => 'منخفضة', 'medium' => 'متوسطة', 'high' => 'عالية'],
+    'issue_status' => ['open' => 'مفتوحة', 'improving' => 'في تحسن', 'resolved' => 'تم حلها'],
+    'issue_category' => ['tajweed' => 'التجويد', 'weak_memorization' => 'ضعف الحفظ', 'weak_revision' => 'ضعف المراجعة', 'slow_pace' => 'بطء التقدم', 'mutashabihat' => 'الخلط بين المتشابهات', 'reading_fluency' => 'طلاقة القراءة', 'concentration' => 'التركيز', 'behavior' => 'السلوك', 'attendance' => 'الحضور', 'home_support' => 'المتابعة المنزلية', 'health_other' => 'صحية / أخرى'],
+    'tajweed_aspect' => ['makharij' => 'مخارج الحروف', 'madd' => 'المدود', 'ghunnah' => 'الغنة', 'qalqalah' => 'القلقلة', 'idgham' => 'الإدغام'],
 ];

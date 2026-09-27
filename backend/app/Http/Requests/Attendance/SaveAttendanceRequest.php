@@ -21,6 +21,8 @@ class SaveAttendanceRequest extends FormRequest
             'records.*.memorization_assignment' => ['nullable', 'string', 'max:1000'],
             'records.*.revision_assignment' => ['nullable', 'string', 'max:1000'],
             'records.*.note' => ['nullable', 'string', 'max:1000'],
-        ];
+            // Optional ledger entries (surah + ayah range) appended for the student in the same save.
+            'records.*.progress' => ['nullable', 'array', 'max:4'],
+        ] + \App\Http\Requests\Progress\ProgressRules::for('records.*.progress.*.');
     }
 }

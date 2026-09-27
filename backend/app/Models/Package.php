@@ -27,6 +27,7 @@ class Package extends Model
             'seats' => 'integer',
             'price_fils' => 'integer',
             'plan_ayahs' => 'integer',
+            'memorization_direction' => \App\Enums\MemorizationDirection::class,
         ];
     }
 
