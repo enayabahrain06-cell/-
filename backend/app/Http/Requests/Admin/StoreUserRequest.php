@@ -12,7 +12,7 @@ class StoreUserRequest extends FormRequest
 {
     public function authorize(): bool
     {
-        return ->user()?->can('create', AppModelsSER::CLASS) ?? FALSE;
+        return $this->user()?->can('create', \App\Models\User::class) ?? false;
     }
 
     protected function prepareForValidation(): void
