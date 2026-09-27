@@ -16,7 +16,7 @@ class StudentFactory extends Factory
 
     public function definition(): array
     {
-        $gender = fake()->randomElement(['male', 'female']);
+        $gender = 'male'; // deterministic: gender separation rules depend on it; use ->female() for the girls track
         $first = fake()->randomElement($gender === 'male' ? self::FIRST_M : self::FIRST_F);
         $father = fake()->randomElement(self::FIRST_M);
         $family = fake()->randomElement(self::FAMILY);
