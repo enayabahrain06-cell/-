@@ -166,7 +166,7 @@ MySQL and PostgreSQL runs happen in GitHub Actions (`.github/workflows/ci.yml`) 
 
 ### Demo accounts (DemoSeeder only — never in production)
 
-Load them with `php artisan db:seed --class=DemoSeeder` (it refuses to run when `APP_ENV=production`).
+Load them with `php artisan db:seed --class=DemoSeeder` on a developer machine. It runs only with `APP_ENV=local` (or `testing`) **and** `WHATSAPP_PROVIDER=log`, and refuses anywhere else: the passwords below are public, and the phone numbers may belong to real people. Never load demo data on a server that others can reach.
 `php artisan migrate --seed` loads reference data only (roles, permissions, settings, templates, surahs, badges).
 
 | Role | Name | Phone | Track | Sign-in |

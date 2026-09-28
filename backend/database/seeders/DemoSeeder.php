@@ -14,7 +14,7 @@ use App\Services\Lessons\SessionGenerator;
 use Illuminate\Database\Seeder;
 
 /**
- * DEMO DATA ONLY (never run in production; DatabaseSeeder does not call it).
+ * DEMO DATA ONLY: runs only with APP_ENV=local/testing and WHATSAPP_PROVIDER=log (see refusal()); DatabaseSeeder does not call it.
  *
  * Two separated tracks (boys and girls) plus one mixed early-years package (ages 4–6).
  * Bahraini Shia names in Arabic, +973 phones with 8 digits. Idempotent (updateOrCreate).
@@ -33,11 +33,29 @@ use Illuminate\Database\Seeder;
  */
 class DemoSeeder extends Seeder
 {
+    /**
+     * Demo data creates known accounts (password "password", published in the README) and real-looking
+     * Bahraini phone numbers. It may only run on a developer machine or in tests, and only while WhatsApp
+     * is in log mode, so no demo login exists on a reachable server and no message reaches a real phone.
+     * Returns the reason it refuses, or null when it may run.
+     */
+    public static function refusal(): ?string
+    {
+        if (! app()->environment(['local', 'testing'])) {
+            return 'Demo data only runs with APP_ENV=local or testing (it creates accounts whose passwords are public).';
+        }
+        if (config('whatsapp.provider') !== 'log') {
+            return 'Demo data only runs with WHATSAPP_PROVIDER=log (its phone numbers may belong to real people).';
+        }
+
+        return null;
+    }
+
     public function run(): void
     {
-        // Demo data never reaches production: run explicitly with  php artisan db:seed --class=DemoSeeder
-        if (app()->environment('production')) {
-            $this->command?->error('DemoSeeder refuses to run in production.');
+        // Run explicitly with  php artisan db:seed --class=DemoSeeder  on a local machine.
+        if ($reason = self::refusal()) {
+            $this->command?->error("DemoSeeder refused: {$reason}");
 
             return;
         }

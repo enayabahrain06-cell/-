@@ -16,7 +16,7 @@ use App\Services\SettingsService;
 use Illuminate\Database\Seeder;
 
 /**
- * Demo only (called from DemoSeeder, never in production): this month's honor boards for both tracks
+ * Demo only (called from DemoSeeder; same local/testing + log-only rule): this month's honor boards for both tracks
  * (published), one boys' competition in judging with scores, one girls' competition open for registration,
  * and one challenge per track with participants. Idempotent.
  */
@@ -24,6 +24,12 @@ class EngagementDemoSeeder extends Seeder
 {
     public function run(): void
     {
+        // Same rule as DemoSeeder when run on its own with --class=EngagementDemoSeeder.
+        if ($reason = DemoSeeder::refusal()) {
+            $this->command?->error("EngagementDemoSeeder refused: {$reason}");
+
+            return;
+        }
         $honor = app(HonorService::class);
         $competitions = app(CompetitionService::class);
         $challenges = app(ChallengeService::class);
