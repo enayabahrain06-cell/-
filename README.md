@@ -10,6 +10,17 @@ Quran circles (halaqat) management system for the Religious Education Authority 
 | WhatsApp bridge | `whatsapp/` | Node + open-wa/wa-automate |
 | Docs | `docs/` | ERD, migrations, work plan |
 
+### Screenshots — لقطات
+
+| لوحة التحكم | Dashboard |
+|---|---|
+| ![Dashboard (Arabic)](docs/screenshots/ar/dashboard.jpg) | ![Dashboard (English)](docs/screenshots/en/dashboard.jpg) |
+| **كشف الحضور** | **Honor board** |
+| ![Attendance sheet (Arabic)](docs/screenshots/ar/attendance-sheet.jpg) | ![Honor board (English)](docs/screenshots/en/honor-board.jpg) |
+
+More screens (students, circles, evaluation, enrollment, messages, reports, phone): [docs/screenshots](docs/screenshots/README.md).
+مزيد من الشاشات في [docs/screenshots](docs/screenshots/README.md).
+
 ---
 
 ## العربية
