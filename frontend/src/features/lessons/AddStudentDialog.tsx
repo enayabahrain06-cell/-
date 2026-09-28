@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next'
 import { lessonsApi, type Lesson, type LessonCandidate } from '../../api/lessons'
 import { parseApiError } from '../../api/client'
 import Avatar from '../../components/Avatar'
-import { Badge, Modal, Notice, SecondaryButton, Segmented, TextInput } from '../../components/ui'
+import { Badge, Modal, Notice, SecondaryButton, Segmented, TextInput, ROW_MAIN } from '../../components/ui'
 import QuickEnrollForm from '../enrollment/QuickEnrollForm'
 import { formatNumber } from '../../lib/format'
 
@@ -77,7 +77,7 @@ export default function AddStudentDialog({ lesson, canQuickEnroll, onClose, onCh
               {rows.map((c) => (
                 <li key={c.id} className="flex flex-wrap items-center gap-3 px-3 py-2.5 text-sm">
                   <Avatar name={c.full_name} initial={c.initial} src={c.photo_url} gender={c.gender} size="sm" />
-                  <span className="min-w-0 flex-1">
+                  <span className={ROW_MAIN}>
                     <span dir="auto" className="block font-medium text-ink">{c.full_name}</span>
                     <span className="block text-xs text-ink/55">
                       <span dir="ltr">{c.student_no}</span>

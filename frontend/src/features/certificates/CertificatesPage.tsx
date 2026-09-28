@@ -10,7 +10,7 @@ import Icon from '../../components/Icon'
 import Pagination from '../../components/Pagination'
 import SelectField from '../../components/SelectField'
 import { PageBand } from '../../components/ornaments'
-import { ErrorState, LoadingState, Notice, PrimaryButton, SecondaryButton, Segmented, TextInput, TableWrap, TABLE_HEAD, EmptyCard, SURFACE } from '../../components/ui'
+import { ErrorState, LoadingState, Notice, PrimaryButton, SecondaryButton, Segmented, TextInput, TableWrap, TABLE_HEAD, EmptyCard, FilterBar, SearchInput } from '../../components/ui'
 import { formatNumber } from '../../lib/format'
 import { ActionButtons, IssueCertificateDialog, useCertificateActions, useCertificateOptions } from './CertificateDialogs'
 import { IssuedDate, StatusBadge, useInvalidateCertificates } from './shared'
@@ -116,15 +116,15 @@ function CertificateList() {
         })}
       </div>
 
-      <div className={`${SURFACE} grid gap-3 p-4 sm:grid-cols-2 lg:grid-cols-[2fr_1fr_1fr_1fr_auto] lg:items-end`}>
-        <TextInput type="search" label={t('filters.search')} placeholder={t('filters.search_placeholder')} value={search} onChange={(e) => setSearch(e.target.value)} />
+      <FilterBar layout="grid" label={t('filters.search')} className="sm:grid-cols-2 sm:items-end xl:grid-cols-[2fr_1fr_1fr_1fr_auto]">
+        <SearchInput label={t('filters.search')} placeholder={t('filters.search_placeholder')} value={search} onChange={(e) => setSearch(e.target.value)} />
         <SelectField label={t('filters.type')} value={type} onChange={(e) => set({ type: e.target.value })} options={[{ value: '', label: t('filters.all_types') }, ...(options.data?.types ?? [])]} />
         <TextInput type="date" label={t('filters.from')} value={from} max={to || undefined} onChange={(e) => set({ from: e.target.value })} dir="ltr" />
         <TextInput type="date" label={t('filters.to')} value={to} min={from || undefined} onChange={(e) => set({ to: e.target.value })} dir="ltr" />
         {(type || from || to || filters.search) ? (
           <SecondaryButton onClick={() => { setSearch(''); set({ type: '', from: '', to: '', search: '' }) }}>{t('filters.clear')}</SecondaryButton>
-        ) : <span className="hidden lg:block" />}
-      </div>
+        ) : <span className="hidden xl:block" />}
+      </FilterBar>
 
       {actions.notice && <Notice tone={actions.notice.tone}>{actions.notice.text}</Notice>}
 
@@ -152,33 +152,33 @@ function CertificateList() {
             <table className="w-full text-sm">
               <thead className={TABLE_HEAD}>
                 <tr>
-                  <th scope="col" className="w-10 px-3 py-2.5"><span className="sr-only">{t('table.select_all')}</span></th>
-                  <th scope="col" className="px-3 py-2.5 text-start font-medium">{t('table.student')}</th>
-                  <th scope="col" className="px-3 py-2.5 text-start font-medium">{t('table.certificate')}</th>
-                  <th scope="col" className="px-3 py-2.5 text-start font-medium">{t('table.grade')}</th>
-                  <th scope="col" className="px-3 py-2.5 text-start font-medium">{t('table.date')}</th>
-                  <th scope="col" className="px-3 py-2.5 text-start font-medium">{t('table.status')}</th>
-                  <th scope="col" className="px-3 py-2.5 text-end font-medium">{t('table.actions')}</th>
+                  <th scope="col" className="w-10 px-4 py-3"><span className="sr-only">{t('table.select_all')}</span></th>
+                  <th scope="col" className="px-4 py-3 text-start font-medium">{t('table.student')}</th>
+                  <th scope="col" className="px-4 py-3 text-start font-medium">{t('table.certificate')}</th>
+                  <th scope="col" className="px-4 py-3 text-start font-medium">{t('table.grade')}</th>
+                  <th scope="col" className="px-4 py-3 text-start font-medium">{t('table.date')}</th>
+                  <th scope="col" className="px-4 py-3 text-start font-medium">{t('table.status')}</th>
+                  <th scope="col" className="px-4 py-3 text-end font-medium">{t('table.actions')}</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-ink/6">
                 {rows.map((c) => (
                   <tr key={c.id} className={`align-top ${selected.has(c.id) ? 'bg-brand-50/40' : 'hover:bg-ink/[0.015]'}`}>
-                    <td className="px-3 py-3">
+                    <td className="px-4 py-3">
                       {c.can?.approve && <input type="checkbox" className="mt-1 size-4 accent-brand-700" checked={selected.has(c.id)} onChange={() => toggle(c.id)} aria-label={t('table.select', { name: c.student?.full_name ?? c.certificate_no })} />}
                     </td>
-                    <td className="px-3 py-3"><StudentCell c={c} /></td>
-                    <td className="px-3 py-3">
+                    <td className="px-4 py-3"><StudentCell c={c} /></td>
+                    <td className="px-4 py-3">
                       <button type="button" onClick={() => actions.run('view', c)} className="text-start hover:underline">
                         <span dir="auto" className={`block font-medium text-ink ${c.status === 'revoked' ? 'line-through decoration-danger/50' : ''}`}>{c.title}</span>
                         <span dir="auto" className="block text-xs text-ink/60">{c.achievement}</span>
                       </button>
                       <span className="mt-0.5 block text-xs text-ink/45"><span className="font-mono tabular-nums">{c.certificate_no}</span> · {c.type_label} · {c.source_label}</span>
                     </td>
-                    <td className="px-3 py-3 text-ink/80">{c.grade_label ?? '—'}</td>
-                    <td className="px-3 py-3 text-ink/80"><IssuedDate c={c} short /></td>
-                    <td className="px-3 py-3"><StatusBadge c={c} /></td>
-                    <td className="px-3 py-2"><div className="flex justify-end"><ActionButtons c={c} run={actions.run} busy={actions.busy} compact /></div></td>
+                    <td className="px-4 py-3 text-ink/80">{c.grade_label ?? '—'}</td>
+                    <td className="px-4 py-3 text-ink/80"><IssuedDate c={c} short /></td>
+                    <td className="px-4 py-3"><StatusBadge c={c} /></td>
+                    <td className="px-4 py-2.5"><div className="flex justify-end"><ActionButtons c={c} run={actions.run} busy={actions.busy} compact /></div></td>
                   </tr>
                 ))}
               </tbody>

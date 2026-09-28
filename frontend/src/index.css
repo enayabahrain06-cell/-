@@ -92,6 +92,11 @@
   body {
     @apply bg-page font-sans text-ink antialiased;
   }
+  /* Default keyboard focus for controls without their own focus-visible utilities (utilities still win). */
+  :where(a, button, summary, [role="button"], [tabindex]):focus-visible {
+    outline: 2px solid var(--color-brand-500);
+    outline-offset: 2px;
+  }
   /* English UI uses Inter; headings stay in the display face only for Arabic. */
   html[lang="en"] body {
     font-family: var(--font-latin);

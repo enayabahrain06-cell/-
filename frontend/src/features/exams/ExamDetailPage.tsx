@@ -8,7 +8,7 @@ import { parseApiError } from '../../api/client'
 import { useAuth } from '../../app/AuthContext'
 import Icon from '../../components/Icon'
 import { OrnamentDivider } from '../../components/ornaments'
-import { Badge, Card, CardTitle, ErrorState, LoadingState, Notice, PrimaryButton, SecondaryButton, Segmented, SURFACE, inputClass, TableWrap, TABLE_HEAD, EmptyCard, IconButton } from '../../components/ui'
+import { Badge, Card, CardTitle, ErrorState, LoadingState, Notice, PrimaryButton, SecondaryButton, Segmented, SURFACE, inputClass, TableWrap, TABLE_HEAD, EmptyCard, IconButton, ROW_MAIN } from '../../components/ui'
 import { formatDate, formatNumber, formatPercent } from '../../lib/format'
 import ExamFormDialog from './ExamFormDialog'
 import { EXAM_STATUS_TONE } from './ExamsHomePage'
@@ -128,20 +128,20 @@ function Questions({ exam, editable }: { exam: Exam; editable: boolean }) {
                 <div className="min-w-0 flex-1">
                   <p dir="auto" className="font-display text-lg text-ink">{qq.prompt}</p>
                   {qq.options && qq.type === 'mcq' && (
-                    <ul className="mt-2 space-y-1 text-sm">{qq.options.map((o) => <li key={o.key} dir="auto" className={o.key === qq.correct_answer?.key ? 'font-semibold text-brand-700' : 'text-ink/70'}>{o.key === qq.correct_answer?.key ? '✓ ' : '· '}{o.text}</li>)}</ul>
+                    <ul className="mt-2 space-y-1 text-sm">{qq.options.map((o) => <li key={o.key} dir="auto" className={o.key === qq.correct_answer?.key ? 'font-semibold text-brand-700' : 'text-ink/70'}>{o.key === qq.correct_answer?.key ? <Icon name="check" className="me-1 inline size-4 align-[-3px]" title={t('questions.correct')} /> : '· '}{o.text}</li>)}</ul>
                   )}
-                  {qq.type === 'true_false' && <p className="mt-1 text-sm text-brand-700">✓ {qq.correct_answer?.value ? t('questions.true') : t('questions.false')}</p>}
-                  {qq.type === 'complete_verse' && <p dir="rtl" className="mt-1 font-display text-brand-700">✓ {qq.correct_answer?.text}</p>}
-                  {qq.type === 'order_verses' && <ol className="mt-1 list-decimal ps-5 text-sm text-brand-700">{(qq.correct_answer?.order ?? []).map((k) => <li key={k} dir="rtl" className="font-display">{qq.options?.find((o) => o.key === k)?.text}</li>)}</ol>}
+                  {qq.type === 'true_false' && <p className="mt-1 text-sm text-brand-700"><Icon name="check" className="me-1 inline size-4 align-[-3px]" title={t('questions.correct')} />{qq.correct_answer?.value ? t('questions.true') : t('questions.false')}</p>}
+                  {qq.type === 'complete_verse' && <p dir="rtl" lang="ar" className="mt-1 font-quran text-lg text-brand-700"><Icon name="check" className="me-1 inline size-4 align-[-3px]" title={t('questions.correct')} />{qq.correct_answer?.text}</p>}
+                  {qq.type === 'order_verses' && <ol className="mt-1 list-decimal ps-5 text-sm text-brand-700">{(qq.correct_answer?.order ?? []).map((k) => <li key={k} dir="rtl" lang="ar" className="font-quran text-base">{qq.options?.find((o) => o.key === k)?.text}</li>)}</ol>}
                 </div>
                 <div className="flex flex-col items-end gap-2">
                   <span className="flex gap-1"><Badge>{t(`questions.types.${qq.type}`)}</Badge><Badge tone="gold">{n(qq.marks)}</Badge></span>
                   {editable && (
                     <span className="flex gap-1 text-ink/60">
-                      <button type="button" disabled={i === 0} className="rounded p-1 hover:bg-ink/5 disabled:opacity-30" aria-label={t('questions.move_up')} onClick={() => move.mutate({ from: i, to: i - 1 })}>↑</button>
-                      <button type="button" disabled={i === q.data.length - 1} className="rounded p-1 hover:bg-ink/5 disabled:opacity-30" aria-label={t('questions.move_down')} onClick={() => move.mutate({ from: i, to: i + 1 })}>↓</button>
-                      <button type="button" className="rounded p-1 hover:bg-ink/5" aria-label={t('questions.edit')} onClick={() => setEdit(qq)}><Icon name="edit" className="size-4" /></button>
-                      <IconButton icon="trash" tone="danger" label={t('questions.delete')} onClick={() => del.mutate(qq.id)} />
+                      <IconButton size="md" icon="chevron" iconClassName="-rotate-90" label={t('questions.move_up')} disabled={i === 0} onClick={() => move.mutate({ from: i, to: i - 1 })} />
+                      <IconButton size="md" icon="chevron" iconClassName="rotate-90" label={t('questions.move_down')} disabled={i === q.data.length - 1} onClick={() => move.mutate({ from: i, to: i + 1 })} />
+                      <IconButton size="md" icon="edit" label={t('questions.edit')} onClick={() => setEdit(qq)} />
+                      <IconButton size="md" icon="trash" tone="danger" label={t('questions.delete')} onClick={() => del.mutate(qq.id)} />
                     </span>
                   )}
                 </div>
@@ -179,7 +179,7 @@ function PaperGrading({ exam, onSaved }: { exam: Exam; onSaved: () => void }) {
       <ul className={`${SURFACE} divide-y divide-ink/6`}>
         {(r.data?.rows ?? []).map((row) => (
           <li key={row.student_id} className="flex flex-wrap items-center gap-3 px-4 py-2.5">
-            <span dir="auto" className="min-w-0 flex-1 font-medium text-ink">{row.full_name}<span className="block text-xs tabular-nums text-ink/50">{row.student_no}</span></span>
+            <span dir="auto" className={`${ROW_MAIN} font-medium text-ink`}>{row.full_name}<span className="block text-xs tabular-nums text-ink/50">{row.student_no}</span></span>
             <label className="sr-only" htmlFor={`score-${row.student_id}`}>{t('grading.score')}</label>
             <input id={`score-${row.student_id}`} type="number" min={0} max={exam.total_marks} inputMode="numeric" value={scores[row.student_id] ?? ''} onChange={(e) => setScores({ ...scores, [row.student_id]: e.target.value })}
               className={inputClass('sm', 'w-24 text-center tabular-nums', scores[row.student_id] !== '' && Number(scores[row.student_id]) < exam.pass_mark)} />
@@ -212,7 +212,7 @@ function OnlineGrading({ exam, onSaved }: { exam: Exam; onSaved: () => void }) {
       <ul className={`${SURFACE} divide-y divide-ink/6`}>
         {q.data.map((a) => (
           <li key={a.id} className="flex flex-wrap items-center gap-3 px-4 py-3 text-sm">
-            <span dir="auto" className="min-w-0 flex-1 font-medium text-ink">{a.student?.full_name}</span>
+            <span dir="auto" className={`${ROW_MAIN} font-medium text-ink`}>{a.student?.full_name}</span>
             <Badge tone={a.status === 'submitted' ? 'gold' : a.status === 'graded' ? 'brand' : 'muted'}>{a.status === 'submitted' ? t('grading.needs_grading') : a.status_label}</Badge>
             <span className="tabular-nums text-ink/70">{t('grading.auto')}: {n(a.auto_score)} · {t('grading.manual')}: {n(a.manual_score)} · <b className="text-ink">{t('grading.total')}: {n(a.total_score)}</b></span>
             {a.passed !== null && <Badge tone={a.passed ? 'brand' : 'danger'}>{a.passed ? t('results.passed') : t('results.failed')}</Badge>}
@@ -251,7 +251,7 @@ function Results({ exam }: { exam: Exam }) {
           <ol className="grid gap-3 sm:grid-cols-3">
             {r.data.top.map((s, i) => (
               <li key={s.student_id} className={`rounded-xl p-3 text-center ${i === 0 ? 'bg-gold-500/12' : 'bg-page/70'}`}>
-                <p className="font-display text-2xl text-gold-700">{n(i + 1)}</p>
+                <p className="text-2xl font-semibold tabular-nums text-gold-700">{n(i + 1)}</p>
                 <p dir="auto" className="font-semibold text-ink">{s.full_name}</p>
                 <p className="tabular-nums text-ink/70">{n(s.score)} / {n(exam.total_marks)}</p>
               </li>
@@ -262,14 +262,14 @@ function Results({ exam }: { exam: Exam }) {
       {rows.length === 0 ? <EmptyCard icon="exams" title={t('results.empty')} /> : (
         <TableWrap surface>
           <table className="w-full min-w-[32rem] text-sm">
-            <thead className={TABLE_HEAD}><tr><th className="px-4 py-2.5 text-start font-medium">{t('results.rank')}</th><th className="px-4 py-2.5 text-start font-medium">{t('results.student')}</th><th className="px-4 py-2.5 text-end font-medium">{t('results.score')}</th><th className="px-4 py-2.5 text-start font-medium">{t('results.result')}</th></tr></thead>
+            <thead className={TABLE_HEAD}><tr><th className="px-4 py-3 text-start font-medium">{t('results.rank')}</th><th className="px-4 py-3 text-start font-medium">{t('results.student')}</th><th className="px-4 py-3 text-end font-medium">{t('results.score')}</th><th className="px-4 py-3 text-start font-medium">{t('results.result')}</th></tr></thead>
             <tbody className="divide-y divide-ink/6">
               {rows.map((row, i) => (
                 <tr key={row.student_id}>
-                  <td className="px-4 py-2.5 tabular-nums text-ink/60">{row.score === null ? '—' : n(i + 1)}</td>
-                  <td className="px-4 py-2.5"><span dir="auto" className="font-medium text-ink">{row.full_name}</span><span className="block text-xs tabular-nums text-ink/50">{row.student_no}</span></td>
-                  <td className="px-4 py-2.5 text-end tabular-nums">{row.score === null ? '—' : `${n(row.score)} / ${n(exam.total_marks)}`}</td>
-                  <td className="px-4 py-2.5">{row.passed === null ? <Badge>{row.status ? t('grading.needs_grading') : t('results.absent')}</Badge> : <Badge tone={row.passed ? 'brand' : 'danger'}>{row.passed ? t('results.passed') : t('results.failed')}</Badge>}</td>
+                  <td className="px-4 py-3 tabular-nums text-ink/60">{row.score === null ? '—' : n(i + 1)}</td>
+                  <td className="px-4 py-3"><span dir="auto" className="font-medium text-ink">{row.full_name}</span><span className="block text-xs tabular-nums text-ink/50">{row.student_no}</span></td>
+                  <td className="px-4 py-3 text-end tabular-nums">{row.score === null ? '—' : `${n(row.score)} / ${n(exam.total_marks)}`}</td>
+                  <td className="px-4 py-3">{row.passed === null ? <Badge>{row.status ? t('grading.needs_grading') : t('results.absent')}</Badge> : <Badge tone={row.passed ? 'brand' : 'danger'}>{row.passed ? t('results.passed') : t('results.failed')}</Badge>}</td>
                 </tr>
               ))}
             </tbody>

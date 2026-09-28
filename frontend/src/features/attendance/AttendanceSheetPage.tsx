@@ -8,7 +8,7 @@ import Avatar from '../../components/Avatar'
 import Icon from '../../components/Icon'
 import QuranRangePicker from '../../components/QuranRangePicker'
 import { OrnamentDivider } from '../../components/ornaments'
-import { Badge, ErrorState, LoadingState, Notice, PrimaryButton, SecondaryButton, Segmented, TextInput, type Tone, SURFACE, EmptyCard } from '../../components/ui'
+import { Badge, ErrorState, LoadingState, Notice, PrimaryButton, SecondaryButton, Segmented, TextInput, type Tone, SURFACE, EmptyCard, ROW_MAIN } from '../../components/ui'
 import { formatDate, formatNumber, formatTime } from '../../lib/format'
 
 const STATUSES: { value: AttendanceStatus; tone: Tone }[] = [
@@ -141,13 +141,13 @@ export default function AttendanceSheetPage() {
               <li key={r.student.id} className={`rounded-2xl border bg-white p-4 shadow-sm ${d.status === 'absent' ? 'border-danger/30' : 'border-ink/8'}`}>
                 <div className="flex flex-wrap items-center gap-3">
                   <Avatar name={r.student.full_name} initial={r.student.initial} src={r.student.photo_url} gender={r.student.gender} size="sm" />
-                  <div className="min-w-0 flex-1">
+                  <div className={ROW_MAIN}>
                     <Link to={`/students/${r.student.id}`} dir="auto" className="block truncate font-semibold text-ink hover:text-brand-700">{r.student.full_name}</Link>
                     <p className="truncate text-xs text-ink/50">
                       {r.current_memorization ? t('current', { text: r.current_memorization }) : r.student.progress.surah_name ?? ''}
                     </p>
                   </div>
-                  <Segmented name={`status-${r.student.id}`} label={r.student.full_name} value={d.status}
+                  <Segmented fill name={`status-${r.student.id}`} label={r.student.full_name} value={d.status}
                     options={STATUSES.map((o) => ({ value: o.value, label: t(`status.${o.value}`), tone: o.tone }))}
                     onChange={(v) => update(r.student.id, { status: v })} />
                 </div>

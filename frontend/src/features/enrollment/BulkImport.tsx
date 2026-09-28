@@ -100,11 +100,11 @@ export default function BulkImport() {
             <table className="w-full min-w-[40rem] text-sm">
               <thead className={TABLE_HEAD}>
                 <tr>
-                  <th scope="col" className="px-4 py-2 text-start font-medium">{t('col_row')}</th>
-                  <th scope="col" className="px-4 py-2 text-start font-medium">{t('full_name')}</th>
-                  <th scope="col" className="px-4 py-2 text-start font-medium">{t('guardian_phone')}</th>
-                  <th scope="col" className="px-4 py-2 text-start font-medium">{t('circle')}</th>
-                  <th scope="col" className="px-4 py-2 text-start font-medium">{t('col_status')}</th>
+                  <th scope="col" className="px-4 py-3 text-start font-medium">{t('col_row')}</th>
+                  <th scope="col" className="px-4 py-3 text-start font-medium">{t('full_name')}</th>
+                  <th scope="col" className="px-4 py-3 text-start font-medium">{t('guardian_phone')}</th>
+                  <th scope="col" className="px-4 py-3 text-start font-medium">{t('circle')}</th>
+                  <th scope="col" className="px-4 py-3 text-start font-medium">{t('col_status')}</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-ink/6">
@@ -113,11 +113,11 @@ export default function BulkImport() {
                   const tone = errs.length ? 'bg-danger/5' : r.warnings.length ? 'bg-gold-500/6' : ''
                   return (
                     <tr key={r.row} className={tone}>
-                      <td className="px-4 py-2.5 tabular-nums text-ink/60">{formatNumber(r.row, locale)}</td>
-                      <td className="px-4 py-2.5 font-medium text-ink" dir="auto">{String(r.data.full_name ?? '')}</td>
-                      <td className="px-4 py-2.5 text-ink/70" dir="ltr">{String(r.data.guardian_phone ?? '')}</td>
-                      <td className="px-4 py-2.5 tabular-nums text-ink/70">{String(r.data.circle_id ?? '')}</td>
-                      <td className="px-4 py-2.5">
+                      <td className="px-4 py-3 tabular-nums text-ink/60">{formatNumber(r.row, locale)}</td>
+                      <td className="px-4 py-3 font-medium text-ink" dir="auto">{String(r.data.full_name ?? '')}</td>
+                      <td className="px-4 py-3 text-ink/70" dir="ltr">{String(r.data.guardian_phone ?? '')}</td>
+                      <td className="px-4 py-3 tabular-nums text-ink/70">{String(r.data.circle_id ?? '')}</td>
+                      <td className="px-4 py-3">
                         {errs.length ? (
                           <span className="text-danger">{errs.join(' · ')}</span>
                         ) : r.warnings.length ? (

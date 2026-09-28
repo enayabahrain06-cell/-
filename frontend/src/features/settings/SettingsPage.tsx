@@ -194,7 +194,8 @@ function Field({ item: s, value, error, onChange }: { item: SettingItem; value: 
   } else if (s.type === 'int') {
     const unit = t(`units.${s.key}`, { defaultValue: '' })
     control = (
-      <div className="flex items-center gap-2">
+      // Wraps instead of overflowing; the allowed range sits beside the unit only when the control column has room (container query).
+      <div className="flex flex-wrap items-center gap-x-2 gap-y-1">
         <input
           id={id}
           type="number"
@@ -207,9 +208,9 @@ function Field({ item: s, value, error, onChange }: { item: SettingItem; value: 
           aria-describedby={describedBy}
           className={`block w-28 rounded-xl border bg-white px-3 py-2 text-sm tabular-nums shadow-sm focus:outline-none focus:ring-4 ${error ? 'border-danger/60 focus:ring-danger/15' : 'border-ink/15 focus:border-brand-500 focus:ring-brand-100'}`}
         />
-        {unit && <span className="text-sm text-ink/60">{unit}</span>}
+        {unit && <span className="whitespace-nowrap text-sm text-ink/60">{unit}</span>}
         {s.min !== undefined && s.max !== undefined && (
-          <span className="text-xs text-ink/45">{t('range', { min: s.min.toLocaleString(i18n.language === 'ar' ? 'ar-BH' : 'en-BH'), max: s.max.toLocaleString(i18n.language === 'ar' ? 'ar-BH' : 'en-BH') })}</span>
+          <span className="basis-full text-xs text-ink/45 @2xs:basis-auto">{t('range', { min: s.min.toLocaleString(i18n.language === 'ar' ? 'ar-BH' : 'en-BH'), max: s.max.toLocaleString(i18n.language === 'ar' ? 'ar-BH' : 'en-BH') })}</span>
         )}
       </div>
     )
@@ -231,7 +232,7 @@ function Field({ item: s, value, error, onChange }: { item: SettingItem; value: 
         {labelEl}
         {help && <p id={helpId} className="mt-0.5 text-xs leading-relaxed text-ink/55">{help}</p>}
       </div>
-      <div className="min-w-0">
+      <div className="@container min-w-0">
         {control}
         {error && <p id={errId} dir="auto" className="mt-1.5 text-start text-sm text-danger">{error}</p>}
       </div>

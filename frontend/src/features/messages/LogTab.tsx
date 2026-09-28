@@ -167,6 +167,10 @@ function StatTile({ label, value, icon, tone, active, onClick }: { label: string
   )
 }
 
+function Row({ label, children }: { label: string; children: React.ReactNode }) {
+  return <div className="grid grid-cols-3 gap-2 py-1.5 text-sm"><dt className="text-ink/55">{label}</dt><dd className="col-span-2 min-w-0 text-ink">{children}</dd></div>
+}
+
 function DetailModal({ id, initial, onClose }: { id: number; initial: MessageLog; onClose: () => void }) {
   const { t, i18n } = useTranslation('messages')
   const locale = i18n.language
@@ -175,10 +179,6 @@ function DetailModal({ id, initial, onClose }: { id: number; initial: MessageLog
   const steps: [string, string | null][] = [
     ['created', m.created_at], ['scheduled', m.scheduled_for], ['sent', m.sent_at], ['delivered', m.delivered_at], ['read', m.read_at],
   ]
-  const Row = ({ label, children }: { label: string; children: React.ReactNode }) => (
-    <div className="grid grid-cols-3 gap-2 py-1.5 text-sm"><dt className="text-ink/55">{label}</dt><dd className="col-span-2 min-w-0 text-ink">{children}</dd></div>
-  )
-
   return (
     <Modal title={t('detail.title')} onClose={onClose} wide footer={<SecondaryButton onClick={onClose}>{t('detail.close')}</SecondaryButton>}>
       <dl className="divide-y divide-ink/6">

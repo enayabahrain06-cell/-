@@ -26,3 +26,9 @@ dist-ssr
 # Local environment
 .env
 .env.local
+
+# Playwright visual tests (baselines in tests/visual/__screenshots__ ARE committed)
+/tests/visual/.auth/
+/test-results/
+/playwright-report/
+/blob-report/

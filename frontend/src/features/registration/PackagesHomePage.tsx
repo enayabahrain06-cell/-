@@ -9,7 +9,7 @@ import Icon from '../../components/Icon'
 import Pagination from '../../components/Pagination'
 import SelectField from '../../components/SelectField'
 import { PageBand } from '../../components/ornaments'
-import { Badge, ErrorState, FilterBar, LoadingState, Modal, Notice, PrimaryButton, SearchInput, SecondaryButton, Segmented, TextArea, type Tone, SURFACE, EmptyCard } from '../../components/ui'
+import { Badge, ErrorState, FilterBar, LoadingState, Modal, Notice, PrimaryButton, SearchInput, SecondaryButton, Segmented, TextArea, type Tone, SURFACE, EmptyCard, ROW_MAIN } from '../../components/ui'
 import { formatDate, formatMoney, formatNumber } from '../../lib/format'
 import { GENDER_TONE } from '../lessons/LessonsHomePage'
 import PackageFormDialog from './PackageFormDialog'
@@ -125,7 +125,7 @@ function Requests() {
             {q.data.data.map((r) => (
               <li key={r.request_no} className={`${SURFACE} p-4`}>
                 <div className="flex flex-wrap items-start gap-3">
-                  <div className="min-w-0 flex-1">
+                  <div className={ROW_MAIN}>
                     <div className="flex flex-wrap items-center gap-2">
                       <p dir="auto" className="font-semibold text-ink">{r.full_name}</p>
                       <Badge tone={STATUS_TONE[r.status]}>{t(`status.${r.status}`)}{r.status === 'waitlist' && r.waitlist_position ? ` ${t('admin.position', { n: n(r.waitlist_position) })}` : ''}</Badge>

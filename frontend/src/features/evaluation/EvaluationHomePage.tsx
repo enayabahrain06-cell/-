@@ -7,7 +7,7 @@ import { lessonsApi, studentsApi } from '../../api/students'
 import { parseApiError } from '../../api/client'
 import SelectField from '../../components/SelectField'
 import { PageBand } from '../../components/ornaments'
-import { LoadingState, Notice, PrimaryButton, Segmented, TextInput, EmptyCard, SURFACE } from '../../components/ui'
+import { LoadingState, Notice, PrimaryButton, Segmented, TextInput, EmptyCard, FilterBar } from '../../components/ui'
 import { formatNumber } from '../../lib/format'
 import AttendanceDayPage from '../attendance/AttendanceDayPage'
 import ScoreGrid, { emptyDraft, isComplete, type Draft } from './ScoreGrid'
@@ -20,7 +20,7 @@ export default function EvaluationHomePage() {
   return (
     <div className="space-y-5">
       <PageBand title={t('title')} subtitle={t('subtitle')} />
-      <Segmented name="eval-tab" label={t('title')} value={tab}
+      <Segmented name="eval-tab" label={t('title')} value={tab} fill
         options={[{ value: 'daily', label: t('tabs.daily') }, { value: 'monthly', label: t('tabs.monthly') }]}
         onChange={(v) => { const n = new URLSearchParams(params); n.set('tab', v); setParams(n, { replace: true }) }} />
       {tab === 'daily' ? <AttendanceDayPage basePath="/evaluation" embedded /> : <Monthly />}
@@ -69,12 +69,12 @@ function Monthly() {
 
   return (
     <div className="space-y-4">
-      <div className={`${SURFACE} grid gap-3 p-4 sm:grid-cols-3`}>
+      <FilterBar layout="grid" label={t('monthly.circle')} className="sm:grid-cols-3">
         <SelectField label={t('monthly.circle')} value={lessonId ?? ''} onChange={(e) => setLessonId(Number(e.target.value))}
           options={(lessons.data ?? []).map((l) => ({ value: String(l.id), label: l.name }))} />
         <TextInput label={t('monthly.period')} type="month" value={period} max={new Date().toISOString().slice(0, 7)} onChange={(e) => e.target.value && setPeriod(e.target.value)} />
         <p className="self-end text-xs text-ink/55">{t('monthly.hint')}</p>
-      </div>
+      </FilterBar>
       {msg && <Notice tone={msg.tone}>{msg.text}</Notice>}
       {!lessonId ? (
         <EmptyCard icon="lessons" title={t('monthly.choose_circle')} />

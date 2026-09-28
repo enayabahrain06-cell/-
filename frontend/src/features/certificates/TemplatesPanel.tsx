@@ -96,7 +96,7 @@ function TemplateEditor({ template }: { template: CertificateTemplate }) {
     <form className="space-y-4" onSubmit={(e) => { e.preventDefault(); save.mutate() }}>
       <Card>
         <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
-          <h2 className="font-display text-xl text-ink">{template.type_label}</h2>
+          <h2 className="text-lg font-semibold text-ink">{template.type_label}</h2>
           <div className="flex flex-wrap gap-2">
             <SecondaryButton onClick={() => void preview('ar')} disabled={previewing !== null}>
               {previewing === 'ar' ? <StarSpinner className="size-4" /> : <Icon name="eye" className="size-4" />}{t('templates.preview_ar')}
@@ -128,7 +128,7 @@ function TemplateEditor({ template }: { template: CertificateTemplate }) {
                 {PLACEHOLDERS.map((p) => (
                   <button key={p} type="button" onClick={() => insert(lang, p)}
                     className="rounded-full border border-gold-500/40 bg-gold-500/8 px-2.5 py-0.5 text-xs font-medium text-gold-700 hover:bg-gold-500/15">
-                    {t(`templates.placeholder.${p}`)} <span dir="ltr" className="font-mono text-[10px] opacity-70">{`{${p}}`}</span>
+                    {t(`templates.placeholder.${p}`)} <span dir="ltr" className="font-mono text-xs opacity-80">{`{${p}}`}</span>
                   </button>
                 ))}
               </div>

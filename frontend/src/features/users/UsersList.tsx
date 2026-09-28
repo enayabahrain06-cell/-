@@ -8,7 +8,7 @@ import Avatar from '../../components/Avatar'
 import Icon from '../../components/Icon'
 import Pagination from '../../components/Pagination'
 import SelectField from '../../components/SelectField'
-import { Badge, ErrorState, LoadingState, Modal, Notice, PrimaryButton, SecondaryButton, type Tone, SURFACE, FilterBar, SearchInput, EmptyCard } from '../../components/ui'
+import { Badge, ErrorState, LoadingState, Modal, Notice, PrimaryButton, SecondaryButton, type Tone, SURFACE, FilterBar, SearchInput, EmptyCard, ROW_MAIN } from '../../components/ui'
 import { formatDate, formatNumber } from '../../lib/format'
 
 const ROLE_TONE: Record<string, Tone> = { super_admin: 'gold', supervisor: 'info', teacher: 'brand' }
@@ -73,7 +73,7 @@ export default function UsersList({ onEdit, onNotice }: { onEdit: (u: AdminUser)
               return (
                 <li key={u.id} className={`flex flex-wrap items-center gap-x-4 gap-y-2 px-5 py-3.5 ${u.is_active ? '' : 'bg-ink/[0.02]'}`}>
                   <Avatar name={u.name} initial={initialOf(u.name)} gender={u.gender} size="sm" />
-                  <div className="min-w-0 flex-1 basis-48">
+                  <div className={ROW_MAIN}>
                     <p dir="auto" className={`truncate text-start font-medium ${u.is_active ? 'text-ink' : 'text-ink/50'}`}>
                       {u.name}
                       {me?.id === u.id && <span className="ms-2 text-xs font-normal text-ink/45">({t('list.you')})</span>}

@@ -3,6 +3,7 @@ import { forwardRef, useEffect, useId } from 'react'
 import { useTranslation } from 'react-i18next'
 import { EmptyState, StarSpinner } from './ornaments'
 import Icon from './Icon'
+import { useScrollLock } from './useScrollLock'
 
 /** Shared building blocks for staff pages (cards, states, badges, segmented controls, text areas). */
 
@@ -36,7 +37,7 @@ export function ErrorState({ message, onRetry }: { message?: string; onRetry?: (
   return (
     <div role="alert" className="rounded-2xl border border-danger/25 bg-danger/5 p-6 text-center text-danger">
       <p>{message ?? t('errors.unexpected')}</p>
-      {onRetry && <button type="button" onClick={onRetry} className="mt-3 rounded-lg bg-white px-3 py-1.5 text-sm font-medium text-ink shadow-sm">{t('retry')}</button>}
+      {onRetry && <button type="button" onClick={onRetry} className={buttonClass('secondary', 'mt-3')}>{t('retry')}</button>}
     </div>
   )
 }
@@ -61,12 +62,19 @@ const BUTTONS = {
   secondary: `${BUTTON_BASE} gap-1.5 border border-ink/12 bg-white px-3 py-2 font-medium text-ink/80 hover:bg-ink/5 disabled:opacity-50`,
   /** White button on the deep PageBand surface. */
   onDeep: `${BUTTON_BASE} gap-2 bg-white px-4 py-2 font-semibold text-brand-800 shadow-sm hover:bg-white/90 disabled:opacity-60`,
+  /** Quiet outlined button on the deep PageBand surface (refresh and other secondary band actions). */
+  onDeepGhost: `${BUTTON_BASE} gap-1.5 border border-white/20 bg-white/10 px-3 py-2 font-medium text-white hover:bg-white/15 disabled:opacity-60`,
 } as const
 export type ButtonVariant = keyof typeof BUTTONS
 
-/** Button look for elements that cannot be a <button> (router <Link>, <a>, <label>). */
+/**
+ * Button look for elements that cannot be a <button> (router <Link>, <a>, <label>).
+ * Buttons are 40px tall, the same as inputs, selects and search, so filter rows line up.
+ * Compact row buttons that pass their own `py-1`/`py-1.5` (or a `min-h-*`) keep their size.
+ */
 export function buttonClass(variant: ButtonVariant = 'primary', className = '') {
-  return `${BUTTONS[variant]} ${className}`
+  const height = /(^|\s)(min-h-|py-(0|1)(\.5)?(\s|$))/.test(className) ? '' : 'min-h-10'
+  return `${BUTTONS[variant]} ${height} ${className}`
 }
 
 export function PrimaryButton({ children, className = '', loading, tone = 'brand', ...rest }: ButtonHTMLAttributes<HTMLButtonElement> & { loading?: boolean; tone?: 'brand' | 'danger' }) {
@@ -92,7 +100,11 @@ export function SecondaryButton({ children, className = '', ...rest }: ButtonHTM
  * Small icon-only button (remove a row, dismiss a notice). `label` is required: it is the
  * accessible name and the tooltip. `remove` is muted until hover, then danger.
  */
-export function IconButton({ icon, label, tone = 'muted', className = '', ...rest }: ButtonHTMLAttributes<HTMLButtonElement> & { icon: string; label: string; tone?: 'muted' | 'remove' | 'danger' }) {
+/**
+ * Icon-only button. `size="md"` gives a 40px tap target (touch pages, reorder rows) while the icon stays 16px;
+ * `iconClassName` rotates or recolours the icon (for example `-rotate-90` for a vertical chevron).
+ */
+export function IconButton({ icon, label, tone = 'muted', size = 'sm', iconClassName = '', className = '', ...rest }: ButtonHTMLAttributes<HTMLButtonElement> & { icon: string; label: string; tone?: 'muted' | 'remove' | 'danger'; size?: 'sm' | 'md'; iconClassName?: string }) {
   const tones = {
     muted: 'text-ink/50 hover:bg-ink/5 hover:text-ink',
     remove: 'text-ink/40 hover:bg-danger/5 hover:text-danger',
@@ -100,24 +112,26 @@ export function IconButton({ icon, label, tone = 'muted', className = '', ...res
   }
   return (
     <button type="button" aria-label={label} title={label} {...rest}
-      className={`inline-grid shrink-0 place-items-center rounded-lg p-1.5 transition focus-visible:outline-2 focus-visible:outline-brand-500 disabled:cursor-not-allowed disabled:opacity-30 ${tones[tone]} ${className}`}>
-      <Icon name={icon} className="size-4" />
+      className={`inline-grid shrink-0 place-items-center rounded-lg ${size === 'md' ? 'size-10' : 'p-1.5'} transition focus-visible:outline-2 focus-visible:outline-brand-500 disabled:cursor-not-allowed disabled:opacity-30 ${tones[tone]} ${className}`}>
+      <Icon name={icon} className={`size-4 ${iconClassName}`} />
     </button>
   )
 }
 
 /** Radio-group styled as a segmented control (keyboard: arrow keys via native radios). */
-export function Segmented<T extends string>({ name, value, options, onChange, label, size = 'md' }: {
+export function Segmented<T extends string>({ name, value, options, onChange, label, size = 'md', fill = false }: {
   name: string; value: T | null; options: { value: T; label: string; tone?: Tone }[]; onChange: (v: T) => void; label: string; size?: 'sm' | 'md'
+  /** Below `sm`, stretch to the full row with equal-width options (for a control that wraps onto its own line). */
+  fill?: boolean
 }) {
   return (
-    <fieldset className="min-w-0">
+    <fieldset className={fill ? 'w-full min-w-0 sm:w-auto' : 'min-w-0'}>
       <legend className="sr-only">{label}</legend>
-      <div className="inline-flex flex-wrap gap-1 rounded-xl bg-ink/5 p-1">
+      <div className={`${fill ? 'flex sm:inline-flex' : 'inline-flex'} flex-wrap gap-1 rounded-xl bg-ink/5 p-1`}>
         {options.map((o) => {
           const active = value === o.value
           return (
-            <label key={o.value} className={`cursor-pointer rounded-lg ${size === 'sm' ? 'px-2.5 py-1 text-xs' : 'px-3 py-1.5 text-sm'} font-medium transition ${
+            <label key={o.value} className={`cursor-pointer rounded-lg ${fill ? 'flex-1 text-center sm:flex-none' : ''} ${size === 'sm' ? 'px-2.5 py-1 text-xs' : 'px-3 py-1.5 text-sm'} font-medium transition ${
               active ? `${o.tone ? TONES[o.tone] : 'bg-white text-ink'} shadow-sm ring-1 ring-ink/10` : 'text-ink/60 hover:text-ink'
             } has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-brand-500`}>
               <input type="radio" name={name} value={o.value} checked={active} onChange={() => onChange(o.value)} className="sr-only" />
@@ -136,7 +150,7 @@ const FIELD_TONE = {
   /** A warning value (for example a score below the pass mark); not the same as invalid. */
   danger: 'border-danger/50 bg-danger/5 text-danger focus:border-danger focus:ring-danger/15',
 } as const
-const FIELD_SIZE = { md: 'rounded-xl px-3 py-2', sm: 'rounded-lg px-2 py-1.5' } as const
+const FIELD_SIZE = { md: 'min-h-10 rounded-xl px-3 py-2', sm: 'rounded-lg px-2 py-1.5' } as const
 
 /**
  * Look of a bare <input>/<select>/<textarea> for places a labelled TextInput cannot go
@@ -194,6 +208,7 @@ export function Notice({ tone = 'success', children }: { tone?: 'success' | 'err
 export function Modal({ title, onClose, children, footer, wide = false }: { title: string; onClose: () => void; children: ReactNode; footer?: ReactNode; wide?: boolean }) {
   const { t } = useTranslation()
   const titleId = useId()
+  useScrollLock(true)
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => e.key === 'Escape' && onClose()
     window.addEventListener('keydown', onKey)
@@ -227,16 +242,25 @@ export const SearchInput = forwardRef<HTMLInputElement, React.InputHTMLAttribute
         <label htmlFor={sid} className="sr-only">{label}</label>
         <Icon name="search" className="pointer-events-none absolute inset-y-0 start-3 my-auto size-4 text-ink/40" />
         <input ref={ref} id={sid} type="search" autoComplete="off" placeholder={placeholder ?? label} {...rest}
-          className={`${FIELD_LOOK} ${FIELD_TONE.normal} w-full rounded-xl py-2.5 pe-3 ps-9 text-sm`} />
+          className={`${FIELD_LOOK} ${FIELD_TONE.normal} min-h-10 w-full rounded-xl py-2 pe-3 ps-9 text-sm`} />
       </div>
     )
   },
 )
 
-/** Filter toolbar surface: controls stack full-width on phones, then wrap in a row from sm up. */
-export function FilterBar({ children, className = '', label }: { children: ReactNode; className?: string; label?: string }) {
+/**
+ * Filter toolbar surface: controls stack full-width on phones, then wrap in a row from sm up.
+ * `layout="grid"` keeps a page's own column template (pass `sm:grid-cols-*` in className);
+ * `layout="row"` keeps small controls on one wrapping row at every width (date steppers).
+ */
+const FILTER_LAYOUT = {
+  stack: 'flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-end',
+  grid: 'grid gap-3',
+  row: 'flex flex-wrap items-center gap-2',
+} as const
+export function FilterBar({ children, className = '', label, layout = 'stack' }: { children: ReactNode; className?: string; label?: string; layout?: keyof typeof FILTER_LAYOUT }) {
   return (
-    <section aria-label={label} className={`${SURFACE} flex flex-col gap-3 p-4 sm:flex-row sm:flex-wrap sm:items-end ${className}`}>
+    <section aria-label={label} className={`${SURFACE} ${FILTER_LAYOUT[layout]} p-4 ${className}`}>
       {children}
     </section>
   )
@@ -246,6 +270,14 @@ export function FilterBar({ children, className = '', label }: { children: React
 export function EmptyCard(props: Parameters<typeof EmptyState>[0]) {
   return <div className={SURFACE}><EmptyState {...props} /></div>
 }
+
+/**
+ * Main (name) cell of a wrapping list row: `<li className="flex flex-wrap items-center gap-3">`.
+ * It grows to fill the row but keeps at least 12rem, so trailing badges and actions drop to the
+ * next line instead of squeezing the name to a few letters. Written as one flex value so no
+ * separate basis utility can override it.
+ */
+export const ROW_MAIN = 'min-w-0 flex-[1_1_12rem]'
 
 /** Header row style shared by data tables. */
 export const TABLE_HEAD = 'bg-page/60 text-start text-xs text-ink/60'

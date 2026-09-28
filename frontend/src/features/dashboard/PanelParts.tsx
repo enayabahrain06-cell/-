@@ -2,7 +2,7 @@ import type { ReactNode } from 'react'
 import { Link } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import Icon from '../../components/Icon'
-import { SURFACE } from '../../components/ui'
+import { buttonClass, SURFACE } from '../../components/ui'
 
 /** Card shell matching TodayList / AlertsBox: header row with a bottom border, optional footer link. */
 export function PanelCard({ id, title, icon, children, footer }: { id: string; title: string; icon: string; children: ReactNode; footer?: { to: string; label: string } }) {
@@ -57,7 +57,7 @@ export function PanelError({ onRetry }: { onRetry: () => void }) {
   return (
     <div role="alert" className="m-4 rounded-xl border border-danger/25 bg-danger/5 p-4 text-center text-sm text-danger">
       <p>{t('error')}</p>
-      <button type="button" onClick={onRetry} className="mt-2 rounded-lg bg-white px-3 py-1.5 text-sm font-medium text-ink shadow-sm">
+      <button type="button" onClick={onRetry} className={buttonClass('secondary', 'mt-2')}>
         {t('retry')}
       </button>
     </div>

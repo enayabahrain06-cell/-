@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next'
 import { myExamsApi, type Attempt, type Question } from '../../api/exams'
 import { parseApiError } from '../../api/client'
 import { OrnamentFrame } from '../../components/ornaments'
-import { buttonClass, ErrorState, LoadingState, Notice, PrimaryButton, SecondaryButton, SURFACE, inputClass } from '../../components/ui'
+import { buttonClass, ErrorState, IconButton, LoadingState, Notice, PrimaryButton, SecondaryButton, SURFACE, inputClass } from '../../components/ui'
 import FamilyLayout from '../../layouts/FamilyLayout'
 import { formatNumber } from '../../lib/format'
 import Icon from '../../components/Icon'
@@ -184,7 +184,7 @@ function QuestionInput({ q, value, onChange, examId, studentId }: { q: Question;
         <div>
           <label htmlFor={`a-${q.id}`} className="mb-1.5 block text-sm font-medium text-ink/75">{t('player.your_answer')}</label>
           <textarea id={`a-${q.id}`} dir="rtl" rows={3} value={String(v.text ?? '')} onChange={(e) => onChange({ text: e.target.value })}
-            className={inputClass('md', 'w-full font-display text-xl')} />
+            className={inputClass('md', 'w-full font-quran text-xl')} />
         </div>
       )
     case 'order_verses': {
@@ -198,9 +198,9 @@ function QuestionInput({ q, value, onChange, examId, studentId }: { q: Question;
             {order.map((k, i) => (
               <li key={k} className="flex items-center gap-2 rounded-xl border border-ink/12 bg-page/40 p-3">
                 <span className="w-6 text-center text-sm tabular-nums text-ink/50">{i + 1}</span>
-                <span dir="rtl" className="flex-1 font-display text-lg text-ink">{q.options?.find((o) => o.key === k)?.text}</span>
-                <button type="button" disabled={i === 0} className="rounded-lg px-2 py-1 hover:bg-ink/5 disabled:opacity-30" aria-label="↑" onClick={() => moveTo(i, i - 1)}>↑</button>
-                <button type="button" disabled={i === order.length - 1} className="rounded-lg px-2 py-1 hover:bg-ink/5 disabled:opacity-30" aria-label="↓" onClick={() => moveTo(i, i + 1)}>↓</button>
+                <span dir="rtl" lang="ar" className="flex-1 font-quran text-lg text-ink">{q.options?.find((o) => o.key === k)?.text}</span>
+                <IconButton size="md" icon="chevron" iconClassName="-rotate-90" label={t('questions.move_up')} disabled={i === 0} onClick={() => moveTo(i, i - 1)} />
+                <IconButton size="md" icon="chevron" iconClassName="rotate-90" label={t('questions.move_down')} disabled={i === order.length - 1} onClick={() => moveTo(i, i + 1)} />
               </li>
             ))}
           </ol>

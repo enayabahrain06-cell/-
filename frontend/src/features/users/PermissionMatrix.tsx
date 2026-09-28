@@ -110,7 +110,7 @@ export default function PermissionMatrix({ onNotice }: { onNotice: (m: string | 
                   <tr key={p.name} className="group">
                     <th scope="row" className="sticky start-0 z-[5] border-b border-ink/5 bg-white px-4 py-2 text-start font-normal text-ink/80 group-hover:bg-brand-50">
                       {p.label}
-                      <span dir="ltr" className="block text-start font-mono text-[11px] text-ink/35">{p.name}</span>
+                      <span dir="ltr" className="block text-start font-mono text-xs text-ink/55">{p.name}</span>
                     </th>
                     {roles.map((r) => (
                       <td key={r.id} className="border-b border-ink/5 px-2 py-2 text-center group-hover:bg-brand-50">

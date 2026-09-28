@@ -7,7 +7,7 @@ import { dashboardApi, type AlertConflict, type DashboardAlert } from '../../api
 import { useAuth } from '../../app/AuthContext'
 import Icon from '../../components/Icon'
 import Pagination from '../../components/Pagination'
-import { Modal, TABLE_HEAD_STICKY, SURFACE, IconButton } from '../../components/ui'
+import { buttonClass, Modal, TABLE_HEAD_STICKY, SURFACE, IconButton } from '../../components/ui'
 import { EmptyState } from '../../components/ornaments'
 import { formatDate, formatNumber, formatTime, formatWeekday } from '../../lib/format'
 import { relativeTime } from './relativeTime'
@@ -167,7 +167,7 @@ export default function AlertsCard() {
       ) : q.isError ? (
         <div role="alert" className="p-6 text-center text-sm text-danger">
           <p>{t('alerts.error')}</p>
-          <button type="button" onClick={() => void q.refetch()} className="mt-2 rounded-lg border border-ink/10 bg-white px-3 py-1.5 font-medium text-ink shadow-sm">{t('retry')}</button>
+          <button type="button" onClick={() => void q.refetch()} className={buttonClass('secondary', 'mt-2')}>{t('retry')}</button>
         </div>
       ) : items.length === 0 ? (
         <EmptyState size="sm" icon="check" title={t('alerts.empty')} body={t('alerts.empty_hint')} />
@@ -229,8 +229,8 @@ export default function AlertsCard() {
 
 function ActionButton({ action: a, primary = false }: { action: Action; primary?: boolean }) {
   const cls = primary
-    ? 'inline-flex items-center gap-1 rounded-lg bg-brand-600 px-2.5 py-1 text-xs font-semibold text-white hover:bg-brand-700 disabled:opacity-50'
-    : 'inline-flex items-center gap-1 rounded-lg border border-ink/12 bg-white px-2.5 py-1 text-xs font-medium text-ink/75 hover:bg-ink/5 disabled:opacity-50'
+    ? 'inline-flex items-center gap-1 rounded-lg bg-brand-700 px-3 py-1.5 text-xs font-semibold text-white hover:bg-brand-800 focus-visible:outline-2 focus-visible:outline-brand-500 disabled:opacity-50'
+    : 'inline-flex items-center gap-1 rounded-lg border border-ink/12 bg-white px-3 py-1.5 text-xs font-medium text-ink/75 hover:bg-ink/5 focus-visible:outline-2 focus-visible:outline-brand-500 disabled:opacity-50'
   if (a.to) return <Link to={a.to} className={cls}>{a.label}</Link>
   return (
     <button type="button" className={cls} onClick={a.onClick} disabled={a.disabled} title={a.title} aria-busy={a.busy}>
@@ -244,7 +244,7 @@ function SessionsModal({ alert, conflict, locale, onClose }: { alert: DashboardA
   return (
     <Modal title={t('alerts.sessions_title', { n: formatNumber(conflict.count, locale) })} onClose={onClose} wide>
       <p dir="auto" className="text-sm text-ink/70">{alert.title}</p>
-      <div className="max-h-[60vh] overflow-y-auto rounded-xl border border-ink/8">
+      <div className="max-h-[60vh] overflow-auto rounded-xl border border-ink/8">
         <table className="w-full text-sm">
           <thead className={TABLE_HEAD_STICKY}>
             <tr className="border-b border-ink/10 text-ink/55">

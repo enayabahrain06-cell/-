@@ -176,7 +176,7 @@ export default function PublicRegisterPage() {
           <OrnamentFrame className="mx-auto max-w-lg text-gold-500">
             <div className="space-y-3 p-6 text-center">
               <Icon name="check" className="mx-auto size-10 text-brand-600" />
-              <h2 className="font-display text-2xl text-ink">{t('public.done_title')}</h2>
+              <h2 className="text-xl font-semibold text-ink">{t('public.done_title')}</h2>
               <p className="text-ink/75">{t('public.done_body', { no: result.request_no })}</p>
               {result.waitlist_position && <p className="text-gold-700">{t('public.done_waitlist', { n: n(result.waitlist_position) })}</p>}
               <p className="font-mono text-2xl tracking-widest text-ink" dir="ltr">{result.request_no}</p>

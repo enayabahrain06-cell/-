@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next'
 import { attendanceApi } from '../../api/attendance'
 import Icon from '../../components/Icon'
 import { PageBand } from '../../components/ornaments'
-import { Badge, ErrorState, LoadingState, SecondaryButton, SURFACE, inputClass, EmptyCard } from '../../components/ui'
+import { Badge, ErrorState, LoadingState, FilterBar, SecondaryButton, SURFACE, inputClass, EmptyCard } from '../../components/ui'
 import { formatDate, formatHijri, formatNumber, formatTime } from '../../lib/format'
 
 const todayIso = () => new Intl.DateTimeFormat('en-CA', { timeZone: 'Asia/Bahrain' }).format(new Date())
@@ -28,15 +28,15 @@ export default function AttendanceDayPage({ basePath = '/attendance', title, sub
     <div className="space-y-5">
       {!embedded && <PageBand title={title ?? t('title')} subtitle={subtitle ?? t('subtitle')} />}
 
-      <div className={`${SURFACE} flex flex-wrap items-center gap-2 p-3`}>
+      <FilterBar layout="row" label={t('date')}>
         <SecondaryButton onClick={() => shift(-1)} aria-label="-1"><Icon name="chevron" className="size-4 ltr:rotate-180" /></SecondaryButton>
         <label htmlFor="att-date" className="sr-only">{t('date')}</label>
         <input id="att-date" type="date" value={date} onChange={(e) => e.target.value && setParams({ date: e.target.value }, { replace: true })}
-          className={inputClass('md', 'tabular-nums')} />
+          className={inputClass('md', 'w-36 tabular-nums')} />
         <SecondaryButton onClick={() => shift(1)} aria-label="+1"><Icon name="chevron" className="size-4 rtl:rotate-180" /></SecondaryButton>
         {date !== todayIso() && <SecondaryButton onClick={() => setParams({}, { replace: true })}>{t('today')}</SecondaryButton>}
-        <p className="ms-auto text-sm text-ink/60">{formatDate(date, locale, { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })} · {formatHijri(date, locale)}</p>
-      </div>
+        <p className="ms-auto basis-full text-sm text-ink/60 sm:basis-auto">{formatDate(date, locale, { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })} · {formatHijri(date, locale)}</p>
+      </FilterBar>
 
       {q.isLoading ? <LoadingState /> : q.isError || !q.data ? <ErrorState onRetry={() => void q.refetch()} /> : q.data.length === 0 ? (
         <EmptyCard icon="attendance" title={t('no_sessions')} body={t('no_sessions_body')} />

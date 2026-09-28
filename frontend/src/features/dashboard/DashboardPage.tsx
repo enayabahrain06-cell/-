@@ -5,7 +5,7 @@ import { Link } from 'react-router-dom'
 import { dashboardApi, type DashboardData, type LocationStatus, type TodaySession } from '../../api/dashboard'
 import { useAuth } from '../../app/AuthContext'
 import Icon from '../../components/Icon'
-import { Notice, SURFACE } from '../../components/ui'
+import { buttonClass, ErrorState, Notice, SURFACE, ROW_MAIN } from '../../components/ui'
 import { formatDate, formatHijri, formatMoney, formatNumber, formatPercent, formatTime, formatWeekday } from '../../lib/format'
 import { RecordPaymentDialog } from '../payments/PaymentDialogs'
 import AgeDonut from './AgeDonut'
@@ -49,7 +49,7 @@ export default function DashboardPage() {
             <button
               type="button"
               onClick={() => void query.refetch()}
-              className="inline-flex items-center gap-1.5 rounded-lg border border-white/20 bg-white/10 px-3 py-1.5 text-sm text-white hover:bg-white/15"
+              className={buttonClass('onDeepGhost')}
             >
               <Icon name="refresh" className={`size-4 ${query.isFetching ? 'motion-safe:animate-spin' : ''}`} />
               {t('refresh')}
@@ -61,12 +61,7 @@ export default function DashboardPage() {
       {query.isLoading ? (
         <Skeleton />
       ) : query.isError || !query.data ? (
-        <div role="alert" className="rounded-2xl border border-danger/25 bg-danger/5 p-6 text-center text-danger">
-          <p>{t('error')}</p>
-          <button type="button" onClick={() => void query.refetch()} className="mt-3 rounded-lg bg-white px-3 py-1.5 text-sm font-medium text-ink shadow-sm">
-            {t('retry')}
-          </button>
-        </div>
+        <ErrorState message={t('error')} onRetry={() => void query.refetch()} />
       ) : (
         <Content data={query.data} locale={locale} />
       )}
@@ -115,18 +110,19 @@ function Content({ data, locale }: { data: DashboardData; locale: string }) {
         )}
       </section>
 
-      {/* Rows in reading order, wide widget first: alerts | today, attendance | ages, memorization | fees, activity | coming up.
-          1 column on phones, 2 on tablet and laptop (the chart and the last card span both), 12-column spans from 2xl.
-          items-start: each card is as tall as its content instead of stretching to its neighbour. */}
-      <div className="grid items-start gap-6 md:grid-cols-2 2xl:grid-cols-12">
+      {/* Rows pair cards of similar height so a stretched card is never left mostly empty.
+          md–2xl (2 columns): alerts | today, attendance (both columns), ages | fees, coming up (both columns), memorization | activity.
+          2xl (12 columns): alerts | today, attendance | ages, fees | coming up, memorization | activity.
+          Cards in a row stretch to the same height (*:*:h-full). 1 column on phones. */}
+      <div className="grid gap-5 *:*:h-full md:grid-cols-2 2xl:grid-cols-12">
         <div className="min-w-0 2xl:col-span-7"><AlertsCard /></div>
         <div className="min-w-0 2xl:col-span-5"><TodayList sessions={data.today} locale={locale} /></div>
         <div className="min-w-0 md:col-span-2 2xl:col-span-8"><AttendanceChart days={data.attendance_chart} /></div>
         <div className="min-w-0 2xl:col-span-4"><AgeDonut data={data.age_distribution} /></div>
-        <div className="min-w-0 2xl:col-span-6"><MemorizationCard /></div>
         <div className="min-w-0 2xl:col-span-6"><FeesCard /></div>
-        <div className="min-w-0 2xl:col-span-7"><ActivityCard /></div>
-        <div className="min-w-0 md:col-span-2 2xl:col-span-5"><UpcomingCard /></div>
+        <div className="min-w-0 md:col-span-2 2xl:col-span-6"><UpcomingCard /></div>
+        <div className="min-w-0 2xl:col-span-6"><MemorizationCard /></div>
+        <div className="min-w-0 2xl:col-span-6"><ActivityCard /></div>
       </div>
     </>
   )
@@ -247,7 +243,7 @@ function TodayList({ sessions, locale }: { sessions: TodaySession[]; locale: str
                   <p className="font-semibold text-ink">{formatTime(s.start_time, locale)}</p>
                   <p>{formatTime(s.end_time, locale)}</p>
                 </div>
-                <div className="min-w-0 flex-1">
+                <div className={ROW_MAIN}>
                   {canLessons ? (
                     <Link to={`/lessons/${s.lesson_id}`} dir="auto" className="block truncate text-start font-medium text-ink hover:text-brand-700">{s.lesson}</Link>
                   ) : (
@@ -284,8 +280,8 @@ function SessionAction({ session: s, locale }: { session: TodaySession; locale: 
 
   if (!s.attendance_taken) {
     return canRecord ? (
-      <Link to={`/attendance/${s.id}`} className="inline-flex items-center gap-1 rounded-full bg-brand-600 px-3 py-1 text-xs font-semibold text-white hover:bg-brand-700">
-        <Icon name="attendance" className="size-3.5" />
+      <Link to={`/attendance/${s.id}`} className={buttonClass('primary', 'shrink-0')}>
+        <Icon name="attendance" className="size-4" />
         {t('today.take_attendance')}
       </Link>
     ) : (
@@ -318,9 +314,9 @@ function Skeleton() {
       <div className="grid grid-cols-2 gap-3 md:grid-cols-3 2xl:grid-cols-6">
         {Array.from({ length: 6 }).map((_, i) => <div key={i} className="h-28 animate-pulse rounded-2xl bg-white/70" />)}
       </div>
-      <div className="grid gap-6 lg:grid-cols-5">
-        <div className="h-72 animate-pulse rounded-2xl bg-white/70 lg:col-span-3" />
-        <div className="h-72 animate-pulse rounded-2xl bg-white/70 lg:col-span-2" />
+      <div className="grid gap-5 md:grid-cols-2">
+        <div className="h-72 animate-pulse rounded-2xl bg-white/70" />
+        <div className="h-72 animate-pulse rounded-2xl bg-white/70" />
       </div>
     </div>
   )

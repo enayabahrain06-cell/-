@@ -64,15 +64,17 @@ Forbidden in TSX: Tailwind default palettes (`stone-*`, `gray-*`, `slate-*`, `sk
 ### Typography
 
 - UI face `font-sans` (IBM Plex Sans Arabic). English switches to Inter automatically.
-- Display face `font-display` (Amiri) is only for page titles (`h1`) and brand text.
-- Quran text uses `font-quran` only.
-- Scale: page title `text-3xl` (`sm:text-4xl` on auth/public hero only); card title `text-base font-semibold`; modal title `text-lg font-semibold`; body `text-sm`; meta `text-xs`; KPI numbers `text-2xl`–`text-3xl font-semibold tabular-nums`.
+- Display face `font-display` (Amiri) is only for page titles (`h1`) and brand text. Section headings (`h2`) and KPI numbers are never display face. Exceptions: the student name on the certificate verification card, and exam question prompts (Arabic question text in the editor, detail and player).
+- Quran text uses `font-quran` only, with `lang="ar" dir="rtl"`. This covers verse answers, verse options and verse inputs in exams, not only display quotes. Never put verses in `font-display`: in the English UI `font-display` switches to Inter bold.
+- Scale: page title `text-3xl` (`sm:text-4xl` on auth/public hero only); page section heading `text-lg font-semibold` (`text-xl font-semibold` for a public confirmation card); card title `text-base font-semibold`; modal title `text-lg font-semibold`; body `text-sm`; meta `text-xs`; KPI numbers `text-2xl`–`text-3xl font-semibold tabular-nums`.
 - Numbers use `tabular-nums` and go through `formatNumber` / `formatDate` from `lib/format.ts`.
 
 ### Spacing
 
 - Page stack `space-y-5`. Tab panels and sub-sections under a page, and the inside of a card: `space-y-4`. Form grids `gap-3` or `gap-4`.
 - Card padding `p-4 sm:p-5`. Filter bar `p-4`. Table cells `px-4 py-3`. Modal sections `px-5 py-4`.
+- Control height: buttons (`buttonClass`), `inputClass("md")`, `SearchInput` and `SelectField` are all `min-h-10` (40px) so filter rows line up. Compact in-row buttons pass `py-1`/`py-1.5` and keep their size. The large 50px `FormField`/`Button` pair is for auth and public forms.
+- `FilterBar` layouts: `stack` (default, flex, stacks on phones), `grid` (the page passes its own `sm:`/`lg:`/`xl:grid-cols-*`; move templates with 5+ columns to `xl:`, since at 1024–1279px the content is only about 690–940px wide), `row` (one wrapping row at every width, for date steppers).
 - Main gutter and width come from `AppLayout` (`px-4 sm:px-6 lg:px-8`, `max-w-7xl`). Pages must not add their own outer padding or width cap.
 
 ### Radius, border, shadow
@@ -83,19 +85,24 @@ Forbidden in TSX: Tailwind default palettes (`stone-*`, `gray-*`, `slate-*`, `sk
 - `rounded-full`: badges, avatars, pills
 - Surfaces use the `SURFACE` constant from `components/ui.tsx` (`rounded-2xl border border-ink/8 bg-white shadow-sm`) or `Card`. Padding: `p-4 sm:p-5` for content cards, `p-4` for filter bars and list items, `p-6` only for the centred single-form cards on public pages.
 - Shadow `shadow-sm` on surfaces, `shadow-2xl` only for modals and the drawer.
+- Floating layers (dropdown listboxes, chart tooltips, the sticky save bar) use `shadow-lg` with `border-ink/10` (the sticky bar may use `border-gold-500/30`).
+- Whole-card links (dashboard KPI tiles, report catalog) lift on hover: `hover:border-brand-600/30 hover:shadow-md`, plus the standard focus outline.
+- Compact tables inside a `Card` (summaries, chart "show as table" views) sit in `TableWrap` or `overflow-x-auto`, with a head row of `border-b border-ink/10 text-ink/55` and `py-2` cells. Full list tables use `TABLE_HEAD` / `TABLE_HEAD_STICKY` and `px-4 py-3`.
+- Exceptions: `HonorDisplayPage` is a wall-screen TV view on `deep` and may use `rounded-3xl` and oversized display type. The certificate thumbnail in `certificates/shared.tsx` is a miniature certificate and may use `text-[8px]`–`text-[11px]`.
 
 ### Icons
 
 - Use `components/Icon.tsx` (24px stroke paths). Sizes: `size-4` inline with text, `size-5` nav and icon buttons.
 - Do not use emoji or text glyphs (`✕`, `+`, `›`) as icons in new code. Existing `+ label` button text is tolerated until replaced.
 - Directional icons flip with `rtl:rotate-180` / `ltr:rotate-180`.
+- Vertical moves (reorder up/down, expand/collapse) use `chevron` with `-rotate-90` / `rotate-90`. They do not flip with direction.
 
 ### States
 
 | State | Rule |
 |---|---|
 | hover | surfaces `hover:bg-ink/5`; brand `hover:bg-brand-800`; rows `hover:bg-brand-50/40` |
-| focus | inputs `focus:border-brand-500 focus:ring-4 focus:ring-brand-100`; buttons/links `focus-visible:outline-2 focus-visible:outline-brand-500` |
+| focus | inputs `focus:border-brand-500 focus:ring-4 focus:ring-brand-100`; buttons/links `focus-visible:outline-2 focus-visible:outline-brand-500`. A base rule in `index.css` gives every `a`, `button`, `summary`, `[role=button]` and `[tabindex]` the same outline by default, so small text and icon buttons are never focus-less |
 | disabled | `disabled:cursor-not-allowed disabled:opacity-60` (secondary `opacity-50`) |
 | loading | `StarSpinner` inside the button with `aria-busy` |
 | invalid | `aria-invalid` + `border-danger/60` + message wired by `aria-describedby` |

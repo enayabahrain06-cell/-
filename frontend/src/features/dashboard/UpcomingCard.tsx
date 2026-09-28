@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router-dom'
 import { dashboardFeedApi, type UpcomingItem, type UpcomingType } from '../../api/dashboard-feed'
 import Icon from '../../components/Icon'
-import { Badge, type Tone, SURFACE } from '../../components/ui'
+import { Badge, buttonClass, type Tone, SURFACE } from '../../components/ui'
 import { EmptyState } from '../../components/ornaments'
 import { formatDate, formatNumber, formatWeekday } from '../../lib/format'
 import { useDashboardFilters } from './useDashboardFilters'
@@ -129,7 +129,7 @@ export function CardError({ onRetry }: { onRetry: () => void }) {
   return (
     <div role="alert" className="m-4 rounded-xl border border-danger/25 bg-danger/5 p-4 text-center text-sm text-danger">
       <p>{t('error')}</p>
-      <button type="button" onClick={onRetry} className="mt-2 rounded-lg bg-white px-3 py-1 text-xs font-medium text-ink shadow-sm">
+      <button type="button" onClick={onRetry} className={buttonClass('secondary', 'mt-2')}>
         {t('retry')}
       </button>
     </div>

@@ -5,7 +5,7 @@ import type { AgeBand, AgeDistribution } from '../../api/dashboard'
 import Icon from '../../components/Icon'
 import { EmptyState } from '../../components/ornaments'
 import { formatNumber, formatPercent } from '../../lib/format'
-import { SURFACE } from '../../components/ui'
+import { SURFACE, TableWrap } from '../../components/ui'
 
 /**
  * Ordinal one-hue ramp (brand green, light → dark = young → old). Validated with the dataviz
@@ -49,24 +49,26 @@ export default function AgeDonut({ data }: { data: AgeDistribution }) {
       {data.total === 0 ? (
         <EmptyState size="sm" icon="students" title={t('age.empty')} />
       ) : asTable ? (
-        <table className="mt-4 w-full text-sm">
-          <thead>
-            <tr className="border-b border-ink/10 text-ink/55">
-              <th className="py-2 text-start font-medium">{t('age.age')}</th>
-              <th className="py-2 text-end font-medium">{t('age.students')}</th>
-              <th className="py-2 text-end font-medium">{t('age.share')}</th>
-            </tr>
-          </thead>
-          <tbody>
-            {bands.map((b) => (
-              <tr key={b.key} className="border-b border-ink/5 last:border-0">
-                <td className="py-2 text-ink">{b.label}</td>
-                <td className="py-2 text-end tabular-nums text-ink/80">{n(b.count)}</td>
-                <td className="py-2 text-end tabular-nums text-ink/80">{pct(b.count)}</td>
+        <TableWrap className="mt-4">
+          <table className="w-full text-sm">
+            <thead>
+              <tr className="border-b border-ink/10 text-ink/55">
+                <th className="py-2 text-start font-medium">{t('age.age')}</th>
+                <th className="py-2 text-end font-medium">{t('age.students')}</th>
+                <th className="py-2 text-end font-medium">{t('age.share')}</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {bands.map((b) => (
+                <tr key={b.key} className="border-b border-ink/5 last:border-0">
+                  <td className="py-2 text-ink">{b.label}</td>
+                  <td className="py-2 text-end tabular-nums text-ink/80">{n(b.count)}</td>
+                  <td className="py-2 text-end tabular-nums text-ink/80">{pct(b.count)}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </TableWrap>
       ) : (
         <div className="mt-2 flex flex-1 flex-col items-center gap-4 sm:flex-row lg:flex-col xl:flex-row">
           <div className="relative size-40 shrink-0" dir="ltr">

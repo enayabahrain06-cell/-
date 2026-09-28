@@ -194,7 +194,7 @@ function ParticipantsTab({ c, onChange }: { c: CompetitionDetail; onChange: () =
   return (
     <Card>
       <CardTitle actions={!c.published && <PrimaryButton onClick={() => setAdding(true)}>+ {t('competitions.add_participants')}</PrimaryButton>}>{t('competitions.participants')} ({formatNumber(active.length, i18n.language)})</CardTitle>
-      {q.isLoading ? <LoadingState /> : active.length === 0 ? <EmptyState size="sm" icon="students" title={t('competitions.no_participants')} /> : (
+      {q.isLoading ? <LoadingState /> : q.isError ? <ErrorState onRetry={() => void q.refetch()} /> : active.length === 0 ? <EmptyState size="sm" icon="students" title={t('competitions.no_participants')} /> : (
         <ul className="divide-y divide-ink/6">
           {active.map((p) => p.student && (
             <li key={p.id} className="flex items-center gap-3 py-2">
@@ -227,7 +227,7 @@ function AddParticipantsDialog({ c, onClose, onDone }: { c: CompetitionDetail; o
       footer={<><SecondaryButton onClick={result ? onDone : onClose}>{t('form.cancel')}</SecondaryButton><PrimaryButton disabled={!picked.length} loading={save.isPending} onClick={() => save.mutate()}>{t('competitions.register_selected', { n: formatNumber(picked.length, i18n.language) })}</PrimaryButton></>}>
       {result && <Notice tone="info">{result}</Notice>}
       <TextInput label={t('competitions.search')} value={search} onChange={(e) => setSearch(e.target.value)} />
-      {q.isLoading ? <LoadingState /> : (
+      {q.isLoading ? <LoadingState /> : q.isError ? <ErrorState onRetry={() => void q.refetch()} /> : (
         <ul className="max-h-96 divide-y divide-ink/6 overflow-y-auto rounded-xl border border-ink/10">
           {(q.data ?? []).map((row) => (
             <li key={row.student.id}>
@@ -323,7 +323,7 @@ function ScoreRow({ p, sheet, competitionId, locale }: { p: JudgingSheet['partic
       <div className="mb-2 flex items-center gap-3">
         <Avatar name={p.student.full_name} initial={p.student.initial} src={p.student.photo_url} size="sm" />
         <p dir="auto" className="flex-1 font-semibold text-ink">{p.student.full_name}</p>
-        <span className="text-sm text-ink/60">{t('competitions.total')} <span className="font-display text-lg tabular-nums text-brand-700">{formatNumber(total, locale, { maximumFractionDigits: 1 })}</span></span>
+        <span className="text-sm text-ink/60">{t('competitions.total')} <span className="text-lg font-semibold tabular-nums text-brand-700">{formatNumber(total, locale, { maximumFractionDigits: 1 })}</span></span>
         {p.total !== null && !save.isPending && <Badge tone="brand"><Icon name="check" className="size-3.5" /> {t('competitions.saved')}</Badge>}
       </div>
       {error && <Notice tone="error">{error}</Notice>}
@@ -354,26 +354,26 @@ function ResultsTab({ c, onPublish }: { c: CompetitionDetail; onPublish: () => v
     <Card>
       <CardTitle actions={!c.published && <PrimaryButton onClick={onPublish} disabled={!q.data?.some((r) => r.final !== null)}><Icon name="trophy" className="size-4" /> {t('competitions.actions.publish')}</PrimaryButton>}>{t('competitions.standings')}</CardTitle>
       <p className="mb-3 text-xs text-ink/55">{c.published ? t('competitions.published_note', { when: '' }) : t('competitions.hidden_note')}</p>
-      {q.isLoading ? <LoadingState /> : !q.data || q.data.length === 0 ? <EmptyState size="sm" icon="trophy" title={t('competitions.no_scores')} /> : (
+      {q.isLoading ? <LoadingState /> : q.isError ? <ErrorState onRetry={() => void q.refetch()} /> : !q.data || q.data.length === 0 ? <EmptyState size="sm" icon="trophy" title={t('competitions.no_scores')} /> : (
         <TableWrap>
           <table className="w-full text-sm">
             <thead className={TABLE_HEAD}>
               <tr>
-                <th className="px-3 py-2 text-start">{t('honor.rank')}</th>
-                <th className="px-3 py-2 text-start">{t('honor.student')}</th>
-                {c.rounds.map((r) => <th key={r.id} className="hidden px-3 py-2 text-start sm:table-cell" dir="auto">{r.name}</th>)}
-                <th className="px-3 py-2 text-start">{t('competitions.final')}</th>
-                <th className="hidden px-3 py-2 text-start md:table-cell">{t('competitions.judged')}</th>
+                <th className="px-4 py-3 text-start font-medium">{t('honor.rank')}</th>
+                <th className="px-4 py-3 text-start font-medium">{t('honor.student')}</th>
+                {c.rounds.map((r) => <th key={r.id} className="hidden px-4 py-3 text-start font-medium sm:table-cell" dir="auto">{r.name}</th>)}
+                <th className="px-4 py-3 text-start font-medium">{t('competitions.final')}</th>
+                <th className="hidden px-4 py-3 text-start font-medium md:table-cell">{t('competitions.judged')}</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-ink/6">
               {q.data.map((r) => (
                 <tr key={r.participant_id}>
-                  <td className="px-3 py-2 font-semibold tabular-nums">{r.rank !== null && r.rank <= 3 && <Icon name="medal" className={`inline size-4 ${MEDAL[r.rank - 1]}`} />} {r.rank !== null ? formatNumber(r.rank, locale) : '—'}</td>
-                  <td className="px-3 py-2"><span dir="auto">{r.student.full_name}</span></td>
-                  {c.rounds.map((rd) => <td key={rd.id} className="hidden px-3 py-2 tabular-nums sm:table-cell">{n(r.rounds[String(rd.id)])}</td>)}
-                  <td className="px-3 py-2 font-semibold tabular-nums text-brand-700">{n(r.final)}</td>
-                  <td className="hidden px-3 py-2 tabular-nums text-ink/60 md:table-cell">{formatNumber(r.judged, locale)}</td>
+                  <td className="px-4 py-3 font-semibold tabular-nums">{r.rank !== null && r.rank <= 3 && <Icon name="medal" className={`inline size-4 ${MEDAL[r.rank - 1]}`} />} {r.rank !== null ? formatNumber(r.rank, locale) : '—'}</td>
+                  <td className="px-4 py-3"><span dir="auto">{r.student.full_name}</span></td>
+                  {c.rounds.map((rd) => <td key={rd.id} className="hidden px-4 py-3 tabular-nums sm:table-cell">{n(r.rounds[String(rd.id)])}</td>)}
+                  <td className="px-4 py-3 font-semibold tabular-nums text-brand-700">{n(r.final)}</td>
+                  <td className="hidden px-4 py-3 tabular-nums text-ink/60 md:table-cell">{formatNumber(r.judged, locale)}</td>
                 </tr>
               ))}
             </tbody>

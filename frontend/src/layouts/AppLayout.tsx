@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { NavLink, Outlet, useLocation } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { useAuth } from '../app/AuthContext'
@@ -6,6 +6,7 @@ import { NAV_SECTIONS } from '../app/nav'
 import Icon from '../components/Icon'
 import LanguageSwitcher from '../components/LanguageSwitcher'
 import { LogoMark, OrnamentStrip } from '../components/ornaments'
+import { useScrollLock } from '../components/useScrollLock'
 
 /** Staff shell: sidebar on desktop, drawer on mobile, header with language switcher and account. */
 export default function AppLayout() {
@@ -14,12 +15,22 @@ export default function AppLayout() {
   const [open, setOpen] = useState(false)
   const location = useLocation()
 
+  const menuButton = useRef<HTMLButtonElement>(null)
+  const closeButton = useRef<HTMLButtonElement>(null)
+
   useEffect(() => setOpen(false), [location.pathname])
+  useScrollLock(open)
   useEffect(() => {
     if (!open) return
+    // Focus moves into the drawer when it opens and back to the menu button when it closes.
+    closeButton.current?.focus()
+    const trigger = menuButton.current
     const onKey = (e: KeyboardEvent) => e.key === 'Escape' && setOpen(false)
     window.addEventListener('keydown', onKey)
-    return () => window.removeEventListener('keydown', onKey)
+    return () => {
+      window.removeEventListener('keydown', onKey)
+      trigger?.focus()
+    }
   }, [open])
 
   const sections = NAV_SECTIONS.filter((s) => can(...s.permissions))
@@ -32,7 +43,7 @@ export default function AppLayout() {
           to={s.path}
           end={s.path === '/'}
           className={({ isActive }) =>
-            `flex items-center gap-3 rounded-xl px-3 py-2.5 text-[0.94rem] font-medium transition ${
+            `flex min-h-10 items-center gap-3 rounded-xl px-3 py-2 text-[0.9375rem] font-medium transition ${
               isActive ? 'bg-white/12 text-white shadow-[inset_3px_0_0_var(--color-gold-500)] rtl:shadow-[inset_-3px_0_0_var(--color-gold-500)]' : 'text-white/75 hover:bg-white/6 hover:text-white'
             }`
           }
@@ -48,7 +59,7 @@ export default function AppLayout() {
     <div className="flex items-center gap-3 px-5 pb-2 pt-5">
       <LogoMark className="size-10" />
       <div className="min-w-0">
-        <p className="truncate font-display text-lg leading-tight text-gold-300">{t('common:app_name')}</p>
+        <p className="truncate font-display text-lg leading-normal text-gold-300">{t('common:app_name')}</p>
         <p className="truncate text-xs text-white/55">{t('common:authority')}</p>
       </div>
     </div>
@@ -70,7 +81,7 @@ export default function AppLayout() {
           <aside className="absolute inset-y-0 start-0 flex w-72 max-w-[85vw] flex-col overflow-y-auto bg-deep shadow-2xl">
             <div className="flex items-start justify-between">
               {brand}
-              <button type="button" onClick={() => setOpen(false)} className="m-3 rounded-lg p-2 text-white/80 hover:bg-white/10" aria-label={t('close_menu')}>
+              <button ref={closeButton} type="button" onClick={() => setOpen(false)} className="m-3 rounded-lg p-2 text-white/80 hover:bg-white/10" aria-label={t('close_menu')}>
                 <Icon name="close" />
               </button>
             </div>
@@ -81,7 +92,7 @@ export default function AppLayout() {
 
       <div className="flex min-w-0 flex-col">
         <header className="sticky top-0 z-30 flex items-center gap-3 border-b border-ink/8 bg-page/90 px-4 py-3 backdrop-blur sm:px-6">
-          <button type="button" onClick={() => setOpen(true)} className="rounded-lg p-2 text-ink hover:bg-ink/5 lg:hidden" aria-label={t('open_menu')}>
+          <button ref={menuButton} type="button" onClick={() => setOpen(true)} className="rounded-lg p-2 text-ink hover:bg-ink/5 lg:hidden" aria-label={t('open_menu')}>
             <Icon name="menu" />
           </button>
           <div className="ms-auto flex items-center gap-2 sm:gap-3">

@@ -8,7 +8,7 @@ import Avatar from '../../components/Avatar'
 import Icon from '../../components/Icon'
 import Pagination from '../../components/Pagination'
 import SelectField from '../../components/SelectField'
-import { Badge, ErrorState, SearchInput, SURFACE, TABLE_HEAD, TableWrap } from '../../components/ui'
+import { Badge, ErrorState, FilterBar, SearchInput, SURFACE, TABLE_HEAD, TableWrap } from '../../components/ui'
 import { EmptyState, PageBand, StarSpinner } from '../../components/ornaments'
 import { formatNumber, formatPercent } from '../../lib/format'
 import { initialOf } from './initial'
@@ -54,7 +54,7 @@ export default function TeachersList() {
     <div className="space-y-5">
       <PageBand title={t('title')} subtitle={query.data ? t('subtitle', { n: formatNumber(query.data.meta.total, locale) }) : undefined} />
 
-      <section aria-label={t('filters.label')} className={`${SURFACE} grid gap-3 p-4 sm:grid-cols-2 lg:grid-cols-4`}>
+      <FilterBar layout="grid" label={t('filters.label')} className="sm:grid-cols-2 lg:grid-cols-4">
         <SearchInput id="teacher-search" className="sm:col-span-2" label={t('search')} value={search} onChange={(e) => setSearch(e.target.value)} />
         {bothTracks && (
           <SelectField
@@ -83,7 +83,7 @@ export default function TeachersList() {
             </button>
           </div>
         )}
-      </section>
+      </FilterBar>
 
       {query.isLoading ? (
         <div className="grid place-items-center py-20"><StarSpinner className="size-10 text-brand-600" /></div>

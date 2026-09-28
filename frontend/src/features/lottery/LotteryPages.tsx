@@ -10,7 +10,7 @@ import Avatar from '../../components/Avatar'
 import Icon from '../../components/Icon'
 import SelectField from '../../components/SelectField'
 import { EmptyState, OrnamentDivider, PageBand } from '../../components/ornaments'
-import { Badge, buttonClass, Card, CardTitle, ErrorState, LoadingState, Modal, Notice, PrimaryButton, SecondaryButton, TextInput, type Tone, SURFACE, inputClass, EmptyCard } from '../../components/ui'
+import { Badge, buttonClass, Card, CardTitle, ErrorState, LoadingState, Modal, Notice, PrimaryButton, SecondaryButton, TextInput, type Tone, SURFACE, inputClass, EmptyCard, ROW_MAIN } from '../../components/ui'
 import { formatDate, formatNumber } from '../../lib/format'
 import { GENDER_TONE } from '../lessons/LessonsHomePage'
 
@@ -105,7 +105,7 @@ function LotteryDialog({ lottery, onClose, onSaved }: { lottery?: LotteryDetail;
                 return (
                   <li key={l.id} className="flex flex-wrap items-center gap-3 px-3 py-2 text-sm">
                     <input type="checkbox" className="size-4 accent-brand-600" aria-label={t('form.include')} checked={r.on} onChange={(e) => setRows({ ...rows, [l.id]: { ...r, on: e.target.checked } })} />
-                    <span dir="auto" className="min-w-0 flex-1 text-ink">{l.name}<span className="block text-xs text-ink/50">{l.teacher?.name}</span></span>
+                    <span dir="auto" className={`${ROW_MAIN} text-ink`}>{l.name}<span className="block text-xs text-ink/50">{l.teacher?.name}</span></span>
                     <label className="flex items-center gap-1 text-xs text-ink/60">{t('form.capacity')}
                       <input type="number" min={1} max={500} value={r.capacity} disabled={!r.on} onChange={(e) => setRows({ ...rows, [l.id]: { ...r, capacity: Number(e.target.value) } })} className={inputClass('sm', 'w-16 text-center tabular-nums')} />
                     </label>

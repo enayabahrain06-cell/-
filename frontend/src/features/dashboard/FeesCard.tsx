@@ -111,7 +111,7 @@ function OverdueRow({ s, locale, canRemind }: { s: OverdueStudent; locale: strin
             onClick={() => remind.mutate()}
             disabled={!s.has_phone || remind.isPending || sent}
             title={!s.has_phone ? t('fees.no_phone') : undefined}
-            className="inline-flex shrink-0 items-center gap-1 rounded-lg border border-ink/10 bg-white px-2.5 py-1 text-xs font-medium text-ink/75 hover:bg-ink/5 disabled:cursor-not-allowed disabled:opacity-55"
+            className="inline-flex shrink-0 items-center gap-1 rounded-lg border border-ink/10 bg-white px-3 py-1.5 text-xs font-medium text-ink/75 hover:bg-ink/5 disabled:cursor-not-allowed disabled:opacity-55"
           >
             <Icon name={sent ? 'check' : 'messages'} className="size-3.5" />
             {remind.isPending ? t('fees.reminding') : sent ? t('fees.reminded') : t('fees.remind')}

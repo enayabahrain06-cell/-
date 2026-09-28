@@ -49,6 +49,8 @@
     "no_upcoming": "لا توجد حلقات قادمة.",
     "empty_roster": "لا يوجد طلاب في الحلقة بعد.",
     "conflicts": "تعارضات القاعة",
+    "conflicts_more": "و{{n}} غيرها",
+    "conflicts_show_all": "عرض الكل ({{n}})",
     "no_conflicts": "لا توجد تعارضات.",
     "full": "الحلقة ممتلئة",
     "hall_changed_on": "قاعة مختلفة",

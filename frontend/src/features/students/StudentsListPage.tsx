@@ -6,7 +6,7 @@ import { lessonsApi, studentsApi, type StudentFilters, type StudentSummary } fro
 import { useAuth } from '../../app/AuthContext'
 import Avatar from '../../components/Avatar'
 import Icon from '../../components/Icon'
-import { SearchInput, TableWrap, TABLE_HEAD, SURFACE } from '../../components/ui'
+import { FilterBar, SearchInput, TableWrap, TABLE_HEAD, SURFACE } from '../../components/ui'
 import Pagination from '../../components/Pagination'
 import SelectField from '../../components/SelectField'
 import { EmptyState, PageBand, StarSpinner } from '../../components/ornaments'
@@ -62,7 +62,7 @@ export default function StudentsListPage() {
       <PageBand title={t('title')} subtitle={query.data ? t('subtitle', { n: n(query.data.meta.total) }) : undefined} />
 
       {/* Filters: one row above the list */}
-      <section aria-label={t('filters.clear')} className={`${SURFACE} grid gap-3 p-4 sm:grid-cols-2 lg:grid-cols-6`}>
+      <FilterBar layout="grid" label={t('filters.clear')} className="sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6">
         <SearchInput id="student-search" className="sm:col-span-2" label={t('search')} value={search} onChange={(e) => setSearch(e.target.value)} />
         {bothTracks && (
           <SelectField
@@ -103,7 +103,7 @@ export default function StudentsListPage() {
             { value: 'newest', label: `${t('filters.sort')}: ${t('filters.sort_newest')}` },
           ]}
         />
-        <div className="flex flex-wrap items-center gap-3 sm:col-span-2 lg:col-span-6">
+        <div className="flex flex-wrap items-center gap-3 sm:col-span-2 lg:col-span-3 xl:col-span-6">
           <SelectField
             label={t('filters.status')}
             hideLabel
@@ -129,7 +129,7 @@ export default function StudentsListPage() {
             </button>
           )}
         </div>
-      </section>
+      </FilterBar>
 
       {query.isLoading ? (
         <div className="grid place-items-center py-20"><StarSpinner className="size-10 text-brand-600" /></div>

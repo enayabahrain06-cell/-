@@ -8,7 +8,7 @@ import Icon from '../../components/Icon'
 import Pagination from '../../components/Pagination'
 import SelectField from '../../components/SelectField'
 import { PageBand } from '../../components/ornaments'
-import { Badge, ErrorState, FilterBar, LoadingState, Notice, PrimaryButton, SecondaryButton, SearchInput, Segmented, type Tone, SURFACE, EmptyCard } from '../../components/ui'
+import { Badge, buttonClass, ErrorState, FilterBar, LoadingState, Notice, PrimaryButton, SecondaryButton, SearchInput, Segmented, type Tone, SURFACE, EmptyCard } from '../../components/ui'
 import { formatDate, formatNumber, formatTime } from '../../lib/format'
 import { BookingDialog, HallFormDialog } from './HallDialogs'
 import LessonFormDialog from './LessonFormDialog'
@@ -110,7 +110,7 @@ function Halls() {
   return (
     <div className="space-y-4">
       {can('locations.manage') && <div className="flex justify-end"><PrimaryButton onClick={() => setEdit('new')}>+ {t('new_hall')}</PrimaryButton></div>}
-      {q.isLoading ? <LoadingState /> : !q.data?.length ? (
+      {q.isLoading ? <LoadingState /> : q.isError ? <ErrorState onRetry={() => void q.refetch()} /> : !q.data?.length ? (
         <EmptyCard icon="pin" title={t('empty_halls')} />
       ) : (
         <ul className="grid gap-3 *:min-w-0 md:grid-cols-2 xl:grid-cols-3">
@@ -126,8 +126,8 @@ function Halls() {
               </p>
               {h.address && <p dir="auto" className="mt-1 text-sm text-ink/55">{h.address}</p>}
               <div className="mt-3 flex flex-wrap gap-2">
-                <Link to={`/lessons/halls/${h.id}`} className="inline-flex items-center gap-1.5 rounded-xl border border-ink/12 px-3 py-1.5 text-sm text-ink/80 hover:bg-ink/5"><Icon name="attendance" className="size-4" />{t('halls.calendar')}</Link>
-                {h.map_link && <a href={h.map_link} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1.5 rounded-xl border border-ink/12 px-3 py-1.5 text-sm text-ink/80 hover:bg-ink/5"><Icon name="pin" className="size-4" />{t('halls.open_map')}</a>}
+                <Link to={`/lessons/halls/${h.id}`} className={buttonClass('secondary')}><Icon name="attendance" className="size-4" />{t('halls.calendar')}</Link>
+                {h.map_link && <a href={h.map_link} target="_blank" rel="noreferrer" className={buttonClass('secondary')}><Icon name="pin" className="size-4" />{t('halls.open_map')}</a>}
                 {can('locations.manage') && (
                   <>
                     <SecondaryButton onClick={() => setEdit(h)}><Icon name="edit" className="size-4" />{t('halls.edit')}</SecondaryButton>
@@ -158,7 +158,7 @@ function Bookings() {
   return (
     <div className="space-y-4">
       {can('locations.manage') && <div className="flex justify-end"><PrimaryButton onClick={() => setOpen(true)}>+ {t('new_booking')}</PrimaryButton></div>}
-      {q.isLoading ? <LoadingState /> : !q.data?.data.length ? (
+      {q.isLoading ? <LoadingState /> : q.isError ? <ErrorState onRetry={() => void q.refetch()} /> : !q.data?.data.length ? (
         <EmptyCard icon="attendance" title={t('empty_bookings')} />
       ) : (
         <>

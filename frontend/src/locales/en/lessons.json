@@ -49,6 +49,8 @@
     "no_upcoming": "No upcoming sessions.",
     "empty_roster": "No students in this circle yet.",
     "conflicts": "Hall conflicts",
+    "conflicts_more": "and {{n}} more",
+    "conflicts_show_all": "Show all ({{n}})",
     "no_conflicts": "No conflicts.",
     "full": "The circle is full",
     "hall_changed_on": "Different hall",

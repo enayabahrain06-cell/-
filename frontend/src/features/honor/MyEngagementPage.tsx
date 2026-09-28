@@ -54,7 +54,7 @@ export default function MyEngagementPage() {
                 <div className="flex items-center gap-4">
                   <span className="grid size-16 shrink-0 place-items-center rounded-full bg-gold-500/15"><Icon name="medal" className={`size-8 ${h.mine.rank_in_track && h.mine.rank_in_track <= 3 ? MEDAL[h.mine.rank_in_track - 1] : 'text-brand-600'}`} /></span>
                   <div className="min-w-0 flex-1 space-y-1">
-                    <p className="font-display text-xl text-ink">{t('my.rank_of', { n: n(h.mine.rank_in_track ?? 0) })}</p>
+                    <p className="text-2xl font-semibold tabular-nums text-ink">{t('my.rank_of', { n: n(h.mine.rank_in_track ?? 0) })}</p>
                     <p className="text-sm text-ink/60">{t('honor.points_n', { n: n(h.mine.points, 1) })}</p>
                     <ul className="flex flex-wrap gap-x-3 gap-y-1 text-xs text-ink/60">
                       {(['attendance', 'evaluation', 'memorization', 'bonus'] as const).map((k) => (
@@ -93,7 +93,7 @@ export default function MyEngagementPage() {
         <OrnamentDivider align="center" className="text-gold-500" />
 
         <section aria-labelledby="my-comp" className="space-y-3">
-          <h2 id="my-comp" className="font-display text-xl text-ink">{t('my.competitions')}</h2>
+          <h2 id="my-comp" className="text-lg font-semibold text-ink">{t('my.competitions')}</h2>
           {comps.isLoading ? <LoadingState /> : comps.data && (
             <div className="grid gap-3 md:grid-cols-2">
               {comps.data.open.map((c) => (
@@ -118,7 +118,7 @@ export default function MyEngagementPage() {
         </section>
 
         <section aria-labelledby="my-chal" className="space-y-3">
-          <h2 id="my-chal" className="font-display text-xl text-ink">{t('my.challenges')}</h2>
+          <h2 id="my-chal" className="text-lg font-semibold text-ink">{t('my.challenges')}</h2>
           {chals.isLoading ? <LoadingState /> : chals.data && (
             <div className="grid gap-3 md:grid-cols-2">
               {chals.data.mine.map((c) => (

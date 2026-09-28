@@ -95,21 +95,23 @@ function Diff({ row }: { row: AuditRow }) {
   const keys = Array.from(new Set([...Object.keys(row.old_values), ...Object.keys(row.new_values)]))
   if (keys.length === 0) return <p className="text-sm text-ink/55">{t('no_changes')}</p>
   return (
-    <table className="w-full text-xs">
-      <thead className="text-ink/55"><tr><th className="py-1 text-start font-medium">{t('field')}</th><th className="py-1 text-start font-medium">{t('before')}</th><th className="py-1 text-start font-medium">{t('after')}</th></tr></thead>
-      <tbody>
-        {keys.map((k) => {
-          const before = show(row.old_values[k])
-          const after = show(row.new_values[k])
-          return (
-            <tr key={k} className={before !== after ? 'text-ink' : 'text-ink/50'}>
-              <td dir="ltr" className="py-1 pe-3 text-start font-mono">{k}</td>
-              <td dir="auto" className="break-all py-1 pe-3">{before}</td>
-              <td dir="auto" className="break-all py-1 font-medium">{after}</td>
-            </tr>
-          )
-        })}
-      </tbody>
-    </table>
+    <div className="overflow-x-auto">
+      <table className="w-full text-xs">
+        <thead className="text-ink/55"><tr><th className="py-1 text-start font-medium">{t('field')}</th><th className="py-1 text-start font-medium">{t('before')}</th><th className="py-1 text-start font-medium">{t('after')}</th></tr></thead>
+        <tbody>
+          {keys.map((k) => {
+            const before = show(row.old_values[k])
+            const after = show(row.new_values[k])
+            return (
+              <tr key={k} className={before !== after ? 'text-ink' : 'text-ink/50'}>
+                <td dir="ltr" className="py-1 pe-3 text-start font-mono">{k}</td>
+                <td dir="auto" className="break-all py-1 pe-3">{before}</td>
+                <td dir="auto" className="break-all py-1 font-medium">{after}</td>
+              </tr>
+            )
+          })}
+        </tbody>
+      </table>
+    </div>
   )
 }

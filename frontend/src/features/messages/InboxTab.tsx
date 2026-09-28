@@ -7,7 +7,7 @@ import { useAuth } from '../../app/AuthContext'
 import Icon from '../../components/Icon'
 import Pagination from '../../components/Pagination'
 import { EmptyState } from '../../components/ornaments'
-import { Badge, Card, CardTitle, ErrorState, LoadingState, PrimaryButton, SecondaryButton, Segmented, type Tone } from '../../components/ui'
+import { Badge, Card, CardTitle, ErrorState, LoadingState, PrimaryButton, SecondaryButton, Segmented, type Tone, ROW_MAIN } from '../../components/ui'
 import { formatDateTime } from './status'
 
 const EXCUSE_TONE: Record<ExcuseRow['status'], Tone> = { applied: 'brand', pending: 'gold', approved: 'brand', rejected: 'muted' }
@@ -47,7 +47,7 @@ function InboxCard() {
             {q.data.data.map((m) => (
               <li key={m.id} className="flex flex-wrap items-start gap-3 py-3">
                 <span className="grid size-9 shrink-0 place-items-center rounded-full bg-brand-50 text-brand-700"><Icon name="messages" className="size-4" /></span>
-                <div className="min-w-0 flex-1 space-y-1">
+                <div className={`${ROW_MAIN} space-y-1`}>
                   <p className="flex flex-wrap items-center gap-2 text-sm">
                     <span dir="auto" className="font-medium text-ink">{m.sender ?? m.student?.full_name ?? t('inbox.unknown')}</span>
                     <span dir="ltr" className="text-xs tabular-nums text-ink/50">{m.from_phone}</span>
@@ -85,7 +85,7 @@ function ExcusesCard() {
         <ul className="divide-y divide-ink/6">
           {q.data.map((e) => (
             <li key={e.id} className="flex flex-wrap items-center gap-3 py-3">
-              <div className="min-w-0 flex-1 space-y-1">
+              <div className={`${ROW_MAIN} space-y-1`}>
                 <p className="flex flex-wrap items-center gap-2 text-sm">
                   <span dir="auto" className="font-medium text-ink">{e.student?.full_name}</span>
                   <Badge tone={EXCUSE_TONE[e.status]}>{t(`excuses.status.${e.status}`)}</Badge>

@@ -215,7 +215,7 @@ export function ChallengeDetailPage() {
                   <div className="flex items-center gap-2"><p dir="auto" className="truncate font-medium text-ink">{r.student.full_name}</p>{r.participant_status === 'completed' && <Icon name="check" className="size-4 text-brand-600" title={t('challenges.p_status.completed')} />}</div>
                   <ProgressBar value={r.progress_pct} label={`${r.student.full_name}: ${r.progress_pct}%`} tone={r.participant_status === 'completed' ? 'gold' : 'brand'} />
                 </div>
-                <span className="w-24 text-end text-sm tabular-nums text-ink/70">{formatNumber(r.progress_value, locale)} / {formatNumber(c.goal_value, locale)}</span>
+                <span className="shrink-0 text-end text-sm tabular-nums text-ink/70">{formatNumber(r.progress_value, locale)} / {formatNumber(c.goal_value, locale)}</span>
               </li>
             ))}
           </ol>

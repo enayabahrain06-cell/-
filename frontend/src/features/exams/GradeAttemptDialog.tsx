@@ -22,8 +22,8 @@ function renderAnswer(q: Question, a: Answer | undefined, t: (k: string) => stri
   switch (q.type) {
     case 'mcq': return <span dir="auto">{q.options?.find((o) => o.key === v.key)?.text ?? String(v.key)}</span>
     case 'true_false': return <span>{v.value ? t('questions.true') : t('questions.false')}</span>
-    case 'complete_verse': return <span dir="rtl" className="font-display text-lg">{String(v.text ?? '')}</span>
-    case 'order_verses': return <ol className="list-decimal ps-5">{(v.order as string[] | undefined ?? []).map((k) => <li key={k} dir="rtl" className="font-display">{q.options?.find((o) => o.key === k)?.text}</li>)}</ol>
+    case 'complete_verse': return <span dir="rtl" lang="ar" className="font-quran text-lg">{String(v.text ?? '')}</span>
+    case 'order_verses': return <ol className="list-decimal ps-5">{(v.order as string[] | undefined ?? []).map((k) => <li key={k} dir="rtl" lang="ar" className="font-quran">{q.options?.find((o) => o.key === k)?.text}</li>)}</ol>
     default: return a?.audio_url ? <AudioPlayer url={a.audio_url} /> : <span className="text-ink/45">{t('grading.no_answer')}</span>
   }
 }

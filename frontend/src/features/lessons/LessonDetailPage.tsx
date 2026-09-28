@@ -2,13 +2,13 @@ import { useState } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { Link, useParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import { lessonsApi } from '../../api/lessons'
+import { lessonsApi, type Conflict } from '../../api/lessons'
 import { parseApiError } from '../../api/client'
 import { useAuth } from '../../app/AuthContext'
 import Avatar from '../../components/Avatar'
 import Icon from '../../components/Icon'
 import { EmptyState, OrnamentDivider } from '../../components/ornaments'
-import { Badge, Card, CardTitle, ErrorState, LoadingState, Notice, SecondaryButton, SURFACE } from '../../components/ui'
+import { Badge, Card, CardTitle, ErrorState, LoadingState, Modal, Notice, ROW_MAIN, SecondaryButton, SURFACE } from '../../components/ui'
 import { formatDate, formatNumber, formatTime } from '../../lib/format'
 import AddStudentDialog from './AddStudentDialog'
 import ChangeLocationDialog from './ChangeLocationDialog'
@@ -45,7 +45,7 @@ export default function LessonDetailPage() {
 
       <header className={`${SURFACE} p-4 sm:p-5`}>
         <div className="flex flex-wrap items-start gap-3">
-          <div className="min-w-0 flex-1">
+          <div className={ROW_MAIN}>
             <div className="flex flex-wrap items-center gap-2">
               <h1 dir="auto" className="font-display text-3xl text-ink">{lesson.name}</h1>
               {lesson.gender && <Badge tone={GENDER_TONE[lesson.gender]}>{t(`gender.${lesson.gender}`)}</Badge>}
@@ -70,12 +70,7 @@ export default function LessonDetailPage() {
       </header>
 
       {notice && <Notice tone={notice.tone}>{notice.text}</Notice>}
-      {manage && conflicts.data && conflicts.data.length > 0 && (
-        <Notice tone="error">
-          <b>{t('detail.conflicts')}:</b>{' '}
-          {conflicts.data.map((c) => `${c.title} (${formatTime(c.start_time, locale)}–${formatTime(c.end_time, locale)}${c.date ? `, ${formatDate(c.date, locale, { day: 'numeric', month: 'short' })}` : ''})`).join(' · ')}
-        </Notice>
-      )}
+      {manage && conflicts.data && conflicts.data.length > 0 && <ConflictsNotice conflicts={conflicts.data} locale={locale} />}
 
       <div className="grid gap-5 lg:grid-cols-5">
         <Card className="lg:col-span-3">
@@ -116,5 +111,53 @@ export default function LessonDetailPage() {
       {adding && <AddStudentDialog lesson={lesson} canQuickEnroll={can('enrollment.quick')} onClose={() => setAdding(false)} onChanged={refresh} />}
       {change && <ChangeLocationDialog lesson={lesson} onClose={() => setChange(false)} onDone={(m) => { setChange(false); setNotice({ tone: 'success', text: m }) }} />}
     </div>
+  )
+}
+
+/** How many conflicts the notice lists before "Show all". */
+const CONFLICT_PREVIEW = 3
+
+/** Hall conflicts as a count, the first few, and the full list in a dialog (a long run-on sentence was unreadable). */
+function ConflictsNotice({ conflicts, locale }: { conflicts: Conflict[]; locale: string }) {
+  const { t } = useTranslation('lessons')
+  const [open, setOpen] = useState(false)
+  const n = (v: number) => formatNumber(v, locale)
+  const when = (c: Conflict) =>
+    `${c.date ? `${formatDate(c.date, locale, { day: 'numeric', month: 'short' })} · ` : ''}${formatTime(c.start_time, locale)}–${formatTime(c.end_time, locale)}`
+  const more = conflicts.length - CONFLICT_PREVIEW
+  const item = (c: Conflict, i: number) => (
+    <li key={`${c.kind}-${c.id}-${i}`} className="flex flex-wrap gap-x-2">
+      <span dir="auto" className="font-medium">{c.title}</span>
+      <span className="tabular-nums opacity-80">{when(c)}</span>
+    </li>
+  )
+
+  return (
+    <>
+      <Notice tone="error">
+        <p className="font-semibold">{t('detail.conflicts')} <span className="tabular-nums">({n(conflicts.length)})</span></p>
+        <ul className="mt-1 space-y-0.5">{conflicts.slice(0, CONFLICT_PREVIEW).map(item)}</ul>
+        {more > 0 && (
+          <p className="mt-1.5 flex flex-wrap items-center gap-x-3 gap-y-1">
+            <span>{t('detail.conflicts_more', { n: n(more) })}</span>
+            <button type="button" aria-haspopup="dialog" onClick={() => setOpen(true)} className="font-semibold underline underline-offset-2 hover:no-underline">
+              {t('detail.conflicts_show_all', { n: n(conflicts.length) })}
+            </button>
+          </p>
+        )}
+      </Notice>
+      {open && (
+        <Modal title={`${t('detail.conflicts')} (${n(conflicts.length)})`} onClose={() => setOpen(false)} wide>
+          <ul className="max-h-[60vh] divide-y divide-ink/6 overflow-y-auto text-sm text-ink">
+            {conflicts.map((c, i) => (
+              <li key={`${c.kind}-${c.id}-${i}`} className="flex flex-wrap justify-between gap-x-4 gap-y-0.5 py-2">
+                <span dir="auto" className="font-medium">{c.title}</span>
+                <span className="tabular-nums text-ink/60">{when(c)}</span>
+              </li>
+            ))}
+          </ul>
+        </Modal>
+      )}
+    </>
   )
 }

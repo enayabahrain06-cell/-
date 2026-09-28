@@ -8,7 +8,7 @@ import type { StudentSummary } from '../../api/students'
 import Avatar from '../../components/Avatar'
 import Icon from '../../components/Icon'
 import QuranRangePicker from '../../components/QuranRangePicker'
-import { Badge, Notice, SecondaryButton, TextInput, SURFACE } from '../../components/ui'
+import { Badge, Notice, SecondaryButton, TextInput, SURFACE, ROW_MAIN } from '../../components/ui'
 import { formatNumber } from '../../lib/format'
 import IssueDialog from './IssueDialog'
 import ScoreSelect from './ScoreSelect'
@@ -67,7 +67,7 @@ export default function ScoreGrid({ students, drafts, saved, suggestions, thresh
             <li key={st.id} className={`${SURFACE} p-4`}>
               <div className="flex flex-wrap items-center gap-3">
                 <Avatar name={st.full_name} initial={st.initial} src={st.photo_url} gender={st.gender} size="sm" />
-                <Link to={`/students/${st.id}`} dir="auto" className="min-w-0 flex-1 truncate font-semibold text-ink hover:text-brand-700">{st.full_name}</Link>
+                <Link to={`/students/${st.id}`} dir="auto" className={`${ROW_MAIN} truncate font-semibold text-ink hover:text-brand-700`}>{st.full_name}</Link>
                 {total !== null && <span className="rounded-lg bg-page px-2.5 py-1 text-sm tabular-nums text-ink/75">{t('total')}: <b className="text-ink">{formatNumber(total, locale)}</b>/{formatNumber(40, locale)}</span>}
                 {done && (
                   sent

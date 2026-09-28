@@ -40,7 +40,7 @@ export default function HallCalendarPage() {
           <SecondaryButton onClick={() => move(7)} aria-label={t('calendar.next')}><Icon name="chevron" className="size-4 rtl:rotate-180" /></SecondaryButton>
         </div>} />
       <p className="text-sm text-ink/60">{t('calendar.week', { date: formatDate(start, locale, { day: 'numeric', month: 'long', year: 'numeric' }) })}</p>
-      <ul className="grid gap-3 *:min-w-0 md:grid-cols-7">
+      <ul className="grid gap-3 *:min-w-0 md:grid-cols-4 xl:grid-cols-7">
         {days.map((d) => {
           const items = q.data.items.filter((i) => i.date === d)
           return (

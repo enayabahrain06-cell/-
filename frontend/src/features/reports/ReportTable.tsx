@@ -77,7 +77,7 @@ export default function ReportTable({ section, locale }: { section: ReportSectio
                     key={i}
                     scope="col"
                     aria-sort={active ? (sort.dir === 1 ? 'ascending' : 'descending') : 'none'}
-                    className={`whitespace-nowrap px-3 py-2.5 font-medium text-ink/60 ${numeric ? 'text-end' : 'text-start'}`}
+                    className={`whitespace-nowrap px-4 py-3 font-medium text-ink/60 ${numeric ? 'text-end' : 'text-start'}`}
                   >
                     <button type="button" onClick={() => toggle(i)} className={`inline-flex items-center gap-1 hover:text-ink ${numeric ? 'flex-row-reverse' : ''}`} title={t('sort_by', { column: h })}>
                       {h}
@@ -99,7 +99,7 @@ export default function ReportTable({ section, locale }: { section: ReportSectio
                     <td
                       key={ci}
                       dir={ltr ? 'ltr' : 'auto'}
-                      className={`px-3 py-2 ${numeric ? 'text-end tabular-nums' : 'text-start'} ${ci === primary ? 'font-medium text-ink' : 'text-ink/80'} ${ltr ? 'tabular-nums' : ''} ${type === 'text' && String(c ?? '').length > 60 ? 'min-w-[16rem] whitespace-normal' : 'whitespace-nowrap'}`}
+                      className={`px-4 py-3 ${numeric ? 'text-end tabular-nums' : 'text-start'} ${ci === primary ? 'font-medium text-ink' : 'text-ink/80'} ${ltr ? 'tabular-nums' : ''} ${type === 'text' && String(c ?? '').length > 60 ? 'min-w-[16rem] whitespace-normal' : 'whitespace-nowrap'}`}
                     >
                       {formatCell(c, type, locale)}
                     </td>

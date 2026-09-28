@@ -5,7 +5,7 @@ import OrnamentDivider from './OrnamentDivider'
 /** Deep emerald header band with a low-opacity gold girih pattern, for dashboards and home screens. */
 export default function PageBand({ title, subtitle, actions }: { title: ReactNode; subtitle?: ReactNode; actions?: ReactNode }) {
   return (
-    <header className="relative overflow-hidden rounded-2xl bg-deep px-5 py-6 text-white shadow-sm sm:px-7">
+    <header className="relative overflow-hidden rounded-2xl bg-deep px-5 py-5 text-white shadow-sm sm:px-7">
       <OrnamentPattern />
       <div className="relative flex flex-wrap items-end justify-between gap-4">
         <div className="min-w-0">

@@ -8,6 +8,15 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600;700&family=Amiri:wght@400;700&family=Amiri+Quran&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <script>
+      // Fetch the UI faces as soon as the font CSS is in, not when the first heading renders a second
+      // later, so the page header does not reflow when Amiri / Plex / Inter swap in (layout shift).
+      // Arabic + Latin sample text pulls both unicode-range subsets. Rendering never waits for this.
+      if (document.fonts && document.fonts.load) {
+        ['400 1em "IBM Plex Sans Arabic"', '500 1em "IBM Plex Sans Arabic"', '600 1em "IBM Plex Sans Arabic"', '700 1em "IBM Plex Sans Arabic"', '400 1em Amiri', '400 1em Inter', '500 1em Inter', '600 1em Inter', '700 1em Inter']
+          .forEach(function (f) { document.fonts.load(f, 'بسم Aa').catch(function () {}) })
+      }
+    </script>
     <title>نظام أهل القرآن</title>
   </head>
   <body>

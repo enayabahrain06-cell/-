@@ -81,7 +81,7 @@ export function InvoiceDialog({ onClose, onDone }: { onClose: () => void; onDone
   const { t } = useTranslation('payments')
   const invalidate = useInvalidate()
   const [student, setStudent] = useState<StudentSummary | null>(null)
-  const [form, setForm] = useState({ amount: '', description: '', due_date: new Date(Date.now() + 7 * 864e5).toISOString().slice(0, 10), term: '' })
+  const [form, setForm] = useState(() => ({ amount: '', description: '', due_date: new Date(Date.now() + 7 * 864e5).toISOString().slice(0, 10), term: '' }))
   const [error, setError] = useState<string | null>(null)
   const save = useMutation({
     mutationFn: () => paymentsApi.createInvoice({ student_id: student!.id, amount: toLatinDigits(form.amount), description: form.description, due_date: form.due_date, term: form.term || undefined }),

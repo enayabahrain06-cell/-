@@ -7,7 +7,7 @@ import { parseApiError } from '../../api/client'
 import Avatar from '../../components/Avatar'
 import Icon from '../../components/Icon'
 import { EmptyState } from '../../components/ornaments'
-import { Badge, buttonClass, Card, CardTitle, ErrorState, LoadingState, Modal, Notice, PrimaryButton, SecondaryButton, TextArea, TextInput, type Tone, SURFACE } from '../../components/ui'
+import { Badge, buttonClass, Card, CardTitle, ErrorState, LoadingState, Modal, Notice, PrimaryButton, SecondaryButton, TextArea, TextInput, type Tone, SURFACE, ROW_MAIN } from '../../components/ui'
 import { formatDate, formatNumber, formatPercent } from '../../lib/format'
 import { initialOf } from './initial'
 
@@ -77,7 +77,7 @@ export default function TeacherDetailView({ id }: { id: number }) {
                 {d.circles.map((c) => (
                   <li key={c.id}>
                     <Link to={`/lessons/${c.id}`} className="flex flex-wrap items-center gap-3 rounded-lg py-3 hover:bg-brand-50/40">
-                      <div className="min-w-0 flex-1">
+                      <div className={ROW_MAIN}>
                         <p dir="auto" className="truncate font-medium text-ink">{c.name}</p>
                         <p className="truncate text-xs text-ink/50">
                           <span dir="auto">{c.package}</span> · {c.days.map((day) => t(`detail.days.${day}`)).join('، ')} · {c.start_time}–{c.end_time}{c.location && <> · <span dir="auto">{c.location}</span></>}

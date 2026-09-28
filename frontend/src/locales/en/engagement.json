@@ -40,6 +40,8 @@
     "badges_awarded": "{{n}} badges this month",
     "tab_board": "Board",
     "tab_badges": "Badges",
+    "view": "Board view",
+    "filters": "Board options",
     "honor_dialog": {
       "title": "Honor the top three for {{month}}",
       "body": "The month is closed first, so its ranking no longer changes.",

@@ -19,7 +19,7 @@ export default function FamilyCertificates() {
     <div className="space-y-5">
       {list.map((s) => (
         <section key={s.id} aria-labelledby={`certs-${s.id}`} className="space-y-3">
-          <h2 id={`certs-${s.id}`} className="flex items-center gap-2 font-display text-xl text-ink">
+          <h2 id={`certs-${s.id}`} className="flex items-center gap-2 text-lg font-semibold text-ink">
             <Avatar name={s.full_name} initial={s.initial} src={s.photo_url} gender={s.gender} size="sm" />
             <span dir="auto">{list.length > 1 || u?.student?.id !== s.id ? t('student.child_certificates', { name: s.full_name }) : t('student.title')}</span>
           </h2>

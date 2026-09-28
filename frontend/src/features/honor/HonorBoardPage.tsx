@@ -7,8 +7,8 @@ import { useAuth } from '../../app/AuthContext'
 import Avatar from '../../components/Avatar'
 import Icon from '../../components/Icon'
 import { OrnamentDivider, PageBand } from '../../components/ornaments'
-import { Badge, buttonClass, Card, CardTitle, ErrorState, LoadingState, Modal, Notice, PrimaryButton, SecondaryButton, Segmented, SURFACE, TABLE_HEAD, TableWrap, type Tone, inputClass, EmptyCard } from '../../components/ui'
-import { formatDate, formatNumber } from '../../lib/format'
+import { Badge, buttonClass, Card, CardTitle, ErrorState, FilterBar, LoadingState, Modal, Notice, PrimaryButton, SecondaryButton, Segmented, SURFACE, TABLE_HEAD, TableWrap, type Tone, inputClass, EmptyCard } from '../../components/ui'
+import { formatDate, formatNumber, formatPercent } from '../../lib/format'
 
 /** Categorical order from the validated palette: attendance, evaluation, memorization, bonus. */
 export const BREAKDOWN_COLORS = { attendance: '#2E8B57', evaluation: '#B8872E', memorization: '#3F74C0', bonus: '#B0413A' } as const
@@ -70,14 +70,14 @@ export default function HonorBoardPage() {
         }
       />
 
-      <div className="flex flex-wrap items-end gap-3">
-        <label className="text-sm text-ink/70">
-          <span className="mb-1 block font-medium">{t('honor.month')}</span>
-          <input type="month" value={period} max={currentMonth()} onChange={(e) => e.target.value && setPeriod(e.target.value)} className={inputClass('md')} />
+      <FilterBar label={t('honor.filters')}>
+        <label className="block min-w-0 sm:w-48">
+          <span className="mb-1.5 block text-sm font-medium text-ink/75">{t('honor.month')}</span>
+          <input type="month" value={period} max={currentMonth()} onChange={(e) => e.target.value && setPeriod(e.target.value)} className={inputClass('md', 'w-full')} />
         </label>
         {both && <Segmented name="honor-gender" label={t('honor.track')} value={gender} onChange={setGender} options={[{ value: 'male', label: t('display.boys') }, { value: 'female', label: t('display.girls') }]} />}
-        <Segmented name="honor-tab" label="" value={tab} onChange={setTab} options={[{ value: 'board', label: t('honor.tab_board') }, { value: 'badges', label: t('honor.tab_badges') }]} />
-      </div>
+        <Segmented name="honor-tab" label={t('honor.view')} value={tab} onChange={setTab} options={[{ value: 'board', label: t('honor.tab_board') }, { value: 'badges', label: t('honor.tab_badges') }]} />
+      </FilterBar>
 
       {notice && <Notice tone={notice.tone}>{notice.text}</Notice>}
       {manage && !displayKey && tab === 'board' && <p className="text-xs text-ink/50">{t('honor.tv_no_key')}</p>}
@@ -102,9 +102,9 @@ export default function HonorBoardPage() {
           ) : (
             <>
               {level === 'track' && <Podium rows={board.rows.slice(0, 3)} />}
-              <div className="grid gap-4 lg:grid-cols-3">
-                <Card className="min-w-0 lg:col-span-2">
-                  <CardTitle actions={<Segmented name="honor-level" size="sm" label="" value={level} onChange={setLevel} options={(['track', 'package', 'circle'] as const).map((v) => ({ value: v, label: t(`honor.level.${v}`) }))} />}>
+              <div className="grid items-start gap-5 xl:grid-cols-3">
+                <Card className="min-w-0 xl:col-span-2">
+                  <CardTitle actions={<Segmented name="honor-level" size="sm" label={t('honor.breakdown')} value={level} onChange={setLevel} options={(['track', 'package', 'circle'] as const).map((v) => ({ value: v, label: t(`honor.level.${v}`) }))} />}>
                     {t('honor.breakdown')}
                   </CardTitle>
                   <WhyLine weights={board.weights} />
@@ -159,7 +159,7 @@ function Podium({ rows }: { rows: HonorRow[] }) {
             <Avatar name={r.student?.full_name ?? ''} initial={r.student?.initial} src={r.student?.photo_url} size={i === 0 ? 'lg' : 'md'} />
             <p dir="auto" className="font-semibold text-ink">{r.student?.full_name}</p>
             <p dir="auto" className="text-xs text-ink/55">{r.lesson?.name}</p>
-            <p className="font-display text-2xl text-brand-700 tabular-nums">{formatNumber(r.points, i18n.language, { maximumFractionDigits: 1 })}</p>
+            <p className="text-2xl font-semibold tabular-nums text-brand-700">{formatNumber(r.points, i18n.language, { maximumFractionDigits: 1 })}</p>
             <p className="text-xs text-ink/50">{t('honor.place', { n: formatNumber(place, i18n.language) })}</p>
           </div>
         )
@@ -189,43 +189,42 @@ function BreakdownBar({ row }: { row: HonorRow }) {
 function RankTable({ rows, level }: { rows: HonorRow[]; level: 'track' | 'package' | 'circle' }) {
   const { t, i18n } = useTranslation('engagement')
   const n = (v: number, d = 0) => formatNumber(v, i18n.language, { maximumFractionDigits: d })
-  let lastGroup: string | undefined
+  const groupOf = (r?: HonorRow) => (level === 'circle' ? r?.lesson?.name : level === 'package' ? r?.package?.name : undefined)
   return (
     <TableWrap>
       <table className="w-full text-sm">
         <thead className={TABLE_HEAD}>
           <tr>
-            <th className="px-3 py-2 text-start">{t('honor.rank')}</th>
-            <th className="px-3 py-2 text-start">{t('honor.student')}</th>
-            <th className="hidden px-3 py-2 text-start md:table-cell">{t('honor.attendance')}</th>
-            <th className="hidden px-3 py-2 text-start md:table-cell">{t('honor.evaluation')}</th>
-            <th className="hidden px-3 py-2 text-start md:table-cell">{t('honor.new_ayahs')}</th>
-            <th className="px-3 py-2 text-start">{t('honor.points')}</th>
-            <th className="hidden px-3 py-2 text-start sm:table-cell">{t('honor.change')}</th>
+            <th className="px-4 py-3 text-start font-medium">{t('honor.rank')}</th>
+            <th className="px-4 py-3 text-start font-medium">{t('honor.student')}</th>
+            <th className="hidden px-4 py-3 text-start font-medium md:table-cell">{t('honor.attendance')}</th>
+            <th className="hidden px-4 py-3 text-start font-medium md:table-cell">{t('honor.evaluation')}</th>
+            <th className="hidden px-4 py-3 text-start font-medium md:table-cell">{t('honor.new_ayahs')}</th>
+            <th className="px-4 py-3 text-start font-medium">{t('honor.points')}</th>
+            <th className="hidden whitespace-nowrap px-4 py-3 text-start font-medium sm:table-cell">{t('honor.change')}</th>
           </tr>
         </thead>
         <tbody className="divide-y divide-ink/6">
-          {rows.map((r) => {
-            const group = level === 'circle' ? r.lesson?.name : level === 'package' ? r.package?.name : undefined
-            const header = group && group !== lastGroup
-            lastGroup = group
+          {rows.map((r, i) => {
+            const group = groupOf(r)
+            const header = group && group !== groupOf(rows[i - 1])
             return [
-              header && <tr key={`g-${group}`} className="bg-page/50"><td colSpan={7} dir="auto" className="px-3 py-1.5 text-xs font-semibold text-ink/60">{group}</td></tr>,
+              header && <tr key={`g-${group}`} className="bg-page/50"><td colSpan={7} dir="auto" className="px-4 py-2 text-xs font-semibold text-ink/60">{group}</td></tr>,
               <tr key={`${r.student?.id}`}>
-                <td className="px-3 py-2 font-semibold tabular-nums text-ink">{r.rank !== null && r.rank <= 3 ? <Icon name="medal" className={`inline size-4 ${MEDAL[r.rank - 1]}`} /> : null} {r.rank !== null ? n(r.rank) : '—'}</td>
-                <td className="px-3 py-2">
+                <td className="px-4 py-3 font-semibold tabular-nums text-ink">{r.rank !== null && r.rank <= 3 ? <Icon name="medal" className={`inline size-4 ${MEDAL[r.rank - 1]}`} /> : null} {r.rank !== null ? n(r.rank) : '—'}</td>
+                <td className="px-4 py-3">
                   <div className="flex items-center gap-2">
                     <Avatar name={r.student?.full_name ?? ''} initial={r.student?.initial} src={r.student?.photo_url} size="sm" />
                     <div className="min-w-0"><p dir="auto" className="truncate font-medium text-ink">{r.student?.full_name}</p>{level === 'track' && <p dir="auto" className="truncate text-xs text-ink/50">{r.lesson?.name}</p>}</div>
                   </div>
                 </td>
-                <td className="hidden px-3 py-2 tabular-nums md:table-cell">{n(r.attendance_pct)}٪</td>
-                <td className="hidden px-3 py-2 tabular-nums md:table-cell">{n(r.evaluation_avg, 1)}</td>
-                <td className="hidden px-3 py-2 tabular-nums md:table-cell">{n(r.new_ayahs)}</td>
-                <td className="px-3 py-2">
+                <td className="hidden px-4 py-3 tabular-nums md:table-cell">{formatPercent(r.attendance_pct, i18n.language)}</td>
+                <td className="hidden px-4 py-3 tabular-nums md:table-cell">{n(r.evaluation_avg, 1)}</td>
+                <td className="hidden px-4 py-3 tabular-nums md:table-cell">{n(r.new_ayahs)}</td>
+                <td className="px-4 py-3">
                   <div className="flex min-w-28 flex-col gap-1"><span className="font-semibold tabular-nums text-ink">{n(r.points, 1)}</span><BreakdownBar row={r} /></div>
                 </td>
-                <td className="hidden px-3 py-2 sm:table-cell"><Change v={r.points_change} /></td>
+                <td className="hidden px-4 py-3 sm:table-cell"><Change v={r.points_change} /></td>
               </tr>,
             ]
           })}
@@ -244,7 +243,7 @@ function CircleOfMonth({ board }: { board: HonorBoard }) {
       {c ? (
         <div className="text-center">
           <Icon name="trophy" className="mx-auto size-10 text-gold-500" />
-          <p dir="auto" className="mt-2 font-display text-xl text-ink">{c.name}</p>
+          <p dir="auto" className="mt-2 text-lg font-semibold text-ink">{c.name}</p>
           <OrnamentDivider align="center" className="my-2 text-gold-500" />
           <p dir="auto" className="text-sm text-ink/60">{t('honor.circle_of_month_body', { teacher: c.teacher ?? '', points: formatNumber(c.avg_points, i18n.language, { maximumFractionDigits: 1 }), n: formatNumber(c.students, i18n.language) })}</p>
         </div>

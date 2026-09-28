@@ -86,7 +86,7 @@ export default function QuestionEditor({ examId, question, onClose, onSaved }: {
 
       {type === 'complete_verse' && (
         <>
-          <TextArea label={t('questions.answer_text')} rows={2} value={text} onChange={(e) => setText(e.target.value)} dir="rtl" className="[&_textarea]:font-display [&_textarea]:text-lg" />
+          <TextArea label={t('questions.answer_text')} rows={2} value={text} onChange={(e) => setText(e.target.value)} dir="rtl" className="[&_textarea]:font-quran [&_textarea]:text-lg" />
           <TextArea label={t('questions.alternatives')} rows={2} value={alts} onChange={(e) => setAlts(e.target.value)} dir="rtl" />
         </>
       )}
@@ -97,7 +97,7 @@ export default function QuestionEditor({ examId, question, onClose, onSaved }: {
           {verses.map((v, i) => (
             <div key={i} className="flex items-center gap-2">
               <span className="w-6 text-center text-sm tabular-nums text-ink/50">{i + 1}</span>
-              <input aria-label={`${i + 1}`} dir="rtl" value={v} onChange={(e) => setVerses(verses.map((x, j) => (j === i ? e.target.value : x)))} className={inputClass('md', 'min-w-0 flex-1 font-display text-lg')} />
+              <input aria-label={`${i + 1}`} dir="rtl" value={v} onChange={(e) => setVerses(verses.map((x, j) => (j === i ? e.target.value : x)))} className={inputClass('md', 'min-w-0 flex-1 font-quran text-lg')} />
               {verses.length > 2 && <IconButton icon="close" tone="remove" label={t('questions.delete')} onClick={() => setVerses(verses.filter((_, j) => j !== i))} />}
             </div>
           ))}

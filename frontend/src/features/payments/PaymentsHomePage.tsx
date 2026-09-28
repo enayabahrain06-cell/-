@@ -10,7 +10,7 @@ import Icon from '../../components/Icon'
 import Pagination from '../../components/Pagination'
 import SelectField from '../../components/SelectField'
 import { EmptyState, PageBand } from '../../components/ornaments'
-import { Badge, Card, CardTitle, ErrorState, LoadingState, Modal, Notice, PrimaryButton, SecondaryButton, Segmented, TableWrap, TextArea, TextInput, type Tone, SURFACE, EmptyCard, FilterBar } from '../../components/ui'
+import { Badge, Card, CardTitle, ErrorState, LoadingState, Modal, Notice, PrimaryButton, SecondaryButton, Segmented, TableWrap, TextArea, TextInput, type Tone, SURFACE, EmptyCard, FilterBar, ROW_MAIN } from '../../components/ui'
 import { formatDate, formatMoney, formatNumber } from '../../lib/format'
 import { AdjustDialog, InvoiceDialog, RecordPaymentDialog, RefundDialog } from './PaymentDialogs'
 
@@ -95,7 +95,7 @@ function Payments() {
             {q.data.data.map((p) => (
               <li key={p.id} className="flex flex-wrap items-center gap-x-4 gap-y-1 px-4 py-3 text-sm">
                 <span className="w-24 text-ink/60">{formatDate(p.paid_at, locale, { day: 'numeric', month: 'short' })}</span>
-                <span className="min-w-0 flex-1">
+                <span className={ROW_MAIN}>
                   {p.student ? <Link to={`/students/${p.student.id}?tab=wallet`} dir="auto" className="font-medium text-ink hover:text-brand-700">{p.student.full_name}</Link> : '—'}
                   <span className="block text-xs text-ink/50"><span dir="ltr" className="font-mono">{p.receipt_no}</span>{p.received_by && <> · {t('received_by', { name: p.received_by })}</>}</span>
                   {p.allocations && p.allocations.length > 0 && <span className="block text-xs text-ink/50">{t('settled', { list: p.allocations.map((a) => a.invoice_no).join(', ') })}</span>}
@@ -146,7 +146,7 @@ function Invoices() {
           <ul className={`${SURFACE} divide-y divide-ink/6`}>
             {q.data.data.map((inv) => (
               <li key={inv.id} className="flex flex-wrap items-center gap-x-4 gap-y-1 px-4 py-3 text-sm">
-                <span className="min-w-0 flex-1">
+                <span className={ROW_MAIN}>
                   {inv.student && <Link to={`/students/${inv.student.id}?tab=wallet`} dir="auto" className="font-medium text-ink hover:text-brand-700">{inv.student.full_name}</Link>}
                   <span dir="auto" className="block text-ink/70">{inv.description}</span>
                   <span className="block text-xs text-ink/50"><span dir="ltr" className="font-mono">{inv.invoice_no}</span> · {t('invoices.due', { date: formatDate(inv.due_date, locale, { day: 'numeric', month: 'short', year: 'numeric' }) })}</span>
@@ -183,7 +183,7 @@ function Refunds() {
         {q.data.data.map((r) => (
           <li key={r.id} className="flex flex-wrap items-center gap-x-4 gap-y-1 px-4 py-3 text-sm">
             <span className="w-24 text-ink/60">{formatDate(r.paid_at, locale, { day: 'numeric', month: 'short' })}</span>
-            <span className="min-w-0 flex-1"><Link to={`/students/${r.student.id}?tab=wallet`} dir="auto" className="font-medium text-ink hover:text-brand-700">{r.student.full_name}</Link>
+            <span className={ROW_MAIN}><Link to={`/students/${r.student.id}?tab=wallet`} dir="auto" className="font-medium text-ink hover:text-brand-700">{r.student.full_name}</Link>
               <span dir="auto" className="block text-xs text-ink/50">{r.note}{r.approved_by && <> · {r.approved_by}</>}</span></span>
             <Badge tone="muted">{t(`methods.${r.method}`)}</Badge>
             <span className="w-28 text-end font-semibold tabular-nums text-danger">{formatMoney(-r.amount_fils, locale)}</span>
