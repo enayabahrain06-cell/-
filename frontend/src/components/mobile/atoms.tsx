@@ -86,7 +86,7 @@ export function MRow({ to, leading, title, caption, trailing, className = '' }: 
     <>
       {leading}
       <span className="min-w-0 flex-1">
-        <span dir="auto" className="block truncate text-[15px] font-semibold text-ink">{title}</span>
+        <span className="block truncate text-[15px] font-semibold text-ink"><bdi>{title}</bdi></span>
         {caption && <span className="mt-0.5 block truncate text-[13px] text-ink/65">{caption}</span>}
       </span>
       {trailing}

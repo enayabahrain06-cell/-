@@ -41,3 +41,18 @@ left out and listed under the page.
   count takes its place.
 - Alerts (the bell's target, #alerts): the five most urgent with a priority pill; each row opens the alert's
   subject (circle, student, requests, wallet, lottery, exam). Actions such as مراسلة ولي الأمر stay on desktop.
+
+## Attendance (/attendance, /attendance/:id) — Attendance.dc.html
+
+- Day page (root tab, also the evaluation "daily" tab): date stepper with 44px previous/next, date input, one date
+  line (Gregorian · Hijri) with a "today" link, session cards (time · hall · teacher, taken / not taken / cancelled
+  pill, hall-changed pill, present · absent count).
+- Sheet: page header with the circle name, back to the day, breadcrumb الرئيسية › الحضور › circle. Circle selector
+  (the other sessions that day) | date selector side by side; five live tiles (حاضر / متأخر / غائب / معذور /
+  لم يُحدد) with the chart state colors; helper line and a الكل حاضر chip (same confirm + mark-all call).
+- Rows: 36px avatar, name (links to the profile), current memorization, absence-sent note, and four 44×40 state
+  buttons with `aria-pressed`, each selected state in its color pair.
+- Assignments, note and today's ranges moved to a bottom sheet, opened by the row's edit button or a long press.
+- Sticky حفظ الحضور (n من N) with an unsaved dot; results and errors show as a 4-second toast.
+- Shared: `MobileToast`; mobile names use `<bdi>` so Arabic names align with the page direction in English.
+- Not in the app: an attendance history view (the spec's history icon) and excuse attachments.

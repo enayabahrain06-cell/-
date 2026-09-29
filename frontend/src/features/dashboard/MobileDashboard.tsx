@@ -26,7 +26,7 @@ export default function MobileDashboard({ query }: { query: UseQueryResult<Dashb
       <section className="relative overflow-hidden rounded-card bg-deep px-4 py-4 text-white">
         <Khatam className="pointer-events-none absolute -end-6 -top-6 size-28 text-gold-400 opacity-10" />
         <h1 className="relative font-display text-2xl leading-[34px] text-gold-300">{t('greeting', { name: user?.name })}</h1>
-        <p className="relative mt-1 truncate text-[13px] text-white/85">
+        <p className="relative mt-1 text-[13px] leading-5 text-white/85">
           {formatWeekday(today, locale)}{locale === 'ar' ? '، ' : ', '}{formatDate(today, locale)} · {formatHijri(today, locale)}
         </p>
         <div className="relative mt-3 flex items-center gap-2">
@@ -154,12 +154,12 @@ function TodayCard({ s, locale }: { s: TodaySession; locale: string }) {
   const body = (
     <>
       <div className="flex items-start justify-between gap-3">
-        <p dir="auto" className="min-w-0 truncate text-[15px] font-semibold text-ink">{s.lesson}</p>
+        <p className="min-w-0 truncate text-[15px] font-semibold text-ink"><bdi>{s.lesson}</bdi></p>
         <Pill tone={pill.tone}>{pill.text}</Pill>
       </div>
       <p className="mt-1 truncate text-[13px] text-ink/65">
         <span className="tabular-nums">{formatTime(s.start_time, locale)}</span>
-        {s.location && <> · <span dir="auto">{s.location}</span></>}
+        {s.location && <> · <span><bdi>{s.location}</bdi></span></>}
         {' · '}{t('mobile.students', { n: formatNumber(s.enrolled, locale) })}
       </p>
       <div className="mt-3 h-1.5 overflow-hidden rounded-full bg-ink/5" role="progressbar" aria-valuenow={pct} aria-valuemin={0} aria-valuemax={100} aria-label={t('kpi.attendance_rate_7d')}>
@@ -175,7 +175,7 @@ function Kpi({ label, value, icon, to, hint, progress, gold, wide, pill }: { lab
     <>
       <div className="flex items-center gap-2">
         <span className={`inline-grid size-7 shrink-0 place-items-center rounded-lg ${gold ? 'bg-gold-500/12 text-gold-700' : 'bg-brand-50 text-brand-700'}`}><Icon name={icon} className="size-4" /></span>
-        <span className="min-w-0 truncate text-xs font-semibold text-ink/65">{label}</span>
+        <span className="line-clamp-2 min-w-0 text-xs font-semibold leading-4 text-ink/65">{label}</span>
       </div>
       <div className="mt-2 flex items-end justify-between gap-2">
         <p className="min-w-0 truncate text-[28px] font-semibold leading-9 tabular-nums text-ink">{value}</p>

@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { Link, useParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
@@ -10,6 +10,8 @@ import QuranRangePicker from '../../components/QuranRangePicker'
 import { OrnamentDivider } from '../../components/ornaments'
 import { Badge, Card, ErrorState, LoadingState, Notice, PrimaryButton, SecondaryButton, Segmented, TextInput, type Tone, SURFACE, EmptyCard, ROW_MAIN } from '../../components/ui'
 import { formatDate, formatNumber, formatTime } from '../../lib/format'
+import MobileToast from '../../components/mobile/Toast'
+import { MobileSheetView } from './MobileAttendance'
 
 const STATUSES: { value: AttendanceStatus; tone: Tone }[] = [
   { value: 'present', tone: 'brand' },
@@ -38,6 +40,8 @@ export default function AttendanceSheetPage() {
   // Details panel per row: an explicit toggle wins, otherwise the row follows "show all details".
   const [expanded, setExpanded] = useState<Record<number, boolean>>({})
   const [showAll, setShowAll] = useState(false)
+  const [toast, setToast] = useState<{ text: string; tone: 'ok' | 'error' } | null>(null)
+  const clearToast = useCallback(() => setToast(null), [])
 
   // Seed drafts from the server roster.
   useEffect(() => {
@@ -74,6 +78,7 @@ export default function AttendanceSheetPage() {
   const onDone = (r: SaveResult) => {
     setResult(r)
     setError(null)
+    setToast({ tone: 'ok', text: [t('saved', { saved: formatNumber(r.saved, locale) }), r.absent > 0 ? t('absence_queued', { n: formatNumber(r.absent, locale) }) : '', r.repeated_absence_alerts.length > 0 ? t('repeated_alerts', { n: formatNumber(r.repeated_absence_alerts.length, locale) }) : ''].filter(Boolean).join(' ') })
     void qc.invalidateQueries({ queryKey: ['attendance-sheet', id] })
     void qc.invalidateQueries({ queryKey: ['sessions-on'] })
     void qc.invalidateQueries({ queryKey: ['dashboard'] })
@@ -89,9 +94,9 @@ export default function AttendanceSheetPage() {
       ...(d.progress.length ? { progress: d.progress } : {}),
     }))),
     onSuccess: onDone,
-    onError: (e) => setError(parseApiError(e).message),
+    onError: (e) => { setError(parseApiError(e).message); setToast({ tone: 'error', text: parseApiError(e).message }) },
   })
-  const markAll = useMutation({ mutationFn: () => attendanceApi.markAllPresent(id), onSuccess: onDone, onError: (e) => setError(parseApiError(e).message) })
+  const markAll = useMutation({ mutationFn: () => attendanceApi.markAllPresent(id), onSuccess: onDone, onError: (e) => { setError(parseApiError(e).message); setToast({ tone: 'error', text: parseApiError(e).message }) } })
 
   const marked = useMemo(() => Object.values(drafts).filter((d) => d.status).length, [drafts])
 
@@ -107,7 +112,11 @@ export default function AttendanceSheetPage() {
   const pct = (v: number) => (roster.length ? (v / roster.length) * 100 : 0)
 
   return (
-    <div className="space-y-5 pb-24">
+    <>
+    <MobileSheetView session={s} roster={roster} drafts={drafts} marked={marked} dirty={dirty} saving={save.isPending} markingAll={markAll.isPending}
+      onStatus={(sid, v) => update(sid, { status: v })} onPatch={update} onSave={() => save.mutate()} onMarkAll={() => markAll.mutate()} />
+    <MobileToast message={toast?.text ?? null} tone={toast?.tone} onDone={clearToast} />
+    <div className="hidden space-y-5 pb-24 lg:block">
       <Link to={`/attendance?date=${s.session_date}`} className="inline-flex items-center gap-1 text-sm font-medium text-brand-700 hover:underline">
         <Icon name="chevron" className="size-4 ltr:rotate-180" />{t('back')}
       </Link>
@@ -249,7 +258,7 @@ export default function AttendanceSheetPage() {
       )}
 
       {/* Sticky save bar */}
-      <div className="fixed inset-x-0 bottom-0 z-20 border-t border-ink/10 bg-white/95 px-4 py-3 shadow-lg backdrop-blur sm:px-6 lg:start-[17rem] lg:px-8">
+      <div className="fixed inset-x-0 bottom-0 z-20 border-t border-ink/10 bg-white/95 px-4 py-3 shadow-lg backdrop-blur max-lg:hidden sm:px-6 lg:start-[17rem] lg:px-8">
         <div className="mx-auto flex w-full max-w-page flex-wrap items-center gap-x-4 gap-y-1">
           <span className="text-sm tabular-nums text-ink/60">{t('counts', { marked: n(marked), total: n(roster.length) })}</span>
           {dirty && <span className="inline-flex items-center gap-1.5 text-sm text-gold-700"><span className="size-2 rounded-full bg-gold-500" />{t('unsaved')}</span>}
@@ -259,5 +268,6 @@ export default function AttendanceSheetPage() {
         </div>
       </div>
     </div>
+    </>
   )
 }

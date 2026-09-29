@@ -6,6 +6,7 @@ import Icon from '../../components/Icon'
 import { PageBand } from '../../components/ornaments'
 import { Badge, ErrorState, LoadingState, FilterBar, SecondaryButton, SURFACE, inputClass, EmptyCard } from '../../components/ui'
 import { formatDate, formatHijri, formatNumber, formatTime } from '../../lib/format'
+import { MobileDayView } from './MobileAttendance'
 
 const todayIso = () => new Intl.DateTimeFormat('en-CA', { timeZone: 'Asia/Bahrain' }).format(new Date())
 
@@ -25,7 +26,10 @@ export default function AttendanceDayPage({ basePath = '/attendance', title, sub
   }
 
   return (
-    <div className="space-y-5">
+    <>
+    <MobileDayView date={date} sessions={q.data} loading={q.isLoading} basePath={basePath} embedded={embedded} onShift={shift}
+      onDate={(v) => setParams({ date: v }, { replace: true })} isToday={date === todayIso()} onToday={() => setParams({}, { replace: true })} />
+    <div className="hidden space-y-5 lg:block">
       {!embedded && <PageBand title={title ?? t('title')} subtitle={subtitle ?? t('subtitle')} />}
 
       <FilterBar layout="row" label={t('date')}>
@@ -63,5 +67,6 @@ export default function AttendanceDayPage({ basePath = '/attendance', title, sub
         </ul>
       )}
     </div>
+    </>
   )
 }

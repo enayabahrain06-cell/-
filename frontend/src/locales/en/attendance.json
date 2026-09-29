@@ -22,7 +22,12 @@
   "absence_queued": "An absence notice will be sent on WhatsApp for {{n}} students.",
   "repeated_alerts": "Warning: {{n}} students have repeated absences; a dashboard alert was raised.",
   "unsaved": "You have unsaved changes",
-  "status": { "present": "Present", "late": "Late", "absent": "Absent", "excused": "Excused" },
+  "status": {
+    "present": "Present",
+    "late": "Late",
+    "absent": "Absent",
+    "excused": "Excused"
+  },
   "not_marked": "Not marked",
   "memorization": "Memorization assignment",
   "revision": "Revision assignment",
@@ -57,5 +62,17 @@
     "no_notes": "No lesson notes were recorded for this session.",
     "assignments": "Memorization and revision",
     "no_circles": "You have no circles scheduled for today."
+  },
+  "mobile": {
+    "all_present": "All present",
+    "helper": "Set each student, or tap “All present”.",
+    "save_n": "Save attendance ({{marked}} of {{total}})",
+    "circle": "Circle",
+    "details_title": "{{name}}: assignments and notes",
+    "details": "Assignments and notes",
+    "prev_day": "Previous day",
+    "next_day": "Next day",
+    "done": "Done",
+    "hold_hint": "Press and hold a student to add a note or excuse."
   }
 }

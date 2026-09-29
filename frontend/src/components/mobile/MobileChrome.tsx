@@ -119,7 +119,7 @@ export function MobilePageHeader({ title, back, actions, breadcrumb }: { title: 
         <Link to={back} aria-label={t('back')} className="inline-grid size-11 shrink-0 place-items-center rounded-ctl text-brand-900">
           <Icon name="chevron" className="size-5 rtl:rotate-0 ltr:rotate-180" />
         </Link>
-        <h1 dir="auto" className="min-w-0 flex-1 truncate font-display text-[22px] leading-normal text-brand-900">{title}</h1>
+        <h1 className="min-w-0 flex-1 truncate font-display text-[22px] leading-normal text-brand-900"><bdi>{title}</bdi></h1>
         {actions && <div className="flex shrink-0 items-center">{actions}</div>}
       </header>
       {breadcrumb && breadcrumb.length > 0 && (
@@ -207,7 +207,7 @@ function MoreSheet({ open, onClose }: { open: boolean; onClose: () => void }) {
         <div className="flex items-center gap-3 rounded-card border border-ink/10 bg-white p-4 shadow-card">
           <MAvatar name={user?.name ?? '?'} size={44} />
           <div className="min-w-0">
-            <p dir="auto" className="truncate text-[15px] font-semibold text-ink">{user?.name}</p>
+            <p className="truncate text-[15px] font-semibold text-ink"><bdi>{user?.name}</bdi></p>
             <p className="truncate text-[13px] text-ink/65">{roles}{user?.track && <> · {t(`tracks.${user.track}`)}</>}</p>
           </div>
         </div>
