@@ -47,6 +47,11 @@ class AcceptRegistrationAction
 
         $package = $request->package;
 
+        // The same child (by CPR) cannot be enrolled twice.
+        if ($holder = \App\Support\Cpr::holder($request->cpr)) {
+            throw ValidationException::withMessages(['cpr' => \App\Support\Cpr::takenMessage($holder)]);
+        }
+
         if ((bool) setting('registration.photo_required', false) && ! $request->media()->where('collection', 'photo')->exists()) {
             throw ValidationException::withMessages(['photo' => __('registration.errors.photo_required')]);
         }
@@ -104,6 +109,8 @@ class AcceptRegistrationAction
 
         $student = Student::create([
             'student_no' => Student::nextStudentNo(),
+            'cpr' => $request->cpr,
+            'address' => $request->address,
             'user_id' => $studentUser?->id,
             'guardian_user_id' => $guardian->id,
             'full_name' => $request->full_name,
@@ -165,6 +172,42 @@ class AcceptRegistrationAction
             'link' => config('ahl.frontend_url').'/login',
             'amount' => Money::format($package->price_fils, $request->locale->value),
         ]);
+    }
+
+    /**
+     * A student saved by staff before any package is chosen (quick enrollment "save without package"):
+     * guardian and student accounts and the wallet as in createStudent(), without a request or invoice.
+     */
+    public function createUnplacedStudent(array $data, ?int $by = null): Student
+    {
+        $locale = $data['locale'] ?? 'ar';
+        $guardian = $this->findOrCreateUser($data['guardian_phone'], trim($data['guardian_name']), 'guardian', $locale);
+
+        $studentUser = null;
+        if (! empty($data['student_phone']) && $data['student_phone'] !== $data['guardian_phone']) {
+            $studentUser = $this->findOrCreateUser($data['student_phone'], trim($data['full_name']), 'student', $locale, $data['gender']);
+        }
+
+        $student = Student::create([
+            'student_no' => Student::nextStudentNo(),
+            'cpr' => $data['cpr'] ?? null,
+            'address' => $data['address'] ?? null,
+            'user_id' => $studentUser?->id,
+            'guardian_user_id' => $guardian->id,
+            'full_name' => trim($data['full_name']),
+            'birth_date' => $data['birth_date'],
+            'gender' => $data['gender'],
+            'student_phone' => $studentUser?->phone,
+            'guardian_name' => trim($data['guardian_name']),
+            'guardian_phone' => $guardian->phone,
+            'memorization_level' => $data['memorization_level'],
+            'locale' => $locale,
+            'status' => StudentStatus::Active,
+            'notes' => $data['notes'] ?? null,
+        ]);
+        $this->wallets->ensure($student);
+
+        return $student;
     }
 
     private function findOrCreateUser(string $phone, string $name, string $role, string $locale, ?string $gender = null): User

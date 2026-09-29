@@ -65,8 +65,8 @@ class QuickEnrollmentController extends Controller
         return response()->json([
             'status' => $result['status'],
             'message' => __('enrollment.done_'.$result['status']),
-            'request_no' => $result['request']->request_no,
-            'waitlist_position' => $result['request']->waitlist_position,
+            'request_no' => $result['request']?->request_no,
+            'waitlist_position' => $result['request']?->waitlist_position,
             'student' => $result['student'] ? [
                 'id' => $result['student']->id,
                 'student_no' => $result['student']->student_no,

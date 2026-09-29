@@ -1,0 +1,54 @@
+ID CARD READER KIT: TECHNICAL NOTES (for IT)
+============================================
+
+How reading works
+-----------------
+The web system (in Chrome/Edge) asks iGA's "GCC CardRead Server" on the same PC to read the card:
+  REST       POST http://localhost:5050/api/operation/ReadCard   (JSON options body, see below)
+  WebSocket  ws://localhost:5060/SCardRead                       ("ReadCard" + the same JSON)
+The service is a Windows service named SCardReadServer, installed in
+  C:\Program Files (x86)\CIO\GCC CardRead Server
+Nothing is installed on the server for this; only the reading PCs need the reader and iGA's service.
+
+Why the Bahrain update is needed
+--------------------------------
+The Bahrain extension shipped with the installed service (2016) knows newer Bahrain cards only by a short ATR
+prefix (3B7F96000080318065B085). For those cards the service falls back to a partial ATR match, picks the
+Kuwait extension, and returns CardCountry "KWT" with empty names. The system then says the card could not be read.
+
+What 1-Setup.cmd changes (files\Update-IgaBahrain.ps1)
+------------------------------------------------------
+  1. Backs up  <service>\Extensions\BAH\*  and  <service>\BH.CIO.Smartcard.IDCardManager.dll.config
+     to  <service>\backup-<date>-<time>\
+  2. Copies from files\cards into <service>\Extensions\BAH:
+       BH.CIO.Smartcard.Bahrain.dll          (2025, version 3.6.0.20664, supports newer card versions)
+       BH.CIO.Smartcard.Bahrain.Lookup.dll
+       BerTlv.dll, Utils.dll                 (needed by the 2025 extension)
+  3. Replaces the  <add key="BAH" .../>  line of the service config with the 2025 SDK's full ATR list.
+  4. Restarts SCardReadServer (always, even if a step failed) and reads the inserted card once.
+  Log: setup-log.txt next to 1-Setup.cmd.   Undo: 3-Undo.cmd (restores the latest backup).
+
+Tested on: Windows 11 Pro, ACS CCID USB Reader, GCC CardRead Server (IDCardManager 3.7.1.0),
+a Bahrain ID card with ATR 3B7F96000080318065B085...120FFF829000. Result after the update: CardCountry BAH,
+names, CPR, birth date, gender, expiry and photo read.
+
+Known limits
+------------
+- The service's data library (2016) has no nationality label fields; nationality text may be empty.
+- A future iGA installer may overwrite the update. After any iGA update, run 2-Check.cmd; run 1-Setup.cmd again
+  only if it reports the Bahrain part is old.
+- The browser must be allowed to reach localhost ("local network access" permission in Chrome/Edge).
+
+ReadCard request body
+---------------------
+{ "ReadCardInfo": true, "ReadPersonalInfo": true, "ReadAddressDetails": false, "ReadBiometrics": false,
+  "ReadEmploymentInfo": false, "ReadImmigrationDetails": false, "ReadTrafficDetails": false,
+  "SilentReading": true, "ReaderIndex": -1, "ReaderName": "", "OutputFormat": "JSON", "ValidateCard": false }
+An empty body ({}) makes the service fail with NullReferenceException (HTTP 500).
+
+Privacy
+-------
+The CPR and personal data are read on demand only, sent straight to the system over HTTPS, and never logged by
+these scripts. 2-Check.cmd shows only whether names were read, never the data itself.
+
+Files in this kit are licensed by iGA: keep the kit inside the organisation, off the internet and out of git.

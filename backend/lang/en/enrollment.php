@@ -3,6 +3,7 @@
 return [
     'done_enrolled' => 'Student enrolled. The welcome message with the login code is on its way.',
     'done_waitlist' => 'The package is full: the student was added to the waitlist.',
+    'done_saved' => 'Student saved without a package. Add them to a circle later from the circle page.',
     'import_done' => ':count students enrolled.',
     'payment_note' => 'Cash payment at quick enrollment',
     'col_circle' => 'Circle',
@@ -17,10 +18,23 @@ return [
         'not_your_circle' => 'You can only enroll students into your own circles.',
         'cannot_record_payment' => 'You are not allowed to record payments.',
         'no_payment_on_waitlist' => 'A payment cannot be recorded for a waitlisted student.',
+        'no_payment_without_package' => 'A payment cannot be recorded for a student without a package.',
         'duplicate' => 'Possible duplicate: :names. Check, then confirm to save anyway.',
     ],
     'warnings' => [
         'same_name_birth_date' => 'A student with the same name and birth date exists (:name, :no).',
         'same_name_guardian' => 'This guardian already has a child with the same name (:name, :no).',
+    ],
+    'attributes' => [
+        'full_name' => 'full name',
+        'birth_date' => 'birth date',
+        'guardian_name' => 'guardian name',
+        'guardian_phone' => 'guardian phone',
+        'student_phone' => 'student phone',
+        'memorization_level' => 'memorization level',
+        'package_id' => 'package',
+        'lesson_id' => 'circle',
+        'cpr' => 'CPR',
+        'address' => 'address',
     ],
 ];

@@ -11,6 +11,8 @@ export interface StudentSummary {
   full_name: string
   initial: string
   gender: 'male' | 'female'
+  /** Staff only: nine-digit CPR (Bahrain personal number); absent for students and guardians. */
+  cpr?: string | null
   birth_date: string | null
   memorization_level: string | null
   status: string
@@ -160,6 +162,8 @@ export interface StudentDetail extends StudentSummary {
   status_label: string | null
   yearly_target_ayahs: number | null
   notes?: string | null
+  /** Home address (staff only). */
+  address?: string | null
   guardian: { id: number; name: string; phone: string; locale: string | null } | null
   lessons: { id: number; name: string; status: string; teacher: string | null; package: string | null; location: string | null; days: string[]; start_time: string; end_time: string }[]
 }
@@ -241,7 +245,7 @@ export const studentsApi = {
   wallet: (id: number) => api.get<WalletView>(`/students/${id}/wallet`).then((r) => r.data),
   /** Placement test results from the student's registration (staff), with the answer key. */
   placement: (id: number) => api.get<{ data: PlacementRecord[] }>(`/students/${id}/placement`).then((r) => r.data.data),
-  update: (id: number, data: Partial<Pick<StudentDetail, 'full_name' | 'birth_date' | 'guardian_name' | 'memorization_level' | 'status' | 'yearly_target_ayahs' | 'notes'>>) =>
+  update: (id: number, data: Partial<Pick<StudentDetail, 'full_name' | 'birth_date' | 'gender' | 'cpr' | 'address' | 'guardian_name' | 'memorization_level' | 'status' | 'yearly_target_ayahs' | 'notes'>>) =>
     api.put<{ data: StudentDetail }>(`/students/${id}`, data).then((r) => r.data.data),
   uploadPhoto: (id: number, file: File) => {
     const form = new FormData()

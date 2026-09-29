@@ -41,3 +41,13 @@ whatsapp/.env
 
 # docker compose production settings
 /.env
+
+# Card reader vendor installers (Bahrain smart card SDK). Local only, never committed.
+/SCardReadServer.7z
+/eRevealerSetup.7z
+
+# iGA smart card SDK (licensed by iGA; used by packages/id-card-reader/setup/make-kit.cmd, not committed)
+/cards/
+
+# Card reader kit for reception PCs: contains the licensed iGA SDK files, copy by USB, never commit
+/ID-Card-Reader-Kit/

@@ -13,6 +13,7 @@ import { Badge, buttonClass, ErrorState, FilterBar, LoadingState, Modal, Notice,
 import { formatDate, formatMoney, formatNumber, formatPercent } from '../../lib/format'
 import { GENDER_TONE } from '../lessons/LessonsHomePage'
 import PackageFormDialog from './PackageFormDialog'
+import CardApplyDialog from '../enrollment/CardApplyDialog'
 
 /** Outcomes the server treats as final (RegistrationStatus::isDecided); accept, waitlist and reject are refused for them. */
 const DECIDED: string[] = ['accepted', 'enrolled', 'pending_lottery']
@@ -105,6 +106,8 @@ function Requests() {
 
   // Accepting needs a circle (or the lottery path) and lets staff confirm the level, so it opens a dialog.
   const [accepting, setAccepting] = useState<RegistrationRequest | null>(null)
+  // Read the ID card for a request and let staff apply the card's details (and optionally its photo).
+  const [carding, setCarding] = useState<RegistrationRequest | null>(null)
   const waitlist = useMutation({ mutationFn: (id: number) => requestsApi.waitlist(id), onSuccess: refresh, onError: onErr })
   const reject = useMutation({ mutationFn: () => requestsApi.reject(rejecting!.id!, reason), onSuccess: () => { setRejecting(null); setReason(''); refresh() }, onError: onErr })
   const manage = can('registrations.manage')
@@ -138,7 +141,7 @@ function Requests() {
                       {r.has_photo && <Badge tone="info"><Icon name="camera" className="size-3.5" />{t('admin.photo')}</Badge>}
                     </div>
                     <p className="mt-1 text-sm text-ink/60">
-                      <span className="font-mono tabular-nums" dir="ltr">{r.request_no}</span> · <span dir="auto">{r.package?.name}</span> · {t('admin.age')}: {n(r.age_at_start)} · {r.memorization_level_label}
+                      <span className="font-mono tabular-nums" dir="ltr">{r.request_no}</span>{r.cpr && <> · {t('admin.cpr')}: <span className="tabular-nums" dir="ltr">{r.cpr}</span></>} · <span dir="auto">{r.package?.name}</span> · {t('admin.age')}: {n(r.age_at_start)} · {r.memorization_level_label}
                     </p>
                     <p className="text-sm text-ink/55">{t('admin.guardian')}: <span dir="auto">{r.guardian_name}</span> · <span dir="ltr" className="tabular-nums">{r.guardian_phone}</span> · {formatDate(r.created_at, locale, { day: 'numeric', month: 'short' })}</p>
                     {r.reason && <p dir="auto" className="mt-1 text-sm text-danger">{r.reason}</p>}
@@ -148,6 +151,7 @@ function Requests() {
                     {r.student && <Link to={`/students/${r.student.id}`} className="rounded-xl border border-ink/12 px-3 py-2 text-sm text-ink/80 hover:bg-ink/5">{t('admin.student_link')}</Link>}
                     {manage && !DECIDED.includes(r.status) && (
                       <>
+                        <SecondaryButton onClick={() => setCarding(r)}><Icon name="students" className="size-4" />{t('read', { ns: 'idCard' })}</SecondaryButton>
                         <PrimaryButton onClick={() => setAccepting(r)}>{t('admin.accept')}</PrimaryButton>
                         {r.status !== 'waitlist' && <SecondaryButton onClick={() => waitlist.mutate(r.id!)}>{t('admin.waitlist_action')}</SecondaryButton>}
                         {r.status !== 'rejected' && <SecondaryButton className="text-danger" onClick={() => setRejecting(r)}>{t('admin.reject')}</SecondaryButton>}
@@ -169,6 +173,19 @@ function Requests() {
         </Modal>
       )}
       {accepting && <AcceptDialog request={accepting} onClose={() => setAccepting(null)} onDone={() => { setAccepting(null); setNotice({ tone: 'success', text: t('admin.accepted_ok') }); refresh() }} />}
+      {carding && (
+        <CardApplyDialog title={t('apply_title', { ns: 'idCard', name: carding.full_name })} allowPhoto
+          current={{ full_name: carding.full_name, birth_date: carding.birth_date?.slice(0, 10) ?? '', gender: carding.gender, cpr: carding.cpr ?? '', address: carding.address ?? '' }}
+          onClose={() => setCarding(null)}
+          onApply={async (patch, photo) => {
+            const { gender, ...rest } = patch
+            if (Object.keys(patch).length) await requestsApi.update(carding.id!, { ...rest, ...(gender ? { gender } : {}) })
+            if (photo) await requestsApi.photo(carding.id!, photo)
+            setCarding(null)
+            setNotice({ tone: 'success', text: t('applied', { ns: 'idCard', name: patch.full_name ?? carding.full_name }) })
+            refresh()
+          }} />
+      )}
       {bulk && <BulkAccept packages={packages.data?.data ?? []} onClose={() => setBulk(false)} onDone={(m) => { setBulk(false); setNotice({ tone: 'success', text: m }); refresh() }} />}
     </div>
   )

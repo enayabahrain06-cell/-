@@ -11,6 +11,7 @@
         "all_statuses": "كل الحالات",
         "circle": "الحلقة",
         "all_circles": "كل الحلقات",
+        "without_package": "بدون باقة",
         "juz": "الجزء الحالي",
         "all_juz": "كل الأجزاء",
         "not_started": "لم يبدأ",
@@ -183,6 +184,8 @@
     },
     "details": {
         "student_no": "رقم الطالب",
+        "cpr": "الرقم الشخصي (CPR)",
+        "address": "العنوان",
         "birth_date": "تاريخ الميلاد",
         "gender": "الجنس",
         "male": "ذكر",

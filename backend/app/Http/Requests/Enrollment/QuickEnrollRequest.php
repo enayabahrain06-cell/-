@@ -35,19 +35,35 @@ class QuickEnrollRequest extends FormRequest
             'waitlist' => filter_var($input['waitlist'] ?? false, FILTER_VALIDATE_BOOLEAN),
             'record_payment' => filter_var($input['record_payment'] ?? false, FILTER_VALIDATE_BOOLEAN),
             'confirm_duplicate' => filter_var($input['confirm_duplicate'] ?? false, FILTER_VALIDATE_BOOLEAN),
+            'cpr' => \App\Support\Cpr::normalize($input['cpr'] ?? null),
+            'address' => \App\Support\Cpr::address($input['address'] ?? null),
+            'without_package' => filter_var($input['without_package'] ?? false, FILTER_VALIDATE_BOOLEAN),
         ];
     }
 
+    /** The single form may save a student with no package yet (placed later from a circle); the bulk import may not. */
     public function rules(): array
     {
-        return self::fieldRules() + [
+        return [
+            'package_id' => ['exclude_if:without_package,true', 'required', 'integer'],
+            'lesson_id' => ['exclude_if:without_package,true', 'nullable', 'integer'],
+            'without_package' => ['boolean'],
+        ] + self::fieldRules() + [
             'photo' => ['nullable', 'file', 'mimes:jpg,jpeg,png,heic,heif', 'max:5120'],
         ];
+    }
+
+    /** Field names in validation messages ("مستوى الحفظ" rather than "memorization level"). */
+    public function attributes(): array
+    {
+        return __('enrollment.attributes');
     }
 
     public static function fieldRules(): array
     {
         return [
+            'cpr' => \App\Support\Cpr::rules(),
+            'address' => \App\Support\Cpr::addressRules(),
             'full_name' => ['required', 'string', 'min:3', 'max:150'],
             'birth_date' => ['required', 'date', 'before:today', 'after:'.now()->subYears(80)->toDateString()],
             'gender' => ['required', Gender::rule()],

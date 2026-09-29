@@ -10,7 +10,9 @@ import FormField from '../../components/FormField'
 import SelectField from '../../components/SelectField'
 import { ageFrom, formatMoney, formatNumber, formatTime } from '../../lib/format'
 import { toLatinDigits } from '../../lib/phone'
-import { SURFACE, buttonClass } from '../../components/ui'
+import { fatherNameFrom, type CardData } from '../../lib/cardReader'
+import CardReaderBar from './CardReaderBar'
+import { Badge, SURFACE, buttonClass } from '../../components/ui'
 
 interface StudentFields {
   full_name: string
@@ -20,9 +22,12 @@ interface StudentFields {
   student_phone: string
   guardian_name: string
   guardian_phone: string
+  /** Bahrain personal number (nine digits), optional; usually filled from the ID card. */
+  cpr: string
+  address: string
 }
 
-const EMPTY_STUDENT: StudentFields = { full_name: '', birth_date: '', gender: '', memorization_level: '', student_phone: '', guardian_name: '', guardian_phone: '' }
+const EMPTY_STUDENT: StudentFields = { full_name: '', birth_date: '', gender: '', memorization_level: '', student_phone: '', guardian_name: '', guardian_phone: '', cpr: '', address: '' }
 
 /**
  * Why a package the server left out does not fit, for its label only (the server still decides).
@@ -63,6 +68,8 @@ export default function QuickEnrollForm({ lock, onEnrolled }: { lock?: LockedCir
   const [packageId, setPackageId] = useState<number | null>(lock?.packageId ?? null)
   const [lessonId, setLessonId] = useState<number | null>(lock?.lessonId ?? null)
   const [waitlist, setWaitlist] = useState(false)
+  // Save the student now and place them in a circle later (not offered for a locked circle).
+  const [withoutPackage, setWithoutPackage] = useState(false)
   const [recordPayment, setRecordPayment] = useState(false)
   const [amount, setAmount] = useState('')
   const [photo, setPhoto] = useState<File | null>(null)
@@ -75,6 +82,25 @@ export default function QuickEnrollForm({ lock, onEnrolled }: { lock?: LockedCir
   const nameRef = useRef<HTMLInputElement>(null)
   const cameraRef = useRef<HTMLInputElement>(null)
   const uploadRef = useRef<HTMLInputElement>(null)
+
+  // A read ID card fills what the card knows (name, birth date, gender, CPR, photo) and keeps everything else.
+  const fromCard = (c: CardData) => {
+    const name = c.nameAr ?? c.nameEn
+    setF((prev) => ({
+      ...prev,
+      full_name: name ?? prev.full_name,
+      birth_date: c.birthDate ?? prev.birth_date,
+      gender: c.gender ?? prev.gender,
+      cpr: c.cpr ?? prev.cpr,
+      address: c.addressAr ?? c.addressEn ?? prev.address,
+      // The guardian is usually the father: the card name without the first name. Never overwrites a name staff
+      // typed or the guardian found by phone.
+      guardian_name: prev.guardian_name.trim() ? prev.guardian_name : fatherNameFrom(name) ?? prev.guardian_name,
+    }))
+    if (c.photo) setPhoto(c.photo)
+    setErrors((prev) => ({ ...prev, full_name: [], birth_date: [], gender: [], cpr: [], address: [], photo: [] }))
+    setDuplicate(null)
+  }
 
   const set = <K extends keyof StudentFields>(key: K, value: StudentFields[K]) => {
     setF((prev) => ({ ...prev, [key]: value }))
@@ -123,7 +149,7 @@ export default function QuickEnrollForm({ lock, onEnrolled }: { lock?: LockedCir
   // With a locked circle: does this child fit it (age and gender via the package), and does it still have a seat?
   const lockedFits = !lock || (!!selected && selected.circles.some((c) => c.id === lock.lessonId))
 
-  const canPay = !!options.data?.can_record_payment && !waitlist
+  const canPay = !!options.data?.can_record_payment && !waitlist && !withoutPackage
   const photoPreview = useMemo(() => (photo ? URL.createObjectURL(photo) : null), [photo])
   useEffect(() => () => void (photoPreview && URL.revokeObjectURL(photoPreview)), [photoPreview])
 
@@ -131,7 +157,7 @@ export default function QuickEnrollForm({ lock, onEnrolled }: { lock?: LockedCir
 
   const submit = async (e: FormEvent, confirmDuplicate = false) => {
     e.preventDefault()
-    if (!selected || !f.gender || !lockedFits) {
+    if (!withoutPackage && (!selected || !f.gender || !lockedFits)) {
       setErrors((prev) => ({ ...prev, package_id: [lock ? t('locked_not_suitable') : t('pick_package')] }))
       return
     }
@@ -141,12 +167,14 @@ export default function QuickEnrollForm({ lock, onEnrolled }: { lock?: LockedCir
     try {
       const result = await enrollmentApi.enroll({
         ...f,
-        gender: f.gender,
+        gender: f.gender as 'male' | 'female',
         guardian_phone: toLatinDigits(f.guardian_phone),
         student_phone: toLatinDigits(f.student_phone) || undefined,
-        package_id: selected.id,
-        lesson_id: waitlist ? null : lessonId,
-        waitlist,
+        cpr: toLatinDigits(f.cpr).replace(/\D/g, '') || undefined,
+        without_package: withoutPackage,
+        package_id: withoutPackage ? undefined : selected?.id,
+        lesson_id: waitlist || withoutPackage ? null : lessonId,
+        waitlist: waitlist && !withoutPackage,
         record_payment: canPay && recordPayment,
         payment_amount_fils: canPay && recordPayment ? Math.round(Number(toLatinDigits(amount)) * 1000) : undefined,
         confirm_duplicate: confirmDuplicate,
@@ -162,6 +190,7 @@ export default function QuickEnrollForm({ lock, onEnrolled }: { lock?: LockedCir
       if (!addAnother.current && !lock) {
         setPackageId(null)
         setLessonId(null)
+        setWithoutPackage(false)
       }
       setPhoto(null)
       setRecordPayment(false)
@@ -172,7 +201,10 @@ export default function QuickEnrollForm({ lock, onEnrolled }: { lock?: LockedCir
       const { message, fields } = parseApiError(ex)
       if (fields.duplicate) setDuplicate(fields.duplicate[0])
       setErrors(fields)
+      // An error with no field on screen (hidden package fields, an unexpected key) still has to be seen.
+      const unshown = Object.entries(fields).filter(([key]) => !shownErrorKeys(withoutPackage).includes(key)).flatMap(([, m]) => m)
       if (!Object.keys(fields).length) setFormError(message)
+      else if (unshown.length) setFormError(unshown.join(' '))
     } finally {
       setSaving(false)
       addAnother.current = false
@@ -199,6 +231,7 @@ export default function QuickEnrollForm({ lock, onEnrolled }: { lock?: LockedCir
       {formError && <Alert>{formError}</Alert>}
 
       <Section title={t('section_student')} className="grid gap-4 sm:grid-cols-2">
+        <CardReaderBar onRead={fromCard} />
         <FormField ref={nameRef} label={t('full_name')} value={f.full_name} onChange={(e) => set('full_name', e.target.value)} error={err('full_name')} autoComplete="off" required className="sm:col-span-2" autoFocus />
         <FormField
           label={t('birth_date')}
@@ -206,7 +239,7 @@ export default function QuickEnrollForm({ lock, onEnrolled }: { lock?: LockedCir
           value={f.birth_date}
           onChange={(e) => set('birth_date', e.target.value)}
           error={err('birth_date')}
-          hint={age !== null ? t('age_now', { age: formatNumber(age, locale) }) : undefined}
+          hint={age !== null ? <Badge tone="brand" className="tabular-nums">{t('age_now', { count: age, age: formatNumber(age, locale) })}</Badge> : undefined}
           max={new Date().toISOString().slice(0, 10)}
           required
         />
@@ -227,9 +260,12 @@ export default function QuickEnrollForm({ lock, onEnrolled }: { lock?: LockedCir
           value={f.memorization_level}
           onChange={(e) => set('memorization_level', e.target.value)}
           options={[{ value: '', label: t('choose') }, ...(levels.data?.memorization_levels ?? [])]}
+          error={err('memorization_level')}
           required
         />
         <FormField label={t('student_phone')} type="tel" inputMode="tel" dir="ltr" value={f.student_phone} onChange={(e) => set('student_phone', e.target.value)} error={err('student_phone')} hint={t('optional')} placeholder="3xxxxxxx" />
+        <FormField label={t('cpr')} inputMode="numeric" dir="ltr" value={f.cpr} onChange={(e) => set('cpr', e.target.value)} error={err('cpr')} hint={t('cpr_hint')} placeholder="000000000" maxLength={11} />
+        <FormField label={t('address')} value={f.address} onChange={(e) => set('address', e.target.value)} error={err('address')} hint={t('address_hint')} dir="auto" maxLength={500} autoComplete="off" className="sm:col-span-2" />
         <div className="sm:col-span-2">
           <span className="mb-1.5 block text-sm font-medium text-ink/75">
             {t('photo')} <span className="font-normal text-ink/50">({t('optional')})</span>
@@ -291,7 +327,27 @@ export default function QuickEnrollForm({ lock, onEnrolled }: { lock?: LockedCir
       </Section>
 
       <Section title={t('section_placement')} className="space-y-4">
-        {lock ? (
+        {!lock && (
+          <label className="flex cursor-pointer items-start gap-3 rounded-xl border border-ink/15 bg-white px-4 py-3 text-sm focus-within:ring-4 focus-within:ring-brand-100">
+            <input
+              type="checkbox"
+              checked={withoutPackage}
+              onChange={(e) => {
+                setWithoutPackage(e.target.checked)
+                setRecordPayment(false)
+                setErrors((prev) => ({ ...prev, package_id: [], lesson_id: [], record_payment: [] }))
+              }}
+              className="mt-0.5 size-4 shrink-0 accent-brand-700"
+            />
+            <span>
+              <span className="block font-medium text-ink">{t('without_package')}</span>
+              <span className="mt-0.5 block text-ink/60">{t('without_package_hint')}</span>
+            </span>
+          </label>
+        )}
+        {withoutPackage ? (
+          err('record_payment') && <p className="text-sm text-danger">{err('record_payment')}</p>
+        ) : lock ? (
           <>
             <div className="rounded-xl border border-brand-600 bg-brand-50 px-4 py-3">
               <span className="block text-xs text-ink/55">{t('locked_circle')}</span>
@@ -406,7 +462,7 @@ export default function QuickEnrollForm({ lock, onEnrolled }: { lock?: LockedCir
 
       <div className="flex flex-col gap-3 sm:flex-row">
         <Button type="submit" loading={saving} className="sm:w-auto sm:px-8">
-          {waitlist ? t('save_waitlist') : t('save')}
+          {withoutPackage ? t('save_without_package') : waitlist ? t('save_waitlist') : t('save')}
         </Button>
         <Button type="submit" variant="ghost" className="border border-brand-700/30 sm:w-auto sm:px-6" disabled={saving} onClick={() => (addAnother.current = true)}>
           {t('save_another')}
@@ -414,6 +470,12 @@ export default function QuickEnrollForm({ lock, onEnrolled }: { lock?: LockedCir
       </div>
     </form>
   )
+}
+
+/** Error keys the form renders next to a field; with no package the package and circle pickers are hidden. */
+function shownErrorKeys(withoutPackage: boolean): string[] {
+  const always = ['full_name', 'birth_date', 'gender', 'memorization_level', 'student_phone', 'cpr', 'address', 'photo', 'guardian_phone', 'guardian_name', 'duplicate', 'record_payment', 'payment_amount_fils']
+  return withoutPackage ? always : [...always, 'package_id', 'lesson_id']
 }
 
 /** A form section: a fieldset whose legend sits inside the card (float trick) and which may shrink below its content width. */

@@ -1,0 +1,17 @@
+/*
+ * Default colour tokens for @ahl/id-card-reader/react (Tailwind v4).
+ * Import after "tailwindcss" in a host that does not define these tokens itself, and let Tailwind scan the package:
+ *   @import "@ahl/id-card-reader/theme.css";
+ *   @source "../node_modules/@ahl/id-card-reader/src";
+ * A host with its own design system defines the same names in its @theme and skips this file.
+ */
+@theme {
+  --color-brand-50: #eef4fb;
+  --color-brand-500: #3b73b9;
+  --color-brand-600: #2c5d9c;
+  --color-brand-700: #244e84;
+  --color-brand-800: #1d3f6b;
+  --color-gold-700: #8f6822;
+  --color-ink: #1f2937;
+  --color-danger: #b42318;
+}

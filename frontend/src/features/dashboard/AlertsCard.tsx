@@ -131,11 +131,11 @@ export default function AlertsCard() {
   return (
     <section className={`${SURFACE} flex min-w-0 flex-col`} aria-labelledby="alerts-title">
       <h2 id="alerts-title" className="flex items-center gap-2 border-b border-ink/8 px-5 py-4 text-base font-semibold text-ink">
-        <Icon name="alert" className="size-5 text-gold-700" />
-        {t('alerts.title')}
-        {allTotal > 0 && <span className="rounded-full bg-danger px-2 py-0.5 text-xs font-semibold text-white">{formatNumber(allTotal, locale)}</span>}
+        <Icon name="alert" className="size-5 shrink-0 text-gold-700" />
+        <span className="min-w-0">{t('alerts.title')}</span>
+        {allTotal > 0 && <span className="shrink-0 rounded-full bg-danger px-2 py-0.5 text-xs font-semibold text-white">{formatNumber(allTotal, locale)}</span>}
         {allTotal > 0 && (
-          <button type="button" onClick={() => pick(type === null ? '' : null)} className="ms-auto text-sm font-medium text-brand-700 hover:underline">
+          <button type="button" onClick={() => pick(type === null ? '' : null)} className="ms-auto shrink-0 whitespace-nowrap text-sm font-medium text-brand-700 hover:underline">
             {type === null ? t('alerts.view_all_short') : t('alerts.show_less')}
           </button>
         )}

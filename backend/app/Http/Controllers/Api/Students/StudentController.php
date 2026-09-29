@@ -32,12 +32,14 @@ class StudentController extends Controller
             ->when($user->hasRole('teacher') && ! $user->can('students.manage'), fn ($q) => $q->whereHas('lessonStudents', fn ($w) => $w->where('status', 'active')->whereIn('lesson_id', $user->lessons()->select('id'))))
             ->when($request->filled('search'), function ($q) use ($request) {
                 $s = '%'.$request->string('search').'%';
-                $q->where(fn ($w) => $w->where('full_name', 'like', $s)->orWhere('student_no', 'like', $s)->orWhere('guardian_phone', 'like', $s)->orWhere('student_phone', 'like', $s)->orWhere('guardian_name', 'like', $s));
+                $q->where(fn ($w) => $w->where('full_name', 'like', $s)->orWhere('student_no', 'like', $s)->orWhere('guardian_phone', 'like', $s)->orWhere('student_phone', 'like', $s)->orWhere('guardian_name', 'like', $s)->orWhere('cpr', 'like', $s));
             })
             ->when($request->filled('status'), fn ($q) => $q->where('status', $request->string('status')))
             ->when($request->filled('gender'), fn ($q) => $q->where('gender', $request->string('gender')))
             ->when($request->filled('memorization_level'), fn ($q) => $q->where('memorization_level', $request->string('memorization_level')))
-            ->when($request->filled('lesson_id'), fn ($q) => $q->whereHas('lessonStudents', fn ($w) => $w->where('status', 'active')->where('lesson_id', $request->integer('lesson_id'))))
+            // lesson_id=none: students in no active circle, so in no package yet (e.g. saved from quick enrollment without one).
+            ->when($request->input('lesson_id') === 'none', fn ($q) => $q->whereDoesntHave('lessonStudents', fn ($w) => $w->where('status', 'active')))
+            ->when($request->filled('lesson_id') && $request->input('lesson_id') !== 'none', fn ($q) => $q->whereHas('lessonStudents', fn ($w) => $w->where('status', 'active')->where('lesson_id', $request->integer('lesson_id'))))
             ->when($request->filled('package_id'), fn ($q) => $q->whereHas('lessonStudents', fn ($w) => $w->where('status', 'active')->whereIn('lesson_id', \App\Models\Lesson::where('package_id', $request->integer('package_id'))->select('id'))))
             ->when($request->boolean('due'), fn ($q) => $q->whereHas('wallet', fn ($w) => $w->where('balance_fils', '<', 0)))
             ->when($request->filled('juz'), fn ($q) => $request->integer('juz') === 0 ? $q->whereNull('progress_juz') : $q->where('progress_juz', $request->integer('juz')))
@@ -70,7 +72,7 @@ class StudentController extends Controller
     {
         $this->authorize('update', $student);
 
-        $old = $student->only(['full_name', 'birth_date', 'gender', 'guardian_name', 'memorization_level', 'status', 'yearly_target_ayahs']);
+        $old = $student->only(['cpr', 'address', 'full_name', 'birth_date', 'gender', 'guardian_name', 'memorization_level', 'status', 'yearly_target_ayahs']);
         $student->update($request->validated());
         $audit->record('student.updated', $student, $old, $student->only(array_keys($old)));
 

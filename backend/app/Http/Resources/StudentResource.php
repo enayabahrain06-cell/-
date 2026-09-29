@@ -17,6 +17,8 @@ class StudentResource extends JsonResource
             'memorization_level_label' => $this->memorization_level?->label(),
             'status_label' => $this->status?->label(),
             'yearly_target_ayahs' => $this->yearly_target_ayahs,
+            // Home address (from the ID card or typed by staff): staff only, like the CPR.
+            'address' => $this->when($request->user()?->can('students.view') ?? false, $this->address),
             'notes' => $this->when($request->user()?->can('students.manage') ?? false, $this->notes),
             'guardian' => $this->whenLoaded('guardian', fn () => $this->guardian ? ['id' => $this->guardian->id, 'name' => $this->guardian->name, 'phone' => $this->guardian->phone, 'locale' => $this->guardian->locale?->value] : null),
             'user' => $this->whenLoaded('user', fn () => $this->user ? ['id' => $this->user->id, 'phone' => $this->user->phone, 'last_login_at' => display_tz($this->user->last_login_at)?->toIso8601String()] : null),

@@ -11,6 +11,7 @@
         "all_statuses": "All statuses",
         "circle": "Circle",
         "all_circles": "All circles",
+        "without_package": "Without package",
         "juz": "Current juz",
         "all_juz": "All juz",
         "not_started": "Not started",
@@ -183,6 +184,8 @@
     },
     "details": {
         "student_no": "Student number",
+        "cpr": "CPR number",
+        "address": "Address",
         "birth_date": "Birth date",
         "gender": "Gender",
         "male": "Male",

@@ -191,6 +191,7 @@
     "include_waitlist": "Include the waitlist",
     "bulk_result": "{{accepted}} accepted, {{skipped}} skipped. Seats left: {{left}}.",
     "photo": "Photo attached",
+    "cpr": "CPR",
     "no_photo": "No photo",
     "position": "#{{n}}",
     "student_link": "Student profile",

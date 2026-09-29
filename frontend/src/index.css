@@ -1,6 +1,7 @@
 @import "tailwindcss";
 /* Certificates package screens (linked from packages/, not scanned as part of node_modules). */
 @source "../../packages/certificates-react/src";
+@source "../../packages/id-card-reader/src";
 
 /* Theme tokens from the spec. Logical utilities only (ps/pe, ms/me, start/end). */
 @theme {
@@ -117,6 +118,21 @@
     font-family: var(--font-quran) !important;
     font-weight: 400 !important;
     letter-spacing: 0 !important;
+  }
+}
+
+@layer utilities {
+  /*
+   * dir="auto" gives a block its own text's direction, so text-start on it followed the text: a Latin title in
+   * the Arabic UI hugged the left edge and an Arabic name in the English UI the right one, and rows looked
+   * broken. "Start" on these blocks means the page's reading start, so align them by the page direction
+   * (text-align: match-parent would say this, but Chromium resolves it against the element's own direction).
+   */
+  html[dir="ltr"] .text-start[dir="auto"] {
+    text-align: left;
+  }
+  html[dir="rtl"] .text-start[dir="auto"] {
+    text-align: right;
   }
 }
 

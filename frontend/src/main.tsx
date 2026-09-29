@@ -6,6 +6,7 @@ import './lib/i18n'
 import './index.css'
 import { AuthProvider } from './app/AuthContext'
 import { AppCertificatesProvider } from './app/certificates'
+import { AppIdCardProvider } from './app/idCard'
 import { router } from './app/routes'
 import { initOrnamentLevel } from './lib/ornament'
 
@@ -20,7 +21,9 @@ createRoot(document.getElementById('root')!).render(
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
         <AppCertificatesProvider>
-          <RouterProvider router={router} />
+          <AppIdCardProvider>
+            <RouterProvider router={router} />
+          </AppIdCardProvider>
         </AppCertificatesProvider>
       </AuthProvider>
     </QueryClientProvider>

@@ -90,7 +90,7 @@ export default function StudentsListPage() {
           hideLabel
           value={filters.lesson_id ?? ''}
           onChange={(e) => setFilter('lesson_id', e.target.value)}
-          options={[{ value: '', label: t('filters.all_circles') }, ...(lessons.data ?? []).map((l) => ({ value: String(l.id), label: l.name }))]}
+          options={[{ value: '', label: t('filters.all_circles') }, { value: 'none', label: t('filters.without_package') }, ...(lessons.data ?? []).map((l) => ({ value: String(l.id), label: l.name }))]}
         />
         <SelectField
           label={t('filters.juz')}

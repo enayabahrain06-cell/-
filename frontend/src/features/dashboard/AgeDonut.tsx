@@ -26,7 +26,7 @@ export default function AgeDonut({ data }: { data: AgeDistribution }) {
   const shown = active !== null ? bands[active] : null
 
   return (
-    <section className={`${SURFACE} flex flex-col p-4 sm:p-5`} aria-labelledby="age-title">
+    <section className={`${SURFACE} @container flex flex-col p-4 sm:p-5`} aria-labelledby="age-title">
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
           <h2 id="age-title" className="text-base font-semibold text-ink">{t('age.title')}</h2>
@@ -70,7 +70,8 @@ export default function AgeDonut({ data }: { data: AgeDistribution }) {
           </table>
         </TableWrap>
       ) : (
-        <div className="mt-2 flex flex-1 flex-col items-center gap-4 sm:flex-row lg:flex-col xl:flex-row">
+        <div className="mt-3 flex flex-1 flex-col items-center justify-center gap-4 @md:flex-row @md:gap-8">
+          {/* By the card width, not the viewport: donut beside its legend from 28rem, stacked in a narrow column */}
           <div className="relative size-40 shrink-0" dir="ltr">
             <ResponsiveContainer width="100%" height="100%">
               <PieChart>
@@ -104,7 +105,7 @@ export default function AgeDonut({ data }: { data: AgeDistribution }) {
             </div>
           </div>
 
-          <ul className="w-full min-w-0 flex-1 space-y-1 text-sm">
+          <ul className="w-full min-w-0 space-y-1 text-sm @md:max-w-sm @md:flex-1">
             {bands.map((b, i) => (
               <li
                 key={b.key}

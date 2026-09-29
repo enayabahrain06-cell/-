@@ -11,6 +11,8 @@ import FormField from '../../../components/FormField'
 import { EmptyState, StarSpinner } from '../../../components/ornaments'
 import { PrimaryButton, SURFACE, inputClass } from '../../../components/ui'
 import { formatDate, formatMoney, formatNumber, formatPercent } from '../../../lib/format'
+import { toLatinDigits } from '../../../lib/phone'
+import CardApplyDialog from '../../enrollment/CardApplyDialog'
 import JuzMap from './JuzMap'
 import TrendChart from './TrendChart'
 import WalletCharts from './WalletCharts'
@@ -329,7 +331,12 @@ export function DetailsTab({ student, canEdit, canPhoto }: { student: StudentDet
   const locale = i18n.language
   const qc = useQueryClient()
   const [editing, setEditing] = useState(false)
-  const [form, setForm] = useState({ full_name: student.full_name, guardian_name: student.guardian_name, yearly_target_ayahs: student.yearly_target_ayahs ?? '', status: student.status, notes: student.notes ?? '' })
+  const [form, setForm] = useState({ full_name: student.full_name, guardian_name: student.guardian_name, cpr: student.cpr ?? '', address: student.address ?? '', yearly_target_ayahs: student.yearly_target_ayahs ?? '', status: student.status, notes: student.notes ?? '' })
+  // Read the ID card and let staff apply its details (and, if allowed, its photo) to this student.
+  const [carding, setCarding] = useState(false)
+  // The CPR field is only offered to staff who can see it (the server omits it otherwise).
+  const showCpr = student.cpr !== undefined
+  const showAddress = student.address !== undefined
   const [error, setError] = useState<string | null>(null)
   const [saved, setSaved] = useState(false)
 
@@ -340,7 +347,10 @@ export function DetailsTab({ student, canEdit, canPhoto }: { student: StudentDet
   }
 
   const save = useMutation({
-    mutationFn: () => studentsApi.update(student.id, { ...form, yearly_target_ayahs: form.yearly_target_ayahs === '' ? null : Number(form.yearly_target_ayahs) }),
+    mutationFn: () => {
+      const { cpr, address, ...rest } = form
+      return studentsApi.update(student.id, { ...rest, ...(showCpr ? { cpr: toLatinDigits(cpr).replace(/\D/g, '') || null } : {}), ...(showAddress ? { address: address.trim() || null } : {}), yearly_target_ayahs: form.yearly_target_ayahs === '' ? null : Number(form.yearly_target_ayahs) })
+    },
     onSuccess: () => { setEditing(false); setSaved(true); setError(null); invalidate() },
     onError: (e) => setError(parseApiError(e).message),
   })
@@ -352,6 +362,8 @@ export function DetailsTab({ student, canEdit, canPhoto }: { student: StudentDet
 
   const rows: [string, React.ReactNode][] = [
     [t('details.student_no'), <span className="tabular-nums">{student.student_no}</span>],
+    ...(showCpr ? [[t('details.cpr'), student.cpr ? <span dir="ltr" className="tabular-nums">{student.cpr}</span> : '—'] as [string, React.ReactNode]] : []),
+    ...(showAddress ? [[t('details.address'), student.address ? <span dir="auto">{student.address}</span> : '—'] as [string, React.ReactNode]] : []),
     [t('details.birth_date'), student.birth_date ? formatDate(student.birth_date, locale) : '—'],
     [t('details.gender'), t(`details.${student.gender}`)],
     [t('details.level'), student.memorization_level_label ?? '—'],
@@ -365,6 +377,17 @@ export function DetailsTab({ student, canEdit, canPhoto }: { student: StudentDet
     <div className="space-y-5">
       {error && <Alert>{error}</Alert>}
       {saved && !editing && <Alert tone="success">{t('details.saved')}</Alert>}
+      {carding && (
+        <CardApplyDialog title={t('apply_title', { ns: 'idCard', name: student.full_name })} allowPhoto={canPhoto}
+          current={{ full_name: student.full_name, birth_date: student.birth_date?.slice(0, 10) ?? '', gender: student.gender, cpr: student.cpr ?? '', address: student.address ?? '' }}
+          onClose={() => setCarding(false)}
+          onApply={async (patch, photo) => {
+            const { gender, ...rest } = patch
+            if (Object.keys(patch).length) await studentsApi.update(student.id, { ...rest, ...(gender ? { gender } : {}) })
+            if (photo && canPhoto) await studentsApi.uploadPhoto(student.id, photo)
+            setCarding(false); setSaved(true); setError(null); invalidate()
+          }} />
+      )}
 
       {canPhoto && (
         <section className={card}>
@@ -383,9 +406,14 @@ export function DetailsTab({ student, canEdit, canPhoto }: { student: StudentDet
         <div className="mb-3 flex items-center justify-between gap-2">
           <h3 className="font-semibold text-ink">{t('tabs.details')}</h3>
           {canEdit && !editing && (
+            <span className="flex flex-wrap gap-2">
+            <button type="button" onClick={() => { setCarding(true); setSaved(false) }} className="inline-flex items-center gap-1.5 rounded-lg border border-ink/10 px-2.5 py-1.5 text-sm text-ink/75 hover:bg-ink/5">
+              <Icon name="students" className="size-4" />{t('read', { ns: 'idCard' })}
+            </button>
             <button type="button" onClick={() => { setEditing(true); setSaved(false) }} className="inline-flex items-center gap-1.5 rounded-lg border border-ink/10 px-2.5 py-1.5 text-sm text-ink/75 hover:bg-ink/5">
               <Icon name="edit" className="size-4" />{t('details.edit')}
             </button>
+            </span>
           )}
         </div>
 
@@ -393,6 +421,8 @@ export function DetailsTab({ student, canEdit, canPhoto }: { student: StudentDet
           <form onSubmit={(e) => { e.preventDefault(); save.mutate() }} className="grid gap-4 sm:grid-cols-2">
             <FormField label={t('columns.student')} value={form.full_name} onChange={(e) => setForm({ ...form, full_name: e.target.value })} required minLength={3} />
             <FormField label={t('details.guardian')} value={form.guardian_name} onChange={(e) => setForm({ ...form, guardian_name: e.target.value })} required minLength={3} />
+            {showCpr && <FormField label={t('details.cpr')} inputMode="numeric" dir="ltr" value={form.cpr} onChange={(e) => setForm({ ...form, cpr: e.target.value })} placeholder="000000000" maxLength={11} />}
+            {showAddress && <FormField label={t('details.address')} dir="auto" value={form.address} onChange={(e) => setForm({ ...form, address: e.target.value })} maxLength={500} className="sm:col-span-2" />}
             <FormField label={t('details.yearly_target')} type="number" min={0} inputMode="numeric" value={form.yearly_target_ayahs} onChange={(e) => setForm({ ...form, yearly_target_ayahs: e.target.value })} />
             <SelectField label={t('columns.status')} value={form.status} onChange={(e) => setForm({ ...form, status: e.target.value })}
               options={['active', 'inactive', 'suspended', 'graduated'].map((s) => ({ value: s, label: t(`status.${s}`) }))} />

@@ -13,6 +13,8 @@ class StudentSummaryResource extends JsonResource
         return [
             'id' => $this->id,
             'student_no' => $this->student_no,
+            // National ID number: staff only, never shown to students or guardians.
+            'cpr' => $this->when($request->user()?->can('students.view') ?? false, $this->cpr),
             'full_name' => $this->full_name,
             'initial' => $this->initial(),
             'gender' => $this->gender?->value,

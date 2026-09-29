@@ -32,7 +32,7 @@ export default function AttendanceChart({ days }: { days: AttendanceDay[] }) {
   const data = rtl ? [...days].reverse() : days
 
   return (
-    <section className={`${SURFACE} p-4 sm:p-5`} aria-labelledby="attendance-chart-title">
+    <section className={`${SURFACE} flex flex-col p-4 sm:p-5`} aria-labelledby="attendance-chart-title">
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
           <h2 id="attendance-chart-title" className="text-base font-semibold text-ink">{t('chart.title')}</h2>
@@ -82,42 +82,45 @@ export default function AttendanceChart({ days }: { days: AttendanceDay[] }) {
           </table>
         </div>
       ) : (
-        <div className="mt-4 h-64" dir="ltr">
-          <ResponsiveContainer width="100%" height="100%">
-            <BarChart data={data} margin={{ top: 4, right: rtl ? 0 : 4, left: rtl ? 4 : 0, bottom: 0 }} barCategoryGap="28%">
-              <CartesianGrid vertical={false} {...CHART_GRID} />
-              <XAxis
-                dataKey="date"
-                tickLine={false}
-                axisLine={CHART_AXIS_LINE}
-                tick={CHART_TICK}
-                tickFormatter={(v: string) => formatDate(v, locale, { day: 'numeric' })}
-                interval={0}
-              />
-              <YAxis
-                orientation={rtl ? 'right' : 'left'}
-                allowDecimals={false}
-                tickLine={false}
-                axisLine={false}
-                width={32}
-                tick={CHART_TICK}
-                tickFormatter={(v: number) => formatNumber(v, locale)}
-              />
-              <Tooltip cursor={CHART_BAR_CURSOR} content={<ChartTooltip locale={locale} />} />
-              {SERIES.map((s, i) => (
-                <Bar
-                  key={s.key}
-                  dataKey={s.key}
-                  stackId="a"
-                  fill={s.color}
-                  stroke="#ffffff"
-                  strokeWidth={2}
-                  radius={i === SERIES.length - 1 ? [4, 4, 0, 0] : 0}
-                  isAnimationActive={false}
+        <div className="relative mt-4 min-h-64 flex-1" dir="ltr">
+          {/* At least 16rem; grows when a taller card shares its row (teachers: the age chart), instead of leaving a blank band */}
+          <div className="absolute inset-0">
+            <ResponsiveContainer width="100%" height="100%">
+              <BarChart data={data} margin={{ top: 4, right: rtl ? 0 : 4, left: rtl ? 4 : 0, bottom: 0 }} barCategoryGap="28%">
+                <CartesianGrid vertical={false} {...CHART_GRID} />
+                <XAxis
+                  dataKey="date"
+                  tickLine={false}
+                  axisLine={CHART_AXIS_LINE}
+                  tick={CHART_TICK}
+                  tickFormatter={(v: string) => formatDate(v, locale, { day: 'numeric' })}
+                  interval={0}
                 />
-              ))}
-            </BarChart>
-          </ResponsiveContainer>
+                <YAxis
+                  orientation={rtl ? 'right' : 'left'}
+                  allowDecimals={false}
+                  tickLine={false}
+                  axisLine={false}
+                  width={32}
+                  tick={CHART_TICK}
+                  tickFormatter={(v: number) => formatNumber(v, locale)}
+                />
+                <Tooltip cursor={CHART_BAR_CURSOR} content={<ChartTooltip locale={locale} />} />
+                {SERIES.map((s, i) => (
+                  <Bar
+                    key={s.key}
+                    dataKey={s.key}
+                    stackId="a"
+                    fill={s.color}
+                    stroke="#ffffff"
+                    strokeWidth={2}
+                    radius={i === SERIES.length - 1 ? [4, 4, 0, 0] : 0}
+                    isAnimationActive={false}
+                  />
+                ))}
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
         </div>
       )}
     </section>

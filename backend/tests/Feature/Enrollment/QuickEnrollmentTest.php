@@ -210,3 +210,50 @@ it('previews an Excel sheet with row errors and enrolls the valid rows', functio
 
     $this->get('/api/enrollment/import/template')->assertOk()->assertDownload('quick-enrollment-template.xlsx');
 });
+
+it('saves a student without a package and lists them under "without package" until placed in a circle', function () {
+    actingAsRole('super_admin');
+
+    $res = $this->postJson('/api/enrollment', quickPayload(['package_id' => null, 'lesson_id' => null, 'without_package' => true]))
+        ->assertCreated()
+        ->assertJsonPath('status', 'saved')
+        ->assertJsonPath('request_no', null)
+        ->assertJsonPath('payment', null);
+
+    $student = Student::findOrFail($res->json('student.id'));
+    expect($student->guardian->phone)->toBe('+97336005001')
+        ->and(Wallet::where('student_id', $student->id)->exists())->toBeTrue()
+        ->and(RegistrationRequest::where('student_id', $student->id)->exists())->toBeFalse()
+        ->and(Invoice::where('student_id', $student->id)->exists())->toBeFalse()
+        ->and(LessonStudent::where('student_id', $student->id)->exists())->toBeFalse()
+        ->and(AuditLog::where('action', 'enrollment.saved_without_package')->exists())->toBeTrue();
+
+    $placed = Student::factory()->male()->create();
+    LessonStudent::create(['lesson_id' => $this->boysCircle->id, 'student_id' => $placed->id, 'status' => 'active', 'joined_at' => today()]);
+    $ids = collect($this->getJson('/api/students?lesson_id=none&per_page=100')->assertOk()->json('data'))->pluck('id');
+    expect($ids)->toContain($student->id)->not->toContain($placed->id);
+
+    // Placed later from the circle page, the student leaves the "without package" list.
+    $this->postJson("/api/lessons/{$this->boysCircle->id}/students", ['student_ids' => [$student->id]])->assertSuccessful();
+    expect(collect($this->getJson('/api/students?lesson_id=none&per_page=100')->json('data'))->pluck('id'))->not->toContain($student->id);
+});
+
+it('refuses a payment without a package and still requires a package otherwise', function () {
+    actingAsRole('super_admin');
+
+    $this->postJson('/api/enrollment', quickPayload(['package_id' => null, 'lesson_id' => null, 'without_package' => true, 'record_payment' => true, 'payment_amount_fils' => 5000]))
+        ->assertUnprocessable()->assertJsonValidationErrors('record_payment');
+
+    $this->postJson('/api/enrollment', quickPayload(['package_id' => null, 'lesson_id' => null]))
+        ->assertUnprocessable()->assertJsonValidationErrors('package_id');
+});
+
+it('names the missing memorization level in Arabic', function () {
+    actingAsRole('super_admin');
+    app()->setLocale('ar');
+
+    $this->postJson('/api/enrollment', array_diff_key(quickPayload(['without_package' => true]), ['memorization_level' => 1]))
+        ->assertUnprocessable()
+        ->assertJsonValidationErrors('memorization_level')
+        ->assertJsonPath('errors.memorization_level.0', fn (string $m) => str_contains($m, 'مستوى الحفظ'));
+});

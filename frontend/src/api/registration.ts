@@ -88,6 +88,9 @@ export interface RegistrationRequest {
   birth_date?: string | null
   age_at_start: number
   gender: 'male' | 'female'
+  /** Staff only: the nine-digit CPR, copied to the student on acceptance. */
+  cpr?: string | null
+  address?: string | null
   student_phone?: string | null
   guardian_name?: string
   guardian_phone?: string
@@ -191,6 +194,11 @@ export const requestsApi = {
   circles: (id: number) => api.get<{ data: MatchedCircle[]; recommended_id: number | null }>(`/registrations/${id}/circles`).then((r) => r.data),
   waitlist: (id: number, note?: string) => api.post(`/registrations/${id}/waitlist`, { note }).then((r) => r.data),
   reject: (id: number, reason: string) => api.post(`/registrations/${id}/reject`, { reason }).then((r) => r.data),
+  /** Correct an undecided request (for example from the ID card); age and gender are re-checked against the package. */
+  update: (id: number, d: { full_name?: string; birth_date?: string; gender?: 'male' | 'female'; cpr?: string; address?: string }) =>
+    api.put<{ data: RegistrationRequest }>(`/registrations/${id}`, d).then((r) => r.data.data),
+  /** Set the request's photo (for example the ID card photo); it moves to the student on acceptance. */
+  photo: (id: number, file: File) => { const f = new FormData(); f.append('photo', file); return api.post<{ data: RegistrationRequest }>(`/registrations/${id}/photo`, f).then((r) => r.data.data) },
   bulkAccept: (d: { package_id: number; statuses?: string[]; gender?: string }) =>
     api.post<{ message: string; accepted: { id: number; request_no: string }[]; skipped: { id: number; request_no: string; reason: string }[]; seats_left: number }>('/registrations/bulk-accept', d).then((r) => r.data),
 }

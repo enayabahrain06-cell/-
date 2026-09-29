@@ -1,0 +1,13 @@
+Put iGA's "GCC CardRead Server" installer in this folder, so the kit has everything in one place.
+
+It was not found on the PC where this kit was made. Ask iGA (Information & eGovernment Authority) for the current
+installer. Their card software updates come from smartcard.gov.bh. If iGA gives you a NEWER version than the one
+installed now, 1-Setup.cmd may no longer be needed: install it, then run 2-Check.cmd. If the check passes, stop there.
+
+-----
+
+ضع مثبّت برنامج الهيئة "GCC CardRead Server" في هذا المجلد، ليكون كل ما يلزم في مكان واحد.
+
+لم يُعثر عليه في الجهاز الذي أُعدّت عليه هذه الحزمة. اطلب المثبّت الحالي من هيئة المعلومات والحكومة الإلكترونية
+(تحديثات برامج البطاقة من smartcard.gov.bh). إذا زوّدتك الهيئة بإصدار أحدث من المثبّت حاليًا فقد لا تحتاج إلى
+1-Setup.cmd: ثبّته ثم شغّل 2-Check.cmd، فإذا نجح الفحص فلا حاجة لخطوات أخرى.

@@ -31,7 +31,7 @@ class RegistrationRequestController extends Controller
             ->when($request->filled('package_id'), fn ($q) => $q->where('package_id', $request->integer('package_id')))
             ->when($request->filled('search'), function ($q) use ($request) {
                 $s = '%'.$request->string('search').'%';
-                $q->where(fn ($w) => $w->where('full_name', 'like', $s)->orWhere('guardian_phone', 'like', $s)->orWhere('guardian_name', 'like', $s)->orWhere('request_no', 'like', $s));
+                $q->where(fn ($w) => $w->where('full_name', 'like', $s)->orWhere('guardian_phone', 'like', $s)->orWhere('guardian_name', 'like', $s)->orWhere('request_no', 'like', $s)->orWhere('cpr', 'like', $s));
             })
             ->when($request->filled('from'), fn ($q) => $q->whereDate('created_at', '>=', $request->date('from')))
             ->when($request->filled('to'), fn ($q) => $q->whereDate('created_at', '<=', $request->date('to')));
@@ -89,6 +89,63 @@ class RegistrationRequestController extends Controller
             'request' => new RegistrationRequestResource($registration->fresh(['package', 'student', 'levelConfirmer', 'placementAttempt.exam', 'placementAttempt.answers'])),
             'student' => new StudentSummaryResource($student),
         ]);
+    }
+
+    /**
+     * Correct a request's details before deciding it, for example from the student's ID card: name, birth
+     * date, gender and CPR. Birth date and gender are re-checked against the package, like the public form.
+     */
+    public function update(Request $request, RegistrationRequest $registration, \App\Services\AuditLogger $audit): RegistrationRequestResource
+    {
+        $this->authorize('decide', $registration);
+        if ($registration->status->isDecided()) {
+            throw ValidationException::withMessages(['status' => __('registration.errors.already_accepted')]);
+        }
+        if ($request->exists('cpr')) {
+            $request->merge(['cpr' => \App\Support\Cpr::normalize($request->input('cpr'))]);
+        }
+        if ($request->exists('address')) {
+            $request->merge(['address' => \App\Support\Cpr::address($request->input('address'))]);
+        }
+        $data = $request->validate([
+            'full_name' => ['sometimes', 'string', 'min:3', 'max:150'],
+            'birth_date' => ['sometimes', 'date', 'before:today'],
+            'gender' => ['sometimes', \App\Enums\Gender::rule()],
+            'cpr' => \App\Support\Cpr::rules(),
+            'address' => \App\Support\Cpr::addressRules(),
+        ]);
+
+        if ($holder = \App\Support\Cpr::holder($data['cpr'] ?? null)) {
+            throw ValidationException::withMessages(['cpr' => \App\Support\Cpr::takenMessage($holder)]);
+        }
+
+        $birth = \Carbon\Carbon::parse($data['birth_date'] ?? $registration->birth_date);
+        $gender = \App\Enums\Gender::from($data['gender'] ?? $registration->gender->value);
+        $check = \App\Services\Registration\PackageSuitability::check($registration->package, $birth, $gender);
+        if (! $check['suitable'] && $check['reason'] !== 'closed') {
+            throw ValidationException::withMessages([$check['reason'] === 'gender' ? 'gender' : 'birth_date' => __('registration.errors.'.$check['reason'], [
+                'age' => $check['age_at_start'], 'min' => $registration->package->min_age, 'max' => $registration->package->max_age,
+            ])]);
+        }
+
+        $old = $registration->only(['full_name', 'birth_date', 'gender', 'cpr', 'address']);
+        $registration->update($data + ['age_at_start' => $check['age_at_start']]);
+        $audit->record('registration.updated', $registration, $old, $registration->only(array_keys($old)));
+
+        return new RegistrationRequestResource($registration->fresh(['package', 'student', 'decider', 'media', 'levelConfirmer', 'placementAttempt.exam', 'placementAttempt.answers']));
+    }
+
+    /** Set or replace the request's photo (for example the ID card photo); it moves to the student on acceptance. */
+    public function photo(Request $request, RegistrationRequest $registration, RegistrationService $service): RegistrationRequestResource
+    {
+        $this->authorize('decide', $registration);
+        if ($registration->status->isDecided()) {
+            throw ValidationException::withMessages(['status' => __('registration.errors.already_accepted')]);
+        }
+        $request->validate(['photo' => ['required', 'file', 'mimes:jpg,jpeg,png,heic,heif', 'max:5120']]);
+        $service->attachPhoto($registration, $request->file('photo'));
+
+        return new RegistrationRequestResource($registration->fresh(['package', 'student', 'decider', 'media']));
     }
 
     public function waitlist(Request $request, RegistrationRequest $registration, RegistrationService $service): JsonResponse

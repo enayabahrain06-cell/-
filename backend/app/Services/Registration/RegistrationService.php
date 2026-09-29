@@ -153,11 +153,9 @@ class RegistrationService
         }
     }
 
-    private function attachPhoto(RegistrationRequest $request, UploadedFile $photo): void
+    /** The request's own photo (moved to the student on acceptance). setPhoto() is for students only. */
+    public function attachPhoto(RegistrationRequest $request, UploadedFile $photo): void
     {
-        $class = \App\Services\Media\StudentPhotoService::class;
-        if (class_exists($class)) {
-            app($class)->setPhoto($request, $photo);
-        }
+        app(\App\Services\Media\StudentPhotoService::class)->setRequestPhoto($request, $photo);
     }
 }

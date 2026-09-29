@@ -51,8 +51,13 @@ export interface EnrollPayload {
   guardian_name: string
   guardian_phone: string
   student_phone?: string
+  /** Nine-digit CPR (stored on the student; unique). */
+  cpr?: string
+  address?: string
   memorization_level: string
-  package_id: number
+  /** Absent with without_package: the student is saved with no package or circle yet. */
+  package_id?: number
+  without_package?: boolean
   lesson_id?: number | null
   waitlist?: boolean
   record_payment?: boolean
@@ -62,9 +67,9 @@ export interface EnrollPayload {
 }
 
 export interface EnrollResult {
-  status: 'enrolled' | 'waitlist'
+  status: 'enrolled' | 'waitlist' | 'saved'
   message: string
-  request_no: string
+  request_no: string | null
   waitlist_position: number | null
   student: { id: number; student_no: string; full_name: string } | null
   payment: { id: number; receipt_no: string; amount_fils: number } | null

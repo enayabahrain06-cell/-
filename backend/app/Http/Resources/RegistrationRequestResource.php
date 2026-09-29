@@ -14,6 +14,8 @@ class RegistrationRequestResource extends JsonResource
         return [
             'id' => $this->when($staff, $this->id),
             'request_no' => $this->request_no,
+            'cpr' => $this->when($staff, $this->cpr),
+            'address' => $this->when($staff, $this->address),
             'status' => $this->status->value,
             'status_label' => $this->status->label(),
             'waitlist_position' => $this->waitlist_position,

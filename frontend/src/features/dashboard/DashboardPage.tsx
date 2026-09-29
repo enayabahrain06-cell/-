@@ -74,12 +74,15 @@ function Content({ data, locale }: { data: DashboardData; locale: string }) {
   const { can } = useAuth()
   const k = data.kpis
   const canAttendance = can('attendance.view', 'attendance.record')
+  // Fees renders nothing without wallet access (teachers); its grid cell must go too, or it leaves an empty slot.
+  const canFees = can('wallets.view')
+  const kpiCount = 4 + (k.pending_registrations !== undefined ? 1 : 0) + (k.collected_this_month_fils !== undefined ? 1 : 0)
 
   return (
     <>
       <QuickActions />
 
-      <section aria-label={t('title')} className="grid grid-cols-2 gap-3 md:grid-cols-3 2xl:grid-cols-6">
+      <section aria-label={t('title')} className={`grid grid-cols-2 gap-3 ${KPI_COLS[kpiCount]}`}>
         <Kpi label={t('kpi.active_students')} value={formatNumber(k.active_students, locale)} icon="students" to={can('students.view') ? '/students' : undefined} />
         <Kpi label={t('kpi.active_circles')} value={formatNumber(k.active_circles, locale)} icon="lessons" to={can('lessons.view') ? '/lessons' : undefined} />
         <Kpi
@@ -110,19 +113,35 @@ function Content({ data, locale }: { data: DashboardData; locale: string }) {
         )}
       </section>
 
-      {/* Rows pair cards of similar height so a stretched card is never left mostly empty.
-          md–2xl (2 columns): alerts | today, attendance (both columns), ages | fees, coming up (both columns), memorization | activity.
-          2xl (12 columns): alerts | today, attendance | ages, fees | coming up, memorization | activity.
-          Cards in a row stretch to the same height (*:*:h-full). 1 column on phones. */}
-      <div className="grid gap-5 *:*:h-full md:grid-cols-2 2xl:grid-cols-12">
-        <div className="min-w-0 2xl:col-span-7"><AlertsCard /></div>
-        <div className="min-w-0 2xl:col-span-5"><TodayList sessions={data.today} locale={locale} /></div>
-        <div className="min-w-0 md:col-span-2 2xl:col-span-8"><AttendanceChart days={data.attendance_chart} /></div>
-        <div className="min-w-0 2xl:col-span-4"><AgeDonut data={data.age_distribution} /></div>
-        <div className="min-w-0 2xl:col-span-6"><FeesCard /></div>
-        <div className="min-w-0 md:col-span-2 2xl:col-span-6"><UpcomingCard /></div>
-        <div className="min-w-0 2xl:col-span-6"><MemorizationCard /></div>
-        <div className="min-w-0 2xl:col-span-6"><ActivityCard /></div>
+      {/* Rows pair cards of similar height so a stretched card is never left mostly empty. Today's circles and
+          Coming up are both short, time-based lists, so they stack in one column beside the tall alerts list.
+          md (2 columns) and xl (12 columns): alerts | today + coming up, then
+          with fees: attendance (full width), fees | ages;
+          without fees (teachers): attendance | ages on xl, ages full width (chart beside its legend) on md;
+          then memorization | activity. Cards in a row stretch to the same height (*:*:h-full).
+          1 column on phones. */}
+      <div className="grid gap-5 *:*:h-full md:grid-cols-2 xl:grid-cols-12">
+        <div className="min-w-0 xl:col-span-7"><AlertsCard /></div>
+        <div className="min-w-0 xl:col-span-5">
+          <div className="flex flex-col gap-5">
+            <TodayList sessions={data.today} locale={locale} />
+            <div className="min-h-0 flex-1 *:h-full"><UpcomingCard /></div>
+          </div>
+        </div>
+        {canFees ? (
+          <>
+            <div className="min-w-0 md:col-span-2 xl:col-span-12"><AttendanceChart days={data.attendance_chart} /></div>
+            <div className="min-w-0 xl:col-span-7"><FeesCard /></div>
+            <div className="min-w-0 xl:col-span-5"><AgeDonut data={data.age_distribution} /></div>
+          </>
+        ) : (
+          <>
+            <div className="min-w-0 md:col-span-2 xl:col-span-8"><AttendanceChart days={data.attendance_chart} /></div>
+            <div className="min-w-0 md:col-span-2 xl:col-span-4"><AgeDonut data={data.age_distribution} /></div>
+          </>
+        )}
+        <div className="min-w-0 xl:col-span-6"><MemorizationCard /></div>
+        <div className="min-w-0 xl:col-span-6"><ActivityCard /></div>
       </div>
     </>
   )
@@ -178,6 +197,13 @@ function QuickActions() {
   )
 }
 
+/** KPI columns by tile count, so a row never ends with one orphan tile (teachers see 4, admins 6). */
+const KPI_COLS: Record<number, string> = {
+  4: 'md:grid-cols-4',
+  5: 'md:grid-cols-3 xl:grid-cols-5',
+  6: 'md:grid-cols-3 2xl:grid-cols-6',
+}
+
 function Kpi({ label, value, icon, hint, tone, to }: { label: string; value: string; icon: string; hint?: string; tone?: 'gold'; to?: string }) {
   const body = (
     <>
@@ -187,14 +213,15 @@ function Kpi({ label, value, icon, hint, tone, to }: { label: string; value: str
           <Icon name={icon} className="size-4" />
         </span>
       </div>
-      <p className="mt-2 text-2xl font-semibold tabular-nums text-ink">{value}</p>
+      {/* Smaller on phones: a money value ("BHD 312.500", one unbreakable string) must fit a half-width tile at 320px */}
+      <p className="mt-1.5 text-lg font-semibold tabular-nums text-ink sm:text-2xl">{value}</p>
       {hint && <p className="mt-1 text-xs leading-snug text-ink/55">{hint}</p>}
     </>
   )
-  const cls = `${SURFACE} p-4`
+  const cls = `${SURFACE} flex min-w-0 flex-col p-4`
 
   return to ? (
-    <Link to={to} className={`${cls} block transition hover:border-brand-600/30 hover:shadow-md focus-visible:outline-2 focus-visible:outline-brand-600`}>
+    <Link to={to} className={`${cls} transition hover:border-brand-600/30 hover:shadow-md focus-visible:outline-2 focus-visible:outline-brand-600`}>
       {body}
     </Link>
   ) : (

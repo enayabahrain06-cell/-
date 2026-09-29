@@ -8,7 +8,8 @@ Quran circles (halaqat) management system for the Religious Education Authority 
 | API | `backend/` | Laravel 12 (PHP 8.2+), Sanctum, spatie/permission, dompdf, maatwebsite/excel, Intervention Image, Scribe, Pest |
 | Web app | `frontend/` | React 18, Vite, TypeScript, TanStack Query, RHF + Zod, Tailwind (RTL/LTR), Recharts, i18next |
 | WhatsApp bridge | `whatsapp/` | Node + open-wa/wa-automate |
-| Docs | `docs/` | ERD, migrations, work plan |
+| Packages | `packages/` | Reusable in other systems: certificates (Laravel + React), `@ahl/id-card-reader` (Bahrain ID card reading + reception PC setup kit) |
+| Docs | `docs/` | ERD, migrations, work plan, deployment, ID card reader setup |
 
 ### Screenshots — لقطات
 

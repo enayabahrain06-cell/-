@@ -1,0 +1,5 @@
+{
+  "hint": "Put the student's CPR card in the reader. The name, birth date, gender and photo are filled in; check them before saving.",
+  "gender_male": "Boy",
+  "gender_female": "Girl"
+}

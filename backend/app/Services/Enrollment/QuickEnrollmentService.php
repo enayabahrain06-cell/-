@@ -197,6 +197,10 @@ class QuickEnrollmentService
      */
     public function errors(User $actor, array $data, bool $hasPhoto = false): array
     {
+        if (! empty($data['without_package'])) {
+            return $this->errorsWithoutPackage($actor, $data);
+        }
+
         $errors = [];
         $package = Package::find($data['package_id'] ?? null);
         if (! $package) {
@@ -204,6 +208,11 @@ class QuickEnrollmentService
         }
         if (! Track::allows($actor, $package->gender)) {
             return ['package_id' => __('gender.outside_track')];
+        }
+
+        // A CPR already on a student is the same child: never a second enrollment, whatever confirm_duplicate says.
+        if ($holder = \App\Support\Cpr::holder($data['cpr'] ?? null)) {
+            return ['cpr' => \App\Support\Cpr::takenMessage($holder)];
         }
 
         $check = PackageSuitability::check($package, Carbon::parse($data['birth_date']), Gender::from($data['gender']));
@@ -249,17 +258,48 @@ class QuickEnrollmentService
         return $errors;
     }
 
+    /** A student saved with no package yet: the actor's track, a unique CPR, no payment, and the duplicate check. */
+    private function errorsWithoutPackage(User $actor, array $data): array
+    {
+        if (! Track::allows($actor, Gender::from($data['gender']))) {
+            return ['gender' => __('gender.outside_track')];
+        }
+        if ($holder = \App\Support\Cpr::holder($data['cpr'] ?? null)) {
+            return ['cpr' => \App\Support\Cpr::takenMessage($holder)];
+        }
+
+        $errors = [];
+        if (! empty($data['record_payment'])) {
+            $errors['record_payment'] = __('enrollment.errors.no_payment_without_package');
+        }
+        if (empty($data['confirm_duplicate'])) {
+            $guardian = User::where('phone', $data['guardian_phone'])->first();
+            $dups = $this->duplicates($actor, $guardian, $data['full_name'], $data['birth_date']);
+            if ($dups) {
+                $errors['duplicate'] = __('enrollment.errors.duplicate', ['names' => collect($dups)->pluck('full_name')->filter()->unique()->join('، ') ?: '—']);
+            }
+        }
+
+        return $errors;
+    }
+
     /**
      * Save and enroll. Validated data only (run errors() first).
      *
-     * @return array{status: 'enrolled'|'waitlist', request: RegistrationRequest, student: ?Student, payment: ?Payment}
+     * @return array{status: 'enrolled'|'waitlist'|'saved', request: ?RegistrationRequest, student: ?Student, payment: ?Payment}
      */
     public function enroll(User $actor, array $data, ?UploadedFile $photo = null): array
     {
+        if (! empty($data['without_package'])) {
+            return $this->saveWithoutPackage($actor, $data, $photo);
+        }
+
         $package = Package::findOrFail($data['package_id']);
         $check = PackageSuitability::check($package, Carbon::parse($data['birth_date']), Gender::from($data['gender']));
         $attributes = [
             'package_id' => $package->id,
+            'cpr' => $data['cpr'] ?? null,
+            'address' => $data['address'] ?? null,
             'full_name' => trim($data['full_name']),
             'birth_date' => $data['birth_date'],
             'gender' => $data['gender'],
@@ -319,6 +359,27 @@ class QuickEnrollmentService
         }
 
         return ['status' => 'enrolled', 'request' => $request->fresh(), 'student' => $student->fresh(), 'payment' => $payment];
+    }
+
+    /**
+     * The student and guardian only: no registration request, invoice, circle or message. The student is
+     * listed under "Without package" and joins a circle later through the circle's "Add student".
+     */
+    private function saveWithoutPackage(User $actor, array $data, ?UploadedFile $photo): array
+    {
+        $student = DB::transaction(fn () => $this->accept->createUnplacedStudent($data, $actor->id));
+
+        if ($photo) {
+            try {
+                $this->photos->setPhoto($student, $photo);
+            } catch (\Throwable $e) {
+                report($e);
+            }
+        }
+
+        $this->audit->record('enrollment.saved_without_package', $student, [], ['source' => self::SOURCE], $actor->id);
+
+        return ['status' => 'saved', 'request' => null, 'student' => $student->fresh(), 'payment' => null];
     }
 
     private function waitlist(User $actor, Package $package, array $attributes, ?UploadedFile $photo): array

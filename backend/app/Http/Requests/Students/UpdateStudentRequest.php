@@ -16,9 +16,21 @@ class UpdateStudentRequest extends FormRequest
         return $this->user()?->can('update', $this->route('student')) ?? false;
     }
 
+    protected function prepareForValidation(): void
+    {
+        if ($this->exists('cpr')) {
+            $this->merge(['cpr' => \App\Support\Cpr::normalize($this->input('cpr'))]);
+        }
+        if ($this->exists('address')) {
+            $this->merge(['address' => \App\Support\Cpr::address($this->input('address'))]);
+        }
+    }
+
     public function rules(): array
     {
         return [
+            'cpr' => \App\Support\Cpr::rules(),
+            'address' => \App\Support\Cpr::addressRules(),
             'full_name' => ['sometimes', 'string', 'min:3', 'max:150'],
             'birth_date' => ['sometimes', 'date', 'before:today'],
             'gender' => ['sometimes', Gender::rule()],
@@ -29,5 +41,14 @@ class UpdateStudentRequest extends FormRequest
             'yearly_target_ayahs' => ['nullable', 'integer', 'min:0'],
             'notes' => ['nullable', 'string', 'max:2000'],
         ];
+    }
+
+    public function withValidator($validator): void
+    {
+        $validator->after(function ($v) {
+            if ($holder = \App\Support\Cpr::holder($this->input('cpr'), $this->route('student')->id)) {
+                $v->errors()->add('cpr', \App\Support\Cpr::takenMessage($holder));
+            }
+        });
     }
 }

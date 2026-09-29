@@ -191,6 +191,7 @@
     "include_waitlist": "تضمين قائمة الانتظار",
     "bulk_result": "قُبل {{accepted}} طلب، وتُخطي {{skipped}}. المقاعد المتبقية: {{left}}.",
     "photo": "صورة مرفقة",
+    "cpr": "الرقم الشخصي",
     "no_photo": "بدون صورة",
     "position": "#{{n}}",
     "student_link": "ملف الطالب",
