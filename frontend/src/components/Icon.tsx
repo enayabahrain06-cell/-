@@ -41,6 +41,16 @@ const PATHS: Record<string, string> = {
   tv: 'M3 5h18v12H3zM8 21h8M12 17v4',
   flag: 'M5 21V4M5 4h11l-2 4 2 4H5',
   ban: 'M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18zM5.6 5.6l12.8 12.8',
+  // Mobile shell
+  home: 'M3.5 11 12 4l8.5 7M6 9.5V20h4.5v-5.5h3V20H18V9.5',
+  bell: 'M6 16.5V11a6 6 0 1 1 12 0v5.5l1.5 2H4.5zM10 21h4',
+  more: 'M5 12h.01M12 12h.01M19 12h.01M5.5 12a.5.5 0 1 1-1 0 .5.5 0 0 1 1 0zm7 0a.5.5 0 1 1-1 0 .5.5 0 0 1 1 0zm7 0a.5.5 0 1 1-1 0 .5.5 0 0 1 1 0z',
+  plus: 'M12 5v14M5 12h14',
+  filter: 'M4 5h16l-6 7.5V19l-4 1.5v-8z',
+  sort: 'M7 4v16m0 0-3-3m3 3 3-3M17 20V4m0 0-3 3m3-3 3 3',
+  history: 'M3.5 12a8.5 8.5 0 1 0 2.5-6M3.5 4v4h4M12 8v4.5l3 2',
+  globe: 'M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18zM3 12h18M12 3c2.5 2.7 3.8 5.7 3.8 9s-1.3 6.3-3.8 9c-2.5-2.7-3.8-5.7-3.8-9S9.5 5.7 12 3z',
+  wallet: 'M4 7h15v12H4zM4 7V5.5A1.5 1.5 0 0 1 5.5 4H17v3M15 13h2',
 }
 
 export type IconName = keyof typeof PATHS

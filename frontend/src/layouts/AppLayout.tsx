@@ -1,39 +1,21 @@
-import { Fragment, useEffect, useRef, useState } from 'react'
-import { NavLink, Outlet, useLocation } from 'react-router-dom'
+import { Fragment } from 'react'
+import { NavLink, Outlet } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { useAuth } from '../app/AuthContext'
 import { NAV_SECTIONS } from '../app/nav'
 import Icon from '../components/Icon'
 import LanguageSwitcher from '../components/LanguageSwitcher'
 import { LogoMark, OrnamentStrip } from '../components/ornaments'
-import { useScrollLock } from '../components/useScrollLock'
+import { MobileChromeProvider } from '../components/mobile/MobileChrome'
 import TeacherTodayDialog from '../features/attendance/TeacherTodayDialog'
 
-/** Staff shell: sidebar on desktop, drawer on mobile, header with language switcher and account. */
+/**
+ * Staff shell: sidebar and header on desktop (lg+). Below lg the mobile shell (components/mobile) takes over:
+ * app bar or page header, bottom nav on the root tabs, and the المزيد sheet with the full section map.
+ */
 export default function AppLayout() {
   const { t } = useTranslation('nav')
   const { user, can, signOut } = useAuth()
-  const [open, setOpen] = useState(false)
-  const location = useLocation()
-
-  const menuButton = useRef<HTMLButtonElement>(null)
-  const closeButton = useRef<HTMLButtonElement>(null)
-
-  useEffect(() => setOpen(false), [location.pathname])
-  useScrollLock(open)
-  useEffect(() => {
-    if (!open) return
-    // Focus moves into the drawer when it opens and back to the menu button when it closes.
-    closeButton.current?.focus()
-    const trigger = menuButton.current
-    const onKey = (e: KeyboardEvent) => e.key === 'Escape' && setOpen(false)
-    window.addEventListener('keydown', onKey)
-    return () => {
-      window.removeEventListener('keydown', onKey)
-      trigger?.focus()
-    }
-  }, [open])
-
   const sections = NAV_SECTIONS.filter((s) => can(...s.permissions))
 
   const nav = (
@@ -71,6 +53,8 @@ export default function AppLayout() {
   )
 
   return (
+    <MobileChromeProvider>
+      {(mobile) => (
     <div className="min-h-screen lg:grid lg:grid-cols-[17rem_minmax(0,1fr)]">
       {/* Desktop sidebar */}
       <aside className="sticky top-0 hidden h-screen flex-col overflow-y-auto bg-deep lg:flex">
@@ -79,27 +63,13 @@ export default function AppLayout() {
         {nav}
       </aside>
 
-      {/* Mobile drawer */}
-      {open && (
-        <div className="fixed inset-0 z-40 lg:hidden" role="dialog" aria-modal="true" aria-label={t('main')}>
-          <button type="button" className="absolute inset-0 bg-ink/50" aria-label={t('close_menu')} onClick={() => setOpen(false)} />
-          <aside className="absolute inset-y-0 start-0 flex w-72 max-w-[85vw] flex-col overflow-y-auto bg-deep shadow-2xl">
-            <div className="flex items-start justify-between">
-              {brand}
-              <button ref={closeButton} type="button" onClick={() => setOpen(false)} className="m-3 rounded-lg p-2 text-white/80 hover:bg-white/10" aria-label={t('close_menu')}>
-                <Icon name="close" />
-              </button>
-            </div>
-            {nav}
-          </aside>
-        </div>
-      )}
-
       <div className="flex min-w-0 flex-col">
-        <header className="sticky top-0 z-30 flex items-center gap-3 border-b border-ink/8 bg-page/90 px-4 py-3 backdrop-blur sm:px-6 lg:px-8">
-          <button ref={menuButton} type="button" onClick={() => setOpen(true)} className="rounded-lg p-2 text-ink hover:bg-ink/5 lg:hidden" aria-label={t('open_menu')}>
-            <Icon name="menu" />
-          </button>
+        {/* Mobile header: app bar on root tabs, back + title elsewhere; a page may portal its own into the slot. */}
+        <div className="sticky top-0 z-30 lg:hidden">
+          {mobile.header}
+          <div ref={mobile.setSlot} />
+        </div>
+        <header className="sticky top-0 z-30 flex items-center gap-3 border-b border-ink/8 bg-page/90 px-4 py-3 backdrop-blur max-lg:hidden sm:px-6 lg:px-8">
           <div className="ms-auto flex items-center gap-2 sm:gap-3">
             <LanguageSwitcher className="text-ink/70" />
             <div className="hidden text-end sm:block">
@@ -111,7 +81,7 @@ export default function AppLayout() {
             </button>
           </div>
         </header>
-        <main className="min-w-0 flex-1 px-4 py-6 sm:px-6 lg:px-8">
+        <main className={`min-w-0 flex-1 px-4 py-6 sm:px-6 lg:px-8 max-lg:pt-4 ${mobile.bottomNav ? 'max-lg:pb-28' : 'max-lg:pb-6'}`}>
           {/* The one page container for every staff page (ui-design-system: page container). It fills the
               column beside the sidebar; max-w-page only stops lines running across QHD/4K screens. */}
           <div className="mx-auto w-full max-w-page">
@@ -120,6 +90,10 @@ export default function AppLayout() {
           </div>
         </main>
       </div>
+      {mobile.nav}
+      {mobile.more}
     </div>
+      )}
+    </MobileChromeProvider>
   )
 }

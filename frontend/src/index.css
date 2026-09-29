@@ -37,6 +37,17 @@
   /* Staff content width (max-w-page). Only a guard for QHD/4K: below a ~2200px viewport the content
      fills the column beside the sidebar, so 1280–1920 screens have no empty side bands. */
   --container-page: 120rem;
+
+  /* Mobile redesign (mobile-redesign-spec.md §3): attendance chart states and the mobile card/control shapes. */
+  --color-chart-present: #2f7a5a;
+  --color-chart-late: #b08a2e;
+  --color-chart-absent: #8c3b2e;
+  --color-chart-excused: #1e4e79;
+  --color-chart-grid: #e3dccb;
+  --radius-card: 12px;
+  --radius-ctl: 10px;
+  --shadow-card: 0 1px 2px rgba(31, 42, 36, 0.06);
+  --shadow-popover: 0 8px 24px rgba(31, 42, 36, 0.12);
 }
 
 /*
@@ -66,6 +77,14 @@
 [data-ornament="off"] .ornament,
 [data-ornament="minimal"] .ornament-full {
   display: none !important;
+}
+
+/* Horizontal chip rows and tab strips on mobile scroll without showing a scrollbar. */
+@utility no-scrollbar {
+  scrollbar-width: none;
+  &::-webkit-scrollbar {
+    display: none;
+  }
 }
 
 /* Girih pattern layer: fills its positioned parent, painted in currentColor. */

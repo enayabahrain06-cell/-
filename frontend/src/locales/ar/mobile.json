@@ -1,0 +1,27 @@
+{
+  "home": "الرئيسية",
+  "more": "المزيد",
+  "back": "رجوع",
+  "notifications": "التنبيهات",
+  "notifications_unread": "التنبيهات — توجد تنبيهات مفتوحة",
+  "account": "حسابي",
+  "bottom_nav": "التنقل السفلي",
+  "breadcrumb": "مسار الصفحة",
+  "language": "اللغة",
+  "tabs": {
+    "dashboard": "الرئيسية",
+    "attendance": "الحضور",
+    "lessons": "الحلقات",
+    "students": "الطلاب",
+    "payments": "المدفوعات",
+    "reports": "التقارير",
+    "messages": "الرسائل",
+    "evaluation": "الحفظ",
+    "teachers": "المعلمون"
+  },
+  "tracks": {
+    "male": "مسار البنين",
+    "female": "مسار البنات",
+    "both": "كل المسارات"
+  }
+}

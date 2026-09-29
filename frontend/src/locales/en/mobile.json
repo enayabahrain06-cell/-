@@ -1,0 +1,27 @@
+{
+  "home": "Home",
+  "more": "More",
+  "back": "Back",
+  "notifications": "Alerts",
+  "notifications_unread": "Alerts — there are open alerts",
+  "account": "My account",
+  "bottom_nav": "Bottom navigation",
+  "breadcrumb": "Breadcrumb",
+  "language": "Language",
+  "tabs": {
+    "dashboard": "Home",
+    "attendance": "Attendance",
+    "lessons": "Circles",
+    "students": "Students",
+    "payments": "Payments",
+    "reports": "Reports",
+    "messages": "Messages",
+    "evaluation": "Memorization",
+    "teachers": "Teachers"
+  },
+  "tracks": {
+    "male": "Boys track",
+    "female": "Girls track",
+    "both": "All tracks"
+  }
+}
