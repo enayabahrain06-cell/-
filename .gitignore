@@ -51,3 +51,8 @@ whatsapp/.env
 
 # Card reader kit for reception PCs: contains the licensed iGA SDK files, copy by USB, never commit
 /ID-Card-Reader-Kit/
+
+# Stray Playwright install at the repo root (the frontend has its own); not part of the project
+/node_modules/
+/package.json
+/package-lock.json
