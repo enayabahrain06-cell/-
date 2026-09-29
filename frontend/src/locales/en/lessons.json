@@ -139,5 +139,20 @@
     "delete": "Delete",
     "delete_confirm": "Delete this booking?",
     "form_title": "Book a hall"
+  },
+  "mobile": {
+    "all": "All",
+    "today": "Today",
+    "filters": "Filters",
+    "status": "Status",
+    "free_seats": "{{n}} seats free",
+    "seats": "Seats",
+    "students": "Students",
+    "upcoming": "Upcoming",
+    "schedule": "Schedule",
+    "more_actions": "More actions",
+    "take_today": "Take today’s attendance",
+    "message": "Message parents",
+    "done": "Done"
   }
 }

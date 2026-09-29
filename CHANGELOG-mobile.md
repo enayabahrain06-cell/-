@@ -56,3 +56,19 @@ left out and listed under the page.
 - Sticky حفظ الحضور (n من N) with an unsaved dot; results and errors show as a 4-second toast.
 - Shared: `MobileToast`; mobile names use `<bdi>` so Arabic names align with the page direction in English.
 - Not in the app: an attendance history view (the spec's history icon) and excuse attachments.
+
+## Circles and halls (/lessons, /lessons/:id) — Halaqat.dc.html, HalaqaDetail.dc.html
+
+- List (root tab): title, segmented الحلقات / القاعات / الحجوزات (the existing tabs), search + filter button (status in
+  a bottom sheet), track chips (الكل n، بنين، بنات، مبكر) on the same `gender` / `status` / `search` params.
+- Circle cards: name, a "today" pill when the circle meets today (otherwise its days) with the start time, teacher ·
+  hall, a 4px seat bar with n من c, track and status pills. FAB حلقة جديدة (existing dialog).
+- Halls tab: hall cards with calendar / map / edit / on-off as secondary buttons; FAB قاعة جديدة. Bookings tab: list
+  rows with a labelled delete button; FAB حجز جديد.
+- Detail: header with ⋯ (edit, change hall in a sheet), breadcrumb, summary card (teacher, status, hall · days · time,
+  package, mini-KPIs students n/c · free seats · upcoming sessions), hall-conflict notice, segmented الطلاب / الجدول
+  (sessions link to their attendance sheet). Sticky: سجّل حضور اليوم when the circle meets today, else إضافة طالب;
+  48px message button (messages send tab).
+- Not in the app: per-circle attendance % and memorization tabs, morning/evening chips, preselected guardians in
+  messages.
+- Shared: the action bar is pinned to the bottom edge (spacer in the flow) and the FAB reserves space after lists.

@@ -12,6 +12,7 @@ import { Badge, buttonClass, ErrorState, FilterBar, LoadingState, Notice, Primar
 import { formatDate, formatNumber, formatTime } from '../../lib/format'
 import { BookingDialog, HallFormDialog } from './HallDialogs'
 import LessonFormDialog from './LessonFormDialog'
+import { MobileBookings, MobileCircles, MobileHalls, MobileLessonsHeader } from './MobileLessons'
 
 export const GENDER_TONE: Record<string, Tone> = { male: 'brand', female: 'gold', mixed: 'info', shared: 'muted' }
 
@@ -24,10 +25,13 @@ export default function LessonsHomePage() {
 
   return (
     <div className="space-y-5">
-      <PageBand title={t('title')} subtitle={t('subtitle')} />
-      <Segmented name="lessons-tab" label={t('title')} value={tab}
-        options={(['circles', 'halls', 'bookings'] as const).map((k) => ({ value: k, label: t(`tabs.${k}`) }))}
-        onChange={(v) => setParams({ tab: v }, { replace: true })} />
+      <MobileLessonsHeader tab={tab} onTab={(v) => setParams({ tab: v }, { replace: true })} />
+      <div className="hidden space-y-5 lg:block">
+        <PageBand title={t('title')} subtitle={t('subtitle')} />
+        <Segmented name="lessons-tab" label={t('title')} value={tab}
+          options={(['circles', 'halls', 'bookings'] as const).map((k) => ({ value: k, label: t(`tabs.${k}`) }))}
+          onChange={(v) => setParams({ tab: v }, { replace: true })} />
+      </div>
       {tab === 'circles' && <Circles />}
       {tab === 'halls' && <Halls />}
       {tab === 'bookings' && <Bookings />}
@@ -49,8 +53,14 @@ function Circles() {
   const both = hasRole('super_admin') || !user?.track || user.track === 'both'
   const n = (v: number) => formatNumber(v, locale)
 
+  const pager = q.data ? <Pagination page={q.data.meta.current_page} lastPage={q.data.meta.last_page} total={q.data.meta.total} onPage={(p) => set('page', String(p))} /> : null
+  const conflictNotice = conflicts && conflicts.length > 0 ? <Notice tone="error"><b>{t('form.conflicts')}.</b> {t('form.conflicts_body')}</Notice> : null
+
   return (
-    <div className="space-y-4">
+    <>
+    <MobileCircles lessons={q.data?.data} total={q.data?.meta.total} loading={q.isLoading} filters={filters} showTracks={both} onSet={set}
+      canCreate={can('lessons.manage')} onCreate={() => setDialog(true)} pagination={pager} notice={conflictNotice} />
+    <div className="hidden space-y-4 lg:block">
       <FilterBar>
         <SearchInput id="lesson-search" className="sm:min-w-48 sm:flex-1" label={t('filters.search')} defaultValue={filters.search} onKeyDown={(e) => e.key === 'Enter' && set('search', (e.target as HTMLInputElement).value)}
           onBlur={(e) => set('search', e.target.value)} />
@@ -93,8 +103,9 @@ function Circles() {
           <Pagination page={q.data.meta.current_page} lastPage={q.data.meta.last_page} total={q.data.meta.total} onPage={(p) => set('page', String(p))} />
         </>
       )}
-      {dialog && <LessonFormDialog onClose={() => setDialog(false)} onSaved={(l, c) => { setDialog(false); setConflicts(c); if (!c.length) navigate(`/lessons/${l.id}`) }} />}
     </div>
+      {dialog && <LessonFormDialog onClose={() => setDialog(false)} onSaved={(l, c) => { setDialog(false); setConflicts(c); if (!c.length) navigate(`/lessons/${l.id}`) }} />}
+    </>
   )
 }
 
@@ -108,7 +119,9 @@ function Halls() {
   const toggle = useMutation({ mutationFn: (id: number) => hallsApi.toggle(id), onSuccess: () => void qc.invalidateQueries({ queryKey: ['halls'] }) })
 
   return (
-    <div className="space-y-4">
+    <>
+    <MobileHalls halls={q.data} loading={q.isLoading} canManage={can('locations.manage')} onNew={() => setEdit('new')} onEdit={(h) => setEdit(h)} onToggle={(h) => toggle.mutate(h.id)} />
+    <div className="hidden space-y-4 lg:block">
       {can('locations.manage') && <div className="flex justify-end"><PrimaryButton onClick={() => setEdit('new')}>+ {t('new_hall')}</PrimaryButton></div>}
       {q.isLoading ? <LoadingState /> : q.isError ? <ErrorState onRetry={() => void q.refetch()} /> : !q.data?.length ? (
         <EmptyCard icon="pin" title={t('empty_halls')} />
@@ -139,8 +152,9 @@ function Halls() {
           ))}
         </ul>
       )}
-      {edit && <HallFormDialog hall={edit === 'new' ? undefined : edit} onClose={() => setEdit(null)} />}
     </div>
+      {edit && <HallFormDialog hall={edit === 'new' ? undefined : edit} onClose={() => setEdit(null)} />}
+    </>
   )
 }
 
@@ -156,7 +170,11 @@ function Bookings() {
   const remove = useMutation({ mutationFn: (id: number) => bookingsApi.remove(id), onSuccess: () => void qc.invalidateQueries({ queryKey: ['bookings'] }) })
 
   return (
-    <div className="space-y-4">
+    <>
+    <MobileBookings bookings={q.data?.data} loading={q.isLoading} canManage={can('locations.manage')} onNew={() => setOpen(true)}
+      onDelete={(b) => window.confirm(t('bookings.delete_confirm')) && remove.mutate(b.id)}
+      pagination={q.data ? <Pagination page={q.data.meta.current_page} lastPage={q.data.meta.last_page} total={q.data.meta.total} onPage={setPage} /> : null} />
+    <div className="hidden space-y-4 lg:block">
       {can('locations.manage') && <div className="flex justify-end"><PrimaryButton onClick={() => setOpen(true)}>+ {t('new_booking')}</PrimaryButton></div>}
       {q.isLoading ? <LoadingState /> : q.isError ? <ErrorState onRetry={() => void q.refetch()} /> : !q.data?.data.length ? (
         <EmptyCard icon="attendance" title={t('empty_bookings')} />
@@ -177,7 +195,8 @@ function Bookings() {
           <Pagination page={q.data.meta.current_page} lastPage={q.data.meta.last_page} total={q.data.meta.total} onPage={setPage} />
         </>
       )}
-      {open && <BookingDialog onClose={() => setOpen(false)} />}
     </div>
+      {open && <BookingDialog onClose={() => setOpen(false)} />}
+    </>
   )
 }

@@ -139,5 +139,20 @@
     "delete": "حذف",
     "delete_confirm": "حذف هذا الحجز؟",
     "form_title": "حجز قاعة"
+  },
+  "mobile": {
+    "all": "الكل",
+    "today": "اليوم",
+    "filters": "تصفية",
+    "status": "الحالة",
+    "free_seats": "{{n}} مقعد متاح",
+    "seats": "المقاعد",
+    "students": "الطلاب",
+    "upcoming": "قادمة",
+    "schedule": "الجدول",
+    "more_actions": "إجراءات أخرى",
+    "take_today": "سجّل حضور اليوم",
+    "message": "مراسلة أولياء الأمور",
+    "done": "تم"
   }
 }

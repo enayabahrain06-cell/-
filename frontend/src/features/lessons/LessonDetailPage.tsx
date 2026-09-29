@@ -14,6 +14,7 @@ import AddStudentDialog from './AddStudentDialog'
 import ChangeLocationDialog from './ChangeLocationDialog'
 import LessonFormDialog from './LessonFormDialog'
 import { GENDER_TONE } from './LessonsHomePage'
+import { MobileLessonDetail } from './MobileLessons'
 
 export default function LessonDetailPage() {
   const { id } = useParams()
@@ -39,8 +40,15 @@ export default function LessonDetailPage() {
   const full = lesson.student_count >= lesson.capacity
   const manage = can('lessons.manage')
 
+  const noticeEl = notice && <Notice tone={notice.tone}>{notice.text}</Notice>
+  const conflictsEl = manage && conflicts.data && conflicts.data.length > 0 ? <ConflictsNotice conflicts={conflicts.data} locale={locale} /> : null
+
   return (
-    <div className="space-y-5">
+    <>
+    <MobileLessonDetail lesson={lesson} manage={manage} canMessage={can('messages.send')} notice={noticeEl} conflicts={conflictsEl}
+      onEdit={() => setEdit(true)} onChangeHall={() => setChange(true)} onAdd={() => setAdding(true)}
+      onUnenroll={(sid, name) => window.confirm(t('detail.unenroll_confirm', { name })) && unenroll.mutate(sid)} />
+    <div className="hidden space-y-5 lg:block">
       <Link to="/lessons" className="inline-flex items-center gap-1 text-sm font-medium text-brand-700 hover:underline"><Icon name="chevron" className="size-4 ltr:rotate-180" />{t('detail.back')}</Link>
 
       <header className={`${SURFACE} p-4 sm:p-5`}>
@@ -69,8 +77,8 @@ export default function LessonDetailPage() {
         </dl>
       </header>
 
-      {notice && <Notice tone={notice.tone}>{notice.text}</Notice>}
-      {manage && conflicts.data && conflicts.data.length > 0 && <ConflictsNotice conflicts={conflicts.data} locale={locale} />}
+      {noticeEl}
+      {conflictsEl}
 
       <div className="grid gap-5 lg:grid-cols-5">
         <Card className="lg:col-span-3">
@@ -107,10 +115,11 @@ export default function LessonDetailPage() {
         </Card>
       </div>
 
+    </div>
       {edit && <LessonFormDialog lesson={lesson} onClose={() => setEdit(false)} onSaved={(_l, c) => { setEdit(false); refresh(); void conflicts.refetch(); setNotice(c.length ? { tone: 'error', text: t('form.conflicts_body') } : { tone: 'success', text: t('form.saved') }) }} />}
       {adding && <AddStudentDialog lesson={lesson} canQuickEnroll={can('enrollment.quick')} onClose={() => setAdding(false)} onChanged={refresh} />}
       {change && <ChangeLocationDialog lesson={lesson} onClose={() => setChange(false)} onDone={(m) => { setChange(false); setNotice({ tone: 'success', text: m }) }} />}
-    </div>
+    </>
   )
 }
 
