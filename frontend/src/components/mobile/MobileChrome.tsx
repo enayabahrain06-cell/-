@@ -11,6 +11,7 @@ import { NAV_SECTIONS, type NavSection } from '../../app/nav'
 import { ChromeContext, TAB_ICON, useMobileChrome, useMobileTabs, type ChromeState, type Crumb } from './chrome'
 import { setLocale } from '../../lib/i18n'
 import { formatNumber } from '../../lib/format'
+import { useInstall } from '../../lib/pwa'
 import Icon from '../Icon'
 import { LogoMark } from '../ornaments'
 import BottomSheet from './BottomSheet'
@@ -200,6 +201,7 @@ function MoreSheet({ open, onClose }: { open: boolean; onClose: () => void }) {
     if (tokenStore.get()) void authApi.updateLocale(next).catch(() => undefined)
   }
   const roles = user?.roles.map((r) => t(`common:roles.${r}`, r)).join(' · ')
+  const install = useInstall()
 
   return (
     <BottomSheet title={t('more')} open={open} onClose={onClose}>
@@ -242,6 +244,19 @@ function MoreSheet({ open, onClose }: { open: boolean; onClose: () => void }) {
             ))}
           </div>
         </div>
+
+        {install.mode && (
+          <div className="flex min-h-[52px] items-center gap-3 rounded-card border border-ink/10 bg-white px-4 py-3 shadow-card">
+            <img src="/icon-192.png" alt="" className="size-8 shrink-0 rounded-lg" />
+            <div className="min-w-0 flex-1">
+              <p className="text-[15px] text-ink">{t('install')}</p>
+              <p className="text-[13px] text-ink/65">{install.mode === 'ios' ? t('install_ios') : t('install_sub')}</p>
+            </div>
+            {install.mode === 'prompt' && (
+              <button type="button" onClick={() => void install.install()} className="inline-flex min-h-11 shrink-0 items-center rounded-ctl border border-ink/10 bg-white px-3 text-[13px] font-semibold text-brand-700">{t('install_action')}</button>
+            )}
+          </div>
+        )}
 
         <button type="button" onClick={() => void signOut()} className="flex min-h-[52px] w-full items-center gap-3 rounded-card border border-ink/10 bg-white px-4 text-[15px] font-semibold text-danger shadow-card">
           <Icon name="logout" className="size-5" />

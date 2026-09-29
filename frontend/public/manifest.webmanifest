@@ -1,0 +1,25 @@
+{
+  "id": "/",
+  "name": "نظام أهل القرآن",
+  "short_name": "أهل القرآن",
+  "description": "إدارة الحلقات والطلاب والحضور والحفظ",
+  "lang": "ar",
+  "dir": "rtl",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#EEF2EC",
+  "theme_color": "#1F3B33",
+  "categories": ["education", "productivity"],
+  "icons": [
+    { "src": "/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ],
+  "shortcuts": [
+    { "name": "تسجيل الحضور", "short_name": "الحضور", "url": "/attendance", "icons": [{ "src": "/icon-192.png", "sizes": "192x192" }] },
+    { "name": "تسجيل سريع", "short_name": "تسجيل", "url": "/enrollment", "icons": [{ "src": "/icon-192.png", "sizes": "192x192" }] },
+    { "name": "الطلاب", "short_name": "الطلاب", "url": "/students", "icons": [{ "src": "/icon-192.png", "sizes": "192x192" }] }
+  ]
+}

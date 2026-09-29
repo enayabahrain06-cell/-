@@ -23,5 +23,9 @@
     "male": "Boys track",
     "female": "Girls track",
     "both": "All tracks"
-  }
+  },
+  "install": "Install the app on your phone",
+  "install_sub": "Opens from the home screen like any app, full screen.",
+  "install_ios": "In Safari: tap Share, then “Add to Home Screen”.",
+  "install_action": "Install"
 }

@@ -9,8 +9,10 @@ import { AppCertificatesProvider } from './app/certificates'
 import { AppIdCardProvider } from './app/idCard'
 import { router } from './app/routes'
 import { initOrnamentLevel } from './lib/ornament'
+import { registerPwa } from './lib/pwa'
 
 initOrnamentLevel()
+registerPwa()
 
 const queryClient = new QueryClient({
   defaultOptions: { queries: { retry: 1, refetchOnWindowFocus: false } },

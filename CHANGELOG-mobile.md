@@ -72,3 +72,16 @@ left out and listed under the page.
 - Not in the app: per-circle attendance % and memorization tabs, morning/evening chips, preselected guardians in
   messages.
 - Shared: the action bar is pinned to the bottom edge (spacer in the flow) and the FAB reserves space after lists.
+
+## Installable app (PWA)
+
+- `public/manifest.webmanifest`: Arabic name, RTL, `standalone`, portrait, deep-emerald theme, page-colored
+  splash, shortcuts (الحضور، تسجيل سريع، الطلاب). Icons 192 / 512 / maskable 512 and a 180 Apple touch icon, drawn
+  from the logo mark.
+- `public/sw.js`: caches only Vite's hashed `/assets/*` (cache first), the app shell for offline start (network
+  first) and Google Fonts; `/api` and `/media` are never cached. With the Vite dev server it caches nothing.
+- `index.html`: manifest, Apple web-app tags, `viewport-fit=cover` (the bottom nav clears the home indicator).
+- المزيد sheet: "تثبيت التطبيق على الجوال" — an install button where the browser offers it (Android Chrome, Edge),
+  the Share → Add to Home Screen hint on iPhone, hidden once installed.
+- Chrome's installability check (`Page.getInstallabilityErrors`) reports no errors on :5180. On phones the site
+  must be served over HTTPS (localhost is the only exception).
