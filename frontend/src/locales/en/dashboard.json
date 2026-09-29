@@ -127,5 +127,15 @@
     "students": "Students",
     "share": "Share",
     "tooltip": "{{count}} students · {{share}}"
+  },
+  "mobile": {
+    "quick_look": "At a glance",
+    "all": "All",
+    "taken": "Attendance {{present}}/{{enrolled}}",
+    "not_taken": "Not taken yet",
+    "students": "{{n}} students",
+    "due_pill": "{{n}} with dues",
+    "refresh": "Refresh data",
+    "more_alerts": "View all alerts ({{n}})"
   }
 }

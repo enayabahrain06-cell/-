@@ -25,3 +25,19 @@ left out and listed under the page.
   pill on الباقات والتسجيل for open registration-request alerts, language (العربية · English), logout.
 - Bell: gold dot when there are open dashboard alerts (`/alerts`), links to the dashboard alerts.
 - New icons: home, bell, more, plus, filter, sort, history, globe, wallet.
+
+## Dashboard (/) — Main.dc.html
+
+- `MobileDashboard` under `lg:hidden`; the desktop page is unchanged under `hidden lg:block`. Both use the one
+  `['dashboard', locale]` query.
+- Compact banner: greeting (Amiri 24, gold-300), one date line (Gregorian · Hijri), then track chip · last update ·
+  44px refresh (labelled). Corner khatam star at 10%.
+- One primary button, تسجيل الحضور (/attendance), and up to four icon tiles by permission: تسجيل سريع,
+  طلبات التسجيل, الحلقات والقاعات, تسجيل دفعة (opens the existing payment dialog).
+- حلقات اليوم cards: name, time · hall · students, status pill (رُصد الحضور n/n, لم يُرصد بعد, hall problem,
+  cancelled) and a 6px progress bar; each opens the circle (or its attendance sheet without lessons.view).
+- نظرة سريعة: 2-column KPI cards linking with the desktop filters; attendance-7-days card has a 4px bar; the money
+  card spans both columns with a gold "n عليهم مستحقات" pill. Without the registrations KPI (teachers) the today
+  count takes its place.
+- Alerts (the bell's target, #alerts): the five most urgent with a priority pill; each row opens the alert's
+  subject (circle, student, requests, wallet, lottery, exam). Actions such as مراسلة ولي الأمر stay on desktop.

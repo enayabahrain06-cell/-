@@ -127,5 +127,15 @@
     "students": "الطلاب",
     "share": "النسبة",
     "tooltip": "{{count}} طالب · {{share}}"
+  },
+  "mobile": {
+    "quick_look": "نظرة سريعة",
+    "all": "الكل",
+    "taken": "رُصد الحضور {{present}}/{{enrolled}}",
+    "not_taken": "لم يُرصد بعد",
+    "students": "{{n}} طالب",
+    "due_pill": "{{n}} عليهم مستحقات",
+    "refresh": "تحديث البيانات",
+    "more_alerts": "عرض كل التنبيهات ({{n}})"
   }
 }

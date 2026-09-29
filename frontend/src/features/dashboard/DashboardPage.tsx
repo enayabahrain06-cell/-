@@ -15,6 +15,7 @@ import AttendanceChart from './AttendanceChart'
 import FeesCard from './FeesCard'
 import MemorizationCard from './MemorizationCard'
 import UpcomingCard from './UpcomingCard'
+import MobileDashboard from './MobileDashboard'
 import { EmptyState, PageBand } from '../../components/ornaments'
 
 export default function DashboardPage() {
@@ -26,7 +27,9 @@ export default function DashboardPage() {
   const today = query.data?.date ?? new Date().toISOString().slice(0, 10)
 
   return (
-    <div className="space-y-5">
+    <>
+    <MobileDashboard query={query} />
+    <div className="hidden space-y-5 lg:block">
       <PageBand
         title={t('greeting', { name: user?.name })}
         subtitle={
@@ -66,6 +69,7 @@ export default function DashboardPage() {
         <Content data={query.data} locale={locale} />
       )}
     </div>
+    </>
   )
 }
 
