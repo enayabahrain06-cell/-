@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState, type ReactNode } from 'react'
 import { useQuery, keepPreviousData } from '@tanstack/react-query'
 import { Link, useSearchParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
@@ -6,10 +6,11 @@ import { lessonsApi, studentsApi, type StudentFilters, type StudentSummary } fro
 import { useAuth } from '../../app/AuthContext'
 import Avatar from '../../components/Avatar'
 import Icon from '../../components/Icon'
-import { Badge, FilterBar, SearchInput, TableWrap, TABLE_HEAD, SURFACE } from '../../components/ui'
+import { Badge, FilterBar, SearchInput, TableWrap, TABLE_HEAD, SURFACE, buttonClass } from '../../components/ui'
 import Pagination from '../../components/Pagination'
 import SelectField from '../../components/SelectField'
 import { EmptyState, PageBand, StarSpinner } from '../../components/ornaments'
+import AddToCircleDialog from './AddToCircleDialog'
 import { ageFrom, formatMoney, formatNumber } from '../../lib/format'
 
 const FILTER_KEYS = ['search', 'gender', 'status', 'lesson_id', 'juz', 'age', 'due', 'sort', 'page'] as const
@@ -206,8 +207,27 @@ function Balance({ s, locale }: { s: StudentSummary; locale: string }) {
   )
 }
 
+/** "Not in a circle": bold red, so a student saved without a package is not forgotten. */
+function NoCircle({ className = '' }: { className?: string }) {
+  const { t } = useTranslation('students')
+  return <span className={`font-semibold text-danger ${className}`}>{t('no_circle')}</span>
+}
+
+function AddToCircleButton({ onClick, children }: { onClick: () => void; children: ReactNode }) {
+  return (
+    <button type="button" onClick={onClick} className={buttonClass('secondary', 'mt-1.5 py-1 text-xs')}>
+      <Icon name="enroll" className="size-4" />
+      {children}
+    </button>
+  )
+}
+
 function StudentsTable({ rows, locale }: { rows: StudentSummary[]; locale: string }) {
   const { t } = useTranslation('students')
+  const { can } = useAuth()
+  // Placing a student uses the quick-enrollment circle options, so it needs that permission.
+  const canPlace = can('enrollment.quick')
+  const [placing, setPlacing] = useState<StudentSummary | null>(null)
 
   return (
     <>
@@ -244,7 +264,10 @@ function StudentsTable({ rows, locale }: { rows: StudentSummary[]; locale: strin
                       <span dir="auto" className="block truncate text-xs text-ink/50">{s.circle.teacher}</span>
                     </>
                   ) : (
-                    <span className="text-ink/45">{t('no_circle')}</span>
+                    <>
+                      <NoCircle className="block" />
+                      {canPlace && <AddToCircleButton onClick={() => setPlacing(s)}>{t('no_circle_action')}</AddToCircleButton>}
+                    </>
                   )}
                 </td>
                 <td className="hidden px-4 py-3 text-ink/80 md:table-cell"><Position s={s} locale={locale} /></td>
@@ -259,8 +282,8 @@ function StudentsTable({ rows, locale }: { rows: StudentSummary[]; locale: strin
       {/* < 640px: cards */}
       <ul className="space-y-3 sm:hidden">
         {rows.map((s) => (
-          <li key={s.id}>
-            <Link to={`/students/${s.id}`} className={`${SURFACE} block p-4 active:bg-brand-50/50`}>
+          <li key={s.id} className={`${SURFACE} overflow-hidden`}>
+            <Link to={`/students/${s.id}`} className="block p-4 active:bg-brand-50/50">
               <div className="flex items-center gap-3">
                 <Avatar name={s.full_name} initial={s.initial} src={s.photo_url} gender={s.gender} size="md" />
                 <div className="min-w-0 flex-1">
@@ -268,7 +291,7 @@ function StudentsTable({ rows, locale }: { rows: StudentSummary[]; locale: strin
                     <span dir="auto" className="truncate font-semibold text-ink">{s.full_name}</span>
                     {ageFrom(s.birth_date) !== null && <Badge className="shrink-0 tabular-nums"><Age s={s} locale={locale} /></Badge>}
                   </p>
-                  <p dir="auto" className="truncate text-sm text-ink/55">{s.circle?.name ?? t('no_circle')}</p>
+                  {s.circle ? <p dir="auto" className="truncate text-sm text-ink/55">{s.circle.name}</p> : <p className="truncate text-sm"><NoCircle /></p>}
                 </div>
                 <Icon name="chevron" className="size-4 text-ink/30 rtl:rotate-180" />
               </div>
@@ -277,9 +300,15 @@ function StudentsTable({ rows, locale }: { rows: StudentSummary[]; locale: strin
                 <Balance s={s} locale={locale} />
               </div>
             </Link>
+            {!s.circle && canPlace && (
+              <div className="border-t border-ink/6 px-4 py-2">
+                <AddToCircleButton onClick={() => setPlacing(s)}>{t('no_circle_action')}</AddToCircleButton>
+              </div>
+            )}
           </li>
         ))}
       </ul>
+      {placing && <AddToCircleDialog student={placing} onClose={() => setPlacing(null)} />}
     </>
   )
 }

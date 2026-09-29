@@ -48,6 +48,15 @@
     "ayahs": "{{n}} ayahs",
     "due_badge": "Has dues",
     "no_circle": "Not in a circle",
+    "no_circle_action": "Add to circle",
+    "add_circle": {
+      "title": "Add {{name}} to a circle",
+      "recommended": "Best match",
+      "free_seats": "Free seats: {{n}}",
+      "none": "No open circle with a free seat fits this student's age and gender.",
+      "save": "Add to circle",
+      "cancel": "Cancel"
+    },
     "not_started": "Not started",
     "position_short": "{{surah}} {{ayah}} · Juz {{juz}}",
     "empty": "No matching students.",

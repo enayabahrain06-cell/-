@@ -9,6 +9,9 @@ export interface EnrollmentCircle {
   start_time: string
   end_time: string
   free_seats: number
+  age_group?: string | null
+  /** The best match for the student's age and gender (sent only when both are known). */
+  recommended?: boolean
 }
 
 export interface EnrollmentPackage {
