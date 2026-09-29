@@ -6,6 +6,8 @@ use App\Enums\Gender;
 use App\Enums\Locale;
 use App\Enums\MemorizationLevel;
 use App\Enums\StudentStatus;
+use Ahl\Certificates\Concerns\HasCertificates;
+use Ahl\Certificates\Contracts\Recipient;
 use App\Models\Concerns\HasMedia;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -16,9 +18,9 @@ use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Support\Str;
 
-class Student extends Model
+class Student extends Model implements Recipient
 {
-    use HasFactory, HasMedia, SoftDeletes;
+    use HasCertificates, HasFactory, HasMedia, SoftDeletes;
 
     protected $guarded = ['id'];
 
@@ -131,11 +133,6 @@ class Student extends Model
         return $this->hasMany(ExamAttempt::class);
     }
 
-    public function certificates(): HasMany
-    {
-        return $this->hasMany(Certificate::class);
-    }
-
     public function registrationRequests(): HasMany
     {
         return $this->hasMany(RegistrationRequest::class);
@@ -178,5 +175,23 @@ class Student extends Model
     public function photoUrls(): array
     {
         return ['profile' => $this->photoUrl('profile'), 'thumb' => $this->photoUrl('thumb')];
+    }
+
+    // Certificates package recipient (Ahl\Certificates\Contracts\Recipient).
+
+    public function certificateName(): string
+    {
+        return (string) $this->full_name;
+    }
+
+    public function certificateLocale(): ?string
+    {
+        return $this->locale?->value ?? 'ar';
+    }
+
+    /** Printed only when the template shows photos; girls' photos follow print_female_photos. */
+    public function certificatePhoto(): ?string
+    {
+        return app(\App\Services\Media\StudentPhotoService::class)->printableDataUri($this);
     }
 }

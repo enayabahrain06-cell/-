@@ -1,6 +1,9 @@
 # Laravel API (php-fpm). The same image runs the app, the queue worker and the scheduler.
 FROM composer:2 AS vendor
 WORKDIR /app
+# composer.json's path repository ../packages/certificates; mirrored (not symlinked) so vendor/ is self-contained.
+COPY --from=packages certificates /packages/certificates
+ENV COMPOSER_MIRROR_PATH_REPOS=1
 COPY composer.json composer.lock ./
 RUN composer install --no-dev --no-scripts --no-autoloader --prefer-dist --no-interaction --no-progress --ignore-platform-reqs
 COPY . .

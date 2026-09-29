@@ -173,8 +173,8 @@ it('honors the top three once: certificate drafts, one message each, published b
     $this->postJson("/api/honor/periods/{$id}/honor")->assertOk()->assertJsonPath('data.certificates', 3);
     $this->postJson("/api/honor/periods/{$id}/honor")->assertOk()->assertJsonPath('data.certificates', 0);
 
-    expect(Certificate::where('honor_period_id', $id)->count())->toBe(3)
-        ->and(Certificate::where('honor_period_id', $id)->pluck('status')->map(fn ($s) => $s->value ?? $s)->unique()->all())->toBe(['draft'])
+    expect(Certificate::fromSource('honor_period', $id)->count())->toBe(3)
+        ->and(Certificate::fromSource('honor_period', $id)->pluck('status')->map(fn ($s) => $s->value ?? $s)->unique()->all())->toBe(['draft'])
         ->and(MessageLog::where('type', 'honor_congrats')->count())->toBe(3)
         ->and(HonorPeriod::find($id)->published_to_students)->toBeTrue();
 });

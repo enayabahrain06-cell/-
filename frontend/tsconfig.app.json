@@ -8,6 +8,8 @@
     "allowArbitraryExtensions": true,
     "resolveJsonModule": true,
     "skipLibCheck": true,
+    /* @ahl/certificates-react is linked from ../packages as source; resolve its imports from this node_modules. */
+    "preserveSymlinks": true,
 
     /* Bundler mode */
     "moduleResolution": "bundler",

@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers\Api\Students;
 
-use App\Enums\CertificateStatus;
+use Ahl\Certificates\Enums\CertificateStatus;
 use App\Http\Controllers\Controller;
 use App\Models\Student;
 use App\Services\Pdf\PdfService;

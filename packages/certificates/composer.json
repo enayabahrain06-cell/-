@@ -1,0 +1,26 @@
+{
+    "name": "ahl/laravel-certificates",
+    "description": "Certificates for Laravel: editable multilingual templates, a draft → approved → revoked workflow, PDF rendering and public QR verification. Issue to any Eloquent model.",
+    "type": "library",
+    "license": "proprietary",
+    "keywords": ["laravel", "certificates", "pdf", "qr", "verification"],
+    "require": {
+        "php": "^8.2",
+        "laravel/framework": "^11.0 || ^12.0",
+        "bacon/bacon-qr-code": "^3.0",
+        "barryvdh/laravel-dompdf": "^3.1"
+    },
+    "autoload": {
+        "psr-4": {
+            "Ahl\\Certificates\\": "src/"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Ahl\\Certificates\\CertificatesServiceProvider"
+            ]
+        }
+    },
+    "minimum-stability": "stable"
+}

@@ -95,9 +95,10 @@ class Exam extends Model
         return $this->hasMany(ExamAttempt::class);
     }
 
+    /** Exam-pass certificates (source exam, source_id = exam id). */
     public function certificates(): HasMany
     {
-        return $this->hasMany(Certificate::class);
+        return $this->hasMany(Certificate::class, 'source_id')->where('source', \App\Enums\CertificateSource::Exam->value);
     }
 
     public function creator(): BelongsTo

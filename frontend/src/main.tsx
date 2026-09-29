@@ -5,6 +5,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
 import './lib/i18n'
 import './index.css'
 import { AuthProvider } from './app/AuthContext'
+import { AppCertificatesProvider } from './app/certificates'
 import { router } from './app/routes'
 import { initOrnamentLevel } from './lib/ornament'
 
@@ -18,7 +19,9 @@ createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <QueryClientProvider client={queryClient}>
       <AuthProvider>
-        <RouterProvider router={router} />
+        <AppCertificatesProvider>
+          <RouterProvider router={router} />
+        </AppCertificatesProvider>
       </AuthProvider>
     </QueryClientProvider>
   </StrictMode>,

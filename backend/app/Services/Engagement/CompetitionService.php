@@ -16,7 +16,7 @@ use App\Models\Lesson;
 use App\Models\LessonStudent;
 use App\Models\Student;
 use App\Models\User;
-use App\Services\Certificates\CertificateService;
+use Ahl\Certificates\CertificateService;
 use App\Services\Lessons\StudentMessenger;
 use App\Support\Track;
 use Illuminate\Support\Collection;
@@ -261,7 +261,7 @@ class CompetitionService
                     if (! $this->certificates->exists($p->student, CertificateSource::Competition, $c->id)) {
                         $this->certificates->createDraft($p->student, CertificateType::Competition, [
                             'achievement' => $prize->title.' — '.$c->name($locale),
-                            'competition_id' => $c->id, 'source' => CertificateSource::Competition, 'source_id' => $c->id,
+                            'source' => CertificateSource::Competition, 'source_id' => $c->id,
                         ], $by);
                     }
                     if ($prize->badge) {

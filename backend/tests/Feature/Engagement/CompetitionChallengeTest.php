@@ -170,7 +170,7 @@ it('hides results until published, then rewards exactly once and locks scoring',
     $this->postJson("/api/competitions/{$c->id}/publish")->assertUnprocessable();
     $svc->publish($c->fresh(), $this->sup); // a second publish through the service must not double-reward
 
-    expect(Certificate::where('competition_id', $c->id)->count())->toBe(2)
+    expect(Certificate::fromSource('competition', $c->id)->count())->toBe(2)
         ->and(HonorPoint::where('source_type', Competition::class)->where('student_id', $this->boys[0]->id)->value('points_x100'))->toBe(2000)
         ->and(StudentBadge::where('student_id', $this->boys[0]->id)->count())->toBe(1)
         ->and(MessageLog::where('type', 'competition_result')->count())->toBe(2);

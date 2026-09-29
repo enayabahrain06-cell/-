@@ -45,9 +45,9 @@
     @foreach($certificates as $c)
         <tr>
             <td class="center">{{ $c->certificate_no }}</td>
-            <td class="ar">{{ pdf_ar($c->type->label('ar')) }}</td>
+            <td class="ar">{{ pdf_ar($c->typeLabel('ar')) }}</td>
             <td class="ar">{{ pdf_ar(trim($c->title.' '.($c->achievement ? '— '.$c->achievement : ''))) }}</td>
-            <td class="ar">{{ $c->grade ? pdf_ar($c->grade->label('ar')) : '—' }}</td>
+            <td class="ar">{{ $c->grade ? pdf_ar($c->gradeLabel('ar')) : '—' }}</td>
             <td class="center">{{ $c->issued_on?->format('Y/m/d') }}</td>
         </tr>
     @endforeach

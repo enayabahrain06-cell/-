@@ -2,12 +2,13 @@
 
 namespace App\Http\Controllers\Api\Progress;
 
+use Ahl\Certificates\CertificateService;
+use Ahl\Certificates\Http\Resources\CertificateResource;
 use App\Enums\CertificateGrade;
 use App\Enums\CertificateType;
 use App\Http\Controllers\Controller;
-use App\Http\Resources\CertificateResource;
+use App\Models\Lesson;
 use App\Models\Student;
-use App\Services\Certificates\CertificateService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
@@ -31,10 +32,13 @@ class CompletionCertificateController extends Controller
             'lesson_id' => ['nullable', 'integer', 'exists:lessons,id'],
         ]);
 
-        $certificate = $certificates->createDraft($student, CertificateType::Completion, $data + [
+        $certificate = $certificates->createDraft($student, CertificateType::Completion, [
+            'achievement' => $data['achievement'],
+            'grade' => $data['grade'] ?? null,
+            'context' => isset($data['lesson_id']) ? Lesson::find($data['lesson_id']) : null,
             'title' => __('progress.certificate_title', ['title' => $data['achievement']], $student->locale?->value ?? 'ar'),
         ], $request->user());
 
-        return response()->json(['message' => __('progress.certificate_issued'), 'data' => new CertificateResource($certificate->fresh('student'))], 201);
+        return response()->json(['message' => __('progress.certificate_issued'), 'data' => new CertificateResource($certificate->fresh(['recipient', 'context']))], 201);
     }
 }

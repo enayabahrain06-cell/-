@@ -15,12 +15,13 @@ use App\Models\Evaluation;
 use App\Models\HonorPeriod;
 use App\Models\HonorPoint;
 use App\Models\HonorRanking;
+use App\Models\Lesson;
 use App\Models\LessonStudent;
 use App\Models\Student;
 use App\Models\StudentBadge;
 use App\Models\StudentProgress;
 use App\Models\User;
-use App\Services\Certificates\CertificateService;
+use Ahl\Certificates\CertificateService;
 use App\Services\Lessons\StudentMessenger;
 use App\Services\Progress\ProgressService;
 use Carbon\Carbon;
@@ -243,8 +244,7 @@ class HonorService
             if ($certificates && ! $this->certificates->exists($r->student, CertificateSource::HonorPeriod, $hp->id)) {
                 $this->certificates->createDraft($r->student, CertificateType::Excellence, [
                     'achievement' => __('honor.certificate_achievement', ['place' => $place, 'month' => $hp->period], $locale),
-                    'lesson_id' => $r->lesson_id,
-                    'honor_period_id' => $hp->id,
+                    'context' => $r->lesson_id ? Lesson::find($r->lesson_id) : null,
                     'source' => CertificateSource::HonorPeriod,
                     'source_id' => $hp->id,
                 ], $by);

@@ -1,5 +1,7 @@
 <?php
 
+// App-specific certificate texts. Workflow messages come from the certificates package
+// (packages/certificates/lang), with this system's wording in lang/vendor/certificates.
 return [
     // Default template texts per certificate type (editable in Certificates → Templates).
     'defaults' => [
@@ -9,39 +11,15 @@ return [
         'exam' => ['title' => 'Certificate of Passing', 'body' => 'has passed {achievement}.'],
         'attendance' => ['title' => 'Full Attendance Certificate', 'body' => 'is honored for full attendance in {achievement}.'],
         'participation' => ['title' => 'Certificate of Appreciation', 'body' => 'is thanked for participating in {achievement}.'],
+        'default' => ['title' => 'Certificate', 'body' => 'is honored for {achievement}.'],
     ],
+    // Printed on the PDF (resources/views/pdf/certificate.blade.php).
     'certify' => 'certifies that the student',
     'grade_line' => 'Grade',
     'issued_on' => 'Issued on',
-    'hijri' => 'AH',
     'certificate_no' => 'Certificate no',
     'verify_hint' => 'Scan to verify',
-    'draft_mark' => 'DRAFT — NOT VALID',
-    'revoked_mark' => 'REVOKED',
-    'sample_name' => 'Hussain Ali Al-Mahroos',
-    'sample_achievement' => 'Juz Amma',
+    // Automatic completion certificates.
     'auto_juz' => 'Juz :juz',
     'auto_quran' => 'the whole Holy Quran',
-    'messages' => [
-        'created' => '{1} One draft certificate created.|[2,*] :count draft certificates created.',
-        'updated' => 'Certificate updated.',
-        'approved' => '{1} One certificate approved.|[2,*] :count certificates approved.',
-        'revoked' => 'Certificate revoked.',
-        'deleted' => 'Draft certificate deleted.',
-        'sent' => 'Certificate sent on WhatsApp.',
-        'template_saved' => 'Template saved.',
-        'signature_saved' => 'Signature saved.',
-        'signature_removed' => 'Signature removed.',
-    ],
-    'errors' => [
-        'not_draft' => 'Only draft certificates can be changed.',
-        'not_approved' => 'Only approved certificates can be revoked or sent.',
-        'not_available' => 'This certificate is not available yet.',
-        'duplicate' => 'The student already has an active certificate for this achievement.',
-        'not_found' => 'No certificate matches this verification code.',
-    ],
-    'verify' => [
-        'valid' => 'Valid certificate',
-        'revoked' => 'This certificate has been revoked',
-    ],
 ];

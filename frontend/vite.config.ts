@@ -9,6 +9,10 @@ export default defineConfig(({ mode }) => {
 
   return {
     plugins: [react(), tailwindcss()],
+    // @ahl/certificates-react is linked from ../packages as TypeScript source: resolve it inside
+    // node_modules (so its peer dependencies come from here) and serve it untouched by the pre-bundler.
+    resolve: { preserveSymlinks: true },
+    optimizeDeps: { exclude: ['@ahl/certificates-react'] },
     server: {
       port: 5173,
       proxy: {

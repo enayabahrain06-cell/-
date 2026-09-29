@@ -33,9 +33,9 @@ beforeEach(function () {
         'status' => 'draft', 'opens_at' => $at(1), 'closes_at' => $at(1)->addHours(2), 'exam_date' => now($this->tz)->addDay()->toDateString()]);
 
     foreach ([1, 2] as $i) {
-        Certificate::create(['student_id' => $this->girl->id, 'lesson_id' => $this->girlsLesson->id, 'type' => 'completion', 'title' => "شهادة {$i}", 'issued_on' => today()]);
+        Certificate::create(['recipient_type' => $this->girl->getMorphClass(), 'recipient_id' => $this->girl->id, 'context_type' => $this->girlsLesson->getMorphClass(), 'context_id' => $this->girlsLesson->id, 'type' => 'completion', 'title' => "شهادة {$i}", 'issued_on' => today()]);
     }
-    Certificate::create(['student_id' => $this->girl->id, 'type' => 'completion', 'title' => 'معتمدة', 'issued_on' => today(), 'status' => 'approved']);
+    Certificate::create(['recipient_type' => $this->girl->getMorphClass(), 'recipient_id' => $this->girl->id, 'type' => 'completion', 'title' => 'معتمدة', 'issued_on' => today(), 'status' => 'approved']);
 
     InboundMessage::create(['from_phone' => '97333000001', 'body' => 'استفسار', 'intent' => 'other', 'status' => 'open', 'student_id' => $this->boy->id, 'received_at' => now()->subDay()]);
     InboundMessage::create(['from_phone' => '97333000002', 'body' => 'تم', 'intent' => 'other', 'status' => 'resolved', 'student_id' => $this->boy->id, 'received_at' => now()]);

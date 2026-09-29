@@ -151,7 +151,7 @@ export default function StudentProfilePage() {
         {tab === 'issues' && <IssuesTab profile={p} />}
         {tab === 'attendance' && <AttendanceTab studentId={studentId} />}
         {tab === 'wallet' && <WalletTab studentId={studentId} />}
-        {tab === 'certificates' && <StudentCertificatesTab studentId={studentId} student={detail.data} />}
+        {tab === 'certificates' && <StudentCertificatesTab studentId={studentId} />}
         {tab === 'details' && <DetailsTab student={detail.data} canEdit={!readOnly && can('students.manage')} canPhoto={can('students.photo')} />}
       </div>
     </div>

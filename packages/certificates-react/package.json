@@ -1,0 +1,21 @@
+{
+  "name": "@ahl/certificates-react",
+  "version": "0.1.0",
+  "private": true,
+  "description": "React screens for ahl/laravel-certificates: certificate list and approval, templates editor, recipient tab and public QR verification.",
+  "type": "module",
+  "sideEffects": ["*.css"],
+  "exports": {
+    ".": "./src/index.ts",
+    "./theme.css": "./theme.css"
+  },
+  "files": ["src", "theme.css", "README.md"],
+  "peerDependencies": {
+    "@tanstack/react-query": "^5.0.0",
+    "axios": "^1.0.0",
+    "i18next": ">=23",
+    "react": "^18.2.0 || ^19.0.0",
+    "react-i18next": ">=14",
+    "react-router-dom": "^6.20.0 || ^7.0.0"
+  }
+}

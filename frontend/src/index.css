@@ -1,4 +1,6 @@
 @import "tailwindcss";
+/* Certificates package screens (linked from packages/, not scanned as part of node_modules). */
+@source "../../packages/certificates-react/src";
 
 /* Theme tokens from the spec. Logical utilities only (ps/pe, ms/me, start/end). */
 @theme {

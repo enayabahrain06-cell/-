@@ -1,0 +1,27 @@
+/*
+ * Default colour tokens for @ahl/certificates-react (Tailwind v4).
+ * Import after "tailwindcss" in a host that does not define these tokens itself, and let Tailwind
+ * scan the package:   @import "@ahl/certificates-react/theme.css";
+ *                     @source "../node_modules/@ahl/certificates-react/src";
+ * A host with its own design system defines the same names in its @theme and skips this file.
+ */
+@theme {
+  --color-brand-50: #eef4fb;
+  --color-brand-100: #d6e4f5;
+  --color-brand-500: #3b73b9;
+  --color-brand-600: #2c5d9c;
+  --color-brand-700: #244e84;
+  --color-brand-800: #1d3f6b;
+  --color-brand-900: #152f50;
+  --color-gold-300: #e9d3a4;
+  --color-gold-400: #d6a954;
+  --color-gold-500: #b8872e;
+  --color-gold-700: #8f6822;
+  --color-page: #f3f4f6;
+  --color-paper: #fbf8f1;
+  --color-ink: #1f2937;
+  --color-danger: #b42318;
+  --color-info: #2563eb;
+  --color-info-700: #1d4ed8;
+  --font-display: Georgia, "Times New Roman", serif;
+}

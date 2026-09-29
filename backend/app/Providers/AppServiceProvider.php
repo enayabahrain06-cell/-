@@ -2,6 +2,9 @@
 
 namespace App\Providers;
 
+use Ahl\Certificates\Events\CertificateApproved;
+use Ahl\Certificates\Events\CertificateRevoked;
+use App\Certificates\AuditCertificateEvents;
 use App\Models\User;
 use App\Observers\UserObserver;
 use App\Policies\RolePolicy;
@@ -9,6 +12,7 @@ use App\Services\WhatsApp\WhatsAppManager;
 use App\Services\WhatsApp\WhatsAppProvider;
 use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Event;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\ServiceProvider;
@@ -29,6 +33,10 @@ class AppServiceProvider extends ServiceProvider
         Gate::policy(Role::class, RolePolicy::class);
 
         User::observe(UserObserver::class);
+
+        // Certificates package: approvals and revocations go to the audit log.
+        Event::listen(CertificateApproved::class, [AuditCertificateEvents::class, 'approved']);
+        Event::listen(CertificateRevoked::class, [AuditCertificateEvents::class, 'revoked']);
 
         RateLimiter::for('login', fn (Request $request) => Limit::perMinute(5)->by($request->ip()));
         RateLimiter::for('otp', fn (Request $request) => [

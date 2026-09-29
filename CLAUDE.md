@@ -1,6 +1,7 @@
 # Ahl Al-Quran System
 
 - `backend/`: Laravel 12 JSON API. `frontend/`: React 18 + Tailwind v4 SPA. Blade is used only for PDFs (`backend/resources/views/pdf`).
+- `packages/`: reusable modules used by both apps. `certificates` (Composer, `ahl/laravel-certificates`) and `certificates-react` (npm, `@ahl/certificates-react`). App-specific behaviour lives in adapters (`backend/app/Certificates`, `frontend/src/app/certificates.tsx`), not in the packages.
 
 ## UI work
 

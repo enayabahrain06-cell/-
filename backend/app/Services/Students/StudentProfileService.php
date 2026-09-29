@@ -3,7 +3,7 @@
 namespace App\Services\Students;
 
 use App\Enums\AttendanceStatus;
-use App\Enums\CertificateStatus;
+use Ahl\Certificates\Enums\CertificateStatus;
 use Illuminate\Support\Facades\DB;
 use App\Enums\IssueSeverity;
 use App\Models\Attendance;

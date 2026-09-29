@@ -2,70 +2,56 @@
 
 namespace App\Policies;
 
-use App\Models\Certificate;
+use Ahl\Certificates\Models\Certificate;
+use Ahl\Certificates\Policies\CertificatePolicy as BasePolicy;
 use App\Models\Student;
 use App\Models\User;
 use App\Support\Track;
+use Illuminate\Contracts\Auth\Authenticatable;
+use Illuminate\Database\Eloquent\Model;
 
 /**
  * Staff see certificates in their gender track (teachers: their own students). Drafts and revoked
  * certificates are staff-only; the student and guardian see approved ones read-only.
  */
-class CertificatePolicy
+class CertificatePolicy extends BasePolicy
 {
-    public function viewAny(User $user): bool
+    public function view(Authenticatable $user, Certificate $certificate): bool
     {
-        return $user->can('certificates.view');
-    }
-
-    public function view(User $user, Certificate $certificate): bool
-    {
-        if (self::isStaffFor($user, $certificate->student)) {
+        $student = $this->student($certificate->recipient);
+        if (self::isStaffFor($user, $student)) {
             return true;
         }
 
-        return $certificate->isApproved() && self::isFamily($user, $certificate->student_id);
+        return $certificate->isApproved() && $student && self::isFamily($user, $student->id);
     }
 
     /** Create drafts for a student (teachers: only students in their circles). */
-    public function issueFor(User $user, Student $student): bool
+    public function issueFor(Authenticatable $user, Model $recipient): bool
     {
-        return $user->can('certificates.issue') && self::isStaffFor($user, $student);
+        return $user->can('certificates.issue') && self::isStaffFor($user, $this->student($recipient));
     }
 
-    public function update(User $user, Certificate $certificate): bool
+    public function approve(Authenticatable $user, Certificate $certificate): bool
     {
-        return $certificate->isDraft() && $this->issueFor($user, $certificate->student);
+        $student = $this->student($certificate->recipient);
+
+        return $user->can('certificates.approve') && $student && Track::allows($user, $student->gender);
     }
 
-    public function delete(User $user, Certificate $certificate): bool
+    public function viewRecipient(Authenticatable $user, Model $recipient): bool
     {
-        return $this->update($user, $certificate);
+        return $recipient instanceof Student && $user->can('view', $recipient);
     }
 
-    public function approve(User $user, Certificate $certificate): bool
+    public function manageRecipient(Authenticatable $user, Model $recipient): bool
     {
-        return $user->can('certificates.approve') && Track::allows($user, $certificate->student->gender);
+        return self::isStaffFor($user, $this->student($recipient));
     }
 
-    public function revoke(User $user, Certificate $certificate): bool
+    public static function isStaffFor(Authenticatable $user, ?Student $student): bool
     {
-        return $this->approve($user, $certificate);
-    }
-
-    /** Resend the WhatsApp congratulations. */
-    public function send(User $user, Certificate $certificate): bool
-    {
-        return $certificate->isApproved() && ($this->approve($user, $certificate) || $this->issueFor($user, $certificate->student));
-    }
-
-    public function manageTemplates(User $user): bool
-    {
-        return $user->can('certificates.templates');
-    }
-
-    public static function isStaffFor(User $user, ?Student $student): bool
-    {
+        /** @var User $user */
         if (! $student || ! Track::allows($user, $student->gender)) {
             return false;
         }
@@ -77,9 +63,15 @@ class CertificatePolicy
         return ($user->can('certificates.view') || $user->can('students.view')) && StudentPolicy::isTeacherOf($user, $student);
     }
 
-    public static function isFamily(User $user, int $studentId): bool
+    public static function isFamily(Authenticatable $user, int $studentId): bool
     {
+        /** @var User $user */
         return $user->student()->whereKey($studentId)->exists()
             || $user->children()->whereKey($studentId)->exists();
+    }
+
+    private function student(?Model $recipient): ?Student
+    {
+        return $recipient instanceof Student ? $recipient : null;
     }
 }

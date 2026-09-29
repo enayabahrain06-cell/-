@@ -8,7 +8,10 @@
 # Configuration comes from ./.env (copy .env.production.example). See docs/04-DEPLOYMENT.md.
 
 x-backend: &backend
-  build: ./backend
+  build:
+    context: ./backend
+    # Local Composer packages (packages/certificates), copied in by the Dockerfile.
+    additional_contexts: { packages: ./packages }
   image: ahl-alquran/backend:latest
   restart: unless-stopped
   env_file: .env
@@ -59,7 +62,10 @@ services:
       app: { condition: service_started }
 
   web:
-    build: ./frontend
+    build:
+      context: ./frontend
+      # Local npm packages (packages/certificates-react), copied in by the Dockerfile.
+      additional_contexts: { packages: ./packages }
     image: ahl-alquran/web:latest
     restart: unless-stopped
     ports:

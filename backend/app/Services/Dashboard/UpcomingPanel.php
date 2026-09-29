@@ -2,7 +2,7 @@
 
 namespace App\Services\Dashboard;
 
-use App\Enums\CertificateStatus;
+use Ahl\Certificates\Enums\CertificateStatus;
 use App\Enums\ExamStatus;
 use App\Enums\InboundStatus;
 use App\Enums\LessonStudentStatus;

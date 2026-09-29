@@ -2,6 +2,7 @@
 
 namespace App\Services\Certificates;
 
+use Ahl\Certificates\CertificateService;
 use App\Enums\CertificateSource;
 use App\Enums\CertificateType;
 use App\Models\Certificate;
@@ -34,7 +35,7 @@ class AutoCertificateIssuer
             return [];
         }
 
-        $existing = Certificate::where('student_id', $student->id)->where('source', CertificateSource::AutoJuz->value)
+        $existing = Certificate::forRecipient($student)->where('source', CertificateSource::AutoJuz->value)
             ->pluck('source_id')->map(fn ($v) => (int) $v)->all();
         $locale = $student->locale?->value ?? 'ar';
         $created = [];

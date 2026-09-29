@@ -4,8 +4,51 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "1fcef7e8a605a49888c4730ba0b0d058",
+    "content-hash": "4f3fbd817bb86305ac1ef77dae4ad5bc",
     "packages": [
+        {
+            "name": "ahl/laravel-certificates",
+            "version": "dev-main",
+            "dist": {
+                "type": "path",
+                "url": "../packages/certificates",
+                "reference": "26f1eca656f53b90c6c8edf82896ecd507c9965c"
+            },
+            "require": {
+                "bacon/bacon-qr-code": "^3.0",
+                "barryvdh/laravel-dompdf": "^3.1",
+                "laravel/framework": "^11.0 || ^12.0",
+                "php": "^8.2"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "Ahl\\Certificates\\CertificatesServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Ahl\\Certificates\\": "src/"
+                }
+            },
+            "license": [
+                "proprietary"
+            ],
+            "description": "Certificates for Laravel: editable multilingual templates, a draft → approved → revoked workflow, PDF rendering and public QR verification. Issue to any Eloquent model.",
+            "keywords": [
+                "certificates",
+                "laravel",
+                "pdf",
+                "qr",
+                "verification"
+            ],
+            "transport-options": {
+                "symlink": true,
+                "relative": true
+            }
+        },
         {
             "name": "bacon/bacon-qr-code",
             "version": "v3.1.1",
@@ -13181,7 +13224,9 @@
     ],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": {},
+    "stability-flags": {
+        "ahl/laravel-certificates": 20
+    },
     "prefer-stable": true,
     "prefer-lowest": false,
     "platform": {

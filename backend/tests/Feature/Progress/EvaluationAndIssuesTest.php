@@ -211,7 +211,7 @@ it('drafts a completion certificate that gets its PDF on approval', function () 
     $res = $this->postJson("/api/students/{$this->students[0]->id}/certificates/completion", ['achievement' => 'جزء عمّ'])->assertCreated();
 
     $cert = Certificate::find($res->json('data.id'));
-    expect($cert->type->value)->toBe('completion')
+    expect($cert->type)->toBe('completion')
         ->and($cert->status->value)->toBe('draft')
         ->and($cert->title)->toContain('جزء عمّ')
         ->and($cert->mediaIn(\App\Enums\MediaCollection::Certificate))->toBeNull();

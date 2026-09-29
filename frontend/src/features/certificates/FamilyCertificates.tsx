@@ -23,7 +23,7 @@ export default function FamilyCertificates() {
             <Avatar name={s.full_name} initial={s.initial} src={s.photo_url} gender={s.gender} size="sm" />
             <span dir="auto">{list.length > 1 || u?.student?.id !== s.id ? t('student.child_certificates', { name: s.full_name }) : t('student.title')}</span>
           </h2>
-          <StudentCertificatesTab studentId={s.id} student={s} />
+          <StudentCertificatesTab studentId={s.id} />
         </section>
       ))}
     </div>

@@ -1,6 +1,8 @@
 # SPA build served by nginx, which also forwards /api, /media and /docs to the php-fpm container.
 FROM node:20-bookworm-slim AS build
 WORKDIR /app
+# package.json's file:../packages/certificates-react (also scanned by Tailwind through index.css @source).
+COPY --from=packages certificates-react /packages/certificates-react
 COPY package.json package-lock.json ./
 RUN npm ci --no-audit --no-fund
 COPY . .

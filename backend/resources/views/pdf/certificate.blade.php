@@ -1,6 +1,6 @@
 {{--
-    Certificate (spec section 16), A4 landscape. Data from CertificateService::viewData():
-    $locale, $ornament (full|minimal|off), $authority, $gregorian, $hijri, $signatures[], $cert[name,title,body,grade,certificate_no,qr,stamp,photo].
+    Certificate (spec section 16), A4 landscape. Data from the certificates package (CertificateService::renderView, AhlCertificateHost):
+    $locale, $ornament (full|minimal|off), $issuer, $date, $date_secondary (Hijri), $signatures[], $cert[name,title,body,grade,certificate_no,qr,stamp,photo].
     Arabic lines are shaped one visual line at a time (pdf_ar / pdf_ar_lines); mixed lines are emitted in reverse order.
 --}}
 <!DOCTYPE html>
@@ -50,12 +50,12 @@ body { font-family: 'amiri', 'plexarabic', 'DejaVu Sans', sans-serif; color: #1B
     @endif
 
     <div class="content">
-        <div class="authority {{ $cls }}">{{ $ar ? pdf_ar($authority) : $authority }}</div>
+        <div class="authority {{ $cls }}">{{ $ar ? pdf_ar($issuer) : $issuer }}</div>
         <div class="title {{ $cls }}">{{ $ar ? pdf_ar($cert['title']) : $cert['title'] }}</div>
         @if($ar)
-            <div class="line c">{{ pdf_ar($authority.' '.$t('certify')) }}</div>
+            <div class="line c">{{ pdf_ar($issuer.' '.$t('certify')) }}</div>
         @else
-            <div class="line c en">{{ $authority }} {{ $t('certify') }}</div>
+            <div class="line c en">{{ $issuer }} {{ $t('certify') }}</div>
         @endif
         @if(!empty($cert['photo']))<div class="c"><img class="photo" src="{{ $cert['photo'] }}" alt=""></div>@endif
         <div class="name c">{{ pdf_ar($cert['name']) }}</div>
@@ -93,12 +93,12 @@ body { font-family: 'amiri', 'plexarabic', 'DejaVu Sans', sans-serif; color: #1B
         @endforeach
         <td style="width:26%; text-align:center" class="meta">
             @if($ar)
-                <div class="c">{{ $gregorian }} :{{ pdf_ar($t('issued_on')) }}</div>
-                @if($hijri)<div class="c">{{ pdf_ar($hijri) }}</div>@endif
+                <div class="c">{{ $date }} :{{ pdf_ar($t('issued_on')) }}</div>
+                @if($date_secondary)<div class="c">{{ pdf_ar($date_secondary) }}</div>@endif
                 <div class="c">{{ $cert['certificate_no'] }} :{{ pdf_ar($t('certificate_no')) }}</div>
             @else
-                <div class="en">{{ $t('issued_on') }}: {{ $gregorian }}</div>
-                @if($hijri)<div class="en">{{ $hijri }}</div>@endif
+                <div class="en">{{ $t('issued_on') }}: {{ $date }}</div>
+                @if($date_secondary)<div class="en">{{ $date_secondary }}</div>@endif
                 <div class="en">{{ $t('certificate_no') }}: {{ $cert['certificate_no'] }}</div>
             @endif
         </td>
