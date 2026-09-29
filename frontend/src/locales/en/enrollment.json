@@ -29,7 +29,7 @@
   "duplicate_title": "This student may already be registered",
   "duplicate_same_name_birth_date": "A student with the same name and birth date",
   "duplicate_same_name_guardian": "A child of this guardian with the same name",
-  "placement_hint": "Enter the birth date and gender to see suitable packages.",
+  "placement_hint": "Enter the birth date and gender to see which packages fit this student and their circles.",
   "loading": "Loading…",
   "no_packages": "No open package fits this age and gender.",
   "package": "Package",
@@ -66,5 +66,13 @@
   "locked_circle": "Circle",
   "locked_hint": "Enter the birth date and gender to check that the student fits this circle.",
   "locked_not_suitable": "This student does not fit the circle: the age or gender is outside its package, or the package is not open for enrollment.",
-  "locked_no_seat": "This circle cannot take new students right now (it is full or not active)."
+  "locked_no_seat": "This circle cannot take new students right now (it is full or not active).",
+  "no_open_packages": "There are no open packages for enrollment right now.",
+  "track_male": "Boys",
+  "track_female": "Girls",
+  "track_mixed": "Early years (mixed)",
+  "age_range": "Ages {{min}}–{{max}}",
+  "unfit_age": "Not available: the student’s age is outside this package",
+  "unfit_gender": "Not available: this package is for the other gender track",
+  "unfit_circle": "Not available: no circle you can enroll into fits this student"
 }

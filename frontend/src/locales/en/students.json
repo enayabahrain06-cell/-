@@ -21,6 +21,12 @@
         "sort_no": "Student number",
         "sort_memorized": "Most memorized",
         "sort_newest": "Newest",
+        "age": "Age",
+        "all_ages": "All ages",
+        "age_under": "Under {{n}}",
+        "age_range": "{{from}}–{{to}} years",
+        "age_over": "{{n}} and over",
+        "sort_age": "Youngest first",
         "clear": "Clear filters"
     },
     "status": {
@@ -34,6 +40,7 @@
         "circle": "Circle",
         "position": "Current position",
         "memorized": "Memorized",
+        "age": "Age",
         "balance": "Balance",
         "status": "Status"
     },
@@ -75,7 +82,33 @@
         "attendance": "Attendance",
         "wallet": "Wallet",
         "details": "Details",
-        "certificates": "Certificates"
+        "certificates": "Certificates",
+        "placement": "Placement test"
+    },
+    "placement_tab": {
+        "empty": "No placement test for this student.",
+        "empty_body": "Students who registered for a package with a placement test show their result here.",
+        "score": "Score",
+        "marks": "{{score}} of {{total}} marks",
+        "correct": "{{correct}} of {{total}} correct",
+        "declared": "Declared by the family",
+        "recommended": "Recommended",
+        "final": "Final level",
+        "not_confirmed": "Not confirmed",
+        "confirmed_by": "Confirmed by {{name}} on {{date}}",
+        "date": "Taken on",
+        "attempt": "Attempt",
+        "answers": "Answers",
+        "question": "Question",
+        "answer": "Answer given",
+        "key": "Correct answer",
+        "mark": "Marks",
+        "right": "Correct",
+        "wrong": "Wrong",
+        "no_answer": "No answer",
+        "true": "True",
+        "false": "False",
+        "difficulty": { "easy": "Easy", "medium": "Medium", "hard": "Hard" }
     },
     "juz_map": {
         "title": "Juz map",
@@ -171,5 +204,23 @@
         "remove_photo": "Remove photo",
         "photo_hint": "JPG, PNG or HEIC up to 5 MB. Cropped square automatically.",
         "uploading": "Uploading…"
+    },
+    "wallet_charts": {
+        "paid_title": "Invoices paid",
+        "paid_subtitle": "Share of {{total}} invoiced (cancelled invoices excluded)",
+        "paid": "Paid",
+        "outstanding": "Outstanding",
+        "monthly_title": "Charged and paid by month",
+        "monthly_subtitle": "Last 12 months",
+        "charged": "Charged",
+        "refunded": "Refunded",
+        "month": "Month",
+        "part": "Part",
+        "amount": "Amount",
+        "share": "Share",
+        "legend": "Legend",
+        "axis_bhd": "Amounts in BHD",
+        "show_table": "Show as table",
+        "show_chart": "Show chart"
     }
 }

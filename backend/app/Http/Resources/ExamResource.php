@@ -28,6 +28,8 @@ class ExamResource extends JsonResource
             'duration_minutes' => $this->duration_minutes,
             'total_marks' => $this->total_marks,
             'pass_mark' => $this->pass_mark,
+            'level_bands' => $this->when($this->isPlacement(), fn () => collect($this->level_bands ?? [])
+                ->map(fn ($b) => $b + ['level_label' => \App\Enums\MemorizationLevel::tryFrom($b['level'])?->label()])->values()),
             'syllabus' => $this->syllabus,
             'randomize' => $this->randomize,
             'questions_count' => $this->whenCounted('questions'),

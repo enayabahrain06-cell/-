@@ -19,7 +19,7 @@ class ExamResultsReport
         $ctx = new ReportContext($user, $f);
         $ownOnly = $ctx->teacherOnly() && ! $user->can('exams.manage');
 
-        $exams = Exam::query()
+        $exams = Exam::query()->forStudents()
             // Half-open range: the `date` cast can store a time part (SQLite), which BETWEEN on the last day would miss.
             ->where('exam_date', '>=', $ctx->fromDate())->where('exam_date', '<', $ctx->to->copy()->addDay()->toDateString())
             ->tap(fn (Builder $q) => Track::scope($q, $user))

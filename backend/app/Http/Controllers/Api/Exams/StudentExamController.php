@@ -35,7 +35,7 @@ class StudentExamController extends Controller
         $lessonIds = $student->lessonStudents()->where('status', 'active')->pluck('lesson_id');
         $packageIds = Lesson::whereIn('id', $lessonIds)->pluck('package_id');
 
-        $exams = Exam::whereIn('status', [ExamStatus::Published->value, ExamStatus::Closed->value, ExamStatus::Graded->value])
+        $exams = Exam::forStudents()->whereIn('status', [ExamStatus::Published->value, ExamStatus::Closed->value, ExamStatus::Graded->value])
             ->where(fn ($q) => $q->whereIn('lesson_id', $lessonIds)->orWhere(fn ($p) => $p->whereNull('lesson_id')->whereIn('package_id', $packageIds)))
             ->with(['package', 'lesson'])->orderBy('opens_at')->get();
 

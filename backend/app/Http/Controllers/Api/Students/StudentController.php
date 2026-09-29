@@ -18,7 +18,8 @@ class StudentController extends Controller
 {
     /**
      * Students list with wallet balance (due badge) and thumbnail.
-     * Filters: search (name / student_no / phone), status, gender, memorization_level, package_id, lesson_id, due=1.
+     * Filters: search (name / student_no / phone), status, gender, memorization_level, package_id, lesson_id, due=1,
+     * age_min / age_max (whole years, inclusive).
      * Teachers see only students enrolled in their circles.
      */
     public function index(Request $request): JsonResponse
@@ -40,11 +41,16 @@ class StudentController extends Controller
             ->when($request->filled('package_id'), fn ($q) => $q->whereHas('lessonStudents', fn ($w) => $w->where('status', 'active')->whereIn('lesson_id', \App\Models\Lesson::where('package_id', $request->integer('package_id'))->select('id'))))
             ->when($request->boolean('due'), fn ($q) => $q->whereHas('wallet', fn ($w) => $w->where('balance_fils', '<', 0)))
             ->when($request->filled('juz'), fn ($q) => $request->integer('juz') === 0 ? $q->whereNull('progress_juz') : $q->where('progress_juz', $request->integer('juz')))
-            ->when($request->boolean('no_photo'), fn ($q) => $q->whereNull('photo_path'));
+            ->when($request->boolean('no_photo'), fn ($q) => $q->whereNull('photo_path'))
+            // Age in whole years today: age >= min means born on or before today minus min years;
+            // age <= max means born after today minus (max + 1) years.
+            ->when($request->filled('age_min'), fn ($q) => $q->whereDate('birth_date', '<=', today()->subYears($request->integer('age_min'))))
+            ->when($request->filled('age_max'), fn ($q) => $q->whereDate('birth_date', '>', today()->subYears($request->integer('age_max') + 1)));
 
-        // Sort: name (default), student_no, memorized (most first), newest.
+        // Sort: name (default), student_no, memorized (most first), newest, age (youngest first).
         match ($request->string('sort')->toString()) {
             'student_no' => $q->orderBy('student_no'),
+            'age' => $q->orderByDesc('birth_date')->orderBy('full_name'),
             'memorized' => $q->orderByDesc('memorized_ayahs')->orderBy('full_name'),
             'newest' => $q->orderByDesc('id'),
             default => $q->orderBy('full_name'),
@@ -69,6 +75,15 @@ class StudentController extends Controller
         $audit->record('student.updated', $student, $old, $student->only(array_keys($old)));
 
         return new StudentResource($student->fresh(['wallet', 'guardian', 'user', 'lessons.teacher', 'lessons.package', 'lessons.location']));
+    }
+
+    /** Placement test results from the student's registration, with recommended and confirmed levels. Staff only. */
+    public function placement(Request $request, Student $student, \App\Services\Exams\PlacementService $placement): JsonResponse
+    {
+        $this->authorize('view', $student);
+        abort_unless($request->user()->can('students.view'), 403);
+
+        return response()->json(['data' => $placement->historyFor($student)]);
     }
 
     /**

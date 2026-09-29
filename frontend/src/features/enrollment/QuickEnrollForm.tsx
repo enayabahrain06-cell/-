@@ -2,13 +2,13 @@ import { useEffect, useMemo, useRef, useState, type FormEvent, type ReactNode } 
 import { useQuery } from '@tanstack/react-query'
 import { useTranslation } from 'react-i18next'
 import { Link } from 'react-router-dom'
-import { enrollmentApi, type EnrollResult } from '../../api/enrollment'
+import { enrollmentApi, type EnrollmentPackage, type EnrollResult } from '../../api/enrollment'
 import { parseApiError, type FieldErrors } from '../../api/client'
 import Alert from '../../components/Alert'
 import Button from '../../components/Button'
 import FormField from '../../components/FormField'
 import SelectField from '../../components/SelectField'
-import { formatMoney, formatNumber, formatTime } from '../../lib/format'
+import { ageFrom, formatMoney, formatNumber, formatTime } from '../../lib/format'
 import { toLatinDigits } from '../../lib/phone'
 import { SURFACE, buttonClass } from '../../components/ui'
 
@@ -24,13 +24,19 @@ interface StudentFields {
 
 const EMPTY_STUDENT: StudentFields = { full_name: '', birth_date: '', gender: '', memorization_level: '', student_phone: '', guardian_name: '', guardian_phone: '' }
 
-function ageFrom(birth: string): number | null {
-  if (!/^\d{4}-\d{2}-\d{2}$/.test(birth)) return null
+/**
+ * Why a package the server left out does not fit, for its label only (the server still decides).
+ * Mirrors PackageSuitability: age in whole years on the package start date, then the gender track;
+ * anything else means no circle open to this user fits the student.
+ */
+function unfitReason(p: EnrollmentPackage, birth: string, gender: StudentFields['gender']): 'age' | 'gender' | 'circle' {
   const b = new Date(birth)
-  const now = new Date()
-  let age = now.getFullYear() - b.getFullYear()
-  if (now.getMonth() < b.getMonth() || (now.getMonth() === b.getMonth() && now.getDate() < b.getDate())) age--
-  return age >= 0 ? age : null
+  const s = new Date(p.start_date)
+  let age = s.getFullYear() - b.getFullYear()
+  if (s.getMonth() < b.getMonth() || (s.getMonth() === b.getMonth() && s.getDate() < b.getDate())) age--
+  if (age < p.min_age || age > p.max_age) return 'age'
+  if (p.gender !== 'mixed' && p.gender !== gender) return 'gender'
+  return 'circle'
 }
 
 /** Keeps a value stable until the user pauses typing, so lookups do not fire on every key. */
@@ -97,7 +103,11 @@ export default function QuickEnrollForm({ lock, onEnrolled }: { lock?: LockedCir
     if (guardian && !f.guardian_name) setF((prev) => ({ ...prev, guardian_name: guardian.name }))
   }, [guardian, f.guardian_name])
 
-  const packages = options.data?.data ?? []
+  // Every open package this user can enroll into is listed from the start; once the birth date and
+  // gender are known, only the ones the server returns as suitable stay selectable.
+  const known = age !== null && !!f.gender
+  const allPackages = levels.data?.data ?? []
+  const packages = known ? options.data?.data ?? [] : allPackages
   const selected = packages.find((p) => p.id === packageId) ?? null
   // Drop a package or circle that no longer fits after the age or gender changed (a locked circle stays; it is reported instead).
   useEffect(() => {
@@ -300,33 +310,48 @@ export default function QuickEnrollForm({ lock, onEnrolled }: { lock?: LockedCir
             {err('package_id') && lockedFits && <p className="text-sm text-danger">{err('package_id')}</p>}
             {err('lesson_id') && <p className="text-sm text-danger">{err('lesson_id')}</p>}
           </>
-        ) : age === null || !f.gender ? (
-          <p className="text-sm text-ink/55">{t('placement_hint')}</p>
-        ) : options.isLoading ? (
+        ) : levels.isLoading || (known && options.isLoading) ? (
           <p className="text-sm text-ink/55">{t('loading')}</p>
-        ) : packages.length === 0 ? (
-          <Alert tone="info">{t('no_packages')}</Alert>
+        ) : allPackages.length === 0 ? (
+          <Alert tone="info">{t('no_open_packages')}</Alert>
         ) : (
           <>
-            <SelectField
-              label={t('package')}
-              value={packageId ?? ''}
-              onChange={(e) => {
-                const next = packages.find((p) => p.id === Number(e.target.value))
-                setPackageId(next?.id ?? null)
-                setAmount(next ? (next.price_fils / 1000).toFixed(3) : '')
-                setLessonId(null)
-                setErrors((prev) => ({ ...prev, package_id: [] }))
-              }}
-              options={[
-                { value: '', label: t('choose') },
-                ...packages.map((p) => ({
-                  value: String(p.id),
-                  label: `${p.name} · ${formatMoney(p.price_fils, locale)} · ${p.is_full ? t('full') : t('seats_left', { count: p.seats_left })}`,
-                })),
-              ]}
-            />
-            {err('package_id') && <p className="-mt-2 text-sm text-danger">{err('package_id')}</p>}
+            {!known && <p className="text-sm text-ink/55">{t('placement_hint')}</p>}
+            {known && packages.length === 0 && <Alert tone="info">{t('no_packages')}</Alert>}
+            <p id="pick-package" className="text-sm font-medium text-ink/75">{t('package')}</p>
+            <div role="radiogroup" aria-labelledby="pick-package" className="grid gap-2 sm:grid-cols-2">
+              {allPackages.map((p) => {
+                const fit = packages.some((x) => x.id === p.id)
+                const info = packages.find((x) => x.id === p.id) ?? p
+                const reason = fit ? null : unfitReason(p, f.birth_date, f.gender)
+                const active = packageId === p.id
+                return (
+                  <label key={p.id} className={`rounded-xl border px-4 py-3 transition ${
+                    !fit ? 'cursor-not-allowed border-ink/10 bg-ink/3 opacity-60'
+                      : active ? 'cursor-pointer border-brand-600 bg-brand-50 focus-within:ring-4 focus-within:ring-brand-100'
+                        : 'cursor-pointer border-ink/15 bg-white hover:border-brand-500/50 focus-within:ring-4 focus-within:ring-brand-100'
+                  }`}>
+                    <input type="radio" name="package" value={p.id} checked={active} disabled={!fit} className="sr-only"
+                      onChange={() => {
+                        setPackageId(p.id)
+                        setAmount((info.price_fils / 1000).toFixed(3))
+                        setLessonId(null)
+                        setErrors((prev) => ({ ...prev, package_id: [] }))
+                      }} />
+                    <span dir="auto" className="block font-medium text-ink">{p.name}</span>
+                    <span className="mt-0.5 block text-sm text-ink/60">
+                      {t(`track_${p.gender}`)} · {t('age_range', { min: formatNumber(p.min_age, locale), max: formatNumber(p.max_age, locale) })} · {formatMoney(p.price_fils, locale)}
+                    </span>
+                    {reason ? (
+                      <span className="mt-0.5 block text-xs text-ink/60">{t(`unfit_${reason}`)}</span>
+                    ) : (
+                      <span className={`mt-0.5 block text-xs ${info.is_full ? 'text-gold-700' : 'text-brand-700'}`}>{info.is_full ? t('full') : t('seats_left', { count: info.seats_left })}</span>
+                    )}
+                  </label>
+                )
+              })}
+            </div>
+            {err('package_id') && <p className="text-sm text-danger">{err('package_id')}</p>}
 
             {selected?.is_full && (
               <label className="flex items-center gap-3 rounded-xl border border-gold-500/40 bg-gold-500/8 px-4 py-3 text-sm text-gold-700">
@@ -335,19 +360,22 @@ export default function QuickEnrollForm({ lock, onEnrolled }: { lock?: LockedCir
               </label>
             )}
 
-            {selected && !waitlist && (
-              <div role="radiogroup" aria-label={t('circle')} className="grid gap-2 sm:grid-cols-2">
-                {selected.circles.length === 0 && <p className="text-sm text-ink/55 sm:col-span-2">{t('no_circles')}</p>}
-                {selected.circles.map((c) => (
-                  <label key={c.id} className={`cursor-pointer rounded-xl border px-4 py-3 transition focus-within:ring-4 focus-within:ring-brand-100 ${lessonId === c.id ? 'border-brand-600 bg-brand-50' : 'border-ink/15 bg-white hover:border-brand-500/50'}`}>
-                    <input type="radio" name="lesson" value={c.id} checked={lessonId === c.id} onChange={() => setLessonId(c.id)} className="sr-only" />
-                    <span className="block font-medium text-ink">{c.name}</span>
-                    <span className="mt-0.5 block text-sm text-ink/60">
-                      {c.teacher} · {c.location} · {formatTime(c.start_time, locale)}
-                    </span>
-                    <span className="mt-0.5 block text-xs text-brand-700">{t('free_seats', { count: c.free_seats })}</span>
-                  </label>
-                ))}
+            {selected && known && !waitlist && (
+              <div className="space-y-2">
+                <p id="pick-circle" className="text-sm font-medium text-ink/75">{t('circle')}</p>
+                <div role="radiogroup" aria-labelledby="pick-circle" className="grid gap-2 sm:grid-cols-2">
+                  {selected.circles.length === 0 && <p className="text-sm text-ink/55 sm:col-span-2">{t('no_circles')}</p>}
+                  {selected.circles.map((c) => (
+                    <label key={c.id} className={`cursor-pointer rounded-xl border px-4 py-3 transition focus-within:ring-4 focus-within:ring-brand-100 ${lessonId === c.id ? 'border-brand-600 bg-brand-50' : 'border-ink/15 bg-white hover:border-brand-500/50'}`}>
+                      <input type="radio" name="lesson" value={c.id} checked={lessonId === c.id} onChange={() => setLessonId(c.id)} className="sr-only" />
+                      <span className="block font-medium text-ink">{c.name}</span>
+                      <span className="mt-0.5 block text-sm text-ink/60">
+                        {c.teacher} · {c.location} · {formatTime(c.start_time, locale)}
+                      </span>
+                      <span className="mt-0.5 block text-xs text-brand-700">{t('free_seats', { count: c.free_seats })}</span>
+                    </label>
+                  ))}
+                </div>
               </div>
             )}
             {err('lesson_id') && <p className="text-sm text-danger">{err('lesson_id')}</p>}

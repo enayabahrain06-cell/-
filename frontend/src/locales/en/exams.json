@@ -2,7 +2,7 @@
   "title": "Exams",
   "subtitle": "Paper and online exams, question bank, grading and results",
   "new": "New exam",
-  "type": { "paper": "Paper", "online": "Online" },
+  "type": { "paper": "Paper", "online": "Online", "placement": "Placement test" },
   "status": { "draft": "Draft", "published": "Published", "closed": "Closed", "graded": "Graded" },
   "filters": { "all_types": "All types", "all_statuses": "All statuses" },
   "empty": "No exams.",
@@ -12,6 +12,27 @@
   "marks": "{{pass}} of {{total}} to pass",
   "questions_n": "{{n}} questions",
   "attempts_n": "{{n}} attempts",
+  "placement": {
+    "form_hint": "Families take this test while registering for the package. It is graded straight away and its score recommends a memorization level; staff confirm the final level when accepting the request.",
+    "bands": "Score bands",
+    "bands_hint": "Each band starts at a percentage and recommends a level. One band must start at 0%.",
+    "band_min": "Starts at (%)",
+    "band_level": "Recommended level",
+    "from": "From",
+    "add_band": "Add band",
+    "remove_band": "Remove band",
+    "preview": "Score bands preview",
+    "range": "{{from}}–{{to}}%",
+    "no_bands": "No score bands yet. Edit the test to add them before publishing.",
+    "total_marks": "{{n}} marks",
+    "no_attempts": "No one has taken this placement test yet.",
+    "candidate": "Candidate",
+    "attempt": "Attempt",
+    "recommended": "Recommended level",
+    "request": "Request",
+    "not_registered": "Not registered",
+    "in_progress": "In progress"
+  },
   "form": {
     "title_new": "New exam",
     "title_edit": "Edit exam",
@@ -30,6 +51,7 @@
     "syllabus": "Syllabus",
     "randomize": "Randomize question order",
     "save": "Save",
+    "save_next": "Save and add questions",
     "cancel": "Cancel"
   },
   "tabs": { "overview": "Overview", "questions": "Questions", "grading": "Grading", "results": "Results" },
@@ -40,9 +62,10 @@
     "delete": "Delete",
     "delete_confirm": "Delete this exam?",
     "roster": "Score sheet PDF",
-    "back": "Back to exams"
+    "back": "Back to exams",
+    "question_paper": "Question paper PDF"
   },
-  "stats": { "eligible": "Eligible students", "graded": "Graded", "passed": "Passed", "pass_rate": "Pass rate", "average": "Average" },
+  "stats": { "attempts": "Attempts", "eligible": "Eligible students", "graded": "Graded", "passed": "Passed", "pass_rate": "Pass rate", "average": "Average" },
   "questions": {
     "add": "Add question",
     "edit": "Edit question",
@@ -51,6 +74,11 @@
     "types": { "mcq": "Multiple choice", "true_false": "True or false", "complete_verse": "Complete the verse", "order_verses": "Order the verses", "recitation": "Recorded recitation" },
     "prompt": "Question",
     "marks": "Marks",
+    "category": "Category (optional)",
+    "category_hint": "e.g. Juz' Amma, Tajweed",
+    "difficulty": "Difficulty (optional)",
+    "difficulty_none": "Not set",
+    "difficulties": { "easy": "Easy", "medium": "Medium", "hard": "Hard" },
     "options": "Options",
     "add_option": "Add option",
     "correct": "Correct answer",
@@ -65,7 +93,9 @@
     "delete": "Delete",
     "total": "Marks total {{sum}} of {{total}}",
     "save": "Save",
-    "cancel": "Cancel"
+    "save_add_another": "Save and add another",
+    "cancel": "Cancel",
+    "paper_hint": "Optional for paper exams: add the questions here to print a question paper for the students. Their answers are then entered on the Grading tab and graded automatically. The question marks must add up to the exam total before publishing."
   },
   "grading": {
     "paper_hint": "Enter a score per student and save. You can upload the graded sheet image after saving.",
@@ -88,7 +118,9 @@
     "wrong": "Wrong",
     "auto": "Auto",
     "manual": "Manual",
-    "total": "Total"
+    "total": "Total",
+    "paper_auto_hint": "Want automatic grading? Add the questions on the Questions tab, then enter each student's answers instead of a total.",
+    "online_hint": "Online answers are graded automatically when the student submits. Only recitation questions need a teacher."
   },
   "results": {
     "rank": "#",
@@ -146,5 +178,24 @@
     "false": "False",
     "back": "Back to my exams",
     "unanswered": "{{n}} unanswered"
+  },
+  "paper": {
+    "title": "Answers: {{name}}",
+    "save": "Save and grade",
+    "hint": "Enter what the student wrote. The system marks each answer; you only score the recitation.",
+    "clear": "Clear",
+    "written": "What the student wrote",
+    "order_hint": "Choose the position the student wrote for each verse.",
+    "position": "Position",
+    "recitation_score": "Recitation score",
+    "print": "Print paper",
+    "print_all": "Print all papers ({{count}})",
+    "print_failed": "Could not open the PDF",
+    "grading_hint": "Enter each student's answers from their paper; the score is calculated automatically.",
+    "no_students": "No students are enrolled for this exam.",
+    "not_entered": "Not entered",
+    "enter": "Enter answers",
+    "edit": "Edit answers",
+    "saved": "{{name}}: {{score}} of {{total}}. Saved and graded."
   }
 }

@@ -13,6 +13,7 @@ import { PrimaryButton, SURFACE, inputClass } from '../../../components/ui'
 import { formatDate, formatMoney, formatNumber, formatPercent } from '../../../lib/format'
 import JuzMap from './JuzMap'
 import TrendChart from './TrendChart'
+import WalletCharts from './WalletCharts'
 
 const card = `${SURFACE} p-4 sm:p-5`
 
@@ -242,7 +243,7 @@ export function AttendanceTab({ studentId }: { studentId: number }) {
         {(['present', 'late', 'absent', 'excused'] as const).map((k) => <Stat key={k} value={formatNumber(tot[k], locale)} label={t(`attendance.${k}`)} />)}
       </div>
       <section className={card}>
-        <SelectField label={t('filters.status')} hideLabel className="mb-3 w-44" value={status} onChange={(e) => { setStatus(e.target.value); setPage(1) }}
+        <SelectField label={t('filters.status')} hideLabel className="mb-3 w-full sm:w-44" value={status} onChange={(e) => { setStatus(e.target.value); setPage(1) }}
           options={[{ value: '', label: t('attendance.all') }, ...(['present', 'late', 'absent', 'excused'] as const).map((k) => ({ value: k, label: t(`attendance.${k}`) }))]} />
         {q.data.data.length === 0 ? (
           <EmptyState size="sm" icon="attendance" title={t('attendance.empty')} />
@@ -282,6 +283,7 @@ export function WalletTab({ studentId }: { studentId: number }) {
         </div>
         <Stat value={m(w.outstanding_fils)} label={t('wallet.outstanding')} />
       </div>
+      <WalletCharts wallet={w} />
       <section className={card}>
         <h3 className="mb-3 font-semibold text-ink">{t('wallet.invoices')}</h3>
         {w.invoices.length === 0 ? <EmptyState size="sm" icon="payments" title={t('wallet.no_invoices')} /> : (

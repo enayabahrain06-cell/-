@@ -31,7 +31,7 @@ If a rule here conflicts with a page, the page is wrong. If a rule here is missi
 
 The master reference is the **staff list page** as built in `features/students/StudentsListPage.tsx` and `features/lessons/LessonsHomePage.tsx`:
 
-1. `<div className="space-y-5">` page root, with no `max-w-*` / `mx-auto` of its own. `AppLayout`'s `<main>` owns the padding and one shared cap (`mx-auto w-full max-w-7xl`), so every staff page has the same width on wide screens (decided by the user, 2026-09-27)
+1. `<div className="space-y-5">` page root, with no `max-w-*` / `mx-auto` of its own. `AppLayout`'s `<main>` is the one page container: it owns the gutter and fills the column beside the sidebar (`mx-auto w-full max-w-page`, where `--container-page` is 120rem and only takes effect on QHD/4K). Every staff page gets the same width at every size. The user dropped the old `max-w-7xl` cap on 2026-09-29 because it left empty side bands at 1440–1920
 2. `PageBand` header (deep emerald, gold girih pattern, gold display title, optional `actions`)
 3. Filter card: white, rounded-2xl, `border-ink/8`, `shadow-sm`, `p-4`
 4. Content: `Card`s or a table card, then `Pagination`
@@ -59,7 +59,7 @@ Do not invent a new look. Extend these.
 | Danger | `danger`, `danger/5` bg, `danger/25` border | errors, destructive actions |
 | Info | `info` (`#3F74C0`), `info-700` text | info badges and notices |
 
-Forbidden in TSX: Tailwind default palettes (`stone-*`, `gray-*`, `slate-*`, `sky-*`, `red-*`, `green-*`, `emerald-*`, `amber-*`) and arbitrary hex (`bg-[#...]`). Chart series colors are the one exception. They come from a single constant per chart file.
+Forbidden in TSX: Tailwind default palettes (`stone-*`, `gray-*`, `slate-*`, `sky-*`, `red-*`, `green-*`, `emerald-*`, `amber-*`) and arbitrary hex (`bg-[#...]`). Chart series colors are the one exception. They come from a single constant per chart file. Grid, axis, tick and cursor styling comes from `components/chart.ts` (`CHART_GRID`, `CHART_AXIS_LINE`, `CHART_TICK`, `CHART_BAR_CURSOR`, `CHART_LINE_CURSOR`), never a repeated ink hex.
 
 ### Typography
 
@@ -75,7 +75,7 @@ Forbidden in TSX: Tailwind default palettes (`stone-*`, `gray-*`, `slate-*`, `sk
 - Card padding `p-4 sm:p-5`. Filter bar `p-4`. Table cells `px-4 py-3`. Modal sections `px-5 py-4`.
 - Control height: buttons (`buttonClass`), `inputClass("md")`, `SearchInput` and `SelectField` are all `min-h-10` (40px) so filter rows line up. Compact in-row buttons pass `py-1`/`py-1.5` and keep their size. The large 50px `FormField`/`Button` pair is for auth and public forms.
 - `FilterBar` layouts: `stack` (default, flex, stacks on phones), `grid` (the page passes its own `sm:`/`lg:`/`xl:grid-cols-*`; move templates with 5+ columns to `xl:`, since at 1024–1279px the content is only about 690–940px wide), `row` (one wrapping row at every width, for date steppers).
-- Main gutter and width come from `AppLayout` (`px-4 sm:px-6 lg:px-8`, `max-w-7xl`). Pages must not add their own outer padding or width cap.
+- Main gutter and width come from `AppLayout` (`px-4 sm:px-6 lg:px-8`, `max-w-page`). The sticky header uses the same gutter so its edges line up with the content. Pages must not add their own outer padding or width cap. Narrow caps belong only on focused content inside a page (auth and public cards, `FamilyLayout`, a single-form card), never on a list, table, dashboard or report.
 
 ### Radius, border, shadow
 

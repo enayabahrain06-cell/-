@@ -25,9 +25,9 @@ class SendExamReminders extends Command
         $now = now();
         $sent = 0;
 
-        $dayExams = Exam::where('status', ExamStatus::Published->value)->whereNull('reminder_day_sent_at')
+        $dayExams = Exam::forStudents()->where('status', ExamStatus::Published->value)->whereNull('reminder_day_sent_at')
             ->whereBetween('opens_at', [$now->copy()->addHours(23)->addMinutes(50), $now->copy()->addHours(24)->addMinutes(10)])->get();
-        $hourExams = Exam::where('status', ExamStatus::Published->value)->whereNull('reminder_hour_sent_at')
+        $hourExams = Exam::forStudents()->where('status', ExamStatus::Published->value)->whereNull('reminder_hour_sent_at')
             ->whereBetween('opens_at', [$now->copy()->addMinutes(55), $now->copy()->addMinutes(65)])->get();
 
         foreach ([['reminder_day_sent_at', $dayExams], ['reminder_hour_sent_at', $hourExams]] as [$column, $list]) {

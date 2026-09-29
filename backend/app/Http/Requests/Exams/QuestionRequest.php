@@ -33,6 +33,8 @@ class QuestionRequest extends FormRequest
             'correct_answer.alternatives.*' => ['string', 'max:2000'],
             'correct_answer.order' => ['nullable', 'array', 'max:10'],
             'correct_answer.order.*' => ['string', 'max:10'],
+            'category' => ['nullable', 'string', 'max:60'],
+            'difficulty' => ['nullable', 'in:easy,medium,hard'],
         ];
     }
 
@@ -43,6 +45,11 @@ class QuestionRequest extends FormRequest
             $opts = $this->input('options', $this->route('question')?->options);
             $ans = $this->input('correct_answer', $this->route('question')?->correct_answer) ?? [];
             $keys = array_map(fn ($o) => (string) ($o['key'] ?? ''), $opts ?? []);
+
+            // Placement results are shown instantly, so no question may need a teacher to grade it.
+            if ($type === QuestionType::Recitation->value && $this->route('exam')?->isPlacement()) {
+                $v->errors()->add('type', __('exams.placement.no_recitation'));
+            }
 
             switch ($type) {
                 case QuestionType::Mcq->value:

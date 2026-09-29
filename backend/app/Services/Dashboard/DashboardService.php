@@ -347,7 +347,7 @@ class DashboardService
         }
 
         if ($user->can('exams.view')) {
-            Exam::where('status', ExamStatus::Published->value)
+            Exam::forStudents()->where('status', ExamStatus::Published->value)
                 ->whereBetween('opens_at', [now(), now()->addDays(3)])
                 ->when($this->teacherOnly($user) && ! $user->can('exams.manage'), fn ($q) => $q->whereIn('lesson_id', $this->lessonScope($user)->select('id')))
                 ->when($termLessons !== null, fn ($q) => $q->whereIn('lesson_id', $termLessons->keys()))

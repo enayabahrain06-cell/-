@@ -13,6 +13,7 @@ use App\Models\LessonStudent;
 use App\Models\Teacher;
 use App\Models\User;
 use App\Services\AuditLogger;
+use App\Services\Media\TeacherPhotoService;
 use App\Services\Reports\TeacherPerformanceReport;
 use App\Support\Track;
 use App\Support\WeekDays;
@@ -40,7 +41,7 @@ class TeacherController extends Controller
      * @queryParam stats boolean Example: 1
      * @queryParam page integer Example: 1
      */
-    public function index(Request $request, TeacherPerformanceReport $performance): JsonResponse
+    public function index(Request $request, TeacherPerformanceReport $performance, TeacherPhotoService $photos): JsonResponse
     {
         abort_unless($request->user()->can('teachers.view') || $request->user()->can('lessons.manage'), 403);
 
@@ -50,7 +51,7 @@ class TeacherController extends Controller
         }
         $limit = Track::genderFor($request->user())?->value;
 
-        $teachers = User::role('teacher')->with('teacher')
+        $teachers = User::role('teacher')->with('teacher.media')
             ->withCount(['lessons as active_circles_count' => fn ($q) => $q->where('status', 'active')])
             ->when($request->has('active'), fn ($q) => $q->where('is_active', $request->boolean('active')), fn ($q) => $q->where('is_active', true))
             ->when($request->filled('search'), fn ($q) => $q->where(fn ($w) => $w->where('name', 'like', '%'.$request->string('search').'%')->orWhere('phone', 'like', '%'.$request->string('search').'%')))
@@ -71,6 +72,7 @@ class TeacherController extends Controller
             'specialization' => $u->teacher?->specialization,
             'is_active' => (bool) $u->is_active,
             'active_circles' => (int) $u->active_circles_count,
+            'photo_url' => $photos->urls($u)['thumb'],
         ];
 
         if (! $request->boolean('stats')) {
@@ -96,10 +98,10 @@ class TeacherController extends Controller
     }
 
     /** Teacher profile: account, circles, weekly timetable, this month's numbers and the next 7 days of sessions. */
-    public function show(Request $request, User $teacher, TeacherPerformanceReport $performance): JsonResponse
+    public function show(Request $request, User $teacher, TeacherPerformanceReport $performance, TeacherPhotoService $photos): JsonResponse
     {
         $this->authorizeView($request->user(), $teacher);
-        $teacher->loadMissing('teacher');
+        $teacher->loadMissing('teacher.media');
         $tz = config('ahl.display_timezone', 'Asia/Bahrain');
         $today = now($tz)->toDateString();
 
@@ -128,6 +130,7 @@ class TeacherController extends Controller
             'gender' => Track::staffGender($teacher)?->value,
             'specialization' => $teacher->teacher?->specialization,
             'bio' => $teacher->teacher?->bio,
+            'photo' => $photos->urls($teacher),
             'is_active' => (bool) $teacher->is_active,
             'last_login_at' => display_tz($teacher->last_login_at)?->toIso8601String(),
             'active_students' => $this->activeStudentCounts([$teacher->id])[$teacher->id] ?? 0,
@@ -193,6 +196,30 @@ class TeacherController extends Controller
     }
 
     /** Staff with teachers.view (or lessons.manage) see teachers of their track; a teacher may open their own page. */
+    /** Upload or replace the teacher's photo (JPG/PNG/HEIC ≤ 5 MB), stored as 512 px + 96 px WebP. */
+    public function storePhoto(Request $request, User $teacher, TeacherPhotoService $photos, AuditLogger $audit): JsonResponse
+    {
+        abort_unless($request->user()->can('teachers.manage'), 403);
+        $this->authorizeView($request->user(), $teacher);
+        $request->validate(['photo' => ['required', 'file', 'max:'.(int) config('ahl.media.photo.max_kb', 5120)]]);
+
+        $photos->setPhoto($teacher, $request->file('photo'));
+        $audit->record('teacher.photo_updated', $teacher, [], [], $request->user()->id);
+
+        return response()->json(['data' => $photos->urls($teacher->fresh('teacher.media'))]);
+    }
+
+    public function destroyPhoto(Request $request, User $teacher, TeacherPhotoService $photos, AuditLogger $audit): JsonResponse
+    {
+        abort_unless($request->user()->can('teachers.manage'), 403);
+        $this->authorizeView($request->user(), $teacher);
+
+        $photos->removePhoto($teacher);
+        $audit->record('teacher.photo_removed', $teacher, [], [], $request->user()->id);
+
+        return response()->json(['message' => __('media.photo_removed')]);
+    }
+
     private function authorizeView(User $viewer, User $teacher): void
     {
         abort_unless($teacher->hasRole('teacher'), 404);

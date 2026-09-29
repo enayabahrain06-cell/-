@@ -7,6 +7,8 @@ use Illuminate\Foundation\Http\FormRequest;
 
 class UpdateExamRequest extends FormRequest
 {
+    use Concerns\ValidatesPlacement;
+
     public function authorize(): bool
     {
         return $this->user()?->can('update', $this->route('exam')) ?? false;
@@ -27,7 +29,17 @@ class UpdateExamRequest extends FormRequest
             'pass_mark' => ['sometimes', 'integer', 'min:0'],
             'syllabus' => ['nullable', 'string', 'max:5000'],
             'randomize' => ['nullable', 'boolean'],
-        ];
+        ] + $this->placementRules();
+    }
+
+    public function validated($key = null, $default = null)
+    {
+        $data = parent::validated();
+        if (array_key_exists('level_bands', $data)) {
+            $data['level_bands'] = $this->sortedBands($data['level_bands']);
+        }
+
+        return data_get($data, $key, $default);
     }
 
     public function withValidator($validator): void
@@ -53,6 +65,10 @@ class UpdateExamRequest extends FormRequest
                 $v->errors()->add('lesson_id', __('gender.package_mismatch'));
             }
             \App\Support\GenderRules::check($v, $this->user(), $pg ?? $lg);
+
+            $type = $this->input('type', $exam->type?->value);
+            $this->checkPlacement($v, $type === ExamType::Placement->value, $this->input('package_id', $exam->package_id),
+                $this->exists('lesson_id') ? $this->input('lesson_id') : $exam->lesson_id, $this->exists('level_bands') ? $this->input('level_bands') : $exam->level_bands);
         });
     }
 }

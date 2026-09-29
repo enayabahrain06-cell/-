@@ -63,6 +63,12 @@ class PublicRegistrationController extends Controller
             $packages->each(fn (Package $p) => $p->setAttribute('suitability', PackageSuitability::check($p, $birth, $gender)));
         }
 
+        // A package with an open placement test adds the test step to the form.
+        $packages->each(function (Package $p) {
+            $exam = \App\Models\Exam::activePlacementFor($p->id);
+            $p->setAttribute('placement', $exam ? ['name' => $exam->name, 'duration_minutes' => $exam->duration_minutes, 'questions_count' => $exam->questions()->count()] : false);
+        });
+
         return PackageResource::collection($packages);
     }
 

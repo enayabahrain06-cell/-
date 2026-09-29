@@ -21,7 +21,7 @@ class LessonSessionController extends Controller
         $user = $request->user();
         $date = $request->filled('date') ? $request->string('date')->toString() : today()->toDateString();
 
-        $sessions = LessonSession::with(['lesson.teacher', 'location'])
+        $sessions = LessonSession::with(['lesson.teacher', 'lesson.package', 'location'])
             ->withCount([
                 'attendances as present_count' => fn ($q) => $q->where('status', 'present'),
                 'attendances as absent_count' => fn ($q) => $q->where('status', 'absent'),

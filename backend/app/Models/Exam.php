@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Enums\ExamStatus;
 use App\Enums\ExamType;
+use App\Enums\MemorizationLevel;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -41,6 +42,7 @@ class Exam extends Model
             'reminder_hour_sent_at' => 'datetime',
             'results_sent_at' => 'datetime',
             'duration_minutes' => 'integer', 'total_marks' => 'integer', 'pass_mark' => 'integer',
+            'level_bands' => 'array',
         ];
     }
 
@@ -68,6 +70,35 @@ class Exam extends Model
             : \Carbon\Carbon::parse((string) $v, config('ahl.display_timezone', 'Asia/Bahrain'));
 
         return $c->utc()->format('Y-m-d H:i:s');
+    }
+
+    /** Exams for enrolled students: everything except registration placement tests. */
+    public function scopeForStudents(\Illuminate\Database\Eloquent\Builder $q): void
+    {
+        $q->where('type', '!=', ExamType::Placement->value);
+    }
+
+    public function isPlacement(): bool
+    {
+        return $this->type === ExamType::Placement;
+    }
+
+    /** The placement test a family must take for this package right now, if any: published and inside its window. */
+    public static function activePlacementFor(int $packageId, ?\DateTimeInterface $at = null): ?self
+    {
+        $at ??= now();
+
+        return static::where('type', ExamType::Placement->value)->where('package_id', $packageId)
+            ->where('status', ExamStatus::Published->value)->where('opens_at', '<=', $at)->where('closes_at', '>=', $at)
+            ->orderByDesc('opens_at')->first();
+    }
+
+    /** Recommended level for a percentage: the highest band whose minimum the score reaches. */
+    public function levelForPercent(float $percent): ?MemorizationLevel
+    {
+        $band = collect($this->level_bands ?? [])->sortByDesc('min')->first(fn ($b) => $percent >= (float) $b['min']);
+
+        return $band ? MemorizationLevel::tryFrom($band['level']) : null;
     }
 
     public function isOpenAt(\DateTimeInterface $at): bool

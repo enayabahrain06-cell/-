@@ -52,6 +52,17 @@
     "cancel_note": "Reason for cancelling",
     "late": "Overdue"
   },
+  "overview": {
+    "title": "This year at a glance",
+    "period": "From 1 January {{year}} to today",
+    "open_report": "Open the finance report",
+    "rate": "Collection rate",
+    "of_invoiced": "of {{amount}} invoiced",
+    "payments_count": "{{n}} payments",
+    "count": "{{n}} payments",
+    "by_package": "Collected and outstanding per package",
+    "due": "{{amount}} due"
+  },
   "report": {
     "export_xlsx": "Export Excel",
     "export_pdf": "Export PDF",

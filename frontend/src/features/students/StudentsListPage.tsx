@@ -6,13 +6,22 @@ import { lessonsApi, studentsApi, type StudentFilters, type StudentSummary } fro
 import { useAuth } from '../../app/AuthContext'
 import Avatar from '../../components/Avatar'
 import Icon from '../../components/Icon'
-import { FilterBar, SearchInput, TableWrap, TABLE_HEAD, SURFACE } from '../../components/ui'
+import { Badge, FilterBar, SearchInput, TableWrap, TABLE_HEAD, SURFACE } from '../../components/ui'
 import Pagination from '../../components/Pagination'
 import SelectField from '../../components/SelectField'
 import { EmptyState, PageBand, StarSpinner } from '../../components/ornaments'
-import { formatMoney, formatNumber } from '../../lib/format'
+import { ageFrom, formatMoney, formatNumber } from '../../lib/format'
 
-const FILTER_KEYS = ['search', 'gender', 'status', 'lesson_id', 'juz', 'due', 'sort', 'page'] as const
+const FILTER_KEYS = ['search', 'gender', 'status', 'lesson_id', 'juz', 'age', 'due', 'sort', 'page'] as const
+
+/** Age bands for the filter. The URL keeps "min-max" (an open end stays empty); the API gets age_min / age_max. */
+const AGE_BANDS: { value: string; min?: number; max?: number }[] = [
+  { value: '-6', max: 6 },
+  { value: '7-9', min: 7, max: 9 },
+  { value: '10-12', min: 10, max: 12 },
+  { value: '13-15', min: 13, max: 15 },
+  { value: '16-', min: 16 },
+]
 
 export default function StudentsListPage() {
   const { t, i18n } = useTranslation('students')
@@ -21,12 +30,15 @@ export default function StudentsListPage() {
   const [params, setParams] = useSearchParams()
   const [search, setSearch] = useState(params.get('search') ?? '')
 
+  const band = AGE_BANDS.find((b) => b.value === params.get('age'))
   const filters: StudentFilters = {
     search: params.get('search') ?? undefined,
     gender: params.get('gender') ?? undefined,
     status: params.get('status') ?? undefined,
     lesson_id: params.get('lesson_id') ?? undefined,
     juz: params.get('juz') ?? undefined,
+    age_min: band?.min?.toString(),
+    age_max: band?.max?.toString(),
     due: params.get('due') === '1',
     sort: params.get('sort') ?? undefined,
     page: Number(params.get('page') ?? 1),
@@ -92,25 +104,40 @@ export default function StudentsListPage() {
           ]}
         />
         <SelectField
-          label={t('filters.sort')}
+          label={t('filters.age')}
           hideLabel
-          value={filters.sort ?? ''}
-          onChange={(e) => setFilter('sort', e.target.value)}
+          value={band?.value ?? ''}
+          onChange={(e) => setFilter('age', e.target.value)}
           options={[
-            { value: '', label: `${t('filters.sort')}: ${t('filters.sort_name')}` },
-            { value: 'memorized', label: `${t('filters.sort')}: ${t('filters.sort_memorized')}` },
-            { value: 'student_no', label: `${t('filters.sort')}: ${t('filters.sort_no')}` },
-            { value: 'newest', label: `${t('filters.sort')}: ${t('filters.sort_newest')}` },
+            { value: '', label: t('filters.all_ages') },
+            ...AGE_BANDS.map((b) => ({
+              value: b.value,
+              label: b.min === undefined ? t('filters.age_under', { n: n(b.max! + 1) }) : b.max === undefined ? t('filters.age_over', { n: n(b.min) }) : t('filters.age_range', { from: n(b.min), to: n(b.max) }),
+            })),
           ]}
         />
         <div className="flex flex-wrap items-center gap-3 sm:col-span-2 lg:col-span-3 xl:col-span-6">
           <SelectField
             label={t('filters.status')}
             hideLabel
-            className="w-44"
+            className="w-full sm:w-44"
             value={filters.status ?? ''}
             onChange={(e) => setFilter('status', e.target.value)}
             options={[{ value: '', label: t('filters.all_statuses') }, ...['active', 'inactive', 'suspended', 'graduated'].map((s) => ({ value: s, label: t(`status.${s}`) }))]}
+          />
+          <SelectField
+            label={t('filters.sort')}
+            hideLabel
+            className="w-full sm:w-52"
+            value={filters.sort ?? ''}
+            onChange={(e) => setFilter('sort', e.target.value)}
+            options={[
+              { value: '', label: `${t('filters.sort')}: ${t('filters.sort_name')}` },
+              { value: 'memorized', label: `${t('filters.sort')}: ${t('filters.sort_memorized')}` },
+              { value: 'age', label: `${t('filters.sort')}: ${t('filters.sort_age')}` },
+              { value: 'student_no', label: `${t('filters.sort')}: ${t('filters.sort_no')}` },
+              { value: 'newest', label: `${t('filters.sort')}: ${t('filters.sort_newest')}` },
+            ]}
           />
           <label className="inline-flex cursor-pointer items-center gap-2 text-sm text-ink/75">
             <input type="checkbox" className="size-4 rounded accent-brand-600" checked={filters.due} onChange={(e) => setFilter('due', e.target.checked ? '1' : null)} />
@@ -162,6 +189,12 @@ function Position({ s, locale }: { s: StudentSummary; locale: string }) {
   )
 }
 
+function Age({ s, locale }: { s: StudentSummary; locale: string }) {
+  const { t } = useTranslation('students')
+  const age = ageFrom(s.birth_date)
+  return age === null ? <span className="text-ink/45">—</span> : <>{t('profile.age', { age: formatNumber(age, locale) })}</>
+}
+
 function Balance({ s, locale }: { s: StudentSummary; locale: string }) {
   const { t } = useTranslation('students')
   const fils = s.balance_fils ?? 0
@@ -184,6 +217,7 @@ function StudentsTable({ rows, locale }: { rows: StudentSummary[]; locale: strin
           <thead className={TABLE_HEAD}>
             <tr>
               <th scope="col" className="px-4 py-3 text-start font-medium">{t('columns.student')}</th>
+              <th scope="col" className="px-4 py-3 text-start font-medium">{t('columns.age')}</th>
               <th scope="col" className="px-4 py-3 text-start font-medium">{t('columns.circle')}</th>
               <th scope="col" className="hidden px-4 py-3 text-start font-medium md:table-cell">{t('columns.position')}</th>
               <th scope="col" className="hidden px-4 py-3 text-end font-medium lg:table-cell">{t('columns.memorized')}</th>
@@ -202,6 +236,7 @@ function StudentsTable({ rows, locale }: { rows: StudentSummary[]; locale: strin
                     </span>
                   </Link>
                 </td>
+                <td className="whitespace-nowrap px-4 py-3 tabular-nums text-ink/80"><Age s={s} locale={locale} /></td>
                 <td className="px-4 py-3">
                   {s.circle ? (
                     <>
@@ -229,7 +264,10 @@ function StudentsTable({ rows, locale }: { rows: StudentSummary[]; locale: strin
               <div className="flex items-center gap-3">
                 <Avatar name={s.full_name} initial={s.initial} src={s.photo_url} gender={s.gender} size="md" />
                 <div className="min-w-0 flex-1">
-                  <p dir="auto" className="truncate font-semibold text-ink">{s.full_name}</p>
+                  <p className="flex items-center gap-2">
+                    <span dir="auto" className="truncate font-semibold text-ink">{s.full_name}</span>
+                    {ageFrom(s.birth_date) !== null && <Badge className="shrink-0 tabular-nums"><Age s={s} locale={locale} /></Badge>}
+                  </p>
                   <p dir="auto" className="truncate text-sm text-ink/55">{s.circle?.name ?? t('no_circle')}</p>
                 </div>
                 <Icon name="chevron" className="size-4 text-ink/30 rtl:rotate-180" />

@@ -220,13 +220,14 @@ export function Modal({ title, onClose, children, footer, wide = false }: { titl
   return (
     <div className="fixed inset-0 z-50 grid place-items-center overflow-y-auto p-4" role="dialog" aria-modal="true" aria-labelledby={titleId}>
       <button type="button" tabIndex={-1} className="fixed inset-0 bg-ink/50" aria-hidden onClick={onClose} />
-      <div data-modal className={`relative my-8 w-full ${wide ? 'max-w-2xl' : 'max-w-lg'} rounded-2xl bg-white shadow-2xl`}>
-        <div className="flex items-center justify-between gap-3 border-b border-ink/8 px-5 py-4">
-          <h2 id={titleId} className="text-lg font-semibold text-ink">{title}</h2>
+      {/* Header and footer stay in view; a long form scrolls inside the body, never the page. */}
+      <div data-modal className={`relative flex max-h-[calc(100dvh-2rem)] w-full min-w-0 flex-col ${wide ? 'max-w-2xl' : 'max-w-lg'} rounded-2xl bg-white shadow-2xl`}>
+        <div className="flex shrink-0 items-center justify-between gap-3 border-b border-ink/8 px-5 py-4">
+          <h2 id={titleId} className="min-w-0 text-lg font-semibold text-ink">{title}</h2>
           <button type="button" onClick={onClose} className="rounded-lg p-1.5 text-ink/50 hover:bg-ink/5 hover:text-ink" aria-label={t('close')}><Icon name="close" className="size-5" /></button>
         </div>
-        <div className="space-y-4 px-5 py-4">{children}</div>
-        {footer && <div className="flex flex-wrap justify-end gap-2 border-t border-ink/8 px-5 py-3">{footer}</div>}
+        <div className="min-h-0 flex-1 space-y-4 overflow-y-auto overflow-x-hidden px-5 py-4">{children}</div>
+        {footer && <div className="flex shrink-0 flex-wrap justify-end gap-2 border-t border-ink/8 px-5 py-3">{footer}</div>}
       </div>
     </div>
   )

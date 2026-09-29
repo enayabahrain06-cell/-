@@ -115,6 +115,7 @@ class DemoSeeder extends Seeder
         $this->history($girlsCircle, 'female', ['نرجس', 'سكينة', 'معصومة', 'خديجة', 'بتول', 'حوراء'], $femaleTeacher);
         $this->history($earlyCircle, 'mixed', [], $earlyTeacher); // the sibling children above only
 
+        $this->call(OperationsDemoSeeder::class); // fees, registrations, lottery, exams, certificates, issues, inbox, bookings, alerts
         $this->call(EngagementDemoSeeder::class); // honor boards, competitions and challenges (sections 13-14)
     }
 

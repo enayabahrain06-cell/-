@@ -34,6 +34,9 @@ export interface StudentFilters {
   lesson_id?: string
   juz?: string
   due?: boolean
+  /** Inclusive age band in whole years. */
+  age_min?: string
+  age_max?: string
   sort?: string
   page?: number
   per_page?: number
@@ -173,7 +176,11 @@ export interface WalletView {
   outstanding_fils: number
   invoices: { id: number; invoice_no: string; description: string; amount_fils: number; paid_fils: number; outstanding_fils: number; due_date: string; is_overdue: boolean; status: string; status_label: string }[]
   transactions: { data: { id: number; type: string; type_label: string; amount_fils: number; balance_after_fils: number; reference: string | null; invoice_no?: string | null; payment_method?: string | null; note: string | null; created_by?: string | null; created_at: string }[] }
+  /** Last 12 months, oldest first, all positive fils (for the wallet charts). */
+  monthly?: WalletMonth[]
 }
+
+export interface WalletMonth { month: string; charged_fils: number; paid_fils: number; refunded_fils: number }
 
 function params(f: StudentFilters) {
   const p: Record<string, string | number> = {}
@@ -184,6 +191,47 @@ function params(f: StudentFilters) {
   return p
 }
 
+type AnswerValue = { key?: string; value?: boolean | string; text?: string; alternatives?: string[]; order?: string[] } | null
+
+export interface PlacementAnswer {
+  position: number
+  prompt: string
+  type: string
+  options: { key: string; text: string }[] | null
+  category: string | null
+  difficulty: 'easy' | 'medium' | 'hard' | null
+  marks: number
+  answer: AnswerValue
+  correct_answer: AnswerValue
+  is_correct: boolean
+  score: number
+}
+
+/** One placement test on the profile: the summary, the three levels and the marked answers. */
+export interface PlacementRecord {
+  attempt_id: number
+  exam_name: string
+  attempt_no: number | null
+  status: string
+  submitted_at: string | null
+  total_questions: number
+  correct: number
+  incorrect: number
+  score: number
+  total_marks: number
+  percent: number
+  recommended_level: string | null
+  recommended_level_label: string | null
+  request_no: string
+  declared_level: string
+  declared_level_label: string
+  final_level: string | null
+  final_level_label: string | null
+  level_confirmed_by: string | null
+  level_confirmed_at: string | null
+  answers: PlacementAnswer[]
+}
+
 export const studentsApi = {
   list: (f: StudentFilters) => api.get<Paginated<StudentSummary>>('/students', { params: params(f) }).then((r) => r.data),
   show: (id: number) => api.get<{ data: StudentDetail }>(`/students/${id}`).then((r) => r.data.data),
@@ -191,6 +239,8 @@ export const studentsApi = {
   attendance: (id: number, page = 1, status?: string) =>
     api.get<AttendanceHistory>(`/students/${id}/attendance`, { params: { page, ...(status ? { status } : {}) } }).then((r) => r.data),
   wallet: (id: number) => api.get<WalletView>(`/students/${id}/wallet`).then((r) => r.data),
+  /** Placement test results from the student's registration (staff), with the answer key. */
+  placement: (id: number) => api.get<{ data: PlacementRecord[] }>(`/students/${id}/placement`).then((r) => r.data.data),
   update: (id: number, data: Partial<Pick<StudentDetail, 'full_name' | 'birth_date' | 'guardian_name' | 'memorization_level' | 'status' | 'yearly_target_ayahs' | 'notes'>>) =>
     api.put<{ data: StudentDetail }>(`/students/${id}`, data).then((r) => r.data.data),
   uploadPhoto: (id: number, file: File) => {

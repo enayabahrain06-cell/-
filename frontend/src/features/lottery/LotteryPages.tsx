@@ -173,7 +173,7 @@ export function LotteryDetailPage() {
         </div>
         {editable && (
           <div className="mt-4 flex flex-wrap items-end gap-3 border-t border-ink/6 pt-4">
-            <TextInput className="w-48" label={t('detail.seed')} dir="ltr" value={seed} onChange={(e) => setSeed(e.target.value)} />
+            <TextInput className="w-full sm:w-48" label={t('detail.seed')} dir="ltr" value={seed} onChange={(e) => setSeed(e.target.value)} />
             <PrimaryButton loading={run.isPending} onClick={() => run.mutate()}><Icon name="lottery" className="size-4" />{l.run_count ? t('detail.rerun') : t('detail.run')}</PrimaryButton>
             <p className="w-full text-xs text-ink/50">{t('detail.seed_hint')}</p>
           </div>

@@ -45,5 +45,13 @@ class AppServiceProvider extends ServiceProvider
         ]);
         RateLimiter::for('otp-verify', fn (Request $request) => Limit::perMinute(10)->by((string) $request->input('phone').'|'.$request->ip()));
         RateLimiter::for('api', fn (Request $request) => Limit::perMinute(120)->by($request->user()?->id ?: $request->ip()));
+        // Public pages. Unnamed throttles (throttle:60,1 next to throttle:10,1) share one counter per IP, so page
+        // loads used up the submit limit; named limiters keep separate counters.
+        RateLimiter::for('public', fn (Request $request) => Limit::perMinute(60)->by('public|'.$request->ip()));
+        RateLimiter::for('registration-submit', fn (Request $request) => Limit::perMinute(10)->by('registration-submit|'.$request->ip()));
+        // Public placement test: starting and submitting attempts, kept apart from the registration POST limit.
+        RateLimiter::for('placement', fn (Request $request) => Limit::perMinute(20)->by('placement|'.$request->ip()));
+        // Resume and autosave (the player saves shortly after every change and every 20 s).
+        RateLimiter::for('placement-answers', fn (Request $request) => Limit::perMinute(120)->by('placement-answers|'.$request->ip()));
     }
 }

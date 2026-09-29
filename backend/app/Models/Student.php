@@ -40,8 +40,9 @@ class Student extends Model implements Recipient
     public static function nextStudentNo(): string
     {
         $year = now()->format('y');
-        $last = static::withTrashed()->where('student_no', 'like', "S{$year}%")->orderByDesc('student_no')->value('student_no');
-        $seq = $last ? ((int) substr($last, 3)) + 1 : 1;
+        // Numeric suffixes only: a non-numeric number such as the demo "S26DEMO1" sorts after "S2600001" as a string.
+        $seq = 1 + (int) static::withTrashed()->where('student_no', 'like', "S{$year}%")->pluck('student_no')
+            ->map(fn (string $no) => ctype_digit(substr($no, 3)) ? (int) substr($no, 3) : 0)->max();
 
         return sprintf('S%s%05d', $year, $seq);
     }

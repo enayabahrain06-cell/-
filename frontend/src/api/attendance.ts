@@ -6,7 +6,7 @@ export type AttendanceStatus = 'present' | 'late' | 'absent' | 'excused'
 export interface SessionInfo {
   id: number
   lesson_id: number
-  lesson: { id: number; name: string; teacher: { id: number; name: string } | null; default_location_id: number | null } | null
+  lesson: { id: number; name: string; teacher: { id: number; name: string } | null; default_location_id: number | null; package?: { id: number; name: string } | null } | null
   session_date: string
   start_time: string
   end_time: string
@@ -17,6 +17,7 @@ export interface SessionInfo {
   status_label: string
   attendance_taken: boolean
   attendance_summary?: { present: number; absent: number }
+  notes?: string | null
 }
 
 export interface RosterRow {

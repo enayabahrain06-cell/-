@@ -17,6 +17,7 @@ class LessonSessionResource extends JsonResource
                 'name' => $this->lesson->name,
                 'teacher' => $this->lesson->relationLoaded('teacher') ? ['id' => $this->lesson->teacher->id, 'name' => $this->lesson->teacher->name] : null,
                 'default_location_id' => $this->lesson->location_id,
+                'package' => $this->lesson->relationLoaded('package') && $this->lesson->package ? ['id' => $this->lesson->package->id, 'name' => $this->lesson->package->localizedName(app()->getLocale())] : null,
             ]),
             'session_date' => $this->session_date?->toDateString(),
             'start_time' => substr($this->start_time, 0, 5),

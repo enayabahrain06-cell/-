@@ -10,10 +10,11 @@ import { OrnamentDivider, StarSpinner } from '../../components/ornaments'
 import { formatMoney, formatNumber, formatPercent } from '../../lib/format'
 import { AttendanceTab, DetailsTab, EvaluationTab, IssuesTab, OverviewTab, WalletTab } from './profile/ProfileTabs'
 import StudentCertificatesTab from '../certificates/StudentCertificatesTab'
+import PlacementTab from './profile/PlacementTab'
 import { openObjectUrl, studentReportObjectUrl } from '../../api/certificates'
 import { ErrorState, SURFACE } from '../../components/ui'
 
-const TABS = ['overview', 'evaluation', 'issues', 'attendance', 'wallet', 'certificates', 'details'] as const
+const TABS = ['overview', 'evaluation', 'issues', 'attendance', 'wallet', 'certificates', 'placement', 'details'] as const
 type Tab = (typeof TABS)[number]
 
 export default function StudentProfilePage() {
@@ -29,7 +30,8 @@ export default function StudentProfilePage() {
   const detail = useQuery({ queryKey: ['student', studentId, locale], queryFn: () => studentsApi.show(studentId), enabled: Number.isFinite(studentId) })
 
   const readOnly = profile.data?.meta.read_only ?? true
-  const tabs = TABS.filter((k) => (k === 'wallet' ? can('wallets.view') : true))
+  // Placement answers include the answer key, so only staff who can view students see that tab.
+  const tabs = TABS.filter((k) => (k === 'wallet' ? can('wallets.view') : k === 'placement' ? can('students.view') : true))
   const tab: Tab = (tabs as readonly string[]).includes(params.get('tab') ?? '') ? (params.get('tab') as Tab) : 'overview'
 
   if (profile.isLoading || detail.isLoading) {
@@ -152,6 +154,7 @@ export default function StudentProfilePage() {
         {tab === 'attendance' && <AttendanceTab studentId={studentId} />}
         {tab === 'wallet' && <WalletTab studentId={studentId} />}
         {tab === 'certificates' && <StudentCertificatesTab studentId={studentId} />}
+        {tab === 'placement' && <PlacementTab studentId={studentId} />}
         {tab === 'details' && <DetailsTab student={detail.data} canEdit={!readOnly && can('students.manage')} canPhoto={can('students.photo')} />}
       </div>
     </div>

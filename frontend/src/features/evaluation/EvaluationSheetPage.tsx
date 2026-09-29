@@ -7,8 +7,8 @@ import { parseApiError } from '../../api/client'
 import Icon from '../../components/Icon'
 import SelectField from '../../components/SelectField'
 import { OrnamentDivider } from '../../components/ornaments'
-import { ErrorState, LoadingState, Notice, PrimaryButton, SURFACE, EmptyCard } from '../../components/ui'
-import { formatDate, formatNumber, formatTime } from '../../lib/format'
+import { Card, ErrorState, LoadingState, Notice, PrimaryButton, EmptyCard } from '../../components/ui'
+import { formatDate, formatNumber, formatPercent, formatTime } from '../../lib/format'
 import ScoreGrid, { emptyDraft, isComplete, type Draft } from './ScoreGrid'
 
 export default function EvaluationSheetPage() {
@@ -65,25 +65,56 @@ export default function EvaluationSheetPage() {
       <Link to={`/evaluation?date=${sheet.date}`} className="inline-flex items-center gap-1 text-sm font-medium text-brand-700 hover:underline">
         <Icon name="chevron" className="size-4 ltr:rotate-180" />{t('back')}
       </Link>
-      <header className={`${SURFACE} p-4 sm:p-5`}>
+
+      <header>
         <p className="text-sm text-ink/55">{t('sheet_title')}</p>
         <h1 dir="auto" className="font-display text-3xl text-ink">{sheet.lesson.name}</h1>
-        <OrnamentDivider className="my-2 text-gold-500/70" />
-        <p className="text-sm text-ink/65">
-          {formatDate(sheet.date, locale, { weekday: 'long', day: 'numeric', month: 'long' })} · {formatTime(sheet.start_time, locale)}–{formatTime(sheet.end_time, locale)}
-          {sheet.location && <> · <span dir="auto">{sheet.location}</span></>}
-          {sheet.lesson.teacher && <> · <span dir="auto">{sheet.lesson.teacher}</span></>}
-        </p>
-        {sheet.data.length > 0 && (
-          <div className="mt-3 flex flex-wrap items-end gap-2">
-            <span className="w-full text-xs text-ink/50">{t('set_all')}</span>
-            {CRITERIA.map((c) => (
-              <SelectField key={c} label={t(`criteria.${c}`)} className="w-40" value="" onChange={(e) => e.target.value !== '' && setAll(c, Number(e.target.value))}
-                options={[{ value: '', label: t(`criteria.${c}`) }, ...Array.from({ length: 11 }, (_, i) => 10 - i).map((n) => ({ value: String(n), label: formatNumber(n, locale) }))]} hideLabel />
-            ))}
-          </div>
-        )}
+        <OrnamentDivider className="my-2 max-w-60 text-gold-500/70" />
+        <ul className="flex flex-wrap gap-x-4 gap-y-1.5 text-sm text-ink/65">
+          <li className="inline-flex items-center gap-1.5">
+            <Icon name="attendance" className="size-4 text-ink/45" />
+            {formatDate(sheet.date, locale, { weekday: 'long', day: 'numeric', month: 'long' })}
+          </li>
+          <li className="inline-flex items-center gap-1.5">
+            <Icon name="clock" className="size-4 text-ink/45" />
+            <span className="tabular-nums">{formatTime(sheet.start_time, locale)}–{formatTime(sheet.end_time, locale)}</span>
+          </li>
+          {sheet.location && <li className="inline-flex items-center gap-1.5"><Icon name="pin" className="size-4 text-ink/45" /><span dir="auto">{sheet.location}</span></li>}
+          {sheet.lesson.teacher && <li className="inline-flex items-center gap-1.5"><Icon name="teachers" className="size-4 text-ink/45" /><span dir="auto">{sheet.lesson.teacher}</span></li>}
+        </ul>
       </header>
+
+      {/* One band: progress on the start side, "set a score for everyone" on the end side (stacked below xl, where the four selects would be too narrow). */}
+      {sheet.data.length > 0 && (
+        <Card aria-labelledby="scored-title" className="grid gap-4 xl:grid-cols-[minmax(14rem,1fr)_minmax(0,34rem)] xl:items-center xl:gap-8">
+          <div className="min-w-0">
+            <div className="flex items-baseline justify-between gap-3">
+              <h2 id="scored-title" className="text-base font-semibold tabular-nums text-ink">{t('scored', { n: formatNumber(complete, locale), total: formatNumber(sheet.data.length, locale) })}</h2>
+              <span className="text-sm font-semibold tabular-nums text-brand-700">{formatPercent(Math.round((complete / sheet.data.length) * 100), locale)}</span>
+            </div>
+            <div className="mt-2 h-2 overflow-hidden rounded-full bg-ink/6" role="progressbar" aria-valuemin={0} aria-valuemax={sheet.data.length} aria-valuenow={complete} aria-labelledby="scored-title">
+              <div className="h-full rounded-full bg-brand-600 transition-[width]" style={{ width: `${(complete / sheet.data.length) * 100}%` }} />
+            </div>
+            <p className="mt-2 flex flex-wrap gap-x-4 gap-y-1 text-xs text-ink/55">
+              {(['saved', 'changed', 'empty'] as const).map((s) => (
+                <span key={s} className="inline-flex items-center gap-1.5">
+                  <span className={`size-2 rounded-full ${s === 'saved' ? 'bg-brand-600' : s === 'changed' ? 'bg-gold-500' : 'bg-ink/20'}`} aria-hidden="true" />
+                  {t(`row_state.${s}`)}
+                </span>
+              ))}
+            </p>
+          </div>
+          <div className="min-w-0 border-t border-ink/6 pt-3 xl:border-s xl:border-t-0 xl:ps-8 xl:pt-0">
+            <p className="mb-2 text-sm font-medium text-ink/75">{t('set_all')}</p>
+            <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
+              {CRITERIA.map((c) => (
+                <SelectField key={c} label={t(`criteria.${c}`)} value="" onChange={(e) => e.target.value !== '' && setAll(c, Number(e.target.value))}
+                  options={[{ value: '', label: t(`criteria.${c}`) }, ...Array.from({ length: 11 }, (_, i) => 10 - i).map((n) => ({ value: String(n), label: formatNumber(n, locale) }))]} hideLabel />
+              ))}
+            </div>
+          </div>
+        </Card>
+      )}
 
       {msg && <Notice tone={msg.tone}>{msg.text}</Notice>}
       {suggestions.length > 0 && <Notice tone="info"><b>{t('suggest.title')}.</b> {t('suggest.body', { n: formatNumber(sheet.threshold, locale) })}</Notice>}
@@ -96,9 +127,11 @@ export default function EvaluationSheetPage() {
           onSuggestionDone={(s) => setSuggestions((all) => all.filter((x) => !(x.student_id === s.student_id && x.criterion === s.criterion)))} />
       )}
 
-      <div className="fixed inset-x-0 bottom-0 z-20 border-t border-ink/8 bg-white/95 px-4 py-3 backdrop-blur sm:px-6 lg:start-[17rem] lg:px-8">
-        <div className="flex items-center gap-3">
-          {dirty && <span className="text-sm text-gold-700">{t('unsaved')}</span>}
+      {/* Sticky save bar */}
+      <div className="fixed inset-x-0 bottom-0 z-20 border-t border-ink/10 bg-white/95 px-4 py-3 shadow-lg backdrop-blur sm:px-6 lg:start-[17rem] lg:px-8">
+        <div className="mx-auto flex w-full max-w-page flex-wrap items-center gap-x-4 gap-y-1">
+          <span className="text-sm tabular-nums text-ink/60">{t('scored', { n: formatNumber(complete, locale), total: formatNumber(sheet.data.length, locale) })}</span>
+          {dirty && <span className="inline-flex items-center gap-1.5 text-sm text-gold-700"><span className="size-2 rounded-full bg-gold-500" />{t('unsaved')}</span>}
           <PrimaryButton className="ms-auto min-w-40" loading={save.isPending} disabled={complete === 0} onClick={() => save.mutate()}>
             {save.isPending ? t('saving') : t('save')}
           </PrimaryButton>

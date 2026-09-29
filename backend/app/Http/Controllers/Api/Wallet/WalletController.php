@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api\Wallet;
 
+use App\Enums\TransactionType;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Wallet\AdjustWalletRequest;
 use App\Http\Resources\InvoiceResource;
@@ -43,7 +44,43 @@ class WalletController extends Controller
                 'reference' => $r->reference, 'note' => $r->note, 'approved_by' => $r->approver?->name,
                 'paid_at' => display_tz($r->paid_at)?->toIso8601String(),
             ]),
+            'monthly' => $this->monthly($wallet),
         ]);
+    }
+
+    /**
+     * The last 12 months (oldest first, display timezone) of what was charged, paid and refunded, as positive
+     * fils, for the wallet charts. Built from every transaction, not the paginated page, and grouped in PHP so
+     * it behaves the same on SQLite, MySQL and PostgreSQL.
+     *
+     * @return list<array{month: string, charged_fils: int, paid_fils: int, refunded_fils: int}>
+     */
+    private function monthly(\App\Models\Wallet $wallet): array
+    {
+        $tz = config('ahl.display_timezone', 'Asia/Bahrain');
+        $first = now($tz)->startOfMonth()->subMonths(11);
+        $months = [];
+        for ($m = $first->copy(); $m <= now($tz); $m->addMonth()) {
+            $months[$m->format('Y-m')] = ['month' => $m->format('Y-m'), 'charged_fils' => 0, 'paid_fils' => 0, 'refunded_fils' => 0];
+        }
+
+        $wallet->transactions()->where('created_at', '>=', $first->copy()->utc())
+            ->whereIn('type', [TransactionType::Charge->value, TransactionType::Payment->value, TransactionType::Refund->value])
+            ->get(['type', 'amount_fils', 'created_at'])
+            ->each(function ($tx) use (&$months, $tz) {
+                $key = $tx->created_at->copy()->setTimezone($tz)->format('Y-m');
+                if (! isset($months[$key])) {
+                    return;
+                }
+                $field = match ($tx->type) {
+                    TransactionType::Charge => 'charged_fils',
+                    TransactionType::Payment => 'paid_fils',
+                    default => 'refunded_fils',
+                };
+                $months[$key][$field] += abs((int) $tx->amount_fils);
+            });
+
+        return array_values($months);
     }
 
     /** Manual adjustment (discount, scholarship, correction). Signed amount in fils; note required; audited. */

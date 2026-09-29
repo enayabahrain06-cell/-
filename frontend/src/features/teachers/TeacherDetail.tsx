@@ -7,11 +7,44 @@ import { parseApiError } from '../../api/client'
 import Avatar from '../../components/Avatar'
 import Icon from '../../components/Icon'
 import { EmptyState } from '../../components/ornaments'
-import { Badge, buttonClass, Card, CardTitle, ErrorState, LoadingState, Modal, Notice, PrimaryButton, SecondaryButton, TextArea, TextInput, type Tone, SURFACE, ROW_MAIN } from '../../components/ui'
+import { Badge, buttonClass, Card, CardTitle, ErrorState, IconButton, LoadingState, Modal, Notice, PrimaryButton, SecondaryButton, TextArea, TextInput, type Tone, SURFACE, ROW_MAIN } from '../../components/ui'
 import { formatDate, formatNumber, formatPercent } from '../../lib/format'
 import { initialOf } from './initial'
 
 const STATUS_TONE: Record<string, Tone> = { active: 'brand', paused: 'gold', ended: 'muted' }
+
+/** The teacher's photo (initial when none). Teacher managers can change or remove it here. */
+function TeacherPhoto({ teacher: d }: { teacher: TeacherDetail }) {
+  const { t } = useTranslation('teachers')
+  const qc = useQueryClient()
+  const [error, setError] = useState<string | null>(null)
+  const done = () => { setError(null); void qc.invalidateQueries({ queryKey: ['teacher', d.id] }); void qc.invalidateQueries({ queryKey: ['teachers'] }) }
+  const fail = (e: unknown) => setError(parseApiError(e).message)
+  const upload = useMutation({ mutationFn: (file: File) => teachersApi.uploadPhoto(d.id, file), onSuccess: done, onError: fail })
+  const remove = useMutation({ mutationFn: () => teachersApi.removePhoto(d.id), onSuccess: done, onError: fail })
+  const busy = upload.isPending || remove.isPending
+
+  return (
+    <div className="flex shrink-0 flex-col items-center gap-1.5">
+      <Avatar name={d.name} initial={initialOf(d.name)} src={d.photo.profile ?? d.photo.thumb} gender={d.gender} size="lg" />
+      {d.can.edit && (
+        <div className="flex items-center gap-1">
+          <label className={`${buttonClass('secondary', 'py-1 text-xs')} cursor-pointer has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-brand-500 ${busy ? 'pointer-events-none opacity-60' : ''}`}>
+            <Icon name="camera" className="size-4" />
+            {upload.isPending ? t('photo.uploading') : d.photo.thumb ? t('photo.change') : t('photo.add')}
+            <input type="file" accept="image/jpeg,image/png,image/heic,image/heif" className="sr-only" disabled={busy}
+              onChange={(e) => { const f = e.target.files?.[0]; if (f) upload.mutate(f); e.target.value = '' }} />
+          </label>
+          {d.photo.thumb && (
+            <IconButton icon="trash" tone="remove" label={t('photo.remove')} disabled={busy}
+              onClick={() => window.confirm(t('photo.remove_confirm')) && remove.mutate()} />
+          )}
+        </div>
+      )}
+      {error && <p role="alert" className="max-w-48 text-center text-xs text-danger">{error}</p>}
+    </div>
+  )
+}
 
 /** One teacher: contact, this month's numbers, circles, weekly timetable and the next seven days. */
 export default function TeacherDetailView({ id }: { id: number }) {
@@ -43,7 +76,7 @@ export default function TeacherDetailView({ id }: { id: number }) {
         <Icon name="chevron" className="size-4 ltr:rotate-180" /> {t('detail.back')}
       </Link>
       <header className="flex flex-wrap items-center gap-4">
-        <Avatar name={d.name} initial={initialOf(d.name)} gender={d.gender} size="md" />
+        <TeacherPhoto teacher={d} />
         <div className="min-w-0 flex-1 space-y-1">
           <h1 dir="auto" className="font-display text-3xl text-ink">{d.name}</h1>
           <p className="flex flex-wrap items-center gap-2 text-sm text-ink/60">
@@ -68,7 +101,8 @@ export default function TeacherDetailView({ id }: { id: number }) {
         ))}
       </dl>
 
-      <div className="grid gap-5 lg:grid-cols-3">
+      {/* min-w-0 on the columns lets the one-line (truncated) circle and session names shrink on phones. */}
+      <div className="grid gap-5 *:min-w-0 lg:grid-cols-3">
         <div className="space-y-5 lg:col-span-2">
           <Card>
             <CardTitle>{t('detail.circles')}</CardTitle>

@@ -19,6 +19,11 @@ return [
     'issued_on' => 'Issued on',
     'certificate_no' => 'Certificate no',
     'verify_hint' => 'Scan to verify',
+    'certify_by' => ':issuer certifies that',
+    'prayer' => 'We ask Allah to grant them lasting success and guidance.',
+    'hijri_label' => 'Corresponding to',
+    'signature' => 'Signature',
+    'signature_default' => 'Head of the Authority',
     // Automatic completion certificates.
     'auto_juz' => 'Juz :juz',
     'auto_quran' => 'the whole Holy Quran',

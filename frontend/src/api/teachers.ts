@@ -23,6 +23,8 @@ export interface TeacherRow {
   active_circles: number
   active_students: number
   month: MonthNumbers
+  /** 96 px thumbnail, signed for 10 minutes; null without a photo. */
+  photo_url: string | null
 }
 
 export interface TeacherFilters {
@@ -71,6 +73,8 @@ export interface TeacherDetail {
   gender: 'male' | 'female' | null
   specialization: string | null
   bio: string | null
+  /** Signed 512 px / 96 px photo URLs (10 minutes); null without a photo. */
+  photo: { profile: string | null; thumb: string | null }
   is_active: boolean
   last_login_at: string | null
   active_students: number
@@ -90,4 +94,6 @@ export const teachersApi = {
   show: (id: number) => api.get<{ data: TeacherDetail }>(`/teachers/${id}`).then((r) => r.data.data),
   update: (id: number, body: { specialization: string | null; bio: string | null }) =>
     api.put<{ message: string }>(`/teachers/${id}`, body).then((r) => r.data),
+  uploadPhoto: (id: number, file: File) => { const f = new FormData(); f.append('photo', file); return api.post<{ data: TeacherDetail['photo'] }>(`/teachers/${id}/photo`, f).then((r) => r.data.data) },
+  removePhoto: (id: number) => api.delete<{ message: string }>(`/teachers/${id}/photo`).then((r) => r.data),
 }

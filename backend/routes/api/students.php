@@ -9,5 +9,6 @@ Route::get('students', [StudentController::class, 'index']);
 Route::get('students/{student}', [StudentController::class, 'show'])->whereNumber('student');
 Route::put('students/{student}', [StudentController::class, 'update'])->whereNumber('student');
 Route::get('students/{student}/attendance', [StudentController::class, 'attendance'])->whereNumber('student');
+Route::get('students/{student}/placement', [StudentController::class, 'placement'])->whereNumber('student');
 Route::get('me/students', [StudentController::class, 'me']);
 Route::get('students/{student}/report.pdf', [StudentReportController::class, 'show'])->whereNumber('student');

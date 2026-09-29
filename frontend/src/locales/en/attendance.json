@@ -33,5 +33,29 @@
   "absence_sent": "Absence notice sent",
   "empty_roster": "No students are enrolled in this circle.",
   "counts": "{{marked}} of {{total}} marked",
-  "read_only": "You cannot edit this sheet."
+  "read_only": "You cannot edit this sheet.",
+  "students": "Students",
+  "show_details": "Show assignments and notes",
+  "hide_details": "Hide assignments and notes",
+  "show_all_details": "Show all details",
+  "hide_all_details": "Hide all details",
+  "briefing": {
+    "morning": "Good morning, {{name}}",
+    "evening": "Good evening, {{name}}",
+    "subtitle": "Your circles today",
+    "switch": "Choose a circle",
+    "circle": "Circle",
+    "subject": "Track",
+    "period": "Time",
+    "hall": "Hall",
+    "attendance": "Student attendance",
+    "total": "Students",
+    "not_taken_hint": "Attendance has not been taken for this circle yet.",
+    "take": "Take attendance",
+    "open_circle": "Open circle",
+    "lesson": "Today’s lesson",
+    "no_notes": "No lesson notes were recorded for this session.",
+    "assignments": "Memorization and revision",
+    "no_circles": "You have no circles scheduled for today."
+  }
 }

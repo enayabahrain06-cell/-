@@ -23,7 +23,25 @@ class ExamAttempt extends Model
             'question_order' => 'array',
             'auto_score' => 'integer', 'manual_score' => 'integer', 'total_score' => 'integer',
             'passed' => 'boolean',
+            'attempt_no' => 'integer',
+            'recommended_level' => \App\Enums\MemorizationLevel::class,
         ];
+    }
+
+    /** Placement attempts are anonymous: the family holds a random token and only its hash is stored. */
+    public static function hashToken(string $token): string
+    {
+        return hash('sha256', $token);
+    }
+
+    public static function findByToken(string $token): ?self
+    {
+        return static::where('access_token', self::hashToken($token))->first();
+    }
+
+    public function registrationRequest(): BelongsTo
+    {
+        return $this->belongsTo(RegistrationRequest::class);
     }
 
     public function isExpiredAt(\DateTimeInterface $at): bool

@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api\Exams;
 
 use App\Enums\MediaCollection;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Exams\PaperAnswersRequest;
 use App\Http\Requests\Exams\PaperScoresRequest;
 use App\Http\Requests\Exams\StoreExamRequest;
 use App\Http\Requests\Exams\UpdateExamRequest;
@@ -12,6 +13,8 @@ use App\Http\Resources\ExamResource;
 use App\Models\Exam;
 use App\Models\ExamAttempt;
 use App\Models\Lesson;
+use App\Models\Student;
+use App\Services\Exams\ExamPaperPresenter;
 use App\Services\Exams\ExamService;
 use App\Services\Media\MediaService;
 use App\Services\Pdf\PdfService;
@@ -132,6 +135,73 @@ class ExamController extends Controller
         $attempts = $this->exams->recordPaperScores($exam, $request->validated('scores'), $request->user());
 
         return ExamAttemptResource::collection($attempts->load('student'));
+    }
+
+    /** Paper exams with a question paper: enter one student's answers; the system grades them. */
+    public function paperAnswers(PaperAnswersRequest $request, Exam $exam, Student $student): ExamAttemptResource
+    {
+        $attempt = $this->exams->recordPaperAnswers($exam, $student, $request->validated('answers'), $request->user());
+
+        return new ExamAttemptResource($attempt->load(['student', 'media', 'answers.question']));
+    }
+
+    /** Blank question paper to hand out (paper exams) or keep on file (online exams). */
+    public function questionPaperPdf(Exam $exam, PdfService $pdf): Response
+    {
+        $this->authorize('view', $exam);
+        abort_if($exam->questions()->doesntExist(), 404);
+        $exam->load(['package', 'lesson.teacher', 'questions']);
+
+        return $this->pdfResponse($pdf->render('pdf.exam-question-paper', $this->paperData($exam)), "exam-{$exam->id}-questions.pdf");
+    }
+
+    /** One student's paper: questions, the student's answers, the correct answers and the marks. */
+    public function paperPdf(Exam $exam, ExamAttempt $attempt, PdfService $pdf): Response
+    {
+        abort_unless($attempt->exam_id === $exam->id, 404);
+        // Staff only: the paper shows the correct answers.
+        $this->authorize('grade', $exam);
+
+        return $this->papers($exam, $pdf, $attempt, "exam-{$exam->id}-paper-{$attempt->student?->student_no}.pdf");
+    }
+
+    /** Every submitted or graded student's paper, one student per page. */
+    public function papersPdf(Exam $exam, PdfService $pdf): Response
+    {
+        $this->authorize('grade', $exam);
+
+        return $this->papers($exam, $pdf, null, "exam-{$exam->id}-papers.pdf");
+    }
+
+    private function papers(Exam $exam, PdfService $pdf, ?ExamAttempt $only, string $filename): Response
+    {
+        $exam->load(['package', 'lesson.teacher', 'questions']);
+        $attempts = $this->exams->attemptsForPapers($exam, $only);
+        abort_if($attempts->isEmpty() || $exam->questions->isEmpty(), 404);
+
+        return $this->pdfResponse($pdf->render('pdf.exam-paper', $this->paperData($exam) + ['attempts' => $attempts]), $filename);
+    }
+
+    /** @return array<string, mixed> */
+    private function paperData(Exam $exam): array
+    {
+        $locale = app()->getLocale();
+
+        return [
+            'locale' => $locale,
+            'exam' => $exam,
+            // The papers are Arabic-first like the score sheet, with English beside the headings.
+            'present' => new ExamPaperPresenter('ar'),
+            'authority' => setting($locale === 'en' ? 'authority.name_en' : 'authority.name_ar', config('ahl.authority.name_'.$locale)),
+        ];
+    }
+
+    private function pdfResponse(string $bytes, string $filename): Response
+    {
+        return response($bytes, 200, [
+            'Content-Type' => 'application/pdf',
+            'Content-Disposition' => 'inline; filename="'.$filename.'"',
+        ]);
     }
 
     /** Upload the graded paper sheet image for one attempt. */

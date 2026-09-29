@@ -1,7 +1,7 @@
 import { api } from './client'
 import type { StudentSummary } from './students'
 
-export type ExamType = 'paper' | 'online'
+export type ExamType = 'paper' | 'online' | 'placement'
 export type ExamStatus = 'draft' | 'published' | 'closed' | 'graded'
 export type QuestionType = 'mcq' | 'true_false' | 'complete_verse' | 'order_verses' | 'recitation'
 export const QUESTION_TYPES: QuestionType[] = ['mcq', 'true_false', 'complete_verse', 'order_verses', 'recitation']
@@ -31,7 +31,12 @@ export interface Exam {
   attempts_count?: number
   questions?: Question[]
   results_sent_at: string | null
+  /** Placement tests only: minimum percentage → recommended memorization level, highest first. */
+  level_bands?: LevelBand[]
 }
+
+export interface LevelBand { min: number; level: string; level_label?: string | null }
+export type QuestionDifficulty = 'easy' | 'medium' | 'hard'
 
 export interface QuestionOption { key: string; text: string }
 export interface Question {
@@ -45,6 +50,9 @@ export interface Question {
   sort_order: number
   position?: number
   correct_answer?: { key?: string; value?: boolean; text?: string; alternatives?: string[]; order?: string[] } | null
+  /** Optional labels (staff only). */
+  category?: string | null
+  difficulty?: QuestionDifficulty | null
 }
 
 export interface Answer {
@@ -63,7 +71,7 @@ export interface Answer {
 export interface Attempt {
   id: number
   exam_id: number
-  student_id: number
+  student_id: number | null
   student?: StudentSummary
   status: 'in_progress' | 'submitted' | 'graded' | 'expired' | string
   status_label: string
@@ -82,7 +90,11 @@ export interface Attempt {
   questions?: Question[]
 }
 
-export interface ResultRow { student_id: number; student_no: string; full_name: string; attempt_id: number | null; status: string | null; score: number | null; passed: boolean | null }
+/** For placement tests a row is one attempt: student_no holds the request number (if registered), full_name the candidate. */
+export interface ResultRow {
+  student_id: number | null; student_no: string | null; full_name: string; attempt_id: number | null; status: string | null; score: number | null; passed: boolean | null
+  attempt_no?: number | null; percent?: number | null; recommended_level?: string | null; recommended_level_label?: string | null
+}
 export interface Results { rows: ResultRow[]; eligible: number; graded: number; passed: number; pass_rate: number; average: number; top: { student_id: number; full_name: string; score: number; passed: boolean }[] }
 export interface ExamStats { eligible: number; graded: number; passed: number; pass_rate: number; average: number }
 
@@ -99,6 +111,7 @@ export interface ExamInput {
   pass_mark: number
   syllabus: string | null
   randomize: boolean
+  level_bands?: { min: number; level: string }[] | null
 }
 
 export interface QuestionInput {
@@ -107,7 +120,12 @@ export interface QuestionInput {
   marks: number
   options?: QuestionOption[] | null
   correct_answer?: Question['correct_answer']
+  category?: string | null
+  difficulty?: QuestionDifficulty | null
 }
+
+/** One question on a paper answer sheet: the written answer (same shapes as online), or the recitation score. */
+export interface PaperAnswerInput { question_id: number; answer?: { key?: string; value?: boolean; text?: string; order?: string[] } | null; score?: number | null }
 
 export interface Paged<T> { data: T[]; meta: { current_page: number; last_page: number; total: number } }
 export type MyExam = Exam & { attempt: Attempt | null }
@@ -135,6 +153,12 @@ export const examsApi = {
   certificates: (id: number) => api.post<{ message: string; data?: unknown[] }>(`/exams/${id}/certificates`).then((r) => r.data),
   resultsXlsx: async (id: number) => (await api.get(`/exams/${id}/results.xlsx`, { responseType: 'blob' })).data as Blob,
   rosterPdf: async (id: number) => (await api.get(`/exams/${id}/roster.pdf`, { responseType: 'blob' })).data as Blob,
+  /** Paper exam with a question paper: one student's written answers; the server grades them and returns the attempt. */
+  paperAnswers: (id: number, studentId: number, answers: PaperAnswerInput[]) =>
+    api.put<{ data: Attempt }>(`/exams/${id}/students/${studentId}/answers`, { answers }).then((r) => r.data.data),
+  questionPaperPdf: async (id: number) => (await api.get(`/exams/${id}/question-paper.pdf`, { responseType: 'blob' })).data as Blob,
+  paperPdf: async (id: number, aid: number) => (await api.get(`/exams/${id}/attempts/${aid}/paper.pdf`, { responseType: 'blob' })).data as Blob,
+  papersPdf: async (id: number) => (await api.get(`/exams/${id}/papers.pdf`, { responseType: 'blob' })).data as Blob,
 }
 
 export const myExamsApi = {

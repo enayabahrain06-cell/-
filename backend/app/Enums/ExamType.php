@@ -10,4 +10,6 @@ enum ExamType: string
 
     case Paper = 'paper';
     case Online = 'online';
+    /** Taken during public registration to recommend a memorization level; never shown to enrolled students. */
+    case Placement = 'placement';
 }

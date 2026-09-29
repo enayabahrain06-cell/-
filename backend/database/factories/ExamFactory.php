@@ -35,6 +35,23 @@ class ExamFactory extends Factory
         return $this->state(fn () => ['type' => 'paper']);
     }
 
+    /** A placement test for a package, open now, with bands: 0–39 none, 40–69 juz amma, 70–89 five ajza, 90+ ten ajza. */
+    public function placement(\App\Models\Package $package): static
+    {
+        return $this->openNow()->state(fn () => [
+            'type' => 'placement',
+            'package_id' => $package->id,
+            'lesson_id' => null,
+            'pass_mark' => 0,
+            'level_bands' => [
+                ['min' => 90, 'level' => 'ten_ajza'],
+                ['min' => 70, 'level' => 'five_ajza'],
+                ['min' => 40, 'level' => 'juz_amma'],
+                ['min' => 0, 'level' => 'none'],
+            ],
+        ]);
+    }
+
     public function published(): static
     {
         return $this->state(fn () => ['status' => 'published']);

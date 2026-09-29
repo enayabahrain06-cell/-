@@ -2,19 +2,21 @@ import { useState } from 'react'
 import { keepPreviousData, useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { Link, useSearchParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import { packagesApi, requestsApi, type Package, type RegistrationRequest } from '../../api/registration'
+import { packagesApi, publicApi, requestsApi, type Package, type RegistrationRequest } from '../../api/registration'
 import { parseApiError } from '../../api/client'
 import { useAuth } from '../../app/AuthContext'
 import Icon from '../../components/Icon'
 import Pagination from '../../components/Pagination'
 import SelectField from '../../components/SelectField'
 import { PageBand } from '../../components/ornaments'
-import { Badge, ErrorState, FilterBar, LoadingState, Modal, Notice, PrimaryButton, SearchInput, SecondaryButton, Segmented, TextArea, type Tone, SURFACE, EmptyCard, ROW_MAIN } from '../../components/ui'
-import { formatDate, formatMoney, formatNumber } from '../../lib/format'
+import { Badge, buttonClass, ErrorState, FilterBar, LoadingState, Modal, Notice, PrimaryButton, SearchInput, SecondaryButton, Segmented, TextArea, type Tone, SURFACE, EmptyCard, ROW_MAIN } from '../../components/ui'
+import { formatDate, formatMoney, formatNumber, formatPercent } from '../../lib/format'
 import { GENDER_TONE } from '../lessons/LessonsHomePage'
 import PackageFormDialog from './PackageFormDialog'
 
-const STATUS_TONE: Record<string, Tone> = { pending: 'gold', accepted: 'brand', waitlist: 'info', rejected: 'danger', open: 'brand', draft: 'muted', closed: 'muted' }
+/** Outcomes the server treats as final (RegistrationStatus::isDecided); accept, waitlist and reject are refused for them. */
+const DECIDED: string[] = ['accepted', 'enrolled', 'pending_lottery']
+const STATUS_TONE: Record<string, Tone> = { pending: 'gold', accepted: 'brand', enrolled: 'brand', pending_lottery: 'gold', waitlist: 'info', rejected: 'danger', open: 'brand', draft: 'muted', closed: 'muted' }
 
 export default function PackagesHomePage() {
   const { t } = useTranslation('registration')
@@ -25,7 +27,7 @@ export default function PackagesHomePage() {
   return (
     <div className="space-y-5">
       <PageBand title={t('admin.title')} subtitle={t('admin.subtitle')}
-        actions={<a href="/register" target="_blank" rel="noreferrer" className="inline-flex items-center gap-1.5 rounded-xl bg-white/90 px-3 py-2 text-sm font-medium text-brand-800 hover:bg-white"><Icon name="packages" className="size-4" />{t('admin.open_public')}</a>} />
+        actions={<a href="/register" target="_blank" rel="noreferrer" className={buttonClass('onDeep')}><Icon name="packages" className="size-4" />{t('admin.open_public')}</a>} />
       <Segmented name="pkg-tab" label={t('admin.title')} value={tab}
         options={[...(can('packages.view') ? [{ value: 'packages' as const, label: t('admin.tabs.packages') }] : []), ...(can('registrations.view') ? [{ value: 'requests' as const, label: t('admin.tabs.requests') }] : [])]}
         onChange={(v) => setParams({ tab: v }, { replace: true })} />
@@ -86,7 +88,9 @@ function Requests() {
   const { can } = useAuth()
   const qc = useQueryClient()
   const [params, setParams] = useSearchParams()
-  const status = params.get('status') ?? 'pending'
+  // Old links may still say ?status=accepted; the server calls that outcome enrolled.
+  const rawStatus = params.get('status') ?? 'pending'
+  const status = rawStatus === 'accepted' ? 'enrolled' : rawStatus
   const filters = { status: status === 'all' ? undefined : status, package_id: params.get('package_id') ?? undefined, search: params.get('search') ?? undefined, page: Number(params.get('page') ?? 1), per_page: 20 }
   const q = useQuery({ queryKey: ['registrations', filters, locale], queryFn: () => requestsApi.list(filters), placeholderData: keepPreviousData })
   const packages = useQuery({ queryKey: ['packages', locale], queryFn: () => packagesApi.list() })
@@ -99,7 +103,8 @@ function Requests() {
   const refresh = () => { void qc.invalidateQueries({ queryKey: ['registrations'] }); void qc.invalidateQueries({ queryKey: ['packages'] }); void qc.invalidateQueries({ queryKey: ['dashboard'] }) }
   const onErr = (e: unknown) => setNotice({ tone: 'error', text: parseApiError(e).message })
 
-  const accept = useMutation({ mutationFn: (r: { id: number; force?: boolean }) => requestsApi.accept(r.id, r.force), onSuccess: () => { setNotice({ tone: 'success', text: t('admin.accepted_ok') }); refresh() }, onError: onErr })
+  // Accepting needs a circle (or the lottery path) and lets staff confirm the level, so it opens a dialog.
+  const [accepting, setAccepting] = useState<RegistrationRequest | null>(null)
   const waitlist = useMutation({ mutationFn: (id: number) => requestsApi.waitlist(id), onSuccess: refresh, onError: onErr })
   const reject = useMutation({ mutationFn: () => requestsApi.reject(rejecting!.id!, reason), onSuccess: () => { setRejecting(null); setReason(''); refresh() }, onError: onErr })
   const manage = can('registrations.manage')
@@ -108,7 +113,7 @@ function Requests() {
     <div className="space-y-4">
       <FilterBar>
         <Segmented name="req-status" label={t('admin.tabs.requests')} value={status} size="sm"
-          options={(['pending', 'waitlist', 'accepted', 'rejected', 'all'] as const).map((s) => ({ value: s, label: t(`admin.status_filter.${s}`) }))}
+          options={(['pending', 'waitlist', 'pending_lottery', 'enrolled', 'rejected', 'all'] as const).map((s) => ({ value: s, label: t(`admin.status_filter.${s}`) }))}
           onChange={(v) => set('status', v)} />
         <SelectField label={t('admin.all_packages')} hideLabel className="sm:w-56" value={filters.package_id ?? ''} onChange={(e) => set('package_id', e.target.value)}
           options={[{ value: '', label: t('admin.all_packages') }, ...(packages.data?.data ?? []).map((p) => ({ value: String(p.id), label: p.name }))]} />
@@ -137,12 +142,13 @@ function Requests() {
                     </p>
                     <p className="text-sm text-ink/55">{t('admin.guardian')}: <span dir="auto">{r.guardian_name}</span> · <span dir="ltr" className="tabular-nums">{r.guardian_phone}</span> · {formatDate(r.created_at, locale, { day: 'numeric', month: 'short' })}</p>
                     {r.reason && <p dir="auto" className="mt-1 text-sm text-danger">{r.reason}</p>}
+                    <PlacementLine r={r} locale={locale} />
                   </div>
                   <div className="flex flex-wrap gap-2">
                     {r.student && <Link to={`/students/${r.student.id}`} className="rounded-xl border border-ink/12 px-3 py-2 text-sm text-ink/80 hover:bg-ink/5">{t('admin.student_link')}</Link>}
-                    {manage && r.status !== 'accepted' && (
+                    {manage && !DECIDED.includes(r.status) && (
                       <>
-                        <PrimaryButton loading={accept.isPending && accept.variables?.id === r.id} onClick={() => accept.mutate({ id: r.id! })}>{t('admin.accept')}</PrimaryButton>
+                        <PrimaryButton onClick={() => setAccepting(r)}>{t('admin.accept')}</PrimaryButton>
                         {r.status !== 'waitlist' && <SecondaryButton onClick={() => waitlist.mutate(r.id!)}>{t('admin.waitlist_action')}</SecondaryButton>}
                         {r.status !== 'rejected' && <SecondaryButton className="text-danger" onClick={() => setRejecting(r)}>{t('admin.reject')}</SecondaryButton>}
                       </>
@@ -162,8 +168,100 @@ function Requests() {
           <TextArea label={t('admin.reject_reason')} value={reason} onChange={(e) => setReason(e.target.value)} dir="auto" />
         </Modal>
       )}
+      {accepting && <AcceptDialog request={accepting} onClose={() => setAccepting(null)} onDone={() => { setAccepting(null); setNotice({ tone: 'success', text: t('admin.accepted_ok') }); refresh() }} />}
       {bulk && <BulkAccept packages={packages.data?.data ?? []} onClose={() => setBulk(false)} onDone={(m) => { setBulk(false); setNotice({ tone: 'success', text: m }); refresh() }} />}
     </div>
+  )
+}
+
+/** Placement result and levels on a request row: score, recommended level, and the level staff confirmed. */
+function PlacementLine({ r, locale }: { r: RegistrationRequest; locale: string }) {
+  const { t } = useTranslation('registration')
+  const n = (v: number) => formatNumber(v, locale)
+  const p = r.placement
+  if (!p && !r.final_level) return null
+  return (
+    <div className="mt-2 flex flex-wrap items-center gap-2 rounded-xl bg-page/70 px-3 py-2 text-sm">
+      {p && (
+        <>
+          <span className="inline-flex items-center gap-1.5 font-medium text-ink"><Icon name="exams" className="size-4 text-ink/45" />{t('admin.placement.score', { percent: formatPercent(p.percent, locale) })}</span>
+          <span className="tabular-nums text-ink/60">{t('admin.placement.correct', { correct: n(p.correct), total: n(p.total_questions) })}</span>
+          {p.attempt_no && <span className="text-ink/50">· {t('admin.placement.attempt', { n: n(p.attempt_no) })}</span>}
+          {p.recommended_level_label && <Badge tone="brand">{t('admin.placement.recommended', { level: p.recommended_level_label })}</Badge>}
+        </>
+      )}
+      {r.final_level_label && (
+        <Badge tone="info"><Icon name="check" className="size-3.5" />{t('admin.placement.final', { level: r.final_level_label })}{r.level_confirmed_by ? ` · ${r.level_confirmed_by}` : ''}</Badge>
+      )}
+    </div>
+  )
+}
+
+/**
+ * Accept one request: pick the circle (the matcher's recommendation is preselected) or take the lottery path,
+ * and confirm the final level. The level starts at the placement recommendation, else what the family declared.
+ */
+function AcceptDialog({ request, onClose, onDone }: { request: RegistrationRequest; onClose: () => void; onDone: () => void }) {
+  const { t, i18n } = useTranslation('registration')
+  const locale = i18n.language
+  const n = (v: number) => formatNumber(v, locale)
+  const circles = useQuery({ queryKey: ['registration-circles', request.id], queryFn: () => requestsApi.circles(request.id!) })
+  const settings = useQuery({ queryKey: ['public-settings', locale], queryFn: publicApi.settings, staleTime: 5 * 60_000 })
+  const [choice, setChoice] = useState<number | 'lottery' | null>(null)
+  const [level, setLevel] = useState(request.recommended_level ?? request.memorization_level)
+  const [error, setError] = useState<string | null>(null)
+  // Accepting needs a circle of this request's package.
+  const rows = (circles.data?.data ?? []).filter((c) => !c.package || c.package.id === request.package?.id)
+  const selected = choice ?? circles.data?.recommended_id ?? null
+  const run = useMutation({
+    mutationFn: () => requestsApi.accept(request.id!, selected === 'lottery' ? { lottery: true, final_level: level } : { lesson_id: selected as number, final_level: level }),
+    onSuccess: onDone,
+    onError: (e) => { const p = parseApiError(e); setError(Object.values(p.fields)[0]?.[0] ?? p.message) },
+  })
+  const levels = settings.data?.memorization_levels ?? []
+
+  return (
+    <Modal wide title={t('admin.accept_title', { name: request.full_name })} onClose={onClose}
+      footer={<><SecondaryButton onClick={onClose}>{t('form.cancel')}</SecondaryButton><PrimaryButton disabled={selected === null || !level} loading={run.isPending} onClick={() => run.mutate()}>{t('admin.accept')}</PrimaryButton></>}>
+      {error && <Notice tone="error">{error}</Notice>}
+
+      <fieldset className="min-w-0 space-y-2">
+        <legend className="mb-1 text-sm font-semibold text-ink">{t('admin.accept_circle')}</legend>
+        {circles.isLoading ? <LoadingState /> : circles.isError ? <ErrorState onRetry={() => void circles.refetch()} /> : (
+          <ul className="space-y-2">
+            {rows.map((c) => (
+              <li key={c.id}>
+                <label className={`flex cursor-pointer flex-wrap items-center gap-3 rounded-xl border p-3 text-sm transition ${selected === c.id ? 'border-brand-600 bg-brand-50' : 'border-ink/12 hover:bg-ink/5'} ${c.fits ? '' : 'opacity-70'}`}>
+                  <input type="radio" name="accept-circle" className="size-4 accent-brand-600" checked={selected === c.id} onChange={() => setChoice(c.id)} />
+                  <span className="min-w-0 flex-1">
+                    <span dir="auto" className="block font-medium text-ink">{c.name}{c.id === circles.data?.recommended_id && <Badge tone="brand" className="ms-2">{t('admin.recommended_circle')}</Badge>}</span>
+                    <span className="block text-xs text-ink/55"><span dir="auto">{c.teacher ?? '—'}</span> · <span className="whitespace-nowrap tabular-nums" dir="ltr">{c.start_time}–{c.end_time}</span>{c.age_group ? <> · <span dir="auto">{c.age_group.name}</span></> : null}</span>
+                    {!c.fits && c.reason_label && <span className="block text-xs text-gold-700">{c.reason_label}</span>}
+                  </span>
+                  <Badge tone={c.free_seats > 0 ? 'muted' : 'danger'}>{t('admin.free_seats', { n: n(c.free_seats) })}</Badge>
+                </label>
+              </li>
+            ))}
+            <li>
+              <label className={`flex cursor-pointer items-center gap-3 rounded-xl border p-3 text-sm transition ${selected === 'lottery' ? 'border-brand-600 bg-brand-50' : 'border-ink/12 hover:bg-ink/5'}`}>
+                <input type="radio" name="accept-circle" className="size-4 accent-brand-600" checked={selected === 'lottery'} onChange={() => setChoice('lottery')} />
+                <span className="min-w-0 flex-1"><span className="block font-medium text-ink">{t('admin.lottery_path')}</span><span className="block text-xs text-ink/55">{t('admin.lottery_path_hint')}</span></span>
+              </label>
+            </li>
+          </ul>
+        )}
+        {!circles.isLoading && rows.length === 0 && <p className="text-sm text-gold-700">{t('admin.no_circles')}</p>}
+      </fieldset>
+
+      <div className="space-y-2 border-t border-ink/6 pt-4">
+        <SelectField label={t('admin.final_level')} value={level} onChange={(e) => setLevel(e.target.value)} options={levels.length ? levels : [{ value: level, label: level }]} />
+        <dl className="grid gap-2 text-sm sm:grid-cols-2">
+          <div className="rounded-lg bg-page/70 px-3 py-2"><dt className="text-xs text-ink/50">{t('admin.recommended_level')}</dt><dd className="font-medium text-ink">{request.recommended_level_label ?? t('admin.no_placement')}{request.placement && <span className="ms-1 text-xs font-normal text-ink/55">(<bdi>{formatPercent(request.placement.percent, locale)}</bdi>)</span>}</dd></div>
+          <div className="rounded-lg bg-page/70 px-3 py-2"><dt className="text-xs text-ink/50">{t('admin.declared_level')}</dt><dd className="font-medium text-ink">{request.memorization_level_label}</dd></div>
+        </dl>
+        <p className="text-xs text-ink/55">{t('admin.final_level_hint')}</p>
+      </div>
+    </Modal>
   )
 }
 

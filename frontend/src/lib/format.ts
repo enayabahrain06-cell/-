@@ -40,3 +40,13 @@ export function formatTime(hhmm: string, locale: string): string {
   const d = new Date(Date.UTC(2000, 0, 1, h - 3, m)) // Bahrain is UTC+3 all year
   return new Intl.DateTimeFormat(tag(locale), { timeZone: 'Asia/Bahrain', hour: 'numeric', minute: '2-digit' }).format(d)
 }
+
+/** Whole years from a YYYY-MM-DD birth date to today; null for an invalid or future date. */
+export function ageFrom(birth: string | null | undefined): number | null {
+  if (!birth || !/^\d{4}-\d{2}-\d{2}/.test(birth)) return null
+  const [y, m, d] = birth.slice(0, 10).split('-').map(Number)
+  const now = new Date()
+  let age = now.getFullYear() - y
+  if (now.getMonth() + 1 < m || (now.getMonth() + 1 === m && now.getDate() < d)) age--
+  return age >= 0 ? age : null
+}

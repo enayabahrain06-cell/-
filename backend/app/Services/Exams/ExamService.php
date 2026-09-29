@@ -62,14 +62,22 @@ class ExamService
 
     public function publish(Exam $exam): Exam
     {
-        if ($exam->type === ExamType::Online) {
-            $questions = $exam->questions()->get();
-            if ($questions->isEmpty()) {
-                throw ValidationException::withMessages(['questions' => __('exams.publish_no_questions')]);
+        $questions = $exam->questions()->get();
+        if (in_array($exam->type, [ExamType::Online, ExamType::Placement], true) && $questions->isEmpty()) {
+            throw ValidationException::withMessages(['questions' => __('exams.publish_no_questions')]);
+        }
+        if ($exam->isPlacement()) {
+            // The family sees the result straight away, so nothing may wait for a teacher to grade it.
+            if ($questions->contains(fn (ExamQuestion $q) => $q->type === QuestionType::Recitation)) {
+                throw ValidationException::withMessages(['questions' => __('exams.placement.no_recitation')]);
             }
-            if ((int) $questions->sum('marks') !== (int) $exam->total_marks) {
-                throw ValidationException::withMessages(['total_marks' => __('exams.publish_marks_mismatch', ['sum' => $questions->sum('marks'), 'total' => $exam->total_marks])]);
+            if (empty($exam->level_bands)) {
+                throw ValidationException::withMessages(['level_bands' => __('exams.placement.bands_required')]);
             }
+        }
+        // Online exams, and paper exams that carry a question paper, are scored per question, so the marks must add up.
+        if ($questions->isNotEmpty() && (int) $questions->sum('marks') !== (int) $exam->total_marks) {
+            throw ValidationException::withMessages(['total_marks' => __('exams.publish_marks_mismatch', ['sum' => $questions->sum('marks'), 'total' => $exam->total_marks])]);
         }
 
         $exam->update(['status' => ExamStatus::Published]);
@@ -125,7 +133,7 @@ class ExamService
     }
 
     /** @return list<int> */
-    private function buildOrder(Exam $exam): array
+    public function buildOrder(Exam $exam): array
     {
         $ids = $exam->questions()->pluck('id')->map(fn ($id) => (int) $id)->all();
         if ($exam->randomize) {
@@ -303,6 +311,11 @@ class ExamService
     /** Paper exams: manual score entry per student. @param array<int, array{student_id:int, score:int, note?:string|null}> $scores */
     public function recordPaperScores(Exam $exam, array $scores, User $grader): Collection
     {
+        // A paper exam with a question paper is graded from each student's answers (recordPaperAnswers), not a typed total.
+        if ($exam->questions()->exists()) {
+            throw ValidationException::withMessages(['scores' => __('exams.paper_use_answers')]);
+        }
+
         $eligible = $this->eligibleStudentsQuery($exam)->pluck('id')->map(fn ($v) => (int) $v)->all();
         $out = new Collection;
 
@@ -337,11 +350,96 @@ class ExamService
         return $out;
     }
 
+    /**
+     * Paper exams with a question paper: the teacher enters what the student wrote for each question and the
+     * system grades it with the same AutoGrader as online exams. Recitation has no written answer, so the
+     * teacher gives its score directly. Re-entering answers regrades the attempt.
+     *
+     * @param  array<int, array{question_id:int, answer?:array|null, score?:int|null}>  $rows
+     */
+    public function recordPaperAnswers(Exam $exam, Student $student, array $rows, User $grader): ExamAttempt
+    {
+        if ($exam->type !== ExamType::Paper) {
+            throw ValidationException::withMessages(['exam' => __('exams.not_paper')]);
+        }
+        $questions = $exam->questions()->get()->keyBy('id');
+        if ($questions->isEmpty()) {
+            throw ValidationException::withMessages(['answers' => __('exams.paper_no_questions')]);
+        }
+        if (! $this->isEligible($exam, $student)) {
+            throw ValidationException::withMessages(['student' => __('exams.not_eligible')]);
+        }
+
+        $attempt = ExamAttempt::firstOrNew(['exam_id' => $exam->id, 'student_id' => $student->id]);
+        $old = $attempt->exists ? ['total_score' => $attempt->total_score, 'passed' => $attempt->passed] : [];
+        $given = collect($rows)->keyBy(fn ($r) => (int) $r['question_id']);
+
+        DB::transaction(function () use ($exam, $attempt, $questions, $given, $grader) {
+            $attempt->fill([
+                'started_at' => $attempt->started_at ?? $exam->opens_at,
+                'submitted_at' => $attempt->submitted_at ?? now(),
+                'question_order' => $questions->keys()->all(),
+            ])->save();
+
+            $auto = 0;
+            $manual = 0;
+            foreach ($questions as $q) {
+                $row = $given->get($q->id);
+                if ($q->type === QuestionType::Recitation) {
+                    $score = min(max((int) ($row['score'] ?? 0), 0), (int) $q->marks);
+                    $manual += $score;
+                    $values = ['answer' => null, 'score' => $score, 'is_correct' => $score > 0, 'graded_by' => $grader->id];
+                } else {
+                    $answer = $row['answer'] ?? null;
+                    $result = $this->grader->grade($q, $answer);
+                    $auto += (int) $result['score'];
+                    $values = ['answer' => $answer, 'score' => $result['score'], 'is_correct' => $result['is_correct']];
+                }
+                ExamAnswer::updateOrCreate(['exam_attempt_id' => $attempt->id, 'exam_question_id' => $q->id], $values + ['saved_at' => now()]);
+            }
+
+            $total = $auto + $manual;
+            $attempt->update([
+                'status' => AttemptStatus::Graded,
+                'auto_score' => $auto,
+                'manual_score' => $manual,
+                'total_score' => $total,
+                'passed' => $total >= $exam->pass_mark,
+                'graded_by' => $grader->id,
+                'graded_at' => now(),
+            ]);
+        });
+
+        $attempt = $attempt->fresh();
+        $this->audit->record('exam.graded', $attempt, $old, ['total_score' => $attempt->total_score, 'passed' => $attempt->passed], $grader->id);
+
+        return $attempt;
+    }
+
+    /**
+     * Attempts for the printable student papers, in roster order, with each student's answers keyed by question.
+     *
+     * @return \Illuminate\Support\Collection<int, ExamAttempt>
+     */
+    public function attemptsForPapers(Exam $exam, ?ExamAttempt $only = null): \Illuminate\Support\Collection
+    {
+        $query = $exam->attempts()->with(['student', 'answers'])->whereIn('status', [AttemptStatus::Submitted->value, AttemptStatus::Graded->value]);
+        if ($only) {
+            $query->whereKey($only->id);
+        }
+
+        return $query->get()->sortBy(fn ($a) => $a->student?->full_name)->values();
+    }
+
     // ------------------------------------------------------------------ results
 
     /** @return array{rows: array, pass_rate: float, average: float, graded: int, eligible: int, top: array} */
     public function results(Exam $exam): array
     {
+        if ($exam->isPlacement()) {
+            return $this->placementResults($exam);
+        }
+
         $students = $this->eligibleStudents($exam);
         $attempts = $exam->attempts()->get()->keyBy('student_id');
 
@@ -376,5 +474,41 @@ class ExamService
             'average' => $count ? round(array_sum(array_column($graded, 'score')) / $count, 2) : 0.0,
             'top' => array_slice($graded, 0, 3),
         ];
+    }
+
+    /** Placement tests have no roster: one row per attempt, newest first, named after the candidate. */
+    private function placementResults(Exam $exam): array
+    {
+        $attempts = $exam->attempts()->with('registrationRequest:id,request_no')->orderByDesc('id')->get();
+        $graded = $attempts->where('status', AttemptStatus::Graded);
+        $count = $graded->count();
+
+        return [
+            'rows' => $attempts->map(fn (ExamAttempt $a) => [
+                'student_id' => $a->student_id,
+                'student_no' => $a->registrationRequest?->request_no,
+                'full_name' => $a->candidate_name,
+                'attempt_id' => $a->id,
+                'attempt_no' => $a->attempt_no,
+                'status' => $a->status?->value,
+                'score' => $a->total_score,
+                'passed' => $a->passed,
+                'percent' => $a->total_score === null ? null : $this->percent($a->total_score, $exam),
+                'recommended_level' => $a->recommended_level?->value,
+                'recommended_level_label' => $a->recommended_level?->label(),
+            ])->values()->all(),
+            'eligible' => $attempts->count(),
+            'graded' => $count,
+            'passed' => $graded->where('passed', true)->count(),
+            'pass_rate' => 0.0,
+            'average' => $count ? round($graded->avg('total_score'), 2) : 0.0,
+            'top' => [],
+        ];
+    }
+
+    /** Score as a percentage of the exam's total marks, one decimal. */
+    public function percent(int $score, Exam $exam): float
+    {
+        return $exam->total_marks > 0 ? round($score * 100 / $exam->total_marks, 1) : 0.0;
     }
 }

@@ -3,7 +3,7 @@ import { useSearchParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { useAuth } from '../../app/AuthContext'
 import { PageBand } from '../../components/ornaments'
-import { Notice, Segmented } from '../../components/ui'
+import { buttonClass, Notice, Segmented } from '../../components/ui'
 import type { AdminUser } from '../../api/users'
 import PermissionMatrix from './PermissionMatrix'
 import UserDialog from './UserDialog'
@@ -28,7 +28,7 @@ export default function UsersHomePage() {
         subtitle={t('subtitle')}
         actions={
           can('users.manage') && tab === 'users' ? (
-            <button type="button" onClick={() => setEditing(null)} className="inline-flex items-center gap-1.5 rounded-xl bg-white px-4 py-2 text-sm font-semibold text-brand-800 shadow-sm hover:bg-white/90">
+            <button type="button" onClick={() => setEditing(null)} className={buttonClass('onDeep')}>
               + {t('new_user')}
             </button>
           ) : undefined

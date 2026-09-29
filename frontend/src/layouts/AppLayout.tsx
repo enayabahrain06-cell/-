@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
+import { Fragment, useEffect, useRef, useState } from 'react'
 import { NavLink, Outlet, useLocation } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { useAuth } from '../app/AuthContext'
@@ -7,6 +7,7 @@ import Icon from '../components/Icon'
 import LanguageSwitcher from '../components/LanguageSwitcher'
 import { LogoMark, OrnamentStrip } from '../components/ornaments'
 import { useScrollLock } from '../components/useScrollLock'
+import TeacherTodayDialog from '../features/attendance/TeacherTodayDialog'
 
 /** Staff shell: sidebar on desktop, drawer on mobile, header with language switcher and account. */
 export default function AppLayout() {
@@ -37,20 +38,24 @@ export default function AppLayout() {
 
   const nav = (
     <nav aria-label={t('main')} className="flex flex-col gap-0.5 p-3">
-      {sections.map((s) => (
-        <NavLink
-          key={s.key}
-          to={s.path}
-          end={s.path === '/'}
-          className={({ isActive }) =>
-            `flex min-h-10 items-center gap-3 rounded-xl px-3 py-2 text-[0.9375rem] font-medium transition ${
-              isActive ? 'bg-white/12 text-white shadow-[inset_3px_0_0_var(--color-gold-500)] rtl:shadow-[inset_-3px_0_0_var(--color-gold-500)]' : 'text-white/75 hover:bg-white/6 hover:text-white'
-            }`
-          }
-        >
-          <Icon name={s.icon} className="size-5 shrink-0 opacity-90" />
-          <span className="truncate">{t(s.key)}</span>
-        </NavLink>
+      {sections.map((s, i) => (
+        <Fragment key={s.key}>
+          {s.group && s.group !== sections[i - 1]?.group && (
+            <p className="mt-4 px-3 pb-1 text-xs font-semibold text-gold-300/70">{t(`groups.${s.group}`)}</p>
+          )}
+          <NavLink
+            to={s.path}
+            end={s.path === '/'}
+            className={({ isActive }) =>
+              `flex min-h-10 items-center gap-3 rounded-xl px-3 py-2 text-[0.9375rem] font-medium transition ${
+                isActive ? 'bg-white/12 text-white shadow-[inset_3px_0_0_var(--color-gold-500)] rtl:shadow-[inset_-3px_0_0_var(--color-gold-500)]' : 'text-white/75 hover:bg-white/6 hover:text-white'
+              }`
+            }
+          >
+            <Icon name={s.icon} className="size-5 shrink-0 opacity-90" />
+            <span className="truncate">{t(s.key)}</span>
+          </NavLink>
+        </Fragment>
       ))}
     </nav>
   )
@@ -91,7 +96,7 @@ export default function AppLayout() {
       )}
 
       <div className="flex min-w-0 flex-col">
-        <header className="sticky top-0 z-30 flex items-center gap-3 border-b border-ink/8 bg-page/90 px-4 py-3 backdrop-blur sm:px-6">
+        <header className="sticky top-0 z-30 flex items-center gap-3 border-b border-ink/8 bg-page/90 px-4 py-3 backdrop-blur sm:px-6 lg:px-8">
           <button ref={menuButton} type="button" onClick={() => setOpen(true)} className="rounded-lg p-2 text-ink hover:bg-ink/5 lg:hidden" aria-label={t('open_menu')}>
             <Icon name="menu" />
           </button>
@@ -107,9 +112,11 @@ export default function AppLayout() {
           </div>
         </header>
         <main className="min-w-0 flex-1 px-4 py-6 sm:px-6 lg:px-8">
-          {/* One content width for every staff page (ui-design-system: page container). */}
-          <div className="mx-auto w-full max-w-7xl">
+          {/* The one page container for every staff page (ui-design-system: page container). It fills the
+              column beside the sidebar; max-w-page only stops lines running across QHD/4K screens. */}
+          <div className="mx-auto w-full max-w-page">
             <Outlet />
+            <TeacherTodayDialog />
           </div>
         </main>
       </div>

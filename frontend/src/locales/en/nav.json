@@ -24,5 +24,13 @@
   "settings": "Settings",
   "coming_soon": "This page is being built",
   "coming_soon_body": "The backend for this section is ready; its screens come in the next step.",
-  "audit": "Audit log"
+  "audit": "Audit log",
+  "groups": {
+    "people": "People",
+    "teaching": "Teaching",
+    "engagement": "Engagement",
+    "finance": "Finance",
+    "communication": "Communication",
+    "admin": "Administration"
+  }
 }

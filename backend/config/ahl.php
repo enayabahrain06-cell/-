@@ -12,6 +12,9 @@ return [
     'frontend_url' => rtrim(env('FRONTEND_URL', 'http://localhost:5173'), '/'),
 
     'display_timezone' => env('APP_DISPLAY_TIMEZONE', 'Asia/Bahrain'),
+
+    // Placement test attempts allowed per guardian phone for one test (registration).
+    'placement_max_attempts' => (int) env('PLACEMENT_MAX_ATTEMPTS', 3),
     'country_code' => env('DEFAULT_COUNTRY_CODE', '973'),
     'currency' => env('DEFAULT_CURRENCY', 'BHD'),
     'fils_per_unit' => 1000,

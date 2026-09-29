@@ -52,6 +52,17 @@
     "cancel_note": "سبب الإلغاء",
     "late": "متأخرة"
   },
+  "overview": {
+    "title": "نظرة على هذا العام",
+    "period": "من ١ يناير {{year}} حتى اليوم",
+    "open_report": "فتح التقرير المالي",
+    "rate": "نسبة التحصيل",
+    "of_invoiced": "من {{amount}} مفوترة",
+    "payments_count": "{{n}} دفعة",
+    "count": "{{n}} دفعة",
+    "by_package": "المحصّل والمستحق حسب الباقة",
+    "due": "مستحق {{amount}}"
+  },
   "report": {
     "export_xlsx": "تصدير Excel",
     "export_pdf": "تصدير PDF",

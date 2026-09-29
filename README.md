@@ -182,6 +182,7 @@ Load them with `php artisan db:seed --class=DemoSeeder` on a developer machine. 
 | Guardian (a boy, a girl, an early-years boy) | علي حسن المحروس | +973 3600 0005 | — | WhatsApp code |
 | Guardians (sibling families) | جعفر محمد الستراوي · حسن كاظم آل عباس · مهدي رضا السماهيجي | +973 3600 0010 · 0011 · 0012 | — | WhatsApp code |
 | Demo class guardians | e.g. حسن محمد الدرازي | +973 3611 0001–0006 (boys), +973 3612 0001–0006 (girls) | — | WhatsApp code |
+| Registration request guardians | e.g. حسن محمد الخباز | +973 3613 0001–0010 | — | WhatsApp code |
 
 Names are Bahraini Shia names in Arabic (the shared list is `database/factories/Support/BahrainiNames.php`).
 The demo also creates four halls (قاعة مأتم سار الكبير for boys, قاعة النساء بالهيئة for girls, and قاعة الهيئة ٢ and الفصل ٣ shared by schedule),
@@ -192,6 +193,14 @@ six extra students in the boys and girls circles, and three weeks of sessions wi
 Engagement demo (sections 13–14, `EngagementDemoSeeder`, called by `DemoSeeder`): this month's honor boards for both tracks (computed and published),
 a boys' Juz Amma competition in judging (two judges, first round scored), a girls' tajweed competition open for registration,
 and one challenge per track with every eligible student joined.
+
+Operations demo (`OperationsDemoSeeder`, called by `DemoSeeder` before the engagement demo) fills the remaining staff pages:
+term invoices with payments by every method (some partial, some overdue, one duplicate payment refunded),
+eleven public registration requests (pending, waitlisted, rejected, enrolled, and four boys waiting for the lottery),
+a second boys circle (حلقة الإمام عاصم, +973 3600 0008) and a lottery that has been run and waits for approval,
+a graded online exam (boys) with exam certificates, some approved and some awaiting approval, a graded paper exam (girls), an online exam opening next week and a draft final exam,
+student follow-up cases with notes, the WhatsApp inbox (confirmations, excuses applied, pending and approved, an open question, an opt-out),
+hall bookings and a one-day hall change, and the repeated-absence and overdue-invoice alerts.
 
 ### Honor board TV display
 

@@ -41,7 +41,7 @@ export default function MyEngagementPage() {
       <div className="space-y-5">
         <PageBand title={t('my.title')} subtitle={h ? monthLabel(h.period, locale) : undefined} />
         {guardian && (children.data?.length ?? 0) > 1 && (
-          <SelectField className="w-64" label={t('my.child')} value={studentId ?? ''} onChange={(e) => setChildId(Number(e.target.value))}
+          <SelectField className="w-full sm:w-64" label={t('my.child')} value={studentId ?? ''} onChange={(e) => setChildId(Number(e.target.value))}
             options={(children.data ?? []).map((c) => ({ value: String(c.id), label: c.full_name }))} />
         )}
         {error && <Notice tone="error">{error}</Notice>}

@@ -40,6 +40,8 @@ class PackageResource extends JsonResource
             'status' => $this->status->value,
             'status_label' => $this->status->label(),
             'suitability' => $this->when($this->getAttribute('suitability') !== null, fn () => $this->getAttribute('suitability')),
+            // Public registration only: the package's open placement test, or null when there is none.
+            'placement' => $this->when($this->getAttribute('placement') !== null, fn () => $this->getAttribute('placement') ?: null),
         ];
     }
 }

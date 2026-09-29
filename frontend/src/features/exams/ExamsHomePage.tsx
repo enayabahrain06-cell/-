@@ -33,7 +33,7 @@ export default function ExamsHomePage() {
       <PageBand title={t('title')} subtitle={t('subtitle')} />
       <FilterBar>
         <SelectField className="sm:w-40" label={t('filters.all_types')} hideLabel value={filters.type ?? ''} onChange={(e) => set('type', e.target.value)}
-          options={[{ value: '', label: t('filters.all_types') }, { value: 'online', label: t('type.online') }, { value: 'paper', label: t('type.paper') }]} />
+          options={[{ value: '', label: t('filters.all_types') }, { value: 'online', label: t('type.online') }, { value: 'paper', label: t('type.paper') }, { value: 'placement', label: t('type.placement') }]} />
         <SelectField className="sm:w-40" label={t('filters.all_statuses')} hideLabel value={filters.status ?? ''} onChange={(e) => set('status', e.target.value)}
           options={[{ value: '', label: t('filters.all_statuses') }, ...(['draft', 'published', 'closed', 'graded'] as const).map((s) => ({ value: s, label: t(`status.${s}`) }))]} />
         {can('exams.manage') && <PrimaryButton className="sm:ms-auto" onClick={() => setOpen(true)}>+ {t('new')}</PrimaryButton>}
@@ -54,11 +54,12 @@ export default function ExamsHomePage() {
                     </div>
                   </div>
                   <p dir="auto" className="mt-1 text-sm text-ink/60">{e.lesson_name ?? e.package_name}</p>
-                  <p className="mt-2 text-sm text-ink/70">{t(`type.${e.type}`)} · {e.type === 'online' ? t('window', { from: dt(e.opens_at), to: dt(e.closes_at) }) : formatDate(e.exam_date, locale)}</p>
+                  <p className="mt-2 text-sm text-ink/70">{t(`type.${e.type}`)} · {e.type !== 'paper' ? t('window', { from: dt(e.opens_at), to: dt(e.closes_at) }) : formatDate(e.exam_date, locale)}</p>
                   <div className="mt-3 flex flex-wrap gap-2 text-xs text-ink/55">
                     {e.gender && <Badge tone={GENDER_TONE[e.gender]}>{tl(`gender.${e.gender}`)}</Badge>}
-                    <span>{t('marks', { pass: n(e.pass_mark), total: n(e.total_marks) })}</span>
-                    {e.type === 'online' && <span>· {t('duration', { n: n(e.duration_minutes) })} · {t('questions_n', { n: n(e.questions_count ?? 0) })}</span>}
+                    {/* A placement test has no pass mark: it recommends a level instead. */}
+                    <span>{e.type === 'placement' ? t('placement.total_marks', { n: n(e.total_marks) }) : t('marks', { pass: n(e.pass_mark), total: n(e.total_marks) })}</span>
+                    {e.type !== 'paper' && <span>· {t('duration', { n: n(e.duration_minutes) })} · {t('questions_n', { n: n(e.questions_count ?? 0) })}</span>}
                     <span>· {t('attempts_n', { n: n(e.attempts_count ?? 0) })}</span>
                   </div>
                 </Link>
@@ -68,7 +69,8 @@ export default function ExamsHomePage() {
           <Pagination page={q.data.meta.current_page} lastPage={q.data.meta.last_page} total={q.data.meta.total} onPage={(p) => set('page', String(p))} />
         </>
       )}
-      {open && <ExamFormDialog onClose={() => setOpen(false)} onSaved={(e) => { setOpen(false); navigate(`/exams/${e.id}`) }} />}
+      {/* A new exam opens on its Questions tab with the question editor ready (ExamDetailPage reads ?add=1). */}
+      {open && <ExamFormDialog onClose={() => setOpen(false)} onSaved={(e) => { setOpen(false); navigate(`/exams/${e.id}?tab=questions&add=1`) }} />}
     </div>
   )
 }

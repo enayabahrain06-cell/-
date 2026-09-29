@@ -20,9 +20,14 @@ if (! function_exists('pdf_ar')) {
         if ($text === null || $text === '') {
             return '';
         }
-        if (! preg_match('/\p{Arabic}/u', $text)) {
+        // Only text with Arabic letters is shaped. Arabic-Indic digits alone (an answer such as «٣٠») pass through
+        // unchanged: ArPHP would reverse them into «٠٣».
+        if (! preg_match('/[\x{0621}-\x{064A}\x{066E}-\x{06D3}\x{06FA}-\x{06FF}]/u', $text)) {
             return e($text);
         }
+        // Harakat between lam and alef (الْأَرْضَ، لَا، كَلَّا) make ArPHP print the lam-alef ligature and then the alef
+        // again («الأأرض»). Moving them after the alef keeps the marks and gives the single ligature.
+        $text = preg_replace('/\x{0644}([\x{064B}-\x{0652}]+)([\x{0622}\x{0623}\x{0625}\x{0627}])/u', "\u{0644}$2$1", $text);
         // ArPHP leaves a leading number on the left of the reversed run ("16 ربيع الآخر" → "١٦ ﺮﺧﻵا ﻊﻴﺑر");
         // in right-to-left reading it belongs at the right end, so it is placed there by hand.
         if (preg_match('/^([0-9٠-٩]+)\s+(.+)$/u', trim($text), $m) && preg_match('/^\p{Arabic}/u', $m[2])) {
@@ -31,7 +36,15 @@ if (! function_exists('pdf_ar')) {
         static $arabic = null;
         $arabic ??= new \ArPHP\I18N\Arabic;
 
-        return e($arabic->utf8Glyphs($text));
+        // ArPHP 7 reads its glyph table with the next character even when that is a space, for a word-final
+        // haraka + shadda (as in «عَمَّ يَتَسَاءَلُونَ»). The missing key is read as "does not join", which is
+        // right, but the PHP warning would abort the PDF. Only warnings raised inside ArPHP are ignored here.
+        set_error_handler(fn (int $no, string $msg, string $file) => str_contains(str_replace('\\', '/', $file), '/ar-php/'), E_WARNING);
+        try {
+            return e($arabic->utf8Glyphs($text));
+        } finally {
+            restore_error_handler();
+        }
     }
 }
 

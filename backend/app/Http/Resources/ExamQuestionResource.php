@@ -23,6 +23,8 @@ class ExamQuestionResource extends JsonResource
             'sort_order' => $this->sort_order,
             'position' => $this->when($this->getAttribute('position') !== null, fn () => $this->getAttribute('position')),
             'correct_answer' => $this->when($staff, fn () => $this->correct_answer),
+            'category' => $this->when($staff, $this->category),
+            'difficulty' => $this->when($staff, $this->difficulty),
         ];
     }
 }

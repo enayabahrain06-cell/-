@@ -46,6 +46,12 @@ class RegistrationService
                 'notes' => $data['notes'] ?? null,
             ]);
 
+            // StoreRegistrationRequest already checked the token; link inside the same transaction.
+            $placement = app(\App\Services\Exams\PlacementService::class);
+            if ($attempt = $placement->usableAttempt($data['placement_token'] ?? null, $package->id)) {
+                $placement->attachToRequest($attempt, $request);
+            }
+
             return $request;
         });
 

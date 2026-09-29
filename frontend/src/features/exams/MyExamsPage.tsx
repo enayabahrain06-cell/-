@@ -53,7 +53,7 @@ export default function MyExamsPage() {
       <div className="space-y-5">
         <PageBand title={t('my.title')} />
         {guardian && (children.data?.length ?? 0) > 1 && (
-          <SelectField className="w-64" label={t('my.student')} value={studentId ?? ''} onChange={(e) => setChildId(Number(e.target.value))}
+          <SelectField className="w-full sm:w-64" label={t('my.student')} value={studentId ?? ''} onChange={(e) => setChildId(Number(e.target.value))}
             options={(children.data ?? []).map((c) => ({ value: String(c.id), label: c.full_name }))} />
         )}
         {q.isLoading ? <LoadingState /> : !q.data ? null : (['open', 'upcoming', 'finished'] as const).map((k) => (

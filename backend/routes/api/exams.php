@@ -17,6 +17,11 @@ Route::post('exams/{exam}/publish', [ExamController::class, 'publish']);
 Route::post('exams/{exam}/close', [ExamController::class, 'close']);
 Route::get('exams/{exam}/roster.pdf', [ExamController::class, 'rosterPdf'])->name('exams.roster');
 Route::put('exams/{exam}/scores', [ExamController::class, 'scores']);
+Route::put('exams/{exam}/students/{student}/answers', [ExamController::class, 'paperAnswers']);
+// Printable papers: the blank question paper, one student's graded paper, and every student's paper in one file.
+Route::get('exams/{exam}/question-paper.pdf', [ExamController::class, 'questionPaperPdf'])->name('exams.question-paper');
+Route::get('exams/{exam}/papers.pdf', [ExamController::class, 'papersPdf'])->name('exams.papers');
+Route::get('exams/{exam}/attempts/{attempt}/paper.pdf', [ExamController::class, 'paperPdf'])->name('exams.paper');
 
 Route::get('exams/{exam}/questions', [ExamQuestionController::class, 'index']);
 Route::post('exams/{exam}/questions', [ExamQuestionController::class, 'store']);

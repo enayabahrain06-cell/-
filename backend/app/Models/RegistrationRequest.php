@@ -23,6 +23,9 @@ class RegistrationRequest extends Model
             'gender' => Gender::class,
             'status' => RegistrationStatus::class,
             'memorization_level' => MemorizationLevel::class,
+            'recommended_level' => MemorizationLevel::class,
+            'final_level' => MemorizationLevel::class,
+            'level_confirmed_at' => 'datetime',
             'locale' => Locale::class,
             'birth_date' => \App\Casts\DateOnly::class,
             'decided_at' => 'datetime',
@@ -38,6 +41,16 @@ class RegistrationRequest extends Model
         $seq = $last ? ((int) substr($last, strlen($prefix))) + 1 : 1;
 
         return sprintf('%s%04d', $prefix, $seq);
+    }
+
+    public function placementAttempt(): BelongsTo
+    {
+        return $this->belongsTo(ExamAttempt::class, 'placement_attempt_id');
+    }
+
+    public function levelConfirmer(): BelongsTo
+    {
+        return $this->belongsTo(User::class, 'level_confirmed_by');
     }
 
     public function package(): BelongsTo

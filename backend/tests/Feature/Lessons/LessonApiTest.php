@@ -142,7 +142,8 @@ it('lists today sessions for the dashboard and lets a teacher cancel their own s
     $this->getJson('/api/sessions/today')->assertOk()->assertJsonCount(2, 'data')->assertJsonPath('data.0.attendance_taken', false);
 
     $this->actingAs($t1, 'sanctum');
-    $this->getJson('/api/sessions/today')->assertOk()->assertJsonCount(1, 'data');
+    $this->getJson('/api/sessions/today')->assertOk()->assertJsonCount(1, 'data')
+        ->assertJsonPath('data.0.lesson.package.id', $s1->lesson->package_id);
     $this->patchJson("/api/sessions/{$s1->id}", ['status' => 'cancelled'])->assertOk()->assertJsonPath('data.status', 'cancelled');
     $this->patchJson("/api/sessions/{$s2->id}", ['status' => 'cancelled'])->assertForbidden();
 });

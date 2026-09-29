@@ -16,7 +16,7 @@ return [
     'evaluation_type' => ['daily' => 'يومي', 'monthly' => 'شهري'],
     'progress_type' => ['memorized' => 'حفظ', 'revised' => 'مراجعة'],
     'lottery_status' => ['draft' => 'مسودة', 'run' => 'تم التوزيع', 'approved' => 'معتمد', 'cancelled' => 'ملغى'],
-    'exam_type' => ['paper' => 'ورقي', 'online' => 'إلكتروني'],
+    'exam_type' => ['paper' => 'ورقي', 'online' => 'إلكتروني', 'placement' => 'اختبار تحديد مستوى'],
     'exam_status' => ['draft' => 'مسودة', 'published' => 'منشور', 'closed' => 'مغلق', 'graded' => 'مصحّح'],
     'question_type' => ['mcq' => 'اختيار من متعدد', 'true_false' => 'صح أو خطأ', 'complete_verse' => 'أكمل الآية', 'order_verses' => 'رتّب الآيات', 'recitation' => 'تلاوة'],
     'attempt_status' => ['in_progress' => 'جارٍ', 'submitted' => 'مُسلَّم', 'graded' => 'مصحّح', 'expired' => 'منتهي'],

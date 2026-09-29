@@ -16,7 +16,7 @@ return [
     'evaluation_type' => ['daily' => 'Daily', 'monthly' => 'Monthly'],
     'progress_type' => ['memorized' => 'Memorized', 'revised' => 'Revised'],
     'lottery_status' => ['draft' => 'Draft', 'run' => 'Distributed', 'approved' => 'Approved', 'cancelled' => 'Cancelled'],
-    'exam_type' => ['paper' => 'Paper', 'online' => 'Online'],
+    'exam_type' => ['paper' => 'Paper', 'online' => 'Online', 'placement' => 'Placement test'],
     'exam_status' => ['draft' => 'Draft', 'published' => 'Published', 'closed' => 'Closed', 'graded' => 'Graded'],
     'question_type' => ['mcq' => 'Multiple choice', 'true_false' => 'True / False', 'complete_verse' => 'Complete the verse', 'order_verses' => 'Order the verses', 'recitation' => 'Recitation'],
     'attempt_status' => ['in_progress' => 'In progress', 'submitted' => 'Submitted', 'graded' => 'Graded', 'expired' => 'Expired'],

@@ -1,15 +1,20 @@
 import { useState } from 'react'
 import { useMutation } from '@tanstack/react-query'
 import { useTranslation } from 'react-i18next'
-import { QUESTION_TYPES, examsApi, type Question, type QuestionInput, type QuestionOption, type QuestionType } from '../../api/exams'
+import { QUESTION_TYPES, examsApi, type ExamType, type Question, type QuestionDifficulty, type QuestionInput, type QuestionOption, type QuestionType } from '../../api/exams'
 import { parseApiError } from '../../api/client'
 import SelectField from '../../components/SelectField'
 import { Modal, Notice, PrimaryButton, SecondaryButton, TextArea, TextInput, inputClass, IconButton } from '../../components/ui'
 
 const KEYS = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h']
 
-/** One dialog for all five question types; options and the answer key adapt to the type. */
-export default function QuestionEditor({ examId, question, onClose, onSaved }: { examId: number; question?: Question; onClose: () => void; onSaved: () => void }) {
+/**
+ * One dialog for all five question types; options and the answer key adapt to the type.
+ * For a new question, `onSaved(true)` means "save and add another": the parent reopens a blank editor.
+ * `summary` is an optional line under the title (for example the marks entered so far).
+ * Placement tests show their result straight away, so they offer no recitation (teacher-graded) type.
+ */
+export default function QuestionEditor({ examId, examType, question, onClose, onSaved, summary }: { examId: number; examType?: ExamType; question?: Question; onClose: () => void; onSaved: (addAnother?: boolean) => void; summary?: string }) {
   const { t } = useTranslation('exams')
   const [type, setType] = useState<QuestionType>(question?.type ?? 'mcq')
   const [prompt, setPrompt] = useState(question?.prompt ?? '')
@@ -26,10 +31,13 @@ export default function QuestionEditor({ examId, question, onClose, onSaved }: {
     }
     return ['', '', '']
   })
+  const [category, setCategory] = useState(question?.category ?? '')
+  const [difficulty, setDifficulty] = useState<QuestionDifficulty | ''>(question?.difficulty ?? '')
   const [error, setError] = useState<string | null>(null)
+  const types = QUESTION_TYPES.filter((q) => examType !== 'placement' || q !== 'recitation')
 
   const payload = (): QuestionInput => {
-    const base = { type, prompt, marks }
+    const base = { type, prompt, marks, category: category.trim() || null, difficulty: difficulty || null }
     switch (type) {
       case 'mcq': return { ...base, options: options.filter((o) => o.text.trim()), correct_answer: { key: correctKey } }
       case 'true_false': return { ...base, options: null, correct_answer: { value: tf } }
@@ -43,23 +51,33 @@ export default function QuestionEditor({ examId, question, onClose, onSaved }: {
   }
 
   const save = useMutation({
-    mutationFn: () => (question ? examsApi.updateQuestion(examId, question.id, payload()) : examsApi.addQuestion(examId, payload())),
-    onSuccess: onSaved,
+    mutationFn: (_addAnother: boolean) => (question ? examsApi.updateQuestion(examId, question.id, payload()) : examsApi.addQuestion(examId, payload())),
+    onSuccess: (_d, addAnother) => onSaved(addAnother),
     onError: (e) => { const p = parseApiError(e); setError(Object.values(p.fields)[0]?.[0] ?? p.message) },
   })
 
   return (
     <Modal wide title={question ? t('questions.edit') : t('questions.add')} onClose={onClose}
-      footer={<><SecondaryButton onClick={onClose}>{t('questions.cancel')}</SecondaryButton><PrimaryButton disabled={!prompt.trim()} loading={save.isPending} onClick={() => save.mutate()}>{t('questions.save')}</PrimaryButton></>}>
+      footer={<>
+        <SecondaryButton onClick={onClose}>{t('questions.cancel')}</SecondaryButton>
+        {!question && <SecondaryButton disabled={!prompt.trim() || save.isPending} onClick={() => save.mutate(true)}>{t('questions.save_add_another')}</SecondaryButton>}
+        <PrimaryButton disabled={!prompt.trim()} loading={save.isPending} onClick={() => save.mutate(false)}>{t('questions.save')}</PrimaryButton>
+      </>}>
+      {summary && <p className="text-sm text-ink/60">{summary}</p>}
       {error && <Notice tone="error">{error}</Notice>}
       <div className="grid gap-4 sm:grid-cols-3">
-        <SelectField className="sm:col-span-2" label={t('questions.type')} value={type} onChange={(e) => setType(e.target.value as QuestionType)} options={QUESTION_TYPES.map((q) => ({ value: q, label: t(`questions.types.${q}`) }))} />
+        <SelectField className="sm:col-span-2" label={t('questions.type')} value={type} onChange={(e) => setType(e.target.value as QuestionType)} options={types.map((q) => ({ value: q, label: t(`questions.types.${q}`) }))} />
         <TextInput label={t('questions.marks')} type="number" min={0} value={marks} onChange={(e) => setMarks(Number(e.target.value))} />
+      </div>
+      <div className="grid gap-4 sm:grid-cols-3">
+        <TextInput className="sm:col-span-2" label={t('questions.category')} placeholder={t('questions.category_hint')} value={category} maxLength={60} onChange={(e) => setCategory(e.target.value)} dir="auto" />
+        <SelectField label={t('questions.difficulty')} value={difficulty} onChange={(e) => setDifficulty(e.target.value as QuestionDifficulty | '')}
+          options={[{ value: '', label: t('questions.difficulty_none') }, ...(['easy', 'medium', 'hard'] as const).map((d) => ({ value: d, label: t(`questions.difficulties.${d}`) }))]} />
       </div>
       <TextArea label={t('questions.prompt')} value={prompt} onChange={(e) => setPrompt(e.target.value)} dir="auto" className="[&_textarea]:font-display [&_textarea]:text-lg" />
 
       {type === 'mcq' && (
-        <fieldset className="space-y-2">
+        <fieldset className="min-w-0 space-y-2">
           <legend className="mb-1 text-sm font-medium text-ink/75">{t('questions.options')} · {t('questions.correct')}</legend>
           {options.map((o, i) => (
             <div key={o.key} className="flex items-center gap-2">
@@ -92,7 +110,7 @@ export default function QuestionEditor({ examId, question, onClose, onSaved }: {
       )}
 
       {type === 'order_verses' && (
-        <fieldset className="space-y-2">
+        <fieldset className="min-w-0 space-y-2">
           <legend className="mb-1 text-sm font-medium text-ink/75">{t('questions.order_hint')}</legend>
           {verses.map((v, i) => (
             <div key={i} className="flex items-center gap-2">

@@ -22,6 +22,18 @@
   "empty_roster": "No students are enrolled in this circle.",
   "ledger": "Progress today",
   "add_range": "Add memorized or revised range",
+  "scored": "{{n}} of {{total}} scored",
+  "student": "Student",
+  "students": "Students",
+  "row_state": {
+    "saved": "Saved",
+    "changed": "Not saved yet",
+    "empty": "Not scored"
+  },
+  "show_details": "Show note and progress",
+  "hide_details": "Hide note and progress",
+  "show_all_details": "Show all details",
+  "hide_all_details": "Hide all details",
   "suggest": {
     "title": "Suggested difficulties",
     "body": "Some students scored below {{n}} on a criterion. You can open a difficulty to follow it up.",

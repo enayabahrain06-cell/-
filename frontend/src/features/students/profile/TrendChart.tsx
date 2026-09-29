@@ -5,6 +5,7 @@ import type { StudentProfile } from '../../../api/students'
 import Icon from '../../../components/Icon'
 import { formatDate, formatNumber } from '../../../lib/format'
 import { SURFACE } from '../../../components/ui'
+import { CHART_AXIS_LINE, CHART_GRID, CHART_LINE_CURSOR, CHART_TICK } from '../../../components/chart'
 
 /**
  * 8-week trend, one line per criterion (0–10). Same validated 4-slot palette as the attendance chart
@@ -76,12 +77,12 @@ export default function TrendChart({ weeks }: { weeks: Week[] }) {
         <div className="mt-4 h-56" dir="ltr">
           <ResponsiveContainer width="100%" height="100%">
             <LineChart data={data} margin={{ top: 8, right: rtl ? 0 : 8, left: rtl ? 8 : 0, bottom: 0 }}>
-              <CartesianGrid vertical={false} stroke="#1B2B28" strokeOpacity={0.07} />
-              <XAxis dataKey="week_start" tickLine={false} axisLine={{ stroke: '#1B2B28', strokeOpacity: 0.15 }} tick={{ fill: '#1B2B28', fillOpacity: 0.55, fontSize: 12 }}
+              <CartesianGrid vertical={false} {...CHART_GRID} />
+              <XAxis dataKey="week_start" tickLine={false} axisLine={CHART_AXIS_LINE} tick={CHART_TICK}
                 tickFormatter={(v: string) => formatDate(v, locale, { day: 'numeric', month: 'short' })} />
               <YAxis domain={[0, 10]} ticks={[0, 5, 10]} orientation={rtl ? 'right' : 'left'} tickLine={false} axisLine={false} width={28}
-                tick={{ fill: '#1B2B28', fillOpacity: 0.55, fontSize: 12 }} tickFormatter={(v: number) => formatNumber(v, locale)} />
-              <Tooltip content={<TrendTooltip locale={locale} />} cursor={{ stroke: '#1B2B28', strokeOpacity: 0.2 }} />
+                tick={CHART_TICK} tickFormatter={(v: number) => formatNumber(v, locale)} />
+              <Tooltip content={<TrendTooltip locale={locale} />} cursor={CHART_LINE_CURSOR} />
               {SERIES.map((s) => (
                 <Line key={s.key} type="monotone" dataKey={s.key} stroke={s.color} strokeWidth={2} connectNulls
                   dot={{ r: 4, strokeWidth: 2, stroke: '#fff', fill: s.color }} activeDot={{ r: 5, strokeWidth: 2, stroke: '#fff' }} isAnimationActive={false} />

@@ -6,6 +6,7 @@ import Icon from '../../components/Icon'
 import { EmptyState } from '../../components/ornaments'
 import { formatDate, formatNumber, formatPercent, formatWeekday } from '../../lib/format'
 import { SURFACE } from '../../components/ui'
+import { CHART_AXIS_LINE, CHART_BAR_CURSOR, CHART_GRID, CHART_TICK } from '../../components/chart'
 
 /**
  * Stacked daily attendance. Palette validated (dataviz validator, light surface): all checks pass;
@@ -84,12 +85,12 @@ export default function AttendanceChart({ days }: { days: AttendanceDay[] }) {
         <div className="mt-4 h-64" dir="ltr">
           <ResponsiveContainer width="100%" height="100%">
             <BarChart data={data} margin={{ top: 4, right: rtl ? 0 : 4, left: rtl ? 4 : 0, bottom: 0 }} barCategoryGap="28%">
-              <CartesianGrid vertical={false} stroke="#1B2B28" strokeOpacity={0.07} />
+              <CartesianGrid vertical={false} {...CHART_GRID} />
               <XAxis
                 dataKey="date"
                 tickLine={false}
-                axisLine={{ stroke: '#1B2B28', strokeOpacity: 0.15 }}
-                tick={{ fill: '#1B2B28', fillOpacity: 0.55, fontSize: 12 }}
+                axisLine={CHART_AXIS_LINE}
+                tick={CHART_TICK}
                 tickFormatter={(v: string) => formatDate(v, locale, { day: 'numeric' })}
                 interval={0}
               />
@@ -99,10 +100,10 @@ export default function AttendanceChart({ days }: { days: AttendanceDay[] }) {
                 tickLine={false}
                 axisLine={false}
                 width={32}
-                tick={{ fill: '#1B2B28', fillOpacity: 0.55, fontSize: 12 }}
+                tick={CHART_TICK}
                 tickFormatter={(v: number) => formatNumber(v, locale)}
               />
-              <Tooltip cursor={{ fill: '#1B2B28', fillOpacity: 0.05 }} content={<ChartTooltip locale={locale} />} />
+              <Tooltip cursor={CHART_BAR_CURSOR} content={<ChartTooltip locale={locale} />} />
               {SERIES.map((s, i) => (
                 <Bar
                   key={s.key}

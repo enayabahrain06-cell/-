@@ -7,3 +7,7 @@ use Illuminate\Support\Facades\Route;
 Route::get('media/students/{student}/photo/{size}', [MediaController::class, 'studentPhoto'])
     ->middleware('signed')
     ->name('media.student-photo');
+Route::get('media/teachers/{teacher}/photo/{size}', [MediaController::class, 'teacherPhoto'])
+    ->whereNumber('teacher')
+    ->middleware('signed')
+    ->name('media.teacher-photo');

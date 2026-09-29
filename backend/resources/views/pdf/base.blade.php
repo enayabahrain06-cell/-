@@ -29,6 +29,15 @@ table.grid th { background: #E3EAE3; font-weight: bold; }
 .footer { position: fixed; bottom: -8mm; left: 0; right: 0; font-size: 9pt; color: #4E5F59; text-align: center; }
 .box { border: 1px solid #CBD6CE; padding: 8pt 10pt; margin-top: 8pt; }
 .badge { display: inline-block; padding: 2pt 8pt; border: 1px solid #2E6B4F; color: #2E6B4F; border-radius: 10pt; font-size: 10pt; }
+.badge.fail { border-color: #A63D32; color: #A63D32; }
+/* Exam papers (question paper and graded student paper). */
+.page-break { page-break-after: always; }
+.question { page-break-inside: avoid; margin-top: 8pt; }
+.choice { display: inline-block; width: 9pt; height: 9pt; border: 1px solid #1B2B28; border-radius: 5pt; }
+.choice.on { background: #2E6B4F; border-color: #2E6B4F; }
+.writein { border-bottom: 1px dotted #4E5F59; height: 20pt; }
+.ok { color: #2E6B4F; font-weight: bold; }
+.no { color: #A63D32; font-weight: bold; }
 </style>
 @yield('head')
 </head>

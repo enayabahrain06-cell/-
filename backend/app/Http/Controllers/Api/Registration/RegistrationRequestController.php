@@ -25,7 +25,7 @@ class RegistrationRequestController extends Controller
     {
         $this->authorize('viewAny', RegistrationRequest::class);
 
-        $q = RegistrationRequest::with(['package', 'student', 'decider'])
+        $q = RegistrationRequest::with(['package', 'student', 'decider', 'levelConfirmer', 'placementAttempt.exam', 'placementAttempt.answers'])
             ->tap(fn ($q) => \App\Support\Track::scope($q, $request->user()))
             ->when($request->filled('status'), fn ($q) => $q->where('status', $request->string('status')))
             ->when($request->filled('package_id'), fn ($q) => $q->where('package_id', $request->integer('package_id')))
@@ -49,7 +49,7 @@ class RegistrationRequestController extends Controller
     {
         $this->authorize('view', $registration);
 
-        return new RegistrationRequestResource($registration->load(['package', 'student', 'decider', 'media']));
+        return new RegistrationRequestResource($registration->load(['package', 'student', 'decider', 'media', 'levelConfirmer', 'placementAttempt.exam', 'placementAttempt.answers']));
     }
 
     /**
@@ -78,13 +78,15 @@ class RegistrationRequestController extends Controller
         $data = $request->validate([
             'lesson_id' => ['nullable', 'required_unless:lottery,true,1', 'integer', 'exists:lessons,id'],
             'lottery' => ['sometimes', 'boolean'],
+            'final_level' => ['nullable', \App\Enums\MemorizationLevel::rule()],
         ], ['lesson_id.required_unless' => __('circles.errors.no_circle')]);
 
-        $student = $action->execute($registration, $request->user()->id, $request->boolean('force'), $data['lesson_id'] ?? null, $request->boolean('lottery'));
+        $student = $action->execute($registration, $request->user()->id, $request->boolean('force'), $data['lesson_id'] ?? null, $request->boolean('lottery'),
+            \App\Enums\MemorizationLevel::tryFrom((string) ($data['final_level'] ?? '')));
 
         return response()->json([
             'message' => __('registration.accepted'),
-            'request' => new RegistrationRequestResource($registration->fresh(['package', 'student'])),
+            'request' => new RegistrationRequestResource($registration->fresh(['package', 'student', 'levelConfirmer', 'placementAttempt.exam', 'placementAttempt.answers'])),
             'student' => new StudentSummaryResource($student),
         ]);
     }

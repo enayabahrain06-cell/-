@@ -28,6 +28,20 @@ it('lists students with circle, cached position, juz filter and sorting', functi
         ->and(collect($this->getJson('/api/students?juz=0')->json('data'))->pluck('id')->all())->toBe([$this->b->id]);
 });
 
+it('filters by an inclusive age band and sorts youngest first', function () {
+    actingAsRole('supervisor');
+    $this->a->update(['birth_date' => today()->subYears(8)->toDateString()]);              // 8 today
+    $this->b->update(['birth_date' => today()->subYears(11)->addDay()->toDateString()]);   // 10, turns 11 tomorrow
+    $c = Student::factory()->create(['birth_date' => today()->subYears(11)->toDateString()]); // 11 today
+
+    $ids = fn (string $qs) => collect($this->getJson("/api/students?$qs")->assertOk()->json('data'))->pluck('id')->all();
+
+    expect($ids('age_min=8&age_max=10'))->toEqualCanonicalizing([$this->a->id, $this->b->id])
+        ->and($ids('age_min=11'))->toBe([$c->id])
+        ->and($ids('age_max=7'))->toBe([])
+        ->and($ids('sort=age'))->toBe([$this->a->id, $this->b->id, $c->id]);
+});
+
 it('returns a student attendance history with totals to staff, the teacher and the guardian only', function () {
     foreach (['present', 'late', 'absent', 'excused'] as $i => $status) {
         $s = LessonSession::factory()->create(['lesson_id' => $this->lesson->id, 'session_date' => today()->subDays($i)->toDateString()]);

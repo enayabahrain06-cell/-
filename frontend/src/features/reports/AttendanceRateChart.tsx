@@ -2,6 +2,7 @@ import { useTranslation } from 'react-i18next'
 import { CartesianGrid, Line, LineChart, ResponsiveContainer, Tooltip, XAxis, YAxis } from 'recharts'
 import type { AttendanceDayPoint } from '../../api/reports'
 import { Card, CardTitle } from '../../components/ui'
+import { CHART_AXIS_LINE, CHART_GRID, CHART_LINE_CURSOR, CHART_TICK } from '../../components/chart'
 import { formatDate, formatNumber, formatPercent, formatWeekday } from '../../lib/format'
 
 /**
@@ -9,7 +10,6 @@ import { formatDate, formatNumber, formatPercent, formatWeekday } from '../../li
  * "present" green (#2E8B57) on the white card; the per-day table below the chart is the table view.
  */
 const LINE = '#2E8B57'
-const INK = '#1B2B28'
 
 export default function AttendanceRateChart({ days }: { days: AttendanceDayPoint[] }) {
   const { t, i18n } = useTranslation('reports')
@@ -30,12 +30,12 @@ export default function AttendanceRateChart({ days }: { days: AttendanceDayPoint
       <div className="h-56" dir="ltr">
         <ResponsiveContainer width="100%" height="100%">
           <LineChart data={data} margin={{ top: 8, right: rtl ? 0 : 12, left: rtl ? 12 : 0, bottom: 0 }}>
-            <CartesianGrid vertical={false} stroke={INK} strokeOpacity={0.07} />
+            <CartesianGrid vertical={false} {...CHART_GRID} />
             <XAxis
               dataKey="date"
               tickLine={false}
-              axisLine={{ stroke: INK, strokeOpacity: 0.15 }}
-              tick={{ fill: INK, fillOpacity: 0.55, fontSize: 12 }}
+              axisLine={CHART_AXIS_LINE}
+              tick={CHART_TICK}
               tickFormatter={(v: string) => formatDate(v, locale, { day: 'numeric', month: 'short' })}
               minTickGap={24}
             />
@@ -46,10 +46,10 @@ export default function AttendanceRateChart({ days }: { days: AttendanceDayPoint
               tickLine={false}
               axisLine={false}
               width={40}
-              tick={{ fill: INK, fillOpacity: 0.55, fontSize: 12 }}
+              tick={CHART_TICK}
               tickFormatter={(v: number) => formatPercent(v, locale)}
             />
-            <Tooltip cursor={{ stroke: INK, strokeOpacity: 0.2 }} content={<RateTooltip locale={locale} />} />
+            <Tooltip cursor={CHART_LINE_CURSOR} content={<RateTooltip locale={locale} />} />
             <Line
               type="monotone"
               dataKey="rate"

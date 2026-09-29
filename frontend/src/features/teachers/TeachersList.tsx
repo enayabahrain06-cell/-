@@ -138,7 +138,7 @@ function TeachersTable({ rows, locale }: { rows: TeacherRow[]; locale: string })
               <tr key={r.id} className="group hover:bg-brand-50/40">
                 <td className="px-4 py-3">
                   <Link to={href(r.id)} className="flex items-center gap-3 rounded-lg focus-visible:outline-2 focus-visible:outline-brand-500">
-                    <Avatar name={r.name} initial={initialOf(r.name)} gender={r.gender} size="sm" />
+                    <Avatar name={r.name} initial={initialOf(r.name)} src={r.photo_url} gender={r.gender} size="sm" />
                     <span className="min-w-0">
                       <span dir="auto" className="block truncate font-medium text-ink group-hover:text-brand-700">{r.name}</span>
                       <span dir="auto" className="block truncate text-xs text-ink/50">{r.specialization || t('no_specialization')}</span>
@@ -162,7 +162,7 @@ function TeachersTable({ rows, locale }: { rows: TeacherRow[]; locale: string })
           <li key={r.id}>
             <Link to={href(r.id)} className={`${SURFACE} block p-4 active:bg-brand-50/50`}>
               <div className="flex items-center gap-3">
-                <Avatar name={r.name} initial={initialOf(r.name)} gender={r.gender} size="md" />
+                <Avatar name={r.name} initial={initialOf(r.name)} src={r.photo_url} gender={r.gender} size="md" />
                 <div className="min-w-0 flex-1">
                   <p dir="auto" className="truncate font-semibold text-ink">{r.name}</p>
                   <p dir="auto" className="truncate text-sm text-ink/55">{r.specialization || t('no_specialization')}</p>

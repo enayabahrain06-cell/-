@@ -21,6 +21,12 @@
         "sort_no": "رقم الطالب",
         "sort_memorized": "الأكثر حفظاً",
         "sort_newest": "الأحدث تسجيلاً",
+        "age": "العمر",
+        "all_ages": "كل الأعمار",
+        "age_under": "أقل من {{n}} سنوات",
+        "age_range": "من {{from}} إلى {{to}} سنة",
+        "age_over": "{{n}} سنة فأكثر",
+        "sort_age": "الأصغر سنًا",
         "clear": "مسح الفلاتر"
     },
     "status": {
@@ -34,6 +40,7 @@
         "circle": "الحلقة",
         "position": "الموضع الحالي",
         "memorized": "المحفوظ",
+        "age": "العمر",
         "balance": "الرصيد",
         "status": "الحالة"
     },
@@ -75,7 +82,33 @@
         "attendance": "الحضور",
         "wallet": "المحفظة",
         "details": "البيانات",
-        "certificates": "الشهادات"
+        "certificates": "الشهادات",
+        "placement": "تحديد المستوى"
+    },
+    "placement_tab": {
+        "empty": "لا يوجد اختبار تحديد مستوى لهذا الطالب.",
+        "empty_body": "تظهر هنا نتيجة الطلاب الذين سجّلوا في باقة لها اختبار تحديد مستوى.",
+        "score": "الدرجة",
+        "marks": "{{score}} من {{total}} درجة",
+        "correct": "{{correct}} صحيحة من {{total}}",
+        "declared": "حسب ما ذكرته الأسرة",
+        "recommended": "المقترح",
+        "final": "المستوى النهائي",
+        "not_confirmed": "لم يُؤكَّد",
+        "confirmed_by": "أكّده {{name}} في {{date}}",
+        "date": "تاريخ الأداء",
+        "attempt": "المحاولة",
+        "answers": "الإجابات",
+        "question": "السؤال",
+        "answer": "الإجابة المقدَّمة",
+        "key": "الإجابة الصحيحة",
+        "mark": "الدرجة",
+        "right": "صحيحة",
+        "wrong": "خاطئة",
+        "no_answer": "لم يُجب",
+        "true": "صح",
+        "false": "خطأ",
+        "difficulty": { "easy": "سهل", "medium": "متوسط", "hard": "صعب" }
     },
     "juz_map": {
         "title": "خريطة الأجزاء",
@@ -171,5 +204,23 @@
         "remove_photo": "حذف الصورة",
         "photo_hint": "JPG أو PNG أو HEIC حتى ٥ ميغابايت، وتُقص مربعة تلقائياً.",
         "uploading": "جارٍ الرفع…"
+    },
+    "wallet_charts": {
+        "paid_title": "المدفوع من الفواتير",
+        "paid_subtitle": "نسبة من {{total}} مفوترة (دون الفواتير الملغاة)",
+        "paid": "مدفوع",
+        "outstanding": "مستحق",
+        "monthly_title": "المفوتر والمدفوع شهريًا",
+        "monthly_subtitle": "آخر ١٢ شهرًا",
+        "charged": "مفوتر",
+        "refunded": "مسترد",
+        "month": "الشهر",
+        "part": "البند",
+        "amount": "المبلغ",
+        "share": "النسبة",
+        "legend": "مفتاح الرسم",
+        "axis_bhd": "المبالغ بالدينار البحريني",
+        "show_table": "عرض كجدول",
+        "show_chart": "عرض الرسم"
     }
 }

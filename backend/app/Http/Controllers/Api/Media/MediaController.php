@@ -5,8 +5,10 @@ namespace App\Http\Controllers\Api\Media;
 use App\Http\Controllers\Controller;
 use App\Models\Media;
 use App\Models\Student;
+use App\Models\User;
 use App\Services\Media\MediaService;
 use App\Services\Media\StudentPhotoService;
+use App\Services\Media\TeacherPhotoService;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Gate;
 
@@ -31,6 +33,22 @@ class MediaController extends Controller
             'Content-Length' => strlen($bytes),
             'Cache-Control' => 'private, max-age=600',
             'Content-Disposition' => 'inline; filename="'.$student->student_no.'-'.$size.'.webp"',
+        ]);
+    }
+
+    /** Teacher photo by temporary signed URL, minted only in teacher responses the viewer is allowed to see. */
+    public function teacherPhoto(User $teacher, string $size, TeacherPhotoService $photos): Response
+    {
+        abort_unless(in_array($size, ['profile', 'thumb'], true), 404);
+
+        $bytes = $photos->contentsFor($teacher, $size);
+        abort_if($bytes === null, 404);
+
+        return response($bytes, 200, [
+            'Content-Type' => 'image/webp',
+            'Content-Length' => strlen($bytes),
+            'Cache-Control' => 'private, max-age=600',
+            'Content-Disposition' => 'inline; filename="teacher-'.$teacher->id.'-'.$size.'.webp"',
         ]);
     }
 

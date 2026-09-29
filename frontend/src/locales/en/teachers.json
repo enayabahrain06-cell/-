@@ -76,5 +76,12 @@
       "fri": "Friday"
     },
     "messages": "Messages for this session"
+  },
+  "photo": {
+    "add": "Add photo",
+    "change": "Change photo",
+    "uploading": "Uploading…",
+    "remove": "Remove photo",
+    "remove_confirm": "Remove this teacher's photo?"
   }
 }

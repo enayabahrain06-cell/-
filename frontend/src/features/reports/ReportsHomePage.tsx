@@ -6,7 +6,7 @@ import { reportsApi, type CatalogEntry, type Cell, type Report, type ReportCatal
 import { saveBlob } from '../../api/payments'
 import Icon from '../../components/Icon'
 import SelectField from '../../components/SelectField'
-import { Card, ErrorState, LoadingState, SecondaryButton, TextInput, SURFACE } from '../../components/ui'
+import { Card, ErrorState, LoadingState, SearchInput, SecondaryButton, Segmented, TextInput, SURFACE } from '../../components/ui'
 import { EmptyState, PageBand } from '../../components/ornaments'
 import { formatNumber, formatPercent } from '../../lib/format'
 import AttendanceRateChart from './AttendanceRateChart'
@@ -49,35 +49,58 @@ export default function ReportsHomePage() {
   )
 }
 
+/** The catalog: one card per subject, laid out as balanced columns, with a client-side search over titles and descriptions. */
 function Catalog({ catalog }: { catalog: ReportCatalog }) {
-  const groups = catalog.groups.map((g) => ({ ...g, reports: catalog.data.filter((r) => r.group === g.key) })).filter((g) => g.reports.length > 0)
+  const { t, i18n } = useTranslation('reports')
+  const [query, setQuery] = useState('')
+  const needle = query.trim().toLocaleLowerCase(i18n.language)
+  const matches = (r: CatalogEntry) => !needle || `${r.title} ${r.description}`.toLocaleLowerCase(i18n.language).includes(needle)
+  const groups = catalog.groups
+    .map((g) => ({ ...g, reports: catalog.data.filter((r) => r.group === g.key && matches(r)) }))
+    .filter((g) => g.reports.length > 0)
 
   return (
-    <div className="space-y-7">
-      {groups.map((g) => (
-        <section key={g.key} aria-labelledby={`group-${g.key}`}>
-          <h2 id={`group-${g.key}`} className="mb-3 text-sm font-semibold uppercase tracking-wide text-ink/55">{g.label}</h2>
-          <ul className="grid gap-3 *:min-w-0 sm:grid-cols-2 xl:grid-cols-3">
-            {g.reports.map((r) => (
-              <li key={r.key}>
-                <Link
-                  to={`/reports?report=${r.key}`}
-                  className={`${SURFACE} group flex h-full items-start gap-3 p-4 transition hover:border-brand-600/30 hover:shadow-md focus-visible:outline-2 focus-visible:outline-brand-600`}
-                >
-                  <span className="rounded-xl bg-brand-50 p-2.5 text-brand-700">
-                    <Icon name={r.icon} className="size-5" />
-                  </span>
-                  <span className="min-w-0 flex-1">
-                    <span className="block font-semibold text-ink group-hover:text-brand-700">{r.title}</span>
-                    <span className="mt-0.5 block text-sm leading-relaxed text-ink/60">{r.description}</span>
-                  </span>
-                  <Icon name="chevron" className="mt-1 size-4 shrink-0 text-ink/30 rtl:rotate-180" />
-                </Link>
-              </li>
-            ))}
-          </ul>
-        </section>
-      ))}
+    <div className="space-y-5">
+      <div className="flex flex-wrap items-center gap-3">
+        <SearchInput className="w-full sm:w-80" label={t('search')} value={query} onChange={(e) => setQuery(e.target.value)} />
+        <p className="text-sm tabular-nums text-ink/55" aria-live="polite">
+          {t('count', { n: formatNumber(groups.reduce((sum, g) => sum + g.reports.length, 0), i18n.language) })}
+        </p>
+      </div>
+
+      {groups.length === 0 ? (
+        <EmptyState icon="search" title={t('no_match')} />
+      ) : (
+        <div className="gap-5 lg:columns-2 2xl:columns-3 [&>*]:mb-5 [&>*]:break-inside-avoid">
+          {groups.map((g) => (
+            <section key={g.key} aria-labelledby={`group-${g.key}`} className={SURFACE}>
+              <div className="flex items-center gap-2 border-b border-ink/6 px-4 py-3 sm:px-5">
+                <h2 id={`group-${g.key}`} className="text-base font-semibold text-ink">{g.label}</h2>
+                <span className="text-sm tabular-nums text-ink/45">({formatNumber(g.reports.length, i18n.language)})</span>
+              </div>
+              <ul className="divide-y divide-ink/6">
+                {g.reports.map((r) => (
+                  <li key={r.key}>
+                    <Link
+                      to={`/reports?report=${r.key}`}
+                      className="group flex items-start gap-3 px-4 py-3.5 transition last:rounded-b-2xl hover:bg-brand-50/40 focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-brand-500 sm:px-5"
+                    >
+                      <span className="rounded-xl bg-brand-50 p-2.5 text-brand-700">
+                        <Icon name={r.icon} className="size-5" />
+                      </span>
+                      <span className="min-w-0 flex-1">
+                        <span className="block font-semibold text-ink group-hover:text-brand-700">{r.title}</span>
+                        <span className="mt-0.5 block text-sm leading-relaxed text-ink/60">{r.description}</span>
+                      </span>
+                      <Icon name="chevron" className="mt-3 size-4 shrink-0 text-ink/30 transition group-hover:text-brand-700 rtl:rotate-180" />
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </section>
+          ))}
+        </div>
+      )}
     </div>
   )
 }
@@ -151,19 +174,9 @@ function Viewer({ entry, catalog }: { entry: CatalogEntry; catalog: ReportCatalo
           <>
             <TextInput className="w-full sm:w-40" label={t('filters.from')} type="date" value={values.from} max={values.to} onChange={(e) => set({ from: e.target.value })} />
             <TextInput className="w-full sm:w-40" label={t('filters.to')} type="date" value={values.to} min={values.from} onChange={(e) => set({ to: e.target.value })} />
-            <div role="group" aria-label={t('filters.presets')} className="flex gap-1 pb-0.5">
-              {presets().map((p) => (
-                <button
-                  key={p.key}
-                  type="button"
-                  aria-pressed={activePreset === p.key}
-                  onClick={() => set({ from: p.from, to: p.to })}
-                  className={`rounded-lg px-2.5 py-2 text-xs font-medium ${activePreset === p.key ? 'bg-brand-600 text-white' : 'bg-ink/5 text-ink/70 hover:bg-ink/10'}`}
-                >
-                  {t(`filters.${p.key}`)}
-                </button>
-              ))}
-            </div>
+            <Segmented name="report-period" label={t('filters.presets')} value={activePreset ?? null}
+              options={presets().map((p) => ({ value: p.key, label: t(`filters.${p.key}`) }))}
+              onChange={(k) => { const p = presets().find((x) => x.key === k); if (p) set({ from: p.from, to: p.to }) }} />
           </>
         )}
         {has('months') && (

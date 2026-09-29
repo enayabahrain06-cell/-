@@ -45,6 +45,7 @@ class StoreRegistrationRequest extends FormRequest
             'locale' => ['nullable', Locale::rule()],
             'notes' => ['nullable', 'string', 'max:1000'],
             'photo' => [$photoRequired ? 'required' : 'nullable', 'file', 'mimes:jpg,jpeg,png,heic,heif', 'max:5120'],
+            'placement_token' => ['nullable', 'string', 'max:64'],
         ];
     }
 
@@ -63,6 +64,16 @@ class StoreRegistrationRequest extends FormRequest
                 $v->errors()->add('package_id', __('registration.errors.'.$check['reason'], [
                     'age' => $check['age_at_start'], 'min' => $package->min_age, 'max' => $package->max_age,
                 ]));
+
+                return;
+            }
+
+            // A package with an open placement test needs a finished attempt that no other request has used.
+            $attempt = app(\App\Services\Exams\PlacementService::class)->usableAttempt($this->input('placement_token'), $package->id);
+            if ($this->filled('placement_token') && ! $attempt) {
+                $v->errors()->add('placement_token', __('exams.placement.invalid_token'));
+            } elseif (! $attempt && \App\Models\Exam::activePlacementFor($package->id)) {
+                $v->errors()->add('placement_token', __('exams.placement.required'));
             }
         });
     }

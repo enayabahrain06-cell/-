@@ -3,6 +3,7 @@
 namespace App\Services\Registration;
 
 use App\Enums\LotteryStatus;
+use App\Enums\MemorizationLevel;
 use App\Enums\MessageType;
 use App\Enums\RegistrationStatus;
 use App\Enums\StudentStatus;
@@ -38,7 +39,7 @@ class AcceptRegistrationAction
      * age group and have a seat), or, when the supervisor explicitly takes the lottery path, hold a
      * package seat as pending_lottery with no circle yet.
      */
-    public function execute(RegistrationRequest $request, ?int $by = null, bool $force = false, ?int $lessonId = null, bool $lottery = false): Student
+    public function execute(RegistrationRequest $request, ?int $by = null, bool $force = false, ?int $lessonId = null, bool $lottery = false, ?MemorizationLevel $finalLevel = null): Student
     {
         if ($request->status->isDecided()) {
             throw ValidationException::withMessages(['status' => __('registration.errors.already_accepted')]);
@@ -62,7 +63,11 @@ class AcceptRegistrationAction
             }
         }
 
-        $student = DB::transaction(function () use ($request, $by, $lesson) {
+        $student = DB::transaction(function () use ($request, $by, $lesson, $finalLevel) {
+            // The level staff confirmed (from the placement recommendation or their own judgement).
+            if ($finalLevel) {
+                $request->update(['final_level' => $finalLevel, 'level_confirmed_by' => $by ?? auth()->id(), 'level_confirmed_at' => now()]);
+            }
             $student = $this->createStudent($request, $by, $lesson ? RegistrationStatus::Enrolled : RegistrationStatus::PendingLottery);
             if ($lesson) {
                 $this->circles->join($lesson, $student, $by ? User::find($by) : null);
@@ -107,10 +112,14 @@ class AcceptRegistrationAction
             'student_phone' => $studentUser?->phone,
             'guardian_name' => $request->guardian_name,
             'guardian_phone' => $guardian->phone,
-            'memorization_level' => $request->memorization_level,
+            // A level staff confirmed wins; otherwise the level the family declared. A placement recommendation
+            // alone never becomes the student's level.
+            'memorization_level' => $request->final_level ?? $request->memorization_level,
             'locale' => $request->locale,
             'status' => StudentStatus::Active,
         ]);
+
+        app(\App\Services\Exams\PlacementService::class)->attachToStudent($request, $student);
 
         $wasWaitlist = $request->status === RegistrationStatus::Waitlist;
         $request->update([

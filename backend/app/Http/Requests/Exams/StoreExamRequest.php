@@ -8,6 +8,8 @@ use Illuminate\Foundation\Http\FormRequest;
 
 class StoreExamRequest extends FormRequest
 {
+    use Concerns\ValidatesPlacement;
+
     public function authorize(): bool
     {
         return $this->user()?->can('create', Exam::class) ?? false;
@@ -28,7 +30,17 @@ class StoreExamRequest extends FormRequest
             'pass_mark' => ['required', 'integer', 'min:0', 'lte:total_marks'],
             'syllabus' => ['nullable', 'string', 'max:5000'],
             'randomize' => ['nullable', 'boolean'],
-        ];
+        ] + $this->placementRules();
+    }
+
+    public function validated($key = null, $default = null)
+    {
+        $data = parent::validated();
+        if (array_key_exists('level_bands', $data)) {
+            $data['level_bands'] = $this->sortedBands($data['level_bands']);
+        }
+
+        return data_get($data, $key, $default);
     }
 
     public function withValidator($validator): void
@@ -41,6 +53,8 @@ class StoreExamRequest extends FormRequest
                 $v->errors()->add('lesson_id', __('gender.package_mismatch'));
             }
             \App\Support\GenderRules::check($v, $this->user(), $pg ?? $lg);
+
+            $this->checkPlacement($v, $this->input('type') === ExamType::Placement->value, $this->input('package_id'), $this->input('lesson_id'), $this->input('level_bands'));
         });
     }
 }

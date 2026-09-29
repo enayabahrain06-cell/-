@@ -6,12 +6,14 @@ import { Bar, BarChart, CartesianGrid, ResponsiveContainer, Tooltip, XAxis, YAxi
 import { METHODS, paymentsApi, saveBlob, type FinanceReport } from '../../api/payments'
 import { packagesApi } from '../../api/registration'
 import { useAuth } from '../../app/AuthContext'
+import { CHART_AXIS_LINE, CHART_BAR_CURSOR, CHART_GRID, CHART_TICK } from '../../components/chart'
 import Icon from '../../components/Icon'
 import Pagination from '../../components/Pagination'
 import SelectField from '../../components/SelectField'
 import { EmptyState, PageBand } from '../../components/ornaments'
-import { Badge, Card, CardTitle, ErrorState, LoadingState, Modal, Notice, PrimaryButton, SecondaryButton, Segmented, TableWrap, TextArea, TextInput, type Tone, SURFACE, EmptyCard, FilterBar, ROW_MAIN } from '../../components/ui'
+import { Badge, buttonClass, Card, CardTitle, ErrorState, LoadingState, Modal, Notice, PrimaryButton, SecondaryButton, Segmented, TableWrap, TextArea, TextInput, type Tone, SURFACE, EmptyCard, FilterBar, ROW_MAIN } from '../../components/ui'
 import { formatDate, formatMoney, formatNumber } from '../../lib/format'
+import { FinanceOverview, MethodBars, OutstandingBars, PackageBars } from './FinanceCharts'
 import { AdjustDialog, InvoiceDialog, RecordPaymentDialog, RefundDialog } from './PaymentDialogs'
 
 type Tab = 'payments' | 'invoices' | 'refunds' | 'report'
@@ -33,7 +35,7 @@ export default function PaymentsHomePage() {
       <PageBand title={t('title')} subtitle={t('subtitle')}
         actions={<div className="flex flex-wrap gap-2">
           {can('payments.record') && (
-            <button type="button" onClick={() => setDialog('pay')} className="inline-flex items-center gap-1.5 rounded-xl bg-white px-4 py-2 text-sm font-semibold text-brand-800 shadow-sm hover:bg-white/90">
+            <button type="button" onClick={() => setDialog('pay')} className={buttonClass('onDeep')}>
               + {t('record')}
             </button>
           )}
@@ -47,6 +49,7 @@ export default function PaymentsHomePage() {
         </div>
       </div>
       {notice && <Notice>{notice}</Notice>}
+      {tab === 'payments' && (can('reports.view') || can('wallets.view')) && <FinanceOverview />}
       {tab === 'payments' && <Payments />}
       {tab === 'invoices' && <Invoices />}
       {tab === 'refunds' && <Refunds />}
@@ -84,7 +87,7 @@ function Payments() {
   return (
     <div className="space-y-4">
       <Period from={from} to={to} onChange={(f, tt) => { setFrom(f); setTo(tt); setPage(1) }}>
-        <SelectField className="w-44" label={t('form.method')} value={method} onChange={(e) => { setMethod(e.target.value); setPage(1) }} options={[{ value: '', label: t('all_methods') }, ...METHODS.map((m) => ({ value: m, label: t(`methods.${m}`) }))]} />
+        <SelectField className="w-full sm:w-44" label={t('form.method')} value={method} onChange={(e) => { setMethod(e.target.value); setPage(1) }} options={[{ value: '', label: t('all_methods') }, ...METHODS.map((m) => ({ value: m, label: t(`methods.${m}`) }))]} />
       </Period>
       {msg && <Notice>{msg}</Notice>}
       {q.isLoading ? <LoadingState /> : q.isError || !q.data ? <ErrorState onRetry={() => void q.refetch()} /> : q.data.data.length === 0 ? (
@@ -135,7 +138,7 @@ function Invoices() {
   return (
     <div className="space-y-4">
       <div className={`${SURFACE} flex flex-wrap items-center gap-3 p-4`}>
-        <SelectField className="w-48" label={t('invoices.all')} hideLabel value={status} onChange={(e) => { setStatus(e.target.value); setPage(1) }}
+        <SelectField className="w-full sm:w-48" label={t('invoices.all')} hideLabel value={status} onChange={(e) => { setStatus(e.target.value); setPage(1) }}
           options={[{ value: '', label: t('invoices.all') }, ...(['open', 'partial', 'paid', 'cancelled'] as const).map((s) => ({ value: s, label: t(`invoices.status.${s}`) }))]} />
         <label className="flex items-center gap-2 text-sm text-ink/80"><input type="checkbox" className="size-4 accent-brand-600" checked={overdue} onChange={(e) => { setOverdue(e.target.checked); setPage(1) }} />{t('invoices.overdue')}</label>
       </div>
@@ -214,9 +217,9 @@ function Report() {
   return (
     <div className="space-y-4">
       <Period from={f.from} to={f.to} onChange={(from, to) => setF({ ...f, from, to })}>
-        {both && <SelectField className="w-40" label={t('report.all_tracks')} value={f.gender} onChange={(e) => setF({ ...f, gender: e.target.value })}
+        {both && <SelectField className="w-full sm:w-40" label={t('report.all_tracks')} value={f.gender} onChange={(e) => setF({ ...f, gender: e.target.value })}
           options={[{ value: '', label: t('report.all_tracks') }, { value: 'male', label: t('report.boys') }, { value: 'female', label: t('report.girls') }]} />}
-        <SelectField className="w-56" label={t('report.all_packages')} value={f.package_id} onChange={(e) => setF({ ...f, package_id: e.target.value })}
+        <SelectField className="w-full sm:w-56" label={t('report.all_packages')} value={f.package_id} onChange={(e) => setF({ ...f, package_id: e.target.value })}
           options={[{ value: '', label: t('report.all_packages') }, ...(packages.data?.data ?? []).map((p) => ({ value: String(p.id), label: p.name }))]} />
         <div className="ms-auto flex gap-2">
           <SecondaryButton onClick={() => void exportAs('xlsx')}><Icon name="table" className="size-4" />{t('report.export_xlsx')}</SecondaryButton>
@@ -262,11 +265,11 @@ function ReportBody({ r, m, locale, asTable, setAsTable }: { r: FinanceReport; m
         ) : (
           <div className="h-64" dir="ltr">
             <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={months} barGap={2} barCategoryGap="30%">
-                <CartesianGrid vertical={false} stroke="#1B2B28" strokeOpacity={0.07} />
-                <XAxis dataKey="period" tickLine={false} axisLine={{ stroke: '#1B2B28', strokeOpacity: 0.15 }} tick={{ fill: '#1B2B28', fillOpacity: 0.55, fontSize: 12 }} tickFormatter={(v: string) => formatDate(`${v}-15`, locale, { month: 'short' })} />
-                <YAxis orientation={rtl ? 'right' : 'left'} tickLine={false} axisLine={false} width={56} tick={{ fill: '#1B2B28', fillOpacity: 0.55, fontSize: 12 }} tickFormatter={(v: number) => formatNumber(v / 1000, locale, { maximumFractionDigits: 0 })} />
-                <Tooltip cursor={{ fill: '#1B2B28', fillOpacity: 0.05 }} formatter={(v, name) => [m(Number(v)), t(`report.${String(name)}`)]} labelFormatter={(v) => formatDate(`${String(v)}-15`, locale, { month: 'long', year: 'numeric' })} />
+              <BarChart data={months} barGap={2} barCategoryGap="30%" maxBarSize={48}>
+                <CartesianGrid vertical={false} {...CHART_GRID} />
+                <XAxis dataKey="period" tickLine={false} axisLine={CHART_AXIS_LINE} tick={CHART_TICK} tickFormatter={(v: string) => formatDate(`${v}-15`, locale, { month: 'short' })} />
+                <YAxis orientation={rtl ? 'right' : 'left'} tickLine={false} axisLine={false} width={56} tick={CHART_TICK} tickFormatter={(v: number) => formatNumber(v / 1000, locale, { maximumFractionDigits: 0 })} />
+                <Tooltip cursor={CHART_BAR_CURSOR} formatter={(v, name) => [m(Number(v)), t(`report.${String(name)}`)]} labelFormatter={(v) => formatDate(`${String(v)}-15`, locale, { month: 'long', year: 'numeric' })} />
                 {SERIES.map((s) => <Bar key={s.key} dataKey={s.key} fill={s.color} radius={[4, 4, 0, 0]} isAnimationActive={false} />)}
               </BarChart>
             </ResponsiveContainer>
@@ -274,41 +277,12 @@ function ReportBody({ r, m, locale, asTable, setAsTable }: { r: FinanceReport; m
         )}
       </Card>
 
-      <div className="grid gap-5 lg:grid-cols-2">
-        <Card>
-          <CardTitle>{t('report.by_package')}</CardTitle>
-          <TableWrap>
-            <table className="w-full min-w-[20rem] text-sm">
-              <thead><tr className="border-b border-ink/10 text-ink/55"><th className="py-2 text-start font-medium">{t('report.package')}</th><th className="py-2 text-end font-medium">{t('report.collected')}</th><th className="py-2 text-end font-medium">{t('report.outstanding')}</th></tr></thead>
-              <tbody>{d.by_package.map((p) => <tr key={p.name} className="border-b border-ink/5"><td dir="auto" className="py-2">{p.name}</td><td className="py-2 text-end tabular-nums">{m(p.collected)}</td><td className="py-2 text-end tabular-nums">{m(p.outstanding)}</td></tr>)}</tbody>
-            </table>
-          </TableWrap>
-        </Card>
-        <Card>
-          <CardTitle>{t('report.by_method')}</CardTitle>
-          <TableWrap>
-            <table className="w-full min-w-[20rem] text-sm">
-              <thead><tr className="border-b border-ink/10 text-ink/55"><th className="py-2 text-start font-medium">{t('report.method')}</th><th className="py-2 text-end font-medium">{t('report.count')}</th><th className="py-2 text-end font-medium">{t('report.collected')}</th></tr></thead>
-              <tbody>{d.by_method.map((x) => <tr key={x.method} className="border-b border-ink/5"><td className="py-2">{t(`methods.${x.method}`)}</td><td className="py-2 text-end tabular-nums">{formatNumber(x.count, locale)}</td><td className="py-2 text-end tabular-nums">{m(x.amount)}</td></tr>)}</tbody>
-            </table>
-          </TableWrap>
-        </Card>
+      <div className="grid gap-5 *:min-w-0 lg:grid-cols-2">
+        <PackageBars rows={d.by_package} />
+        <MethodBars rows={d.by_method} />
       </div>
 
-      <Card>
-        <CardTitle>{t('report.outstanding_list')}</CardTitle>
-        {d.outstanding.length === 0 ? <EmptyState size="sm" icon="check" title={t('report.empty')} /> : (
-          <ul className="divide-y divide-ink/6 text-sm">
-            {d.outstanding.map((s) => (
-              <li key={s.student_id} className="flex items-center gap-3 py-2">
-                <Link to={`/students/${s.student_id}?tab=wallet`} dir="auto" className="flex-1 text-ink hover:text-brand-700">{s.full_name}</Link>
-                <span className="text-xs tabular-nums text-ink/50">{s.student_no}</span>
-                <span className="w-28 text-end font-semibold tabular-nums text-danger">{m(s.balance_fils)}</span>
-              </li>
-            ))}
-          </ul>
-        )}
-      </Card>
+      <OutstandingBars rows={d.outstanding} />
     </div>
   )
 }

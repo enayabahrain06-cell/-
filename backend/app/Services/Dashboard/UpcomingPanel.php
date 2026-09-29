@@ -52,7 +52,7 @@ class UpcomingPanel
         $from = $today->copy()->utc();
         $to = $last->copy()->endOfDay()->utc();
 
-        $exams = Exam::with(['lesson:id,name', 'package:id,name,name_ar,name_en'])
+        $exams = Exam::forStudents()->with(['lesson:id,name', 'package:id,name,name_ar,name_en'])
             ->whereIn('status', [ExamStatus::Draft->value, ExamStatus::Published->value])
             ->whereBetween('opens_at', [$from, $to])
             ->when($this->dashboard->teacherOnly($user) && ! $user->can('exams.manage'),
