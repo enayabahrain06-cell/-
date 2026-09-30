@@ -9,7 +9,7 @@ RUN composer install --no-dev --no-scripts --no-autoloader --prefer-dist --no-in
 COPY . .
 RUN composer dump-autoload --optimize --no-dev --classmap-authoritative --ignore-platform-reqs
 
-FROM php:8.3-fpm-bookworm
+FROM php:8.4-fpm-bookworm
 RUN apt-get update && apt-get install -y --no-install-recommends \
         libicu-dev libzip-dev libpng-dev libjpeg62-turbo-dev libfreetype6-dev libwebp-dev libpq-dev libsqlite3-dev \
         fonts-noto-core unzip default-mysql-client postgresql-client \

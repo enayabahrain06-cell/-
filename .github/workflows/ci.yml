@@ -44,7 +44,7 @@ jobs:
 
       - uses: shivammathur/setup-php@v2
         with:
-          php-version: "8.3"
+          php-version: "8.4"
           extensions: mbstring, intl, gd, zip, bcmath, pdo_sqlite, pdo_mysql, pdo_pgsql, fileinfo
           coverage: none
 
@@ -115,6 +115,14 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Validate compose file
-        run: cp .env.production.example .env && docker compose --profile mysql --profile pgsql --profile whatsapp config -q
+        # The error also goes out as an annotation, readable without opening the job log.
+        run: |
+          cp .env.production.example .env
+          docker compose version
+          if ! docker compose --profile mysql --profile pgsql --profile whatsapp config -q 2> compose-error.txt; then
+            cat compose-error.txt
+            echo "::error title=docker compose config::$(tr '\n' ' ' < compose-error.txt)"
+            exit 1
+          fi
       - name: Build backend, web and whatsapp images
         run: docker compose --profile whatsapp build
