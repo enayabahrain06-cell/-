@@ -1,4 +1,4 @@
-import { Fragment, useEffect, useMemo, useState, type ReactNode } from 'react'
+import { Fragment, useLayoutEffect, useMemo, useState, type ReactNode } from 'react'
 import { createPortal } from 'react-dom'
 import { Link, NavLink, useLocation } from 'react-router-dom'
 import { useQuery } from '@tanstack/react-query'
@@ -67,7 +67,8 @@ export function MobileChromeProvider({ children }: { children: (state: { bottomN
 /** A page's own mobile header, portalled into the shell's header slot (replaces the default one). */
 export function MobilePage({ title, back, actions, breadcrumb }: { title: string; back?: string; actions?: ReactNode; breadcrumb?: Crumb[] }) {
   const { slot, claim, bottomNav } = useMobileChrome()
-  useEffect(() => claim(), [claim])
+  // Layout effect: the default header is removed before the browser paints, so both never show for a frame (CLS).
+  useLayoutEffect(() => claim(), [claim])
   if (!slot) return null
   return createPortal(bottomNav ? <MobileAppBarSlotTitle /> : <MobilePageHeader title={title} back={back ?? '/'} actions={actions} breadcrumb={breadcrumb} />, slot)
 }
