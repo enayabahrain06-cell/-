@@ -17,6 +17,7 @@ import CardApplyDialog from '../enrollment/CardApplyDialog'
 import { MobilePackagesHeader, MobileRequests } from './MobilePackages'
 import { MobilePackageList } from './MobilePackageList'
 import MobileToast from '../../components/mobile/Toast'
+import { useEmbed, useOwnParam } from '../../app/embed'
 
 /** Outcomes the server treats as final (RegistrationStatus::isDecided); accept, waitlist and reject are refused for them. */
 const DECIDED: string[] = ['accepted', 'enrolled', 'pending_lottery']
@@ -26,21 +27,23 @@ export default function PackagesHomePage() {
   const { t } = useTranslation('registration')
   const { can } = useAuth()
   const [params, setParams] = useSearchParams()
-  const tab = params.get('tab') === 'requests' || !can('packages.view') ? 'requests' : 'packages'
+  const host = useEmbed()
+  const ownTab = useOwnParam(params, 'tab')
+  const tab = ownTab === 'requests' || !can('packages.view') ? 'requests' : 'packages'
   const tabs = [...(can('packages.view') ? [{ value: 'packages' as const, label: t('admin.tabs.packages') }] : []), ...(can('registrations.view') ? [{ value: 'requests' as const, label: t('admin.tabs.requests') }] : [])]
   const onTab = (v: 'packages' | 'requests') => setParams({ tab: v }, { replace: true })
 
   return (
     <div className="space-y-5">
       {/* Below lg: page header + segmented tabs (MobilePackages); the band and desktop tabs stay as they are. */}
-      <MobilePackagesHeader tab={tab} tabs={tabs} onTab={onTab} />
+      <MobilePackagesHeader tab={tab} tabs={host ? [] : tabs} onTab={onTab} />
       <div className="hidden lg:block">
         <PageBand title={t('admin.title')} subtitle={t('admin.subtitle')}
           actions={<a href="/register" target="_blank" rel="noreferrer" className={buttonClass('onDeep')}><Icon name="packages" className="size-4" />{t('admin.open_public')}</a>} />
       </div>
-      <div className="hidden lg:block">
+      {!host && <div className="hidden lg:block">
         <Segmented name="pkg-tab" label={t('admin.title')} value={tab} options={tabs} onChange={onTab} />
-      </div>
+      </div>}
       {tab === 'packages' ? <Packages /> : <Requests />}
     </div>
   )

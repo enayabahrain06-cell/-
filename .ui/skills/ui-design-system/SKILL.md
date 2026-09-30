@@ -41,6 +41,18 @@ Detail pages (`LessonDetailPage`, `StudentProfilePage`, `ExamDetailPage`) use a 
 
 Do not invent a new look. Extend these.
 
+### nav_v2 section pages (runtime switch in القائمة, docs/07-NAV-V2.md)
+
+With nav_v2 on, a list page is shown inside a **tab page** (`features/navV2/TabPage.tsx`), top to bottom:
+
+1. `Breadcrumb` (`PageBand breadcrumb`): `text-xs text-ink/60`, links `text-info-700`, `chevron` separators (never `›` text)
+2. One `PageBand`: the tab name as the title, the exact name of the screen shown as the subtitle, the page's own actions, then `ModeSwitch onDeep` on the end edge (visually left in RTL). A hosted page's own `PageBand` and `MobilePage` add their subtitle and actions to it through `EmbedContext`; they never draw a second band
+3. `SectionTabs`: one row of real links, 44px tall, `border-b border-ink/10`; active `border-brand-700 font-semibold text-brand-800`, idle `text-ink/65`. On phones the row scrolls sideways and keeps the active tab centred
+4. Below lg: `ModeSwitch` light, full width, 44px options (`Segmented size="lg" fill`) under the tabs; a kind filter (`?kind=`, e.g. الصف / التقسيم) is a plain `Segmented`
+5. The page body. In-page tab bars (`Segmented` / `MSegmented` / chip rows that switch a page's `?tab=`) are hidden when hosted: the mode switch replaces them. Read the page's own tab key with `useOwnParam`, never `params.get('tab')` directly
+
+Segmented on the deep band: `Segmented onDeep` (translucent `bg-white/10` track, chosen option `bg-white text-brand-900 font-semibold`, focus outline `gold-300`). Tab and mode labels are short and never repeat the section name (one approved exception: التواصل والتقارير › التقارير).
+
 ## Tokens
 
 ### Color (use tokens only; no raw hex in TSX)

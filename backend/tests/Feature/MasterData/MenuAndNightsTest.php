@@ -23,6 +23,28 @@ it('stores one shared menu layout that only menu.manage can change', function ()
     $this->getJson('/api/menu-layout')->assertForbidden();
 });
 
+it('keeps the nav_v2 switch (off by default) and the tab order, also when an older client saves without them', function () {
+    actingAsRole('teacher');
+    $this->getJson('/api/menu-layout')->assertOk()->assertJsonPath('data.nav_v2', false);
+
+    actingAsRole('super_admin');
+    $this->putJson('/api/menu-layout', [
+        'sections' => [], 'entries' => [], 'hidden' => [],
+        'tabs' => ['attendance' => ['teachers', 'students', 'teachers']], 'nav_v2' => true,
+    ])->assertOk()->assertJsonPath('data.nav_v2', true)->assertJsonPath('data.tabs.attendance', ['teachers', 'students']);
+
+    // The old القائمة editor sends only sections, entries and hidden: the switch and the tab order stay.
+    $this->putJson('/api/menu-layout', ['sections' => ['system'], 'entries' => [], 'hidden' => ['lottery']])->assertOk()
+        ->assertJsonPath('data.nav_v2', true)->assertJsonPath('data.tabs.attendance', ['teachers', 'students']);
+
+    $this->putJson('/api/menu-layout', ['sections' => [], 'entries' => [], 'hidden' => [], 'nav_v2' => 'maybe'])->assertJsonValidationErrors('nav_v2');
+    $this->putJson('/api/menu-layout', ['sections' => [], 'entries' => [], 'hidden' => [], 'tabs' => ['attendance' => ['Bad Key!']]])->assertJsonValidationErrors('tabs.attendance.0');
+
+    actingAsRole('supervisor');
+    $this->putJson('/api/menu-layout', ['sections' => [], 'entries' => [], 'hidden' => [], 'nav_v2' => false])->assertForbidden();
+    expect($this->getJson('/api/menu-layout')->json('data.nav_v2'))->toBeTrue();
+});
+
 it('lists the seven nights and lets nights.manage switch them and set times', function () {
     actingAsRole('teacher');
     expect($this->getJson('/api/nights')->assertOk()->json('data.*.weekday'))->toBe(['sat', 'sun', 'mon', 'tue', 'wed', 'thu', 'fri']);

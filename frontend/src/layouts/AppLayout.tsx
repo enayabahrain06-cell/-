@@ -1,8 +1,13 @@
+import { useCallback, useState } from 'react'
 import { Outlet } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { useAuth } from '../app/AuthContext'
 import Icon from '../components/Icon'
 import SideMenu from '../components/SideMenu'
+import SideMenuV2 from '../components/SideMenuV2'
+import QuickSearch from '../components/nav/QuickSearch'
+import useQuickSearchShortcut from '../components/nav/useQuickSearchShortcut'
+import { useNavV2 } from '../app/menuV2'
 import LanguageSwitcher from '../components/LanguageSwitcher'
 import { LogoMark, OrnamentStrip } from '../components/ornaments'
 import { MobileChromeProvider } from '../components/mobile/MobileChrome'
@@ -14,6 +19,7 @@ import { LoadingState } from '../components/ui'
 /**
  * Staff shell: sidebar and header on desktop (lg+). Below lg the mobile shell (components/mobile) takes over:
  * app bar or page header, bottom nav on the root tabs, and the المزيد sheet with the full section map.
+ * nav_v2 (runtime switch in القائمة) swaps the sidebar for section names only and adds the Ctrl+K quick search.
  */
 export default function AppLayout() {
   return (
@@ -28,7 +34,12 @@ function StaffShell() {
   const { user, signOut } = useAuth()
   const { ready } = useTerm()
 
-  const nav = <SideMenu />
+  const v2 = useNavV2() === true
+  const [search, setSearch] = useState(false)
+  const openSearch = useCallback(() => setSearch(true), [])
+  useQuickSearchShortcut(openSearch, v2)
+
+  const nav = v2 ? <SideMenuV2 onSearch={openSearch} /> : <SideMenu />
 
   const brand = (
     <div className="flex items-center gap-3 px-5 pb-2 pt-5">
@@ -81,6 +92,7 @@ function StaffShell() {
       </div>
       {mobile.nav}
       {mobile.more}
+      {v2 && search && <QuickSearch onClose={() => setSearch(false)} />}
     </div>
       )}
     </MobileChromeProvider>

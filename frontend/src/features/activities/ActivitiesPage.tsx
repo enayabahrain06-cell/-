@@ -13,6 +13,7 @@ import RegisterTab from './RegisterTab'
 import { BookDeliveryTab, BookFollowupTab, EvaluationTab, EvaluationViewTab, FeeFollowupTab, FeePaymentTab, StudentsTab } from './RosterTabs'
 import LinkedAlbums from '../gallery/LinkedAlbums'
 import { ActivityWhen, TABS, type Tab } from './shared'
+import { useEmbed, useOwnParam } from '../../app/embed'
 
 /**
  * البرامج / الرحلات: one page per type on the one activities engine. Each menu entry of the section opens its tab
@@ -22,8 +23,10 @@ export default function ActivitiesPage({ type }: { type: ActivityType }) {
   const { t } = useTranslation('activities')
   const { can } = useAuth()
   const [params, setParams] = useSearchParams()
+  const host = useEmbed()
+  const ownTab = useOwnParam(params, 'tab')
   const tabs = TABS[type].filter((x) => can(...x.perms))
-  const current = tabs.find((x) => x.tab === params.get('tab')) ?? tabs[0]
+  const current = tabs.find((x) => x.tab === ownTab) ?? tabs[0]
   const q = useQuery({ queryKey: ['activities', type], queryFn: () => activitiesApi.list(type) })
   const set = (patch: Record<string, string>) => setParams((p) => { const n = new URLSearchParams(p); Object.entries(patch).forEach(([k, v]) => n.set(k, v)); return n }, { replace: true })
   if (!current) return null
@@ -33,7 +36,7 @@ export default function ActivitiesPage({ type }: { type: ActivityType }) {
   return (
     <div className="space-y-5">
       <div className="hidden lg:block"><PageBand title={title} subtitle={q.data ? t(`subtitle.${type}`, { term: q.data.term.name }) : undefined} /></div>
-      {tabs.length > 1 && (
+      {!host && tabs.length > 1 && (
         <>
           <div className="hidden lg:block">
             <Segmented name={`${type}-tab`} label={t(`nav:menu.${TABS[type][0].menu}`)} value={current.tab} onChange={(v) => set({ tab: v })} options={options} />
@@ -45,7 +48,7 @@ export default function ActivitiesPage({ type }: { type: ActivityType }) {
       )}
       {q.isLoading ? <LoadingState /> : q.isError ? <QueryError error={q.error} onRetry={() => void q.refetch()} /> : q.data && (
         current.tab === 'list'
-          ? <ActivityList type={type} data={q.data} onOpen={(a) => set({ activity: String(a.id), tab: tabs.find((x) => x.tab !== 'list')?.tab ?? 'list' })} />
+          ? <ActivityList type={type} data={q.data} onOpen={(a) => { const next = tabs.find((x) => x.tab !== 'list')?.tab ?? 'list'; if (host) host.go(type === 'trip' ? 'activities_trips' : 'activities_programs', { tab: next }, { activity: String(a.id) }); else set({ activity: String(a.id), tab: next }) }} />
           : <Picked type={type} tab={current.tab} list={q.data.data} options={q.data.options} activityId={Number(params.get('activity')) || null} onPick={(id) => set({ activity: String(id) })} />
       )}
     </div>

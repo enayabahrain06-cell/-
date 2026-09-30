@@ -157,5 +157,318 @@
     "grades": "Grades",
     "communication": "Communication & reports"
   },
-  "gallery": "Photo gallery"
+  "gallery": "Photo gallery",
+  "v2": {
+    "sections": {
+      "motivation": "Motivation"
+    },
+    "tabs": {
+      "system": {
+        "users": "Users",
+        "general": "General",
+        "menu": "Menu",
+        "audit": "Audit log"
+      },
+      "lists": {
+        "terms": "Terms",
+        "nights": "Nights",
+        "rooms": "Rooms",
+        "subjects": "Subjects",
+        "classes": "Classes",
+        "levels": "Levels",
+        "teachers": "Teachers",
+        "supervisors": "Supervisors"
+      },
+      "term_setup": {
+        "level_rooms": "Level rooms",
+        "subjects": "Subjects & lessons",
+        "plan": "Plan",
+        "supervisors": "Night supervisors",
+        "timetable": "Timetable"
+      },
+      "registration": {
+        "new": "New student",
+        "students": "Students",
+        "levels": "Levels",
+        "archive": "Archive",
+        "fees": "Tuition fees",
+        "books": "Textbooks",
+        "packages": "Packages & lottery"
+      },
+      "followup": {
+        "student": "Student",
+        "notes": "Notes",
+        "divisions": "Divisions",
+        "evaluation": "Evaluation",
+        "lessons": "Lessons"
+      },
+      "attendance": {
+        "students": "Students",
+        "supervisors": "Supervisors",
+        "teachers": "Teachers"
+      },
+      "programs": {
+        "overview": "Overview",
+        "registration": "Registration",
+        "fees": "Fees",
+        "book": "Book",
+        "attendance": "Attendance",
+        "evaluation": "Evaluation"
+      },
+      "trips": {
+        "overview": "Overview",
+        "registration": "Registration",
+        "fees": "Fees",
+        "attendance": "Attendance"
+      },
+      "grades": {
+        "exams": "Exams",
+        "marking": "Grade entry",
+        "distribution": "Distribution"
+      },
+      "motivation": {
+        "competitions": "Competitions",
+        "honor": "Honor board",
+        "certificates": "Certificates"
+      },
+      "communication": {
+        "messages": "Messages",
+        "reports": "Reports",
+        "gallery": "Photo gallery"
+      }
+    },
+    "modes": {
+      "system": {
+        "users": {
+          "users": "Accounts",
+          "roles": "Permissions"
+        },
+        "general": {
+          "general": "Settings",
+          "committee": "Committee"
+        }
+      },
+      "lists": {
+        "rooms": {
+          "rooms": "Rooms",
+          "bookings": "Bookings"
+        }
+      },
+      "term_setup": {
+        "subjects": {
+          "subjects": "Subjects",
+          "lessons": "Lessons"
+        },
+        "plan": {
+          "edit": "Edit",
+          "view": "View"
+        }
+      },
+      "registration": {
+        "levels": {
+          "distribute": "Distribute",
+          "promote": "Promote",
+          "update": "Update"
+        },
+        "archive": {
+          "view": "View",
+          "upload": "Upload"
+        },
+        "fees": {
+          "pay": "Pay",
+          "track": "Follow-up",
+          "invoices": "Invoices",
+          "refunds": "Refunds",
+          "report": "Report"
+        },
+        "books": {
+          "books": "Books",
+          "track": "Follow-up"
+        },
+        "packages": {
+          "packages": "Packages",
+          "requests": "Requests",
+          "lottery": "Lottery"
+        }
+      },
+      "followup": {
+        "student": {
+          "details": "Details",
+          "info": "Information"
+        },
+        "notes": {
+          "record": "Record",
+          "view": "View"
+        },
+        "evaluation": {
+          "record": "Record",
+          "view": "View",
+          "criteria": "Criteria"
+        },
+        "lessons": {
+          "quran": "Quran",
+          "subjects": "Subjects"
+        }
+      },
+      "attendance": {
+        "students": {
+          "record": "Record",
+          "view": "View",
+          "monitor": "Monitor"
+        },
+        "supervisors": {
+          "record": "Record",
+          "view": "View"
+        },
+        "teachers": {
+          "view": "View",
+          "record": "Record"
+        }
+      },
+      "programs": {
+        "registration": {
+          "register": "Register",
+          "list": "Registered"
+        },
+        "fees": {
+          "pay": "Pay",
+          "track": "Follow-up"
+        },
+        "book": {
+          "deliver": "Deliver",
+          "track": "Follow-up"
+        },
+        "attendance": {
+          "record": "Record",
+          "track": "Follow-up"
+        },
+        "evaluation": {
+          "enter": "Enter",
+          "view": "View"
+        }
+      },
+      "trips": {
+        "fees": {
+          "pay": "Pay",
+          "track": "Follow-up"
+        },
+        "attendance": {
+          "record": "Record",
+          "track": "Follow-up"
+        }
+      },
+      "grades": {
+        "exams": {
+          "list": "List",
+          "upload": "Upload"
+        },
+        "marking": {
+          "record": "Enter",
+          "view": "View",
+          "monitor": "Monitor"
+        },
+        "distribution": {
+          "distribution": "Distribution",
+          "required": "Required lessons"
+        }
+      },
+      "motivation": {
+        "competitions": {
+          "competitions": "Competitions",
+          "challenges": "Challenges"
+        },
+        "honor": {
+          "board": "Board",
+          "badges": "Badges",
+          "top": "Top students"
+        }
+      },
+      "communication": {
+        "messages": {
+          "log": "Log",
+          "inbox": "Inbox",
+          "send": "Send",
+          "templates": "Templates",
+          "rules": "Rules",
+          "whatsapp": "WhatsApp"
+        }
+      }
+    },
+    "kinds": {
+      "system": {},
+      "lists": {},
+      "term_setup": {},
+      "registration": {},
+      "followup": {
+        "notes": {
+          "students": "Students",
+          "general": "General",
+          "levels": "Levels",
+          "subjects": "Level subjects"
+        },
+        "evaluation": {
+          "daily": "Daily",
+          "monthly": "Monthly",
+          "class": "Class",
+          "division": "Division"
+        }
+      },
+      "attendance": {
+        "students": {
+          "class": "Class",
+          "division": "Division"
+        }
+      },
+      "programs": {},
+      "trips": {},
+      "grades": {
+        "marking": {
+          "table": "View grades",
+          "download": "Download grades"
+        }
+      },
+      "motivation": {},
+      "communication": {}
+    },
+    "kindLabels": {
+      "system": {},
+      "lists": {},
+      "term_setup": {},
+      "registration": {},
+      "followup": {
+        "notes": "Type",
+        "evaluation": "Type"
+      },
+      "attendance": {
+        "students": "Type"
+      },
+      "programs": {},
+      "trips": {},
+      "grades": {},
+      "motivation": {},
+      "communication": {}
+    },
+    "extra": {
+      "room_bookings": "Room bookings",
+      "registration_requests": "Registration requests",
+      "invoices": "Invoices",
+      "refunds": "Refunds",
+      "finance_report": "Finance report",
+      "monthly_evaluation": "Monthly evaluation",
+      "record_teacher_attendance": "Record teacher attendance",
+      "challenges": "Challenges",
+      "badges": "Badges",
+      "message_inbox": "Inbox & excuses",
+      "message_send": "Send a message",
+      "message_templates": "Message templates",
+      "message_rules": "Messaging rules",
+      "whatsapp": "WhatsApp"
+    }
+  },
+  "v2search": {
+    "open": "Quick search",
+    "title": "Quick search of screens",
+    "placeholder": "Type a screen name, e.g. Program fee payment",
+    "none": "No screen with that name."
+  }
 }

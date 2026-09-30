@@ -118,22 +118,29 @@ export function IconButton({ icon, label, tone = 'muted', size = 'sm', iconClass
   )
 }
 
+const SEGMENT_SIZE = { sm: 'px-2.5 py-1 text-xs', md: 'px-3 py-1.5 text-sm', lg: 'inline-flex min-h-11 items-center justify-center px-4 text-sm' } as const
+
 /** Radio-group styled as a segmented control (keyboard: arrow keys via native radios). */
-export function Segmented<T extends string>({ name, value, options, onChange, label, size = 'md', fill = false }: {
-  name: string; value: T | null; options: { value: T; label: string; tone?: Tone }[]; onChange: (v: T) => void; label: string; size?: 'sm' | 'md'
+export function Segmented<T extends string>({ name, value, options, onChange, label, size = 'md', fill = false, onDeep = false }: {
+  name: string; value: T | null; options: { value: T; label: string; tone?: Tone }[]; onChange: (v: T) => void; label: string
+  /** `lg`: 44px options, for a page-level switch that is tapped on phones. */
+  size?: keyof typeof SEGMENT_SIZE
   /** Below `sm`, stretch to the full row with equal-width options (for a control that wraps onto its own line). */
   fill?: boolean
+  /** On the deep PageBand surface: a translucent track, the chosen option white with brand text. */
+  onDeep?: boolean
 }) {
+  const idle = onDeep ? 'text-white/80 hover:text-white' : 'text-ink/60 hover:text-ink'
   return (
     <fieldset className={fill ? 'w-full min-w-0 sm:w-auto' : 'min-w-0'}>
       <legend className="sr-only">{label}</legend>
-      <div className={`${fill ? 'flex sm:inline-flex' : 'inline-flex'} flex-wrap gap-1 rounded-xl bg-ink/5 p-1`}>
+      <div className={`${fill ? 'flex sm:inline-flex' : 'inline-flex'} flex-wrap gap-1 rounded-xl p-1 ${onDeep ? 'bg-white/10 ring-1 ring-white/15' : 'bg-ink/5'}`}>
         {options.map((o) => {
           const active = value === o.value
           return (
-            <label key={o.value} className={`cursor-pointer rounded-lg ${fill ? 'flex-1 text-center sm:flex-none' : ''} ${size === 'sm' ? 'px-2.5 py-1 text-xs' : 'px-3 py-1.5 text-sm'} font-medium transition ${
-              active ? `${o.tone ? TONES[o.tone] : 'bg-white text-ink'} shadow-sm ring-1 ring-ink/10` : 'text-ink/60 hover:text-ink'
-            } has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-brand-500`}>
+            <label key={o.value} className={`cursor-pointer rounded-lg ${fill ? 'flex-1 text-center sm:flex-none' : ''} ${SEGMENT_SIZE[size]} font-medium transition ${
+              active ? `${o.tone ? TONES[o.tone] : onDeep ? 'bg-white font-semibold text-brand-900' : 'bg-white text-ink'} shadow-sm ring-1 ring-ink/10` : idle
+            } has-[:focus-visible]:outline-2 ${onDeep ? 'has-[:focus-visible]:outline-gold-300' : 'has-[:focus-visible]:outline-brand-500'}`}>
               <input type="radio" name={name} value={o.value} checked={active} onChange={() => onChange(o.value)} className="sr-only" />
               {o.label}
             </label>

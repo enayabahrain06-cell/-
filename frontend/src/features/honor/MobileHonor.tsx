@@ -56,7 +56,7 @@ export default function MobileHonor({ board, loading, error, onRetry, period, ma
           </div>
         )}
       </div>
-      <MSegmented label={t('honor.view')} value={tab} onChange={onTab} options={tabOptions} />
+      {tabOptions.length > 1 && <MSegmented label={t('honor.view')} value={tab} onChange={onTab} options={tabOptions} />}
 
       {tab === 'grades' ? grades : tab === 'badges' ? badges : loading ? <BoardSkeleton /> : error || !board ? (
         <MCard><MEmpty icon="alert" text={t('mobile.error')} action={<button type="button" onClick={onRetry} className={M_BTN_SECONDARY}>{t('mobile.retry')}</button>} /></MCard>

@@ -6,12 +6,14 @@ import { menuApi, type MenuLayout } from '../../api/menu'
 import { arrangeMenu, useMenuLayout } from '../../app/menu'
 import type { MenuSectionDef } from '../../app/nav'
 import { PageBand } from '../../components/ornaments'
-import { Badge, ErrorState, IconButton, LoadingState, Notice, PrimaryButton, SecondaryButton, SURFACE } from '../../components/ui'
+import { Badge, ErrorState, IconButton, LoadingState, Notice, PrimaryButton, SecondaryButton, Segmented, SURFACE } from '../../components/ui'
+import MenuSettingsV2 from './MenuSettingsV2'
 import type { CrudNotice } from '../common/crud'
 
 /**
  * القائمة: the order of the menu's sections and entries, and which entries are hidden, for everyone.
  * Names cannot be changed here (they are the exact feature names). Permissions still decide who sees an entry.
+ * The switch at the top chooses the old menu or nav_v2 (sections with tab pages) for everyone, at run time.
  */
 export default function MenuSettingsPage() {
   const { t } = useTranslation('menuSettings')
@@ -59,7 +61,16 @@ export default function MenuSettingsPage() {
       </div>
       <p className="text-sm text-ink/60 lg:hidden">{t('subtitle')}</p>
       {notice && <Notice tone={notice.tone}>{notice.text}</Notice>}
-      {q.isLoading || !sections ? (q.isError ? <ErrorState onRetry={() => void q.refetch()} /> : <LoadingState />) : (
+      {q.data && (
+        <div className={`${SURFACE} space-y-2 p-4`}>
+          <p className="font-semibold text-ink">{t('v2.switch')}</p>
+          <p className="text-sm text-ink/65">{t('v2.switch_hint')}</p>
+          <Segmented name="nav-v2" label={t('v2.switch')} value={q.data.nav_v2 ? 'v2' : 'old'}
+            options={[{ value: 'old', label: t('v2.old') }, { value: 'v2', label: t('v2.new') }]}
+            onChange={(v) => q.data && save.mutate({ ...q.data, nav_v2: v === 'v2' })} />
+        </div>
+      )}
+      {q.data?.nav_v2 ? <MenuSettingsV2 key={JSON.stringify(q.data)} layout={q.data} saving={save.isPending} onSave={(d) => save.mutate(d)} /> : q.isLoading || !sections ? (q.isError ? <ErrorState onRetry={() => void q.refetch()} /> : <LoadingState />) : (
         <>
           <div className="flex flex-wrap justify-end gap-2">
             <SecondaryButton onClick={reset} disabled={save.isPending}>{t('reset')}</SecondaryButton>

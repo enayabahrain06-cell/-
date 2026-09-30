@@ -11,6 +11,7 @@ import { PageBand } from '../../components/ornaments'
 import SelectField from '../../components/SelectField'
 import { EmptyCard, ErrorState, FilterBar, LoadingState, Notice, Segmented, SURFACE, TABLE_HEAD, TableWrap, TextInput, buttonClass } from '../../components/ui'
 import { formatDate, formatNumber, formatPercent, formatTime } from '../../lib/format'
+import { useEmbed, useOwnParam } from '../../app/embed'
 
 type Tab = 'record' | 'view'
 
@@ -25,7 +26,9 @@ const shift = (days: number) => { const d = new Date(); d.setDate(d.getDate() + 
 export default function DivisionEvaluationPage() {
   const { t } = useTranslation('education')
   const [params, setParams] = useSearchParams()
-  const tab: Tab = params.get('tab') === 'view' ? 'view' : 'record'
+  const host = useEmbed()
+  const ownTab = useOwnParam(params, 'tab')
+  const tab: Tab = ownTab === 'view' ? 'view' : 'record'
   const base = useQuery({ queryKey: ['divisions', 'classes'], queryFn: () => divisionsApi.list() })
   const [lessonId, setLessonId] = useState<number | ''>('')
   const [divisionId, setDivisionId] = useState<number | ''>('')
@@ -37,10 +40,10 @@ export default function DivisionEvaluationPage() {
       <div className="hidden lg:block">
         <PageBand title={t(`nav:menu.${tab === 'view' ? 'view_division_evaluation' : 'division_evaluation'}`)} subtitle={t(tab === 'view' ? 'division_eval.subtitle_view' : 'division_eval.subtitle_record')} />
       </div>
-      <div className="-mx-4 overflow-x-auto px-4 lg:mx-0 lg:px-0">
+      {!host && <div className="-mx-4 overflow-x-auto px-4 lg:mx-0 lg:px-0">
         <Segmented name="division-eval-tab" label={t('nav:division_evaluation')} value={tab} onChange={(v) => setParams({ tab: v }, { replace: true })}
           options={[{ value: 'record', label: t('nav:menu.division_evaluation') }, { value: 'view', label: t('nav:menu.view_division_evaluation') }]} />
-      </div>
+      </div>}
       {base.isLoading ? <LoadingState /> : base.isError ? (
         isAxiosError(base.error) && base.error.response?.status === 422 ? <Notice tone="info">{parseApiError(base.error).message}</Notice> : <ErrorState onRetry={() => void base.refetch()} />
       ) : base.data && (base.data.classes.length === 0 ? <EmptyCard icon="lessons" title={t('division_eval.no_classes')} /> : (

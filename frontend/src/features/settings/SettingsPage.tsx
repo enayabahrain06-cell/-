@@ -11,6 +11,7 @@ import { Card, ErrorState, LoadingState, Notice, PrimaryButton, SecondaryButton,
 import { applyOrnamentLevel, type OrnamentLevel } from '../../lib/ornament'
 import MSwitch from '../../components/mobile/MSwitch'
 import MobileSettings from './MobileSettings'
+import { useOwnParam } from '../../app/embed'
 
 /** Groups with a screen here, in display order. Others (e.g. messaging, managed in Messages) are not shown. */
 const GROUPS = ['authority', 'locale', 'reminders', 'attendance', 'registration', 'sessions', 'progress', 'certificates', 'honor', 'ui', 'media'] as const
@@ -28,7 +29,8 @@ export default function SettingsPage() {
     return GROUPS.map((k) => byKey.get(k)).filter((g): g is SettingsGroup => !!g)
   }, [query.data])
   const [params] = useSearchParams()
-  const openGroup = groups.find((g) => g.key === params.get('group'))
+  const askedGroup = useOwnParam(params, 'group')
+  const openGroup = groups.find((g) => g.key === askedGroup)
 
   return (
     <>

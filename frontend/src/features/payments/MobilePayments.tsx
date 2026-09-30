@@ -12,6 +12,7 @@ import MPager from '../../components/mobile/MPager'
 import MobileToast from '../../components/mobile/Toast'
 import { Chip, ChipRow, MCard, MEmpty, MList, MListSkeleton, MRow, MSegmented, Pill, Skeleton, M_BTN_PRIMARY, M_BTN_SECONDARY, M_CARD, type PillTone } from '../../components/mobile/atoms'
 import { formatDate, formatMoney, formatNumber, formatPercent } from '../../lib/format'
+import { useEmbed, useOwnParam } from '../../app/embed'
 
 /**
  * Payments & wallets below lg (mobile-redesign-spec.md §6.21). The dialogs and their form logic stay in
@@ -27,6 +28,8 @@ const monthKey = (offset = 0) => { const d = new Date(); return new Date(d.getFu
 
 /** `?tab=` is shared with desktop: payments → recent, invoices → overdue; wallets is the mobile-only view. */
 const VIEW_OF_TAB: Record<string, View> = { invoices: 'overdue', wallets: 'wallets' }
+/** Inside a nav_v2 tab the mode picks the view: الفواتير → overdue, التقرير → wallets (the mobile balances list). */
+const HOSTED_VIEW: Record<string, View> = { invoices: 'overdue', report: 'wallets' }
 const TAB_OF_VIEW: Record<View, string> = { recent: 'payments', overdue: 'invoices', wallets: 'wallets' }
 
 export default function MobilePayments({ onDialog, notice, onNoticeDone }: { onDialog: (d: Dialog) => void; notice: string | null; onNoticeDone: () => void }) {
@@ -34,10 +37,12 @@ export default function MobilePayments({ onDialog, notice, onNoticeDone }: { onD
   const locale = i18n.language
   const { can } = useAuth()
   const [params, setParams] = useSearchParams()
+  const host = useEmbed()
+  const ownTab = useOwnParam(params, 'tab')
   const [menu, setMenu] = useState(false)
   const finance = can('reports.view') || can('wallets.view')
   const views: View[] = ['recent', 'overdue', ...(finance ? ['wallets' as const] : [])]
-  const fromUrl = VIEW_OF_TAB[params.get('tab') ?? ''] ?? 'recent'
+  const fromUrl = (host ? HOSTED_VIEW : VIEW_OF_TAB)[ownTab ?? ''] ?? 'recent'
   const view: View = views.includes(fromUrl) ? fromUrl : 'recent'
   const setView = (v: View) => setParams({ tab: TAB_OF_VIEW[v] }, { replace: true })
 
@@ -57,7 +62,7 @@ export default function MobilePayments({ onDialog, notice, onNoticeDone }: { onD
 
       {finance && <Kpis loading={fin.isLoading} data={fin.data?.data} onOverdue={() => setView('overdue')} />}
 
-      <MSegmented label={t('title')} value={view} onChange={setView} options={views.map((v) => ({ value: v, label: t(`mobile.views.${v}`) }))} />
+      {!host && <MSegmented label={t('title')} value={view} onChange={setView} options={views.map((v) => ({ value: v, label: t(`mobile.views.${v}`) }))} />}
 
       {view === 'recent' && <Recent />}
       {view === 'overdue' && <Overdue />}
