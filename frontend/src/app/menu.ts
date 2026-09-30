@@ -4,6 +4,7 @@ import { useLocation } from 'react-router-dom'
 import { menuApi, type MenuLayout } from '../api/menu'
 import { useAuth } from './AuthContext'
 import { MENU, MENU_TOP, entryScore, type MenuEntry, type MenuSectionDef } from './nav'
+import { withBuilt } from './menuRoutes'
 
 export interface MenuSectionView { key: string; icon: string; entries: MenuEntry[] }
 
@@ -22,7 +23,7 @@ export function arrangeMenu(layout: MenuLayout, applyHidden = true): MenuSection
   const hidden = new Set(applyHidden ? layout.hidden : [])
   return ordered(MENU, layout.sections).map((s) => ({
     ...s,
-    entries: ordered(s.entries, layout.entries[s.key]).filter((e) => !hidden.has(e.key)),
+    entries: ordered(s.entries.map(withBuilt), layout.entries[s.key]).filter((e) => !hidden.has(e.key)),
   }))
 }
 

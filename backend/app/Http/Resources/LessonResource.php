@@ -45,6 +45,8 @@ class LessonResource extends JsonResource
             // Drives the "Add student" button on the circle page (LessonPolicy::addStudents).
             'can_add_students' => $this->when($this->relationLoaded('lessonStudents'), fn () => (bool) $request->user()?->can('addStudents', $this->resource)),
             'next_sessions' => LessonSessionResource::collection($this->whenLoaded('sessions')),
+            // Detail view only: the schedule from الجدول الدراسي (U1) and whether the class form may edit it.
+            'schedule' => $this->when($this->relationLoaded('lessonStudents'), fn () => app(\App\Services\Lessons\ClassSchedule::class)->summary($this->resource)),
             'created_at' => display_tz($this->created_at)?->toIso8601String(),
         ];
     }

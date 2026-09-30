@@ -96,8 +96,9 @@ abstract class TermSetupBase extends Controller
         return [
             'id' => $s->id,
             'academic_term_id' => $s->academic_term_id,
-            'level' => ['id' => $s->level->id, 'name' => $s->level->name()],
+            'level' => $s->level ? ['id' => $s->level->id, 'name' => $s->level->name()] : null,
             'lesson' => $s->lesson ? ['id' => $s->lesson->id, 'name' => $s->lesson->name] : null,
+            'source' => $s->source,
             'weekday' => $s->weekday->value,
             'weekday_label' => $s->weekday->label(),
             'start_time' => substr((string) $s->start_time, 0, 5),

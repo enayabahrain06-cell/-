@@ -46,7 +46,7 @@ final class ReportContext
     {
         return Lesson::query()
             ->tap(fn ($q) => Track::scope($q, $this->user))
-            ->when($this->teacherOnly(), fn ($q) => $q->where('teacher_id', $this->user->id))
+            ->when($this->teacherOnly(), fn ($q) => $q->whereIn('id', \App\Support\TeacherScope::lessonIds($this->user)))
             ->when(! empty($this->f['lesson_id']), fn ($q) => $q->where('id', $this->f['lesson_id']))
             ->when(! empty($this->f['package_id']), fn ($q) => $q->where('package_id', $this->f['package_id']))
             ->when(! empty($this->f['teacher_id']), fn ($q) => $q->where('teacher_id', $this->f['teacher_id']))

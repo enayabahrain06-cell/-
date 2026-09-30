@@ -46,7 +46,8 @@ class TermSetupController extends TermSetupBase
             'teachers' => $staff('teacher'),
             'supervisors' => $staff('supervisor'),
             'halls' => Location::where('is_active', true)->tap(fn ($q) => Track::scopeLocations($q, $user))->orderBy('name')->get(['id', 'name']),
-            'circles' => Lesson::whereNotNull('level_id')->tap(fn ($q) => Track::scope($q, $user))
+            // Every class of the term: a class-only period needs no level (U1).
+            'circles' => Lesson::query()->tap(fn ($q) => Track::scope($q, $user))
                 ->tap(fn ($q) => TermScope::via($q, $term->id))->orderBy('name')->get(['id', 'name', 'level_id']),
             // Rooms assigned to each level this term (the timetable lists them first for that level).
             'level_rooms' => LevelRoom::where('academic_term_id', $term->id)->get(['level_id', 'location_id']),
@@ -119,6 +120,15 @@ class TermSetupController extends TermSetupBase
                 }
             }
         });
+        // Copied whole-level periods change when the target term's classes meet: bring their sessions in line.
+        if ($n['slots'] > 0) {
+            $schedule = app(\App\Services\Lessons\ClassSchedule::class);
+            $sync = app(\App\Services\Lessons\SessionSync::class);
+            Lesson::whereHas('package', fn ($q) => $q->where('academic_term_id', $to))->get()->each(function (Lesson $l) use ($schedule, $sync) {
+                $schedule->syncCopy($l);
+                $sync->apply($l->fresh());
+            });
+        }
         $audit->record('term_setup.copied', AcademicTerm::find($to), [], ['from_term_id' => $from] + $n);
 
         return response()->json(['message' => __('term_setup.copied', $n), 'data' => $n]);

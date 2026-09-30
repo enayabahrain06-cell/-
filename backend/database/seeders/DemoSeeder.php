@@ -10,7 +10,7 @@ use App\Models\Student;
 use App\Models\Teacher;
 use App\Models\User;
 use App\Models\Wallet;
-use App\Services\Lessons\SessionGenerator;
+use App\Services\Lessons\SessionSync;
 use Illuminate\Database\Seeder;
 
 /**
@@ -108,7 +108,7 @@ class DemoSeeder extends Seeder
             }
         }
         foreach ([$boysCircle, $girlsCircle, $earlyCircle] as $circle) {
-            app(SessionGenerator::class)->generateFor($circle);
+            app(SessionSync::class)->apply($circle);
         }
 
         $this->history($boysCircle, 'male', ['عباس', 'كاظم', 'رضا', 'صادق', 'جواد', 'مرتضى'], $maleTeacher);

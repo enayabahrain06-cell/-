@@ -29,6 +29,8 @@ export interface Lesson {
   level?: { id: number; name: string } | null
   students?: { id: number; student: StudentSummary; status: string; joined_at: string | null; current_memorization: string | null }[]
   next_sessions?: SessionInfo[]
+  /** Detail view only: the schedule from الجدول الدراسي; `editable` false = change it in the timetable. */
+  schedule?: { source: 'timetable' | 'legacy'; editable: boolean; periods: number; nights: { weekday: string; start: string; end: string; location_id: number | null }[] }
   /** Detail view only: whether this user may add students here (LessonPolicy::addStudents). */
   can_add_students?: boolean
 }

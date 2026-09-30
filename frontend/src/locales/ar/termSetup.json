@@ -84,7 +84,9 @@
     "no_room": "بدون غرفة",
     "warnings": "تنبيه:",
     "delete_confirm": "حذف هذه الحصة؟",
-    "level_room": "{{name}} (غرفة المستوى)"
+    "level_room": "{{name}} (غرفة المستوى)",
+    "no_level": "بدون مستوى (حصة لصف واحد)",
+    "choose_class": "اختر الصف"
   },
   "copy": {
     "open": "نسخ من فصل آخر",

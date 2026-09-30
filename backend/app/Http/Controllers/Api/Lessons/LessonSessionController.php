@@ -29,7 +29,7 @@ class LessonSessionController extends Controller
             ->where('session_date', $date)
             ->tap(fn ($q) => \App\Support\Track::scopeVia($q, $user, 'lesson'))
             ->tap(fn ($q) => \App\Support\TermScope::via($q, \App\Support\TermScope::fromRequest($request), 'lesson.package'))
-            ->when(! $user->can('lessons.manage'), fn ($q) => $q->whereHas('lesson', fn ($l) => $l->where('teacher_id', $user->id)))
+            ->when(! $user->can('lessons.manage'), fn ($q) => $q->whereIn('lesson_id', \App\Support\TeacherScope::lessonIds($user)))
             ->orderBy('start_time')
             ->get();
 

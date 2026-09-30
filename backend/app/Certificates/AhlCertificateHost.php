@@ -31,7 +31,7 @@ class AhlCertificateHost extends DefaultHost
         /** @var User $user */
         Track::scopeVia($query, $user, 'student');
         if (! $user->can('students.manage') && ! $user->can('certificates.approve')) {
-            $query->whereHas('student.lessonStudents', fn ($w) => $w->where('status', 'active')->whereIn('lesson_id', $user->lessons()->select('id')));
+            $query->whereHas('student.lessonStudents', fn ($w) => $w->where('status', 'active')->whereIn('lesson_id', \App\Support\TeacherScope::lessonIds($user)));
         }
     }
 

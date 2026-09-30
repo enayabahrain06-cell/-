@@ -9,12 +9,13 @@ use App\Support\Track;
 class LessonPolicy
 {
     /**
-     * Teachers without lessons.manage only see their own circles; managers only circles in their track.
+     * Teachers without lessons.manage only reach the classes they teach (TeacherScope: the class teacher, or a period
+     * of it in the timetable — of $subjectId when given); managers only classes in their track.
      * Sessions, attendance and evaluations all authorise through this method.
      */
-    public static function ownsOrManages(User $user, Lesson $lesson): bool
+    public static function ownsOrManages(User $user, Lesson $lesson, ?int $subjectId = null): bool
     {
-        return ($user->can('lessons.manage') && Track::allows($user, $lesson->gender)) || $lesson->teacher_id === $user->id;
+        return ($user->can('lessons.manage') && Track::allows($user, $lesson->gender)) || \App\Support\TeacherScope::teaches($user, $lesson, $subjectId);
     }
 
     public function viewAny(User $user): bool

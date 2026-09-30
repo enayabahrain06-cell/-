@@ -5,7 +5,7 @@ use App\Models\LessonLocationOverride;
 use App\Models\Location;
 use App\Models\LocationBooking;
 use App\Services\Lessons\LocationConflictDetector;
-use App\Services\Lessons\SessionGenerator;
+use App\Services\Lessons\SessionSync;
 use Carbon\Carbon;
 
 function nextWeekday(string $key): Carbon
@@ -56,7 +56,7 @@ it('ignores other halls and non-shared weekdays', function () {
 });
 
 it('detects materialised sessions and skips the lesson being edited', function () {
-    app(SessionGenerator::class)->generateFor($this->lessonA, today()->addWeeks(3));
+    count(app(SessionSync::class)->apply($this->lessonA, null, today()->addWeeks(3))['create']);
     $monday = nextWeekday('mon');
 
     $conflicts = $this->detector->forDate($this->hall->id, $monday, '16:30', '17:00');

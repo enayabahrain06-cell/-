@@ -71,7 +71,7 @@ class DashboardService
     public function lessonScope(User $user, string|int|null $term = null): Builder
     {
         return Lesson::query()
-            ->when($this->teacherOnly($user), fn ($q) => $q->where('teacher_id', $user->id))
+            ->when($this->teacherOnly($user), fn ($q) => $q->whereIn('id', \App\Support\TeacherScope::lessonIds($user)))
             ->when($term, fn ($q) => $q->whereHas('package', fn ($p) => TermScope::packages($p, $term)))
             ->tap(fn ($q) => Track::scope($q, $user));
     }
@@ -500,7 +500,7 @@ class DashboardService
         }
 
         return match ($alert->type) {
-            AlertType::LocationConflict => $subject instanceof Lesson && ($user->can('lessons.manage') || $subject->teacher_id === $user->id),
+            AlertType::LocationConflict => $subject instanceof Lesson && ($user->can('lessons.manage') || \App\Support\TeacherScope::teaches($user, $subject)),
             AlertType::RegistrationRequest => $user->can('registrations.view'),
             AlertType::RepeatedAbsence => $user->can('lessons.manage') || ($subject instanceof Student && \App\Policies\StudentPolicy::isTeacherOf($user, $subject)),
             AlertType::InvoiceOverdue => $user->can('wallets.view'),

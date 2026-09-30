@@ -145,7 +145,7 @@ it('summarises a hall conflict with the hall name, session count and weekdays, a
         'start_date' => $monday->toDateString(), 'end_date' => $monday->copy()->addWeeks(2)->toDateString()];
     $other = Lesson::factory()->create($attrs + ['name' => 'حلقة الإمام نافع', 'package_id' => $this->boysLesson->package_id]);
     $mine = Lesson::factory()->create($attrs + ['name' => 'حلقة ورش', 'package_id' => $this->boysLesson->package_id]);
-    app(\App\Services\Lessons\SessionGenerator::class)->regenerate($mine);
+    app(\App\Services\Lessons\SessionSync::class)->apply($mine);
     Alert::raise(AlertType::LocationConflict, 'تعارض', 'نص قديم طويل', $mine, AlertSeverity::Danger);
 
     actingAsRole('super_admin');

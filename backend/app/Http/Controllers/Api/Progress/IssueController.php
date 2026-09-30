@@ -47,7 +47,7 @@ class IssueController extends Controller
 
         $q = StudentIssue::with(['student', 'opener:id,name', 'notes.author:id,name'])
             ->when(! $user->can('students.manage') && ! $user->can('lessons.manage'), fn ($q) => $q->whereIn('student_id',
-                LessonStudent::where('status', 'active')->whereIn('lesson_id', $user->lessons()->select('id'))->select('student_id')))
+                LessonStudent::where('status', 'active')->whereIn('lesson_id', \App\Support\TeacherScope::lessonIds($user))->select('student_id')))
             ->tap(fn ($q) => \App\Support\Track::scopeVia($q, $user, 'student'))
             ->when($request->string('status')->toString() === 'unresolved', fn ($q) => $q->unresolved())
             ->when($request->filled('status') && $request->string('status')->toString() !== 'unresolved', fn ($q) => $q->where('status', $request->string('status')))

@@ -15,6 +15,8 @@
   "empty_bookings": "No upcoming bookings.",
   "form": {
     "level": "Level",
+    "schedule_in_timetable": "This class's times are detailed in the timetable (several periods a night, or level periods), so change them there.",
+    "open_timetable": "Open the timetable",
     "no_level": "No level",
     "title_new": "New class",
     "title_edit": "Edit class",
@@ -39,7 +41,7 @@
     "conflicts_body": "The class was saved, but the room is busy at these times. A dashboard alert was raised."
   },
   "days": { "sat": "Saturday", "sun": "Sunday", "mon": "Monday", "tue": "Tuesday", "wed": "Wednesday", "thu": "Thursday", "fri": "Friday" },
-  "detail": {
+  "detail": { "timetable_link": "From the timetable",
     "back": "Back to classes",
     "edit": "Edit",
     "change_location": "Change room",

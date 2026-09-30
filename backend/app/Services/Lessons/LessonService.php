@@ -32,7 +32,8 @@ class LessonService
 {
     public function __construct(
         private LocationConflictDetector $conflicts,
-        private SessionGenerator $sessions,
+        private SessionSync $sessions,
+        private ClassSchedule $schedule,
         private StudentMessenger $messenger,
         private AuditLogger $audit,
         private CircleEnrollmentService $circles,
@@ -43,7 +44,12 @@ class LessonService
     {
         return DB::transaction(function () use ($data) {
             $lesson = Lesson::create($this->normalize($data));
-            $this->sessions->generateFor($lesson);
+            // The form's days/times become the class's own periods in الجدول الدراسي (the only schedule source).
+            if (! empty($lesson->days)) {
+                $this->schedule->setOwnSchedule($lesson, $lesson->days, (string) $lesson->start_time, (string) $lesson->end_time);
+            }
+            $this->schedule->syncCopy($lesson);
+            $this->sessions->apply($lesson);
 
             return ['lesson' => $lesson->fresh(), 'conflicts' => $this->syncConflicts($lesson)];
         });
@@ -54,11 +60,21 @@ class LessonService
     {
         return DB::transaction(function () use ($lesson, $data) {
             $lesson->fill($this->normalize($data));
-            $scheduleChanged = $lesson->isDirty(['days', 'start_time', 'end_time', 'start_date', 'end_date', 'location_id']);
+            $timesChanged = $lesson->isDirty(['days', 'start_time', 'end_time']);
+            $levelChanged = $lesson->isDirty('level_id');
+            $scheduleChanged = $timesChanged || $levelChanged || $lesson->isDirty(['start_date', 'end_date', 'location_id', 'status', 'package_id']);
             $lesson->save();
 
+            // The class's own periods follow its level; the form's days/times rewrite its simple own schedule.
+            if ($levelChanged) {
+                \App\Models\TimetableSlot::where('lesson_id', $lesson->id)->update(['level_id' => $lesson->level_id]);
+            }
+            if ($timesChanged) {
+                $this->schedule->setOwnSchedule($lesson, $lesson->days ?? [], (string) $lesson->start_time, (string) $lesson->end_time);
+            }
             if ($scheduleChanged) {
-                $this->sessions->regenerate($lesson);
+                $this->schedule->syncCopy($lesson);
+                $this->sessions->apply($lesson->fresh());
             }
 
             return ['lesson' => $lesson->fresh(), 'conflicts' => $this->syncConflicts($lesson)];
@@ -239,12 +255,9 @@ class LessonService
                 $dates = [Carbon::parse($date)->toDateString()];
             } else {
                 $lesson->update(['location_id' => $location->id]);
-                $sessions = $this->sessions->emptyFutureSessions($lesson);
-                foreach ($sessions as $s) {
-                    $s->update(['location_id' => $location->id]);
-                }
-                // Overrides in the future pointing at the OLD hall are now moot.
-                $dates = $sessions->map(fn ($s) => $s->session_date->toDateString())->all();
+                // The sync moves every upcoming session without attendance to the new room (one-day overrides still win).
+                $plan = $this->sessions->apply($lesson->fresh());
+                $dates = collect($plan['update'])->filter(fn ($u) => array_key_exists('location_id', $u['changes']))->pluck('date')->values()->all();
             }
         });
 

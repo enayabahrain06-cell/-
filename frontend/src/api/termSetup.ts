@@ -11,7 +11,7 @@ export interface SetupOptions {
   teachers: Ref[]
   supervisors: Ref[]
   halls: Ref[]
-  circles: (Ref & { level_id: number })[]
+  circles: (Ref & { level_id: number | null })[]
   level_rooms: { level_id: number; location_id: number }[]
   weekdays: { value: string; label: string }[]
 }
@@ -39,7 +39,8 @@ export interface NightSupervisor { id: number; weekday: string; weekday_label: s
 export interface TimetableSlot {
   id: number
   academic_term_id: number
-  level: Ref
+  level: Ref | null
+  source?: string | null
   lesson: Ref | null
   weekday: string
   weekday_label: string
@@ -57,7 +58,7 @@ type Termed<T> = { term: SetupTerm; data: T }
 export interface LevelSubjectInput { academic_term_id: number; level_id: number; subject_id: number; teacher_id: number | null; weekly_sessions: number | null; notes: string | null; sort: number }
 export interface SubjectLessonInput { subject_id: number; level_id: number | null; title: string; description: string | null; sort: number; is_active: boolean }
 export interface PlanItemInput { level_subject_id: number; week_no: number; subject_lesson_id: number | null; title: string | null; notes: string | null }
-export interface SlotInput { academic_term_id: number; level_id: number; lesson_id: number | null; weekday: string; start_time: string; end_time: string; subject_id: number; teacher_id: number | null; location_id: number | null; notes: string | null }
+export interface SlotInput { academic_term_id: number; level_id: number | null; lesson_id: number | null; weekday: string; start_time: string; end_time: string; subject_id: number; teacher_id: number | null; location_id: number | null; notes: string | null }
 export type CopyPart = 'level_rooms' | 'level_subjects' | 'night_supervisors' | 'timetable'
 
 export interface LevelRoomRow {

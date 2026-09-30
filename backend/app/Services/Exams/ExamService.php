@@ -51,11 +51,13 @@ class ExamService
 
     public function teacherOwns(User $user, Exam $exam): bool
     {
+        // The exam's subject taught in its class (or in a class of its package) — U3.
+        $mine = \App\Support\TeacherScope::lessonIds($user, $exam->subject_id);
         if ($exam->lesson_id) {
-            return Lesson::whereKey($exam->lesson_id)->where('teacher_id', $user->id)->exists();
+            return Lesson::whereKey($exam->lesson_id)->whereIn('id', $mine)->exists();
         }
 
-        return $exam->package_id && Lesson::where('package_id', $exam->package_id)->where('teacher_id', $user->id)->exists();
+        return $exam->package_id && Lesson::where('package_id', $exam->package_id)->whereIn('id', $mine)->exists();
     }
 
     // ------------------------------------------------------------------ lifecycle

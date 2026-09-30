@@ -8,7 +8,7 @@ use App\Models\Location;
 use App\Models\MessageLog;
 use App\Models\Student;
 use App\Models\User;
-use App\Services\Lessons\SessionGenerator;
+use App\Services\Lessons\SessionSync;
 
 it('manages halls and their calendar', function () {
     actingAsRole('supervisor');
@@ -20,7 +20,7 @@ it('manages halls and their calendar', function () {
     $this->getJson('/api/locations?all=1')->assertOk()->assertJsonCount(1, 'data');
 
     $lesson = Lesson::factory()->create(['location_id' => $id, 'days' => ['sun'], 'start_date' => today()->toDateString()]);
-    app(SessionGenerator::class)->generateFor($lesson, today()->addWeeks(2));
+    count(app(SessionSync::class)->apply($lesson, null, today()->addWeeks(2))['create']);
 
     $res = $this->getJson("/api/locations/{$id}/calendar?from=".today()->toDateString().'&to='.today()->addWeeks(2)->toDateString())->assertOk();
     expect($res->json('items'))->not->toBeEmpty()->and($res->json('items.0.kind'))->toBe('session');
@@ -75,7 +75,7 @@ it('enrolls and unenrolls students respecting capacity', function () {
 it('changes the hall for one day with an override and notifies students and guardians', function () {
     actingAsRole('supervisor');
     $lesson = Lesson::factory()->create(['days' => ['sun', 'tue'], 'start_date' => today()->toDateString()]);
-    app(SessionGenerator::class)->generateFor($lesson, today()->addWeeks(2));
+    count(app(SessionSync::class)->apply($lesson, null, today()->addWeeks(2))['create']);
     $session = LessonSession::where('lesson_id', $lesson->id)->where('session_date', '>', today())->orderBy('session_date')->first();
     $newHall = Location::factory()->create(['map_link' => 'https://maps.google.com/?q=9,9']);
 
@@ -103,7 +103,7 @@ it('changes the hall for one day with an override and notifies students and guar
 it('changes the hall for all upcoming sessions and refuses a busy hall', function () {
     actingAsRole('supervisor');
     $lesson = Lesson::factory()->create(['days' => ['sun'], 'start_time' => '16:00:00', 'end_time' => '17:00:00', 'start_date' => today()->toDateString()]);
-    app(SessionGenerator::class)->generateFor($lesson, today()->addWeeks(3));
+    count(app(SessionSync::class)->apply($lesson, null, today()->addWeeks(3))['create']);
     $newHall = Location::factory()->create();
     $busyHall = Location::factory()->create();
     Lesson::factory()->create(['location_id' => $busyHall->id, 'days' => ['sun'], 'start_time' => '16:30:00', 'end_time' => '18:00:00', 'start_date' => today()->toDateString()]);

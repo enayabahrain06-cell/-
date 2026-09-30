@@ -109,6 +109,9 @@ it('blocks timetable clashes inside a level and warns about a busy teacher or ro
     // Back to back is not a clash.
     $this->postJson('/api/term-setup/timetable', ['start_time' => '17:00', 'end_time' => '18:00', 'subject_id' => $this->fiqh->id, 'location_id' => null] + $slot)->assertCreated();
 
+    // A room is taken by classes that meet in it: give level 1 a class, then level 2 at the same time warns twice.
+    Lesson::factory()->create(['level_id' => $this->level->id, 'location_id' => null, 'start_date' => today()->toDateString(), 'end_date' => null,
+        'package_id' => Package::factory()->create(['academic_term_id' => $this->term->id])->id]);
     $warn = $this->postJson('/api/term-setup/timetable', ['level_id' => $level2->id, 'teacher_id' => $this->teacher->id] + $slot)->assertCreated()->json('warnings');
     expect($warn)->toHaveCount(2);
 
@@ -120,7 +123,7 @@ it('blocks timetable clashes inside a level and warns about a busy teacher or ro
     $this->postJson('/api/term-setup/timetable', ['weekday' => 'tue'] + $slot)->assertJsonValidationErrors('start_time'); // level-wide clashes with the circle's
 
     expect($this->getJson("/api/term-setup/timetable?level_id={$this->level->id}")->json('data.*.weekday'))->toBe(['sun', 'sun', 'tue'])
-        ->and($this->getJson('/api/term-setup/options')->json('data.circles.*.id'))->toBe([$circle->id]);
+        ->and($this->getJson('/api/term-setup/options')->json('data.circles.*.id'))->toContain($circle->id);
 
     $this->putJson("/api/term-setup/timetable/{$first['id']}", ['end_time' => '16:45'])->assertOk()->assertJsonPath('data.end_time', '16:45');
 });

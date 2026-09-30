@@ -34,7 +34,7 @@ class SendMessageController extends Controller
 
             if ($user->hasRole('teacher') && ! $user->hasRole('super_admin') && ! $user->hasRole('supervisor')) {
                 $allowed = LessonStudent::whereIn('student_id', $ids)->where('status', 'active')
-                    ->whereIn('lesson_id', Lesson::where('teacher_id', $user->id)->select('id'))
+                    ->whereIn('lesson_id', \App\Support\TeacherScope::lessonIds($user))
                     ->pluck('student_id')->unique()->all();
                 $denied = array_values(array_diff($ids, $allowed));
                 if ($denied) {

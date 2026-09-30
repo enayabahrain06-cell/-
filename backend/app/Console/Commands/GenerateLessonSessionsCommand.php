@@ -2,22 +2,23 @@
 
 namespace App\Console\Commands;
 
-use App\Services\Lessons\SessionGenerator;
+use App\Services\Lessons\SessionSync;
 use Illuminate\Console\Command;
 
-/** Materialise lesson sessions for the next N weeks (scheduled daily). */
+/** Keep every class's sessions in step with الجدول الدراسي for the next N weeks (scheduled daily). */
 class GenerateLessonSessionsCommand extends Command
 {
     protected $signature = 'lesson-sessions:generate {--weeks= : Weeks ahead (default: settings sessions.generate_weeks_ahead)}';
 
-    protected $description = 'Generate lesson_sessions rows for every active lesson for the coming weeks';
+    protected $description = 'Sync lesson_sessions with the timetable for the coming weeks (create, update, cancel; never delete attached sessions)';
 
-    public function handle(SessionGenerator $generator): int
+    public function handle(SessionSync $sync): int
     {
         $weeks = $this->option('weeks') !== null ? (int) $this->option('weeks') : null;
-        $created = $generator->generateAll($weeks);
+        $plans = $sync->all(false, $weeks);
+        $count = fn (string $k) => array_sum(array_map(fn ($p) => count($p[$k]), $plans));
 
-        $this->info("Sessions created: {$created}");
+        $this->info("Sessions created: {$count('create')}, updated: {$count('update')}, cancelled: {$count('cancel')}, removed: {$count('delete')}");
 
         return self::SUCCESS;
     }

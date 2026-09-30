@@ -1,7 +1,7 @@
 import { Navigate, Outlet, createBrowserRouter, useLocation } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { useAuth } from './AuthContext'
-import { NAV_SECTIONS } from './nav'
+import { ALL_ROUTES } from './menuRoutes'
 import LoginPage from '../features/auth/LoginPage'
 import DashboardPage from '../features/dashboard/DashboardPage'
 import ComingSoon from '../features/common/ComingSoon'
@@ -179,7 +179,7 @@ export const router = createBrowserRouter([
         element: <StaffOrFamily />,
         children: [
           { index: true, element: <DashboardPage /> },
-          ...NAV_SECTIONS.filter((s) => s.path !== '/').map((s) => ({
+          ...ALL_ROUTES.filter((s) => s.path !== '/').map((s) => ({
             path: s.path.slice(1),
             element: BUILT[s.key] ? <Guard permissions={s.permissions}>{BUILT[s.key]}</Guard> : <Section keyName={s.key} icon={s.icon} permissions={s.permissions} />,
           })),

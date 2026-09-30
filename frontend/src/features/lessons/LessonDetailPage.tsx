@@ -71,7 +71,12 @@ export default function LessonDetailPage() {
         <OrnamentDivider className="my-3 text-gold-500/70" />
         <dl className="grid gap-3 text-sm sm:grid-cols-4">
           <div><dt className="text-xs text-ink/50">{t('form.days')}</dt><dd className="text-ink">{lesson.days.map((d) => t(`days.${d}`)).join(locale === 'ar' ? '، ' : ', ')}</dd></div>
-          <div><dt className="text-xs text-ink/50">{t('form.start_time')}</dt><dd className="tabular-nums text-ink">{formatTime(lesson.start_time, locale)}–{formatTime(lesson.end_time, locale)}</dd></div>
+          <div><dt className="text-xs text-ink/50">{t('form.start_time')}</dt><dd className="tabular-nums text-ink">
+            {lesson.schedule && new Set(lesson.schedule.nights.map((x) => x.start + x.end)).size > 1
+              ? lesson.schedule.nights.map((x) => <span key={x.weekday} className="block">{t(`days.${x.weekday}`)}: {formatTime(x.start, locale)}–{formatTime(x.end, locale)}</span>)
+              : <>{formatTime(lesson.start_time, locale)}–{formatTime(lesson.end_time, locale)}</>}
+            {lesson.schedule?.source === 'timetable' && <Link to="/term-setup?tab=timetable" className="mt-0.5 block text-xs text-brand-700 hover:underline">{t('detail.timetable_link')}</Link>}
+          </dd></div>
           <div><dt className="text-xs text-ink/50">{t('form.hall')}</dt><dd dir="auto" className="text-ink">{lesson.location?.name ?? t('no_hall')}</dd></div>
           <div><dt className="text-xs text-ink/50">{t('form.capacity')}</dt><dd className="tabular-nums text-ink">{t('students_of', { n: n(lesson.student_count), c: n(lesson.capacity) })}</dd></div>
         </dl>

@@ -42,6 +42,32 @@ class LessonSession extends Model
         return $this->hasMany(Attendance::class);
     }
 
+    // What can be attached to a session (SessionSync never deletes a session that has any of these).
+    public function attendanceConfirmations(): HasMany
+    {
+        return $this->hasMany(AttendanceConfirmation::class);
+    }
+
+    public function excuses(): HasMany
+    {
+        return $this->hasMany(AttendanceExcuse::class);
+    }
+
+    public function messageLogs(): HasMany
+    {
+        return $this->hasMany(MessageLog::class);
+    }
+
+    public function evaluations(): HasMany
+    {
+        return $this->hasMany(Evaluation::class);
+    }
+
+    public function inboundMessages(): HasMany
+    {
+        return $this->hasMany(InboundMessage::class);
+    }
+
     public function takenBy(): BelongsTo
     {
         return $this->belongsTo(User::class, 'taken_by');

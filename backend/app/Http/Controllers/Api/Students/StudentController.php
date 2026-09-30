@@ -29,7 +29,7 @@ class StudentController extends Controller
 
         $q = Student::with(['wallet', 'guardian', 'activeLessons.teacher:id,name'])
             ->tap(fn ($q) => \App\Support\Track::scope($q, $user))
-            ->when($user->hasRole('teacher') && ! $user->can('students.manage'), fn ($q) => $q->whereHas('lessonStudents', fn ($w) => $w->where('status', 'active')->whereIn('lesson_id', $user->lessons()->select('id'))))
+            ->when($user->hasRole('teacher') && ! $user->can('students.manage'), fn ($q) => $q->whereHas('lessonStudents', fn ($w) => $w->where('status', 'active')->whereIn('lesson_id', \App\Support\TeacherScope::lessonIds($user))))
             ->when($request->filled('search'), function ($q) use ($request) {
                 $s = '%'.$request->string('search').'%';
                 $q->where(fn ($w) => $w->where('full_name', 'like', $s)->orWhere('student_no', 'like', $s)->orWhere('guardian_phone', 'like', $s)->orWhere('student_phone', 'like', $s)->orWhere('guardian_name', 'like', $s)->orWhere('cpr', 'like', $s));

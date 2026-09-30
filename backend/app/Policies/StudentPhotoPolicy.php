@@ -60,7 +60,7 @@ class StudentPhotoPolicy
     {
         return LessonStudent::where('student_id', $student->id)
             ->where('status', 'active')
-            ->whereIn('lesson_id', Lesson::where('teacher_id', $user->id)->select('id'))
+            ->whereIn('lesson_id', \App\Support\TeacherScope::lessonIds($user))
             ->exists();
     }
 }

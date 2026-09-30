@@ -30,7 +30,7 @@ use App\Services\Attendance\RepeatedAbsenceDetector;
 use App\Services\Certificates\ExamCertificateIssuer;
 use App\Services\Exams\ExamService;
 use App\Services\Issues\IssueService;
-use App\Services\Lessons\SessionGenerator;
+use App\Services\Lessons\SessionSync;
 use App\Services\Lottery\LotteryService;
 use App\Services\Registration\AcceptRegistrationAction;
 use App\Services\Registration\RegistrationService;
@@ -172,7 +172,7 @@ class OperationsDemoSeeder extends Seeder
             'start_time' => $boys->start_time, 'end_time' => $boys->end_time, 'capacity' => 12,
             'start_date' => $boys->start_date->toDateString(), 'end_date' => $boys->end_date?->toDateString(), 'status' => 'active',
         ]);
-        app(SessionGenerator::class)->generateFor($circle);
+        app(SessionSync::class)->apply($circle);
         $first = Lesson::where('name', 'حلقة الإمام نافع')->firstOrFail();
 
         $lotteries = app(LotteryService::class);

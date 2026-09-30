@@ -72,7 +72,7 @@ class AttendanceService
         $absentStudentIds = [];
         $corrected = 0;
         $isCorrection = $session->attendance_taken_at !== null;
-        $isTeacher = $session->lesson?->teacher_id === $by->id;
+        $isTeacher = $session->lesson && \App\Support\TeacherScope::teaches($by, $session->lesson);
 
         DB::transaction(function () use ($session, $records, $by, $isCorrection, $isTeacher, &$absentStudentIds, &$corrected) {
             $existing = Attendance::where('lesson_session_id', $session->id)->get()->keyBy('student_id');

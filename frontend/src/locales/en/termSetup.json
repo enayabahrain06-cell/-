@@ -84,7 +84,9 @@
     "no_room": "No room",
     "warnings": "Heads-up:",
     "delete_confirm": "Delete this period?",
-    "level_room": "{{name}} (level's room)"
+    "level_room": "{{name}} (level's room)",
+    "no_level": "No level (one class only)",
+    "choose_class": "Choose the class"
   },
   "copy": {
     "open": "Copy from another term",

@@ -48,7 +48,7 @@ class ExamController extends Controller
             ->orderByDesc('exam_date')->orderByDesc('id');
 
         if (! $user->can('exams.manage')) {
-            $mine = Lesson::where('teacher_id', $user->id);
+            $mine = Lesson::whereIn('id', \App\Support\TeacherScope::lessonIds($user));
             $q->where(fn ($w) => $w
                 ->whereIn('lesson_id', (clone $mine)->select('id'))
                 ->orWhere(fn ($p) => $p->whereNull('lesson_id')->whereIn('package_id', (clone $mine)->select('package_id'))));

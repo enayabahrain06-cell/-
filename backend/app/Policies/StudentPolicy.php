@@ -59,6 +59,6 @@ class StudentPolicy
     public static function isTeacherOf(User $user, Student $student): bool
     {
         return LessonStudent::where('student_id', $student->id)->where('status', 'active')
-            ->whereIn('lesson_id', $user->lessons()->select('id'))->exists();
+            ->whereIn('lesson_id', \App\Support\TeacherScope::lessonIds($user))->exists();
     }
 }

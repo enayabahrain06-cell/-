@@ -5,7 +5,8 @@ import { hallsApi, lessonsApi, optionsApi, type Conflict, type Lesson, type Less
 import { levelsApi } from '../../api/masterData'
 import { parseApiError, type FieldErrors } from '../../api/client'
 import SelectField from '../../components/SelectField'
-import { Modal, Notice, PrimaryButton, SecondaryButton, TextInput } from '../../components/ui'
+import { Link } from 'react-router-dom'
+import { buttonClass, Modal, Notice, PrimaryButton, SecondaryButton, TextInput } from '../../components/ui'
 
 export const WEEK_DAYS = ['sat', 'sun', 'mon', 'tue', 'wed', 'thu', 'fri'] as const
 
@@ -39,12 +40,19 @@ export default function LessonFormDialog({ lesson, onClose, onSaved }: { lesson?
   const hallOk = (g: string) => g === 'shared' || g === gender || (gender === 'mixed' && g === 'female')
 
   const save = useMutation({
-    mutationFn: () => (lesson ? lessonsApi.update(lesson.id, form) : lessonsApi.create(form)),
+    mutationFn: () => {
+      if (!lesson) return lessonsApi.create(form)
+      // A detailed timetable is not overwritten from here: leave days and times out.
+      const { days, start_time, end_time, ...rest } = form
+      return lessonsApi.update(lesson.id, fixedSchedule ? rest : { ...rest, days, start_time, end_time })
+    },
     onSuccess: (r) => { void qc.invalidateQueries({ queryKey: ['lessons'] }); void qc.invalidateQueries({ queryKey: ['lesson', r.data.id] }); onSaved(r.data, r.conflicts) },
     onError: (e) => { const p = parseApiError(e); setErrors(p.fields); setMessage(p.message) },
   })
 
   const set = <K extends keyof LessonInput>(k: K, v: LessonInput[K]) => setForm((f) => ({ ...f, [k]: v }))
+  /** The schedule lives in الجدول الدراسي; the form only edits a simple one (one Quran period a night). */
+  const fixedSchedule = !!lesson?.schedule && !lesson.schedule.editable
   const err = (k: string) => errors[k]?.[0]
 
   return (
@@ -84,6 +92,12 @@ export default function LessonFormDialog({ lesson, onClose, onSaved }: { lesson?
           {err('level_id') && <p className="mt-1 text-sm text-danger">{err('level_id')}</p>}
         </div>
         <TextInput label={t('form.capacity')} type="number" min={1} max={500} value={form.capacity} onChange={(e) => set('capacity', Number(e.target.value))} />
+        {fixedSchedule ? (
+          <div className="sm:col-span-2">
+            <Notice tone="info">{t('form.schedule_in_timetable')}</Notice>
+            <Link to="/term-setup?tab=timetable" className={buttonClass('secondary', 'mt-2')}>{t('form.open_timetable')}</Link>
+          </div>
+        ) : (<>
         <fieldset className="sm:col-span-2">
           <legend className="mb-1.5 text-sm font-medium text-ink/75">{t('form.days')}</legend>
           <div className="flex flex-wrap gap-2">
@@ -104,6 +118,7 @@ export default function LessonFormDialog({ lesson, onClose, onSaved }: { lesson?
           <TextInput label={t('form.end_time')} type="time" value={form.end_time} onChange={(e) => set('end_time', e.target.value)} />
           {err('end_time') && <p className="mt-1 text-sm text-danger">{err('end_time')}</p>}
         </div>
+        </>)}
         <TextInput label={t('form.start_date')} type="date" value={form.start_date} onChange={(e) => set('start_date', e.target.value)} />
         <TextInput label={t('form.end_date')} type="date" value={form.end_date ?? ''} onChange={(e) => set('end_date', e.target.value || null)} />
         <SelectField label={t('form.status')} value={form.status} onChange={(e) => set('status', e.target.value)}

@@ -39,7 +39,7 @@ export default function TimetableTab() {
       </FilterBar>
       <Toolbar notice={notice} />
       {warnings.length > 0 && <Notice tone="error"><b>{t('timetable.warnings')}</b> {warnings.join(' ')}</Notice>}
-      {(opts?.levels.length ?? 0) === 0 ? <EmptyCard icon="lessons" title={t('no_levels')} /> : q.isLoading ? <LoadingState /> : q.isError ? <ErrorState onRetry={() => void q.refetch()} /> : (
+      {(opts?.levels.length ?? 0) === 0 && (opts?.circles.length ?? 0) === 0 ? <EmptyCard icon="lessons" title={t('no_levels')} /> : q.isLoading ? <LoadingState /> : q.isError ? <ErrorState onRetry={() => void q.refetch()} /> : (
         <ul className="grid gap-3 *:min-w-0 md:grid-cols-2 xl:grid-cols-3">
           {nights.map((d) => {
             const rows = (q.data?.data ?? []).filter((s) => s.weekday === d)
@@ -55,7 +55,7 @@ export default function TimetableTab() {
                           <p className="text-xs tabular-nums text-ink/60"><bdi>{time(s.start_time)}–{time(s.end_time)}</bdi></p>
                           <p dir="auto" className="font-medium text-ink">{s.subject.name}</p>
                           <p className="text-xs text-ink/55">
-                            <bdi>{s.lesson ? `${s.level.name} · ${s.lesson.name}` : s.level.name}</bdi>
+                            <bdi>{s.lesson ? (s.level ? `${s.level.name} · ${s.lesson.name}` : s.lesson.name) : s.level?.name}</bdi>
                             {s.teacher && <> · <bdi>{s.teacher.name}</bdi></>}
                             {s.location && <> · <bdi>{s.location.name}</bdi></>}
                           </p>
@@ -95,7 +95,7 @@ function SlotDialog({ weekday, slot, levelId, onClose, onSaved }: { weekday: str
   const qc = useQueryClient()
   const opts = useSetupOptions().data!
   const [form, setForm] = useState<SlotInput>(() => ({
-    academic_term_id: opts.term.id, level_id: slot?.level.id ?? levelId, lesson_id: slot?.lesson?.id ?? null, weekday: slot?.weekday ?? weekday,
+    academic_term_id: opts.term.id, level_id: slot ? slot.level?.id ?? null : levelId || null, lesson_id: slot?.lesson?.id ?? null, weekday: slot?.weekday ?? weekday,
     start_time: slot?.start_time ?? '16:00', end_time: slot?.end_time ?? '17:00', subject_id: slot?.subject.id ?? opts.subjects[0]?.id ?? 0,
     teacher_id: slot?.teacher?.id ?? null, location_id: slot?.location?.id ?? null, notes: slot?.notes ?? '',
   }))
@@ -110,7 +110,8 @@ function SlotDialog({ weekday, slot, levelId, onClose, onSaved }: { weekday: str
   })
   const set = <K extends keyof SlotInput>(k: K, v: SlotInput[K]) => setForm((f) => ({ ...f, [k]: v }))
   const nights = useNights([form.weekday])
-  const circles = opts.circles.filter((c) => c.level_id === form.level_id)
+  // A class can take a period of its own with or without a level; choosing it sets the level to the class's.
+  const circles = form.level_id ? opts.circles.filter((c) => c.level_id === form.level_id) : opts.circles
   const mine = new Set(opts.level_rooms.filter((r) => r.level_id === form.level_id).map((r) => r.location_id))
   const halls = [...opts.halls.filter((h) => mine.has(h.id)), ...opts.halls.filter((h) => !mine.has(h.id))]
 
@@ -118,11 +119,12 @@ function SlotDialog({ weekday, slot, levelId, onClose, onSaved }: { weekday: str
     <Modal wide title={slot ? t('timetable.title_edit') : t('timetable.title_new')} onClose={onClose}
       footer={<DialogFooter onCancel={onClose} onSave={() => save.mutate()} saving={save.isPending} />}>
       <div className="grid gap-4 sm:grid-cols-2">
-        <SelectField label={t('fields.level')} value={String(form.level_id)} onChange={(e) => setForm({ ...form, level_id: Number(e.target.value), lesson_id: null })}
-          options={opts.levels.map((l) => ({ value: String(l.id), label: l.name }))} />
+        <SelectField label={t('fields.level')} value={String(form.level_id ?? '')} onChange={(e) => setForm({ ...form, level_id: e.target.value ? Number(e.target.value) : null, lesson_id: null })}
+          options={[{ value: '', label: t('timetable.no_level') }, ...opts.levels.map((l) => ({ value: String(l.id), label: l.name }))]} />
         <Field error={errors.lesson_id?.[0]}>
-          <SelectField label={t('fields.circle')} value={String(form.lesson_id ?? '')} onChange={(e) => set('lesson_id', e.target.value ? Number(e.target.value) : null)}
-            options={[{ value: '', label: t('timetable.whole_level') }, ...circles.map((c) => ({ value: String(c.id), label: c.name }))]} />
+          <SelectField label={t('fields.circle')} value={String(form.lesson_id ?? '')}
+            onChange={(e) => { const c = opts.circles.find((x) => x.id === Number(e.target.value)); setForm({ ...form, lesson_id: c?.id ?? null, level_id: c ? c.level_id : form.level_id }) }}
+            options={[...(form.level_id ? [{ value: '', label: t('timetable.whole_level') }] : [{ value: '', label: t('timetable.choose_class') }]), ...circles.map((c) => ({ value: String(c.id), label: c.name }))]} />
         </Field>
         <SelectField label={t('fields.weekday')} value={form.weekday} onChange={(e) => set('weekday', e.target.value)}
           options={nights.map((d) => ({ value: d, label: t(`lessons:days.${d}`) }))} />

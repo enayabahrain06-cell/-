@@ -5,7 +5,7 @@ use App\Models\Lesson;
 use App\Models\LessonSession;
 use App\Models\Student;
 use App\Services\Lessons\LessonService;
-use App\Services\Lessons\SessionGenerator;
+use App\Services\Lessons\SessionSync;
 use App\Support\WeekDays;
 
 it('creates one session per scheduled weekday inside the date range, idempotently', function () {
@@ -15,7 +15,7 @@ it('creates one session per scheduled weekday inside the date range, idempotentl
         'end_date' => today()->addDays(13)->toDateString(),
     ]);
 
-    $created = app(SessionGenerator::class)->generateFor($lesson, today()->addWeeks(8));
+    $created = count(app(SessionSync::class)->apply($lesson, null, today()->addWeeks(8))['create']);
 
     $expected = 0;
     for ($d = today(); $d->lte(today()->addDays(13)); $d->addDay()) {
@@ -28,7 +28,7 @@ it('creates one session per scheduled weekday inside the date range, idempotentl
     expect(LessonSession::where('lesson_id', $lesson->id)->count())->toBe($expected);
     expect(LessonSession::where('lesson_id', $lesson->id)->get()->every(fn ($s) => in_array(WeekDays::keyFor($s->session_date), ['sat', 'mon'], true) && $s->location_id === $lesson->location_id))->toBeTrue();
 
-    expect(app(SessionGenerator::class)->generateFor($lesson, today()->addWeeks(8)))->toBe(0);
+    expect(count(app(SessionSync::class)->apply($lesson, null, today()->addWeeks(8))['create']))->toBe(0);
 });
 
 it('runs through the artisan command for all active lessons', function () {
@@ -47,7 +47,7 @@ it('runs through the artisan command for all active lessons', function () {
 
 it('regenerates only future sessions without attendance when the schedule changes', function () {
     $lesson = Lesson::factory()->create(['days' => ['sat', 'mon'], 'start_date' => today()->toDateString(), 'end_date' => today()->addDays(20)->toDateString()]);
-    app(SessionGenerator::class)->generateFor($lesson, today()->addWeeks(8));
+    count(app(SessionSync::class)->apply($lesson, null, today()->addWeeks(8))['create']);
 
     $withAttendance = LessonSession::where('lesson_id', $lesson->id)->orderBy('session_date')->skip(1)->first();
     $student = Student::factory()->create();

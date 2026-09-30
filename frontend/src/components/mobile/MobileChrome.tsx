@@ -7,7 +7,8 @@ import { authApi } from '../../api/auth'
 import { tokenStore } from '../../api/client'
 import { dashboardApi } from '../../api/dashboard'
 import { useAuth } from '../../app/AuthContext'
-import { NAV_SECTIONS, entryHref, type MenuEntry, type NavSection } from '../../app/nav'
+import { entryHref, type MenuEntry, type NavSection } from '../../app/nav'
+import { ALL_ROUTES } from '../../app/menuRoutes'
 import { useMenu } from '../../app/menu'
 import { useTerm } from '../../app/term'
 import TermSelector from '../TermSelector'
@@ -31,7 +32,7 @@ import { MAvatar, Pill } from './atoms'
 /** Section of a path ("/students/7" → students). */
 function sectionOf(pathname: string): NavSection | undefined {
   const seg = pathname.split('/')[1] ?? ''
-  return NAV_SECTIONS.find((s) => s.path === `/${seg}`)
+  return ALL_ROUTES.find((s) => s.path === `/${seg}`)
 }
 
 export function MobileChromeProvider({ children }: { children: (state: { bottomNav: boolean; header: ReactNode; more: ReactNode; nav: ReactNode; setSlot: (el: HTMLElement | null) => void }) => ReactNode }) {
