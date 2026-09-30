@@ -85,3 +85,22 @@ left out and listed under the page.
   the Share → Add to Home Screen hint on iPhone, hidden once installed.
 - Chrome's installability check (`Page.getInstallabilityErrors`) reports no errors on :5180. On phones the site
   must be served over HTTPS (localhost is the only exception).
+
+## Payments & wallets (/payments) — Payments.dc.html
+
+- `MobilePayments` under `lg:hidden`; the desktop page is unchanged under `hidden lg:block`. The payment, invoice,
+  refund and adjustment dialogs stay in `PaymentsHomePage` and open from both layouts.
+- Header: back + title + ⋯ (فاتورة جديدة، تسجيل استرداد، تسوية رصيد, by permission). Save messages show as a
+  4-second toast (its own state, so the desktop notice is untouched).
+- Two KPI cards from the same `['finance', this year]` query as the desktop overview: المحصَّل هذا الشهر with the
+  change on last month, and المستحق (gold-tinted, n عليهم مستحقات) which opens المتأخرات. One column below 360px.
+- Segmented آخر العمليات / المتأخرات / المحافظ on the same `?tab=` param (payments / invoices / wallets).
+  - آخر العمليات: this month's payments (same query key as the desktop tab): student, time · method · invoice,
+    amount, مسدد pill. A row opens a sheet with the receipt facts, الإيصال (PDF) and إعادة الإرسال, and a link to
+    the student's wallet. Note "الإيصال يُطبع من صفحة العملية" under the list.
+  - المتأخرات: invoices with chips المتأخرة / مفتوحة / جزئية / مسددة / الكل; due date · package, amount (clay when
+    overdue), status pill (متأخرة / مفتوحة / جزئي / مسدد). Rows open the student's wallet.
+  - المحافظ: students with dues from the finance report (amount owed in clay), linking to the wallet.
+- Sticky تسجيل دفعة (the one primary). New shared file `components/mobile/MPager.tsx` (44px previous / next).
+- Desktop only: the refunds list, the finance report tab (period, package and track filters, exports) and
+  cancelling an invoice.

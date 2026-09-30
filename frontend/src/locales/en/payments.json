@@ -90,5 +90,41 @@
     "show_table": "Show as table",
     "show_chart": "Show as chart",
     "empty": "No financial data in this period."
+  },
+  "mobile": {
+    "more_actions": "More actions",
+    "views": {
+      "recent": "Recent",
+      "overdue": "Overdue",
+      "wallets": "Wallets"
+    },
+    "collected_month": "Collected this month",
+    "delta_up": "+{{n}} on last month",
+    "delta_down": "−{{n}} on last month",
+    "no_prev": "Nothing collected last month",
+    "students_due": "{{n}} with dues",
+    "receipt_note": "Receipts are printed from the payment: tap a payment to open it.",
+    "paid": "Paid",
+    "empty_month": "No payments this month yet.",
+    "no_overdue": "No overdue invoices.",
+    "no_balances": "No wallets with dues.",
+    "error": "Could not load the data.",
+    "resend": "Resend",
+    "received_by": "Received by",
+    "settled": "Settled",
+    "open_wallet": "Open the student's wallet",
+    "inv": {
+      "overdue": "Overdue",
+      "open": "Open",
+      "partial": "Partial",
+      "paid": "Paid",
+      "all": "All"
+    },
+    "inv_status": {
+      "open": "Open",
+      "partial": "Partial",
+      "paid": "Paid",
+      "cancelled": "Cancelled"
+    }
   }
 }
