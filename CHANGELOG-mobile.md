@@ -173,3 +173,18 @@ left out and listed under the page.
 - Ages on mobile are shown in whole years (the API sends fractional ages).
 - Not in the app: prize-draw conditions (حضور ≥ ٩٠٪، أتمّ تسميع الأسبوع) and a single winner — the lottery places
   every eligible student; there is no separate "previous draws" list beyond the run count and seed.
+
+## Excellence board (/honor) — Excellence.dc.html
+
+- `MobileHonor` under `lg:hidden`, sharing the page's state (month, track, view, level), query and mutations.
+  Header with the TV-screen action (opens the display in a new tab when a display key is set); breadcrumb.
+- Month input | boys / girls (staff on both tracks), segmented اللوحة / الأوسمة. Board: status and published pills,
+  ranked and badges counts, last update; for managers إعادة الحساب and نشر / إخفاء as secondary buttons and a sticky
+  تكريم الثلاثة الأوائل (existing dialog).
+- Podium: three cards 2 · 1 · 3, the first taller with a gold border, 56px avatar, corner khatam and a gold rank
+  badge; points in text-gold-700. The formula caption (the desktop "why" text), segmented المسار / الباقة / الحلقة
+  (the existing level), ranked list (rank with medal for the top three, avatar, name, circle, points, change vs last
+  month) with group headers per package / circle, and حلقة الشهر. Skeleton, empty and error states; toasts.
+- Badges tab: the existing badges panel.
+- Not in the app: term and year boards (the board is monthly; the month picker replaces the segmented period) and
+  exporting the board as an image (the share icon is the TV display link).

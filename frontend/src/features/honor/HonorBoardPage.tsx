@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useCallback, useState } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useTranslation } from 'react-i18next'
 import { honorApi, type BadgeRow, type HonorBoard, type HonorRow } from '../../api/engagement'
@@ -9,6 +9,8 @@ import Icon from '../../components/Icon'
 import { OrnamentDivider, PageBand } from '../../components/ornaments'
 import { Badge, buttonClass, Card, CardTitle, ErrorState, FilterBar, LoadingState, Modal, Notice, PrimaryButton, SecondaryButton, Segmented, SURFACE, TABLE_HEAD, TableWrap, type Tone, inputClass, EmptyCard } from '../../components/ui'
 import { formatDate, formatNumber, formatPercent } from '../../lib/format'
+import MobileHonor from './MobileHonor'
+import MobileToast from '../../components/mobile/Toast'
 
 /** Categorical order from the validated palette: attendance, evaluation, memorization, bonus. */
 export const BREAKDOWN_COLORS = { attendance: '#2E8B57', evaluation: '#B8872E', memorization: '#3F74C0', bonus: '#B0413A' } as const
@@ -42,15 +44,18 @@ export default function HonorBoardPage() {
   const key = ['honor-board', period, gender, level, locale]
   const q = useQuery({ queryKey: key, queryFn: () => honorApi.board({ period, gender: both ? gender : undefined, level }) })
   const board = q.data?.data
-  const fail = (e: unknown) => setNotice({ tone: 'error', text: parseApiError(e).message })
+  // Mobile feedback: a 4-second toast with its own state (the desktop notice is unchanged).
+  const [toast, setToast] = useState<{ tone: 'ok' | 'error'; text: string } | null>(null)
+  const clearToast = useCallback(() => setToast(null), [])
+  const fail = (e: unknown) => { setNotice({ tone: 'error', text: parseApiError(e).message }); setToast({ tone: 'error', text: parseApiError(e).message }) }
   const compute = useMutation({
     mutationFn: () => honorApi.compute(period, both ? gender : undefined),
-    onSuccess: (r) => { setNotice({ tone: 'success', text: r.message }); void qc.invalidateQueries({ queryKey: ['honor-board'] }) },
+    onSuccess: (r) => { setNotice({ tone: 'success', text: r.message }); setToast({ tone: 'ok', text: r.message }); void qc.invalidateQueries({ queryKey: ['honor-board'] }) },
     onError: fail,
   })
   const publish = useMutation({
     mutationFn: (v: boolean) => honorApi.publish(board!.id!, v),
-    onSuccess: (r) => { setNotice({ tone: 'success', text: r.message }); void qc.invalidateQueries({ queryKey: ['honor-board'] }) },
+    onSuccess: (r) => { setNotice({ tone: 'success', text: r.message }); setToast({ tone: 'ok', text: r.message }); void qc.invalidateQueries({ queryKey: ['honor-board'] }) },
     onError: fail,
   })
 
@@ -58,7 +63,13 @@ export default function HonorBoardPage() {
   const tvUrl = displayKey ? `/display/honor?key=${encodeURIComponent(displayKey)}&gender=${board?.gender ?? gender}&lang=${locale}` : null
 
   return (
-    <div className="space-y-5">
+    <>
+    <MobileHonor board={board} loading={q.isLoading} error={q.isError} onRetry={() => void q.refetch()} period={period} maxPeriod={currentMonth()} onPeriod={setPeriod}
+      both={both} gender={gender} onGender={setGender} tab={tab} onTab={setTab} level={level} onLevel={setLevel} manage={manage} displayKey={displayKey} tvUrl={tvUrl}
+      computing={compute.isPending} publishing={publish.isPending} onCompute={() => compute.mutate()} onPublish={(v) => publish.mutate(v)} onHonor={() => setHonorOpen(true)}
+      badges={<div className="lg:hidden"><BadgesPanel manage={manage} /></div>} />
+    <MobileToast message={toast?.text ?? null} tone={toast?.tone} onDone={clearToast} />
+    <div className="hidden space-y-5 lg:block">
       <PageBand
         title={t('honor.title')}
         subtitle={t('honor.subtitle', { month: monthLabel(period, locale) })}
@@ -118,12 +129,13 @@ export default function HonorBoardPage() {
           )}
         </>
       )}
+    </div>
 
       {honorOpen && board?.id && (
         <HonorDialog board={board} onClose={() => setHonorOpen(false)}
-          onDone={(text) => { setHonorOpen(false); setNotice({ tone: 'success', text }); void qc.invalidateQueries({ queryKey: ['honor-board'] }) }} />
+          onDone={(text) => { setHonorOpen(false); setNotice({ tone: 'success', text }); setToast({ tone: 'ok', text }); void qc.invalidateQueries({ queryKey: ['honor-board'] }) }} />
       )}
-    </div>
+    </>
   )
 }
 

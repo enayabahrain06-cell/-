@@ -249,5 +249,10 @@
     "join": "Join",
     "nothing_open": "Nothing open right now.",
     "nothing_joined": "You have not joined any yet."
+  },
+  "mobile": {
+    "error": "Could not load the board.",
+    "retry": "Try again",
+    "level": {"track":"Track","package":"Package","circle":"Circle"}
   }
 }
