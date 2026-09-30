@@ -123,3 +123,21 @@ left out and listed under the page.
   per-student placeholders such as {اسم_الطالب}), recipients prefilled from a student, circle or overdue list
   (the send tab takes no query params), delivery and reply counts per sent message.
 - Open: the inbox tab still shows one primary قبول button per excuse card on mobile.
+
+## Reports (/reports, /reports?report=…) — Reports.dc.html
+
+- Page band hidden below lg; the shell header carries the title (the report's title inside a report, back to the
+  catalog, breadcrumb الرئيسية › التقارير › report).
+- Catalog: `MobileCatalog` under `lg:hidden` (catalog query and search state shared with desktop). Period chips
+  (هذا الشهر / الشهر الماضي / هذا الفصل) → "نسبة الحضور اليومية": the last seven taken days as 14px bars
+  (chart-present, chart-late below 80%), value above each bar, day number and weekday below (weekday hidden under
+  360px), one-line insight (average and lowest day) → "توزيع الحالات": one stacked bar with 2px gaps and a
+  labelled legend (count · %) → link to the full attendance report with the same period → other reports as grouped
+  lists (icon badge, title, two-line description). The attendance data is the attendance report's own endpoint with
+  the same query key as the viewer, fetched only below lg (`components/mobile/useBelowLg.ts`, new).
+- Report viewer: period chips + filter button (sheet with the report's own filter controls, shared JSX with the
+  desktop filter card) and a download icon in the header opening an export sheet (PDF / Excel, same export call).
+  Report tables become card rows below lg (naming column as the title, the other columns as label / value pairs);
+  the "show all" limit is shared with the table.
+- `presets()` moved to `features/reports/presets.ts` (unchanged) so both layouts use it.
+- Not on mobile: column sorting of report tables (desktop header buttons).

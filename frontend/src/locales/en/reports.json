@@ -47,5 +47,25 @@
     "average": "average {{rate}}",
     "rate": "Attendance {{rate}}",
     "breakdown": "{{present}} present · {{late}} late · {{absent}} absent · {{excused}} excused"
+  },
+  "mobile": {
+    "daily_title": "Daily attendance rate",
+    "dist_title": "Status breakdown",
+    "insight": "Average {{avg}} · lowest day {{day}} at {{low}}",
+    "no_days": "No sessions were taken in this period.",
+    "states": {
+      "present": "Present",
+      "late": "Late",
+      "absent": "Absent",
+      "excused": "Excused"
+    },
+    "open_attendance": "Open the attendance report",
+    "all_reports": "Other reports",
+    "error": "Could not load the data.",
+    "filters": "Filters",
+    "done": "Done",
+    "export": "Export",
+    "export_pdf": "PDF file",
+    "export_xlsx": "Excel file"
   }
 }
