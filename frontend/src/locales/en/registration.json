@@ -231,6 +231,15 @@
   "mobile": {
     "register_title": "Register",
     "track_title": "Track a request",
-    "track_contact": "Questions about your request? Call us"
+    "track_contact": "Questions about your request? Call us",
+    "filters": "Filters",
+    "clear": "Clear",
+    "done": "Done",
+    "show_all": "Show all requests",
+    "age": "{{n}} yrs",
+    "today": "Today",
+    "days_ago_one": "1 day ago",
+    "days_ago_other": "{{n}} days ago",
+    "accept": "Accept and place"
   }
 }

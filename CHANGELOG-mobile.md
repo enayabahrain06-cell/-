@@ -128,3 +128,24 @@ left out and listed under the page.
 - Lapis note with the authority phone from `/public/settings` (tel: link, Latin digits, `dir=ltr`).
 - Not in the backend: the spec's five stages (اكتمال البيانات، تحديد الحلقة، السداد); the request only has
   created / decided dates, so the timeline shows the app's three steps.
+
+## Registration requests (/packages?tab=requests) — Requests.dc.html
+
+- `MobileRequests` under `lg:hidden`; the band, desktop tabs, filter bar and list are unchanged under `hidden lg:block`.
+  Same `['registrations', filters]` query, mutations and dialogs (accept with circle + level, ID card, reject with
+  reason, bulk accept) as desktop.
+- Page header الباقات والتسجيل with a share action that opens the public form, breadcrumb, segmented الباقات /
+  طلبات التسجيل (the page's `tab` param).
+- Search (Enter commits `search`) + filter button (package select and قبول جماعي in a bottom sheet); status chips
+  on the same `status` param (المعلقة، قائمة الانتظار، بانتظار القرعة، المسجّلة، المرفوضة، الكل), the active chip
+  shows its count.
+- Cards: avatar, name, age · track · level · guardian, request no. · phone (Latin, `dir=ltr`), status pill; a
+  bg-page line with the package and an age-of-request pill (gold after 7 days pending), placement score and
+  recommended / confirmed level, "no photo" when missing; rejection reason on clay. Actions: قبول (tinted, opens the
+  accept dialog where the circle is chosen), 44px انتظار / ID card / reject (clay, opens the reason confirm) icon
+  buttons, or ملف الطالب once enrolled. Skeleton cards, designed empty state, pagination, 4-second toast.
+- The accept buttons are tinted secondaries, not bg-brand-700: a list of cards cannot each hold the screen's one
+  primary; this tab has no primary.
+- Not in the backend: per-status counts for every chip (the list returns only the filtered total), a suggested
+  circle per request without one call per card (the matcher runs in the accept dialog), "طلب استكمال" (request
+  missing data) and an incomplete-request flag.

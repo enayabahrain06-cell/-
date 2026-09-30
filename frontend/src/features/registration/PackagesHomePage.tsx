@@ -14,6 +14,7 @@ import { formatDate, formatMoney, formatNumber, formatPercent } from '../../lib/
 import { GENDER_TONE } from '../lessons/LessonsHomePage'
 import PackageFormDialog from './PackageFormDialog'
 import CardApplyDialog from '../enrollment/CardApplyDialog'
+import { MobilePackagesHeader, MobileRequests } from './MobilePackages'
 
 /** Outcomes the server treats as final (RegistrationStatus::isDecided); accept, waitlist and reject are refused for them. */
 const DECIDED: string[] = ['accepted', 'enrolled', 'pending_lottery']
@@ -24,14 +25,20 @@ export default function PackagesHomePage() {
   const { can } = useAuth()
   const [params, setParams] = useSearchParams()
   const tab = params.get('tab') === 'requests' || !can('packages.view') ? 'requests' : 'packages'
+  const tabs = [...(can('packages.view') ? [{ value: 'packages' as const, label: t('admin.tabs.packages') }] : []), ...(can('registrations.view') ? [{ value: 'requests' as const, label: t('admin.tabs.requests') }] : [])]
+  const onTab = (v: 'packages' | 'requests') => setParams({ tab: v }, { replace: true })
 
   return (
     <div className="space-y-5">
-      <PageBand title={t('admin.title')} subtitle={t('admin.subtitle')}
-        actions={<a href="/register" target="_blank" rel="noreferrer" className={buttonClass('onDeep')}><Icon name="packages" className="size-4" />{t('admin.open_public')}</a>} />
-      <Segmented name="pkg-tab" label={t('admin.title')} value={tab}
-        options={[...(can('packages.view') ? [{ value: 'packages' as const, label: t('admin.tabs.packages') }] : []), ...(can('registrations.view') ? [{ value: 'requests' as const, label: t('admin.tabs.requests') }] : [])]}
-        onChange={(v) => setParams({ tab: v }, { replace: true })} />
+      {/* Below lg: page header + segmented tabs (MobilePackages); the band and desktop tabs stay as they are. */}
+      <MobilePackagesHeader tab={tab} tabs={tabs} onTab={onTab} />
+      <div className="hidden lg:block">
+        <PageBand title={t('admin.title')} subtitle={t('admin.subtitle')}
+          actions={<a href="/register" target="_blank" rel="noreferrer" className={buttonClass('onDeep')}><Icon name="packages" className="size-4" />{t('admin.open_public')}</a>} />
+      </div>
+      <div className="hidden lg:block">
+        <Segmented name="pkg-tab" label={t('admin.title')} value={tab} options={tabs} onChange={onTab} />
+      </div>
       {tab === 'packages' ? <Packages /> : <Requests />}
     </div>
   )
@@ -111,9 +118,15 @@ function Requests() {
   const waitlist = useMutation({ mutationFn: (id: number) => requestsApi.waitlist(id), onSuccess: refresh, onError: onErr })
   const reject = useMutation({ mutationFn: () => requestsApi.reject(rejecting!.id!, reason), onSuccess: () => { setRejecting(null); setReason(''); refresh() }, onError: onErr })
   const manage = can('registrations.manage')
+  const pagination = q.data && q.data.data.length > 0 ? <Pagination page={q.data.meta.current_page} lastPage={q.data.meta.last_page} total={q.data.meta.total} onPage={(p) => set('page', String(p))} /> : null
 
   return (
     <div className="space-y-4">
+      <MobileRequests rows={q.data?.data} total={q.data?.meta.total} loading={q.isLoading} error={q.isError ? <ErrorState onRetry={() => void q.refetch()} /> : null}
+        status={status} filters={filters} packages={packages.data?.data ?? []} manage={manage} decided={DECIDED} onSet={set}
+        onAccept={setAccepting} onWaitlist={(r) => waitlist.mutate(r.id!)} onReject={setRejecting} onCard={setCarding} onBulk={() => setBulk(true)}
+        notice={notice} pagination={pagination} />
+      <div className="hidden space-y-4 lg:block">
       <FilterBar>
         <Segmented name="req-status" label={t('admin.tabs.requests')} value={status} size="sm"
           options={(['pending', 'waitlist', 'pending_lottery', 'enrolled', 'rejected', 'all'] as const).map((s) => ({ value: s, label: t(`admin.status_filter.${s}`) }))}
@@ -162,9 +175,10 @@ function Requests() {
               </li>
             ))}
           </ul>
-          <Pagination page={q.data.meta.current_page} lastPage={q.data.meta.last_page} total={q.data.meta.total} onPage={(p) => set('page', String(p))} />
+          {pagination}
         </>
       )}
+      </div>
 
       {rejecting && (
         <Modal title={`${t('admin.reject')}: ${rejecting.full_name}`} onClose={() => setRejecting(null)}
