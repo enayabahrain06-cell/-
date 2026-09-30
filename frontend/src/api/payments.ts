@@ -68,7 +68,7 @@ export const paymentsApi = {
   record: (form: FormData) => api.post<{ message: string; data?: PaymentRow; payment?: PaymentRow }>('/payments', form).then((r) => r.data),
   resendReceipt: (id: number) => api.post(`/payments/${id}/resend-receipt`),
   invoices: (p: Record<string, string | number | boolean | undefined>) => api.get<Paged<InvoiceRow>>('/invoices', { params: p }).then((r) => r.data),
-  createInvoice: (d: { student_id: number; amount: string; due_date: string; description: string; term?: string }) =>
+  createInvoice: (d: { student_id: number; amount: string; due_date: string; description: string; term?: string; academic_term_id?: number }) =>
     api.post('/invoices', { ...d, amount_fils: Math.round(Number(d.amount) * 1000) }).then((r) => r.data),
   cancelInvoice: (id: number, note: string) => api.post(`/invoices/${id}/cancel`, { note }),
   refunds: (p: Record<string, string | number | undefined>) => api.get<Paged<RefundRow>>('/refunds', { params: p }).then((r) => r.data),

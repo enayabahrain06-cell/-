@@ -48,13 +48,13 @@ class WalletService
         return Wallet::firstOrCreate(['student_id' => $student->id], ['balance_fils' => 0]);
     }
 
-    public function createInvoice(Student $student, ?Package $package, int $amountFils, CarbonInterface $dueDate, string $description, ?string $term = null, ?int $issuedBy = null): Invoice
+    public function createInvoice(Student $student, ?Package $package, int $amountFils, CarbonInterface $dueDate, string $description, ?string $term = null, ?int $issuedBy = null, ?int $academicTermId = null): Invoice
     {
         if ($amountFils <= 0) {
             throw ValidationException::withMessages(['amount_fils' => __('wallet.errors.amount_positive')]);
         }
 
-        return DB::transaction(function () use ($student, $package, $amountFils, $dueDate, $description, $term, $issuedBy) {
+        return DB::transaction(function () use ($student, $package, $amountFils, $dueDate, $description, $term, $issuedBy, $academicTermId) {
             $wallet = $this->lockedWallet($student);
 
             $invoice = Invoice::create([
@@ -67,8 +67,8 @@ class WalletService
                 'due_date' => $dueDate->toDateString(),
                 'status' => InvoiceStatus::Open,
                 'term' => $term ?? $package?->term,
-                // The package's term, otherwise the current one, so the invoice shows under the term selector.
-                'academic_term_id' => $package?->academic_term_id ?? \App\Support\TermScope::defaultId(),
+                // The chosen term, else the package's, else the current one, so the invoice shows under the term selector.
+                'academic_term_id' => $academicTermId ?? $package?->academic_term_id ?? \App\Support\TermScope::defaultId(),
                 'issued_by' => $issuedBy ?? auth()->id(),
             ]);
 

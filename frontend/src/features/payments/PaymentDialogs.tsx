@@ -5,6 +5,7 @@ import { METHODS, paymentsApi, type Method } from '../../api/payments'
 import { studentsApi, type StudentSummary } from '../../api/students'
 import { parseApiError, type FieldErrors } from '../../api/client'
 import SelectField from '../../components/SelectField'
+import { useTerm } from '../../app/term'
 import StudentPicker from '../../components/StudentPicker'
 import { Modal, Notice, PrimaryButton, SecondaryButton, TextArea, TextInput } from '../../components/ui'
 import { formatMoney } from '../../lib/format'
@@ -79,12 +80,14 @@ export function RecordPaymentDialog({ initial, onClose, onDone }: { initial?: St
 
 export function InvoiceDialog({ onClose, onDone }: { onClose: () => void; onDone: () => void }) {
   const { t } = useTranslation('payments')
+  // Defaults to the term chosen in the top bar (the current one when "all terms" is selected).
+  const { terms, selected, current } = useTerm()
   const invalidate = useInvalidate()
   const [student, setStudent] = useState<StudentSummary | null>(null)
-  const [form, setForm] = useState(() => ({ amount: '', description: '', due_date: new Date(Date.now() + 7 * 864e5).toISOString().slice(0, 10), term: '' }))
+  const [form, setForm] = useState(() => ({ amount: '', description: '', due_date: new Date(Date.now() + 7 * 864e5).toISOString().slice(0, 10), term: '', academic_term_id: selected?.id ?? current?.id ?? null as number | null }))
   const [error, setError] = useState<string | null>(null)
   const save = useMutation({
-    mutationFn: () => paymentsApi.createInvoice({ student_id: student!.id, amount: toLatinDigits(form.amount), description: form.description, due_date: form.due_date, term: form.term || undefined }),
+    mutationFn: () => paymentsApi.createInvoice({ student_id: student!.id, amount: toLatinDigits(form.amount), description: form.description, due_date: form.due_date, term: form.term || undefined, academic_term_id: form.academic_term_id ?? undefined }),
     onSuccess: () => { invalidate(); onDone() },
     onError: (e) => { const p = parseApiError(e); setError(errOf(p.fields, 'amount_fils', 'description', 'due_date') ?? p.message) },
   })
@@ -97,7 +100,12 @@ export function InvoiceDialog({ onClose, onDone }: { onClose: () => void; onDone
       <div className="grid gap-4 sm:grid-cols-3">
         <TextInput label={t('form.amount')} inputMode="decimal" dir="ltr" value={form.amount} onChange={(e) => setForm({ ...form, amount: e.target.value })} />
         <TextInput label={t('form.due_date')} type="date" value={form.due_date} onChange={(e) => setForm({ ...form, due_date: e.target.value })} />
-        <TextInput label={t('form.term')} value={form.term} onChange={(e) => setForm({ ...form, term: e.target.value })} />
+        {terms.length > 0 ? (
+          <SelectField label={t('form.term')} value={String(form.academic_term_id ?? '')} onChange={(e) => setForm({ ...form, academic_term_id: Number(e.target.value) })}
+            options={terms.map((x) => ({ value: String(x.id), label: x.name }))} />
+        ) : (
+          <TextInput label={t('form.term')} value={form.term} onChange={(e) => setForm({ ...form, term: e.target.value })} />
+        )}
       </div>
     </Modal>
   )

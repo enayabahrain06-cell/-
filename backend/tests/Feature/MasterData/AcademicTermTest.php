@@ -144,3 +144,36 @@ it('migrates free-text terms into linked academic terms without changing the tex
         // Quran is seeded again as a system subject.
         ->and(DB::table('subjects')->where('code', 'quran')->value('is_system'))->toBeTruthy();
 });
+
+it('lets a manual invoice choose its term, defaulting to the package term or the current one', function () {
+    actingAsRole('super_admin');
+    makeTerm(['is_current' => true]);
+    $other = makeTerm();
+    $student = Student::factory()->create();
+
+    $id = $this->postJson('/api/invoices', ['student_id' => $student->id, 'amount_fils' => 500, 'due_date' => '2026-10-01', 'description' => 'x', 'academic_term_id' => $other->id])
+        ->assertCreated()->json('data.id');
+    expect(\App\Models\Invoice::find($id)->academic_term_id)->toBe($other->id);
+    $this->postJson('/api/invoices', ['student_id' => $student->id, 'amount_fils' => 500, 'due_date' => '2026-10-01', 'description' => 'x', 'academic_term_id' => 999])
+        ->assertJsonValidationErrors('academic_term_id');
+});
+
+it('reports rows that would get no term and dry-runs the conversion without writing', function () {
+    $current = makeTerm(['is_current' => true, 'legacy_label' => 'T-1', 'start_date' => '2026-09-01', 'end_date' => '2027-01-31']);
+    Package::factory()->create(['term' => '   ', 'name' => 'Blank']);
+    $new = Package::factory()->create(['term' => 'T-2', 'start_date' => '2027-02-01', 'end_date' => '2027-06-30']);
+    Exam::factory()->create(['lesson_id' => null, 'package_id' => null, 'exam_date' => '2030-01-01']);
+
+    $this->artisan('terms:check')
+        ->expectsOutputToContain('Blank')
+        ->expectsOutputToContain('outside every term')
+        ->assertExitCode(1);
+
+    $this->artisan('terms:convert --dry-run')->expectsOutputToContain('DRY RUN')->assertExitCode(0);
+    expect(AcademicTerm::count())->toBe(1)->and($new->fresh()->academic_term_id)->toBeNull();
+
+    $this->artisan('terms:convert')->assertExitCode(0);
+    $t2 = AcademicTerm::where('legacy_label', 'T-2')->firstOrFail();
+    expect($new->fresh()->academic_term_id)->toBe($t2->id)
+        ->and(AcademicTerm::where('is_current', true)->pluck('id')->all())->toBe([$current->id]);
+});

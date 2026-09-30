@@ -148,6 +148,7 @@ class WalletController extends Controller
             'due_date' => ['required', 'date'],
             'description' => ['required', 'string', 'max:255'],
             'term' => ['nullable', 'string', 'max:60'],
+            'academic_term_id' => ['nullable', 'integer', 'exists:academic_terms,id'],
         ]);
         $student = Student::findOrFail($data['student_id']);
         Gate::authorize('recordPayment', [\App\Models\Wallet::class, $student]);
@@ -160,6 +161,7 @@ class WalletController extends Controller
             $data['description'],
             $data['term'] ?? null,
             $request->user()->id,
+            isset($data['academic_term_id']) ? (int) $data['academic_term_id'] : null,
         );
 
         return (new InvoiceResource($invoice->load(['student', 'package'])))->response()->setStatusCode(201);
