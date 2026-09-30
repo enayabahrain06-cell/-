@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { useMutation } from '@tanstack/react-query'
+import { useMutation, useQuery } from '@tanstack/react-query'
 import { Link, useParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { publicApi, type RegistrationRequest } from '../../api/registration'
@@ -7,6 +7,7 @@ import Alert from '../../components/Alert'
 import Button from '../../components/Button'
 import FormField from '../../components/FormField'
 import Icon from '../../components/Icon'
+import { M_CARD, Pill, type PillTone } from '../../components/mobile/atoms'
 import { OrnamentDivider } from '../../components/ornaments'
 import { SURFACE } from '../../components/ui'
 import PublicLayout from '../../layouts/PublicLayout'
@@ -40,15 +41,15 @@ export default function TrackRequestPage() {
   })
 
   return (
-    <PublicLayout>
+    <PublicLayout mobile={{ title: t('mobile.track_title'), back: '/login' }}>
       <div className="mx-auto max-w-lg space-y-6">
-        <div className="text-center">
+        <div className="text-center max-lg:hidden">
           <h1 className="font-display text-3xl text-ink sm:text-4xl">{t('track.title')}</h1>
           <p className="mt-2 text-ink/65">{t('track.subtitle')}</p>
           <OrnamentDivider align="center" className="mx-auto mt-3 text-gold-500" />
         </div>
 
-        <form className={`${SURFACE} space-y-5 p-6`} onSubmit={(e) => { e.preventDefault(); search.mutate() }} aria-describedby="track-hint">
+        <form className={`${SURFACE} space-y-5 p-6 max-lg:p-4`} onSubmit={(e) => { e.preventDefault(); search.mutate() }} aria-describedby="track-hint">
           <div className="flex items-start gap-3">
             <span className="shrink-0 rounded-xl bg-brand-50 p-2.5 text-brand-700"><Icon name="search" className="size-5" /></span>
             <p id="track-hint" className="text-sm leading-relaxed text-ink/65">{t('track.hint')}</p>
@@ -61,10 +62,12 @@ export default function TrackRequestPage() {
           <Button type="submit" loading={search.isPending}>{t('track.search')}</Button>
         </form>
 
-        {found && <Result request={found} locale={locale} />}
+        {found && <div className="hidden lg:block"><Result request={found} locale={locale} /></div>}
+        {found && <MobileTrackResult request={found} locale={locale} />}
+        <MobileTrackContact />
 
         <p className="text-center text-sm">
-          <Link to="/register" className="inline-flex items-center gap-1.5 font-medium text-brand-700 hover:underline">
+          <Link to="/register" className="inline-flex items-center gap-1.5 font-medium text-brand-700 hover:underline max-lg:min-h-11 max-lg:text-[15px]">
             <Icon name="enroll" className="size-4" />{t('public.new_request')}
           </Link>
         </p>
@@ -139,5 +142,81 @@ function Result({ request: r, locale }: { request: RegistrationRequest; locale: 
         </dl>
       </div>
     </section>
+  )
+}
+
+const PILL_TONE: Record<string, PillTone> = { pending: 'warn', pending_lottery: 'warn', waitlist: 'info', accepted: 'ok', enrolled: 'ok', rejected: 'err' }
+
+/**
+ * Result below lg (mobile spec §6.3): name + request number + status pill, then a vertical timeline
+ * (done = emerald dot, current = gold ring, pending = hollow). Same data and steps as the desktop result.
+ */
+function MobileTrackResult({ request: r, locale }: { request: RegistrationRequest; locale: string }) {
+  const { t } = useTranslation('registration')
+  const label = t(`status.${r.status}`, { defaultValue: r.status_label })
+  const body = t(`track.${r.status}_body`, { defaultValue: '' })
+  const decided = ['accepted', 'enrolled', 'rejected'].includes(r.status)
+  const date = (d: string | null) => (d ? formatDate(d, locale, { day: 'numeric', month: 'short', year: 'numeric' }) : null)
+  const steps = [
+    { key: 'submitted', label: t('track.step_submitted'), date: date(r.created_at), state: 'done' },
+    { key: 'review', label: r.status === 'waitlist' ? label : t('track.step_review'), date: null, state: decided ? 'done' : 'current' },
+    { key: 'decision', label: decided ? label : t('track.step_decision'), date: decided ? date(r.decided_at) : null, state: decided ? 'done' : 'todo' },
+  ] as const
+
+  return (
+    <section aria-labelledby="track-result-m" aria-live="polite" className={`${M_CARD} space-y-4 p-4 lg:hidden`}>
+      <div className="flex items-start gap-3">
+        <div className="min-w-0 flex-1">
+          <h2 id="track-result-m" className="truncate text-[15px] font-semibold text-ink"><bdi>{r.full_name}</bdi></h2>
+          <p className="mt-0.5 truncate text-[13px] text-ink/65"><span dir="ltr" className="font-mono tracking-wider">{r.request_no}</span>{r.package && <> · <bdi>{r.package.name}</bdi></>}</p>
+        </div>
+        <Pill tone={PILL_TONE[r.status] ?? 'warn'}>{label}</Pill>
+      </div>
+      {body && <p className="text-[15px] text-ink/75">{body}</p>}
+
+      {r.status === 'waitlist' && r.waitlist_position && (
+        <div className="flex items-center justify-between gap-3 rounded-ctl bg-info/10 px-4 py-3 text-info">
+          <span className="text-[13px] font-semibold">{t('track.position_label')}</span>
+          <span className="text-2xl font-semibold tabular-nums">{formatNumber(r.waitlist_position, locale)}</span>
+        </div>
+      )}
+
+      <ol aria-label={t('track.result')}>
+        {steps.map((s, i) => {
+          const rejected = r.status === 'rejected' && s.key === 'decision'
+          return (
+            <li key={s.key} className="relative flex min-h-12 gap-3" aria-current={s.state === 'current' ? 'step' : undefined}>
+              {i < steps.length - 1 && <span aria-hidden className={`absolute bottom-0 start-[9px] top-6 w-0.5 ${s.state === 'done' ? 'bg-brand-700' : 'bg-ink/10'}`} />}
+              <span aria-hidden className={`relative mt-0.5 grid size-5 shrink-0 place-items-center rounded-full ${
+                s.state === 'done' ? (rejected ? 'bg-danger text-white' : 'bg-brand-700 text-white') : s.state === 'current' ? 'border-[3px] border-gold-500 bg-white' : 'border-2 border-ink/20 bg-white'
+              }`}>
+                {s.state === 'done' && <Icon name={rejected ? 'close' : 'check'} className="size-3" />}
+              </span>
+              <div className="min-w-0 flex-1 pb-3">
+                <p className={`text-[15px] ${s.state === 'todo' ? 'text-ink/65' : 'font-semibold text-ink'}`}>{s.label}</p>
+                {s.date && <p className="text-[13px] tabular-nums text-ink/65">{s.date}</p>}
+              </div>
+            </li>
+          )
+        })}
+      </ol>
+
+      {r.reason && <p className="rounded-ctl bg-page px-4 py-3 text-[13px] text-ink/75"><b className="text-ink">{t('track.reason')}:</b> <span dir="auto">{r.reason}</span></p>}
+    </section>
+  )
+}
+
+/** Lapis note with the authority's phone (public settings), below lg only. */
+function MobileTrackContact() {
+  const { t } = useTranslation('registration')
+  const settings = useQuery({ queryKey: ['public-settings'], queryFn: publicApi.settings, staleTime: 5 * 60_000 })
+  const phone = settings.data?.authority.phone
+  if (!phone) return null
+  return (
+    <div className="flex items-center gap-3 rounded-card bg-info/10 px-4 py-2 text-[13px] text-info lg:hidden">
+      <Icon name="phone" className="size-5 shrink-0" />
+      <p className="min-w-0 flex-1">{t('mobile.track_contact')}</p>
+      <a href={`tel:${phone}`} dir="ltr" className="inline-flex min-h-11 shrink-0 items-center font-semibold tabular-nums underline">{phone}</a>
+    </div>
   )
 }
