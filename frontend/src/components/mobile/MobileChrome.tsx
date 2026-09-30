@@ -191,7 +191,15 @@ function MoreSheet({ open, onClose }: { open: boolean; onClose: () => void }) {
   const { user, can, signOut } = useAuth()
   const locale = i18n.language
   const alerts = useQuery({ queryKey: ['alerts-count'], queryFn: () => dashboardApi.alerts({ per_page: 1 }), enabled: open && can('dashboard.view'), staleTime: 60_000 })
-  const counts: Record<string, number> = { packages: alerts.data?.meta.by_type?.registration_request ?? 0 }
+  // Count pills (spec §4.4): open dashboard alerts of each type, on the section that handles them.
+  const byType = alerts.data?.meta.by_type ?? {}
+  const counts: Record<string, number> = {
+    packages: byType.registration_request ?? 0,
+    lessons: (byType.location_conflict ?? 0) + (byType.lesson_no_teacher ?? 0),
+    attendance: byType.repeated_absence ?? 0,
+    lottery: byType.lottery_pending ?? 0,
+    payments: byType.invoice_overdue ?? 0,
+  }
 
   const sections = NAV_SECTIONS.filter((s) => s.path !== '/' && can(...s.permissions))
   const groups = [...new Set(sections.map((s) => s.group))]

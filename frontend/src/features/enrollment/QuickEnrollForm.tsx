@@ -212,7 +212,7 @@ export default function QuickEnrollForm({ lock, onEnrolled }: { lock?: LockedCir
   }
 
   return (
-    <form onSubmit={(e) => void submit(e)} noValidate className="space-y-6">
+    <form onSubmit={(e) => void submit(e)} noValidate className={lock ? 'space-y-6' : 'space-y-6 max-lg:space-y-4 max-lg:pb-20'}>
       {done && (
         <Alert tone="success">
           <p className="font-medium">{done.message}</p>
@@ -460,7 +460,19 @@ export default function QuickEnrollForm({ lock, onEnrolled }: { lock?: LockedCir
         </div>
       )}
 
-      <div className="flex flex-col gap-3 sm:flex-row">
+      {/* Total row above the bar (spec §6.18), phones only; never the form's last child, so desktop spacing is unchanged. */}
+      {!withoutPackage && selected && (
+        <div className="flex items-center justify-between gap-3 rounded-card bg-brand-50 px-4 py-3 text-brand-900 lg:hidden">
+          <span className="min-w-0 text-[13px] font-semibold">
+            {t('mobile.total')}
+            <span dir="auto" className="block truncate font-normal text-ink/65">{selected.name}{waitlist && <> · {t('mobile.waitlist')}</>}</span>
+          </span>
+          <span className="shrink-0 text-lg font-semibold tabular-nums">{selected.price_fils > 0 ? formatMoney(selected.price_fils, locale) : t('mobile.free')}</span>
+        </div>
+      )}
+
+      {/* Below lg (not in the circle dialog) the two saves are the sticky action bar (spec §4.5). */}
+      <div className={lock ? 'flex flex-col gap-3 sm:flex-row' : `flex flex-col gap-3 sm:flex-row ${STICKY_BAR}`}>
         <Button type="submit" loading={saving} className="sm:w-auto sm:px-8">
           {withoutPackage ? t('save_without_package') : waitlist ? t('save_waitlist') : t('save')}
         </Button>
@@ -472,6 +484,8 @@ export default function QuickEnrollForm({ lock, onEnrolled }: { lock?: LockedCir
   )
 }
 
+const STICKY_BAR = 'max-lg:fixed max-lg:inset-x-0 max-lg:bottom-0 max-lg:z-20 max-lg:flex-row max-lg:gap-2.5 max-lg:border-t max-lg:border-ink/10 max-lg:bg-white max-lg:px-4 max-lg:pb-[max(1.25rem,env(safe-area-inset-bottom))] max-lg:pt-3 sm:max-lg:px-6 max-lg:[&>*]:min-h-12 max-lg:[&>*]:rounded-ctl max-lg:[&>*]:py-2 max-lg:[&>*]:text-[15px] max-lg:[&>*]:flex-1 max-lg:[&>*]:px-2 max-lg:[&>*]:leading-5'
+
 /** Error keys the form renders next to a field; with no package the package and circle pickers are hidden. */
 function shownErrorKeys(withoutPackage: boolean): string[] {
   const always = ['full_name', 'birth_date', 'gender', 'memorization_level', 'student_phone', 'cpr', 'address', 'photo', 'guardian_phone', 'guardian_name', 'duplicate', 'record_payment', 'payment_amount_fils']
@@ -481,8 +495,8 @@ function shownErrorKeys(withoutPackage: boolean): string[] {
 /** A form section: a fieldset whose legend sits inside the card (float trick) and which may shrink below its content width. */
 function Section({ title, className = '', children }: { title: string; className?: string; children: ReactNode }) {
   return (
-    <fieldset className={`${SURFACE} min-w-0 p-5`}>
-      <legend className="float-start mb-4 w-full text-sm font-semibold text-ink/70">{title}</legend>
+    <fieldset className={`${SURFACE} min-w-0 p-5 max-lg:p-4`}>
+      <legend className="float-start mb-4 w-full text-sm font-semibold text-ink/70 max-lg:mb-3 max-lg:text-xs max-lg:text-ink/65">{title}</legend>
       <div className={`clear-both ${className}`}>{children}</div>
     </fieldset>
   )

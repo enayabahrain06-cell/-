@@ -27,9 +27,10 @@ export default function QuickEnrollPage() {
 
   return (
     <div className="space-y-5">
-      <PageBand title={t('title')} subtitle={t('subtitle')} />
+      {/* Below lg the shell's page header (تسجيل سريع + breadcrumb) replaces the band. */}
+      <div className="hidden lg:block"><PageBand title={t('title')} subtitle={t('subtitle')} /></div>
 
-      <div role="tablist" aria-label={t('title')} onKeyDown={onKeyDown} className="inline-flex flex-wrap gap-1 rounded-xl bg-ink/5 p-1">
+      <div role="tablist" aria-label={t('title')} onKeyDown={onKeyDown} className="inline-flex flex-wrap gap-1 rounded-xl bg-ink/5 p-1 max-lg:flex max-lg:flex-nowrap max-lg:gap-[3px] max-lg:rounded-ctl max-lg:p-[3px]">
         {TABS.map((k) => (
           <button
             key={k}
@@ -41,7 +42,7 @@ export default function QuickEnrollPage() {
             aria-controls={`panel-${k}`}
             tabIndex={tab === k ? 0 : -1}
             onClick={() => setTab(k)}
-            className={`min-h-10 rounded-lg px-4 py-2 text-sm font-medium transition ${tab === k ? 'bg-white text-ink shadow-sm ring-1 ring-ink/10' : 'text-ink/60 hover:text-ink'}`}
+            className={`min-h-10 rounded-lg px-4 py-2 text-sm font-medium transition max-lg:min-h-11 max-lg:flex-1 max-lg:px-2 max-lg:font-semibold ${tab === k ? 'bg-white text-ink shadow-sm ring-1 ring-ink/10 max-lg:text-brand-700' : 'text-ink/60 hover:text-ink max-lg:text-ink/65'}`}
           >
             {t(`tab_${k}`)}
           </button>

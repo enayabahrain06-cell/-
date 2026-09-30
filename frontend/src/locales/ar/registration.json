@@ -227,5 +227,24 @@
     "delete": "حذف",
     "delete_confirm": "حذف هذه الباقة؟"
   },
-  "gender": { "male": "بنين", "female": "بنات", "mixed": "مبكر (مختلط)" }
+  "gender": { "male": "بنين", "female": "بنات", "mixed": "مبكر (مختلط)" },
+  "mobile": {
+    "register_title": "طلب تسجيل",
+    "track_title": "تتبع الطلب",
+    "track_contact": "للاستفسار عن طلبك تواصل معنا",
+    "filters": "التصفية",
+    "clear": "مسح",
+    "done": "تم",
+    "show_all": "عرض كل الطلبات",
+    "age": "{{n}} سنة",
+    "today": "اليوم",
+    "days_ago_zero": "اليوم",
+    "days_ago_one": "منذ يوم",
+    "days_ago_two": "منذ يومين",
+    "days_ago_few": "منذ {{n}} أيام",
+    "days_ago_many": "منذ {{n}} يومًا",
+    "days_ago_other": "منذ {{n}} يوم",
+    "accept": "قبول وتحديد الحلقة",
+    "package_open": "{{name}}: مفتوحة للتسجيل"
+  }
 }

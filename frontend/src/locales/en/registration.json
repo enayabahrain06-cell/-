@@ -227,5 +227,20 @@
     "delete": "Delete",
     "delete_confirm": "Delete this package?"
   },
-  "gender": { "male": "Boys", "female": "Girls", "mixed": "Early years (mixed)" }
+  "gender": { "male": "Boys", "female": "Girls", "mixed": "Early years (mixed)" },
+  "mobile": {
+    "register_title": "Register",
+    "track_title": "Track a request",
+    "track_contact": "Questions about your request? Call us",
+    "filters": "Filters",
+    "clear": "Clear",
+    "done": "Done",
+    "show_all": "Show all requests",
+    "age": "{{n}} yrs",
+    "today": "Today",
+    "days_ago_one": "1 day ago",
+    "days_ago_other": "{{n}} days ago",
+    "accept": "Accept and place",
+    "package_open": "{{name}}: open for registration"
+  }
 }

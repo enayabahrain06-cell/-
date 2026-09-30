@@ -29,11 +29,11 @@ export default function LoginPage() {
 
   return (
     <AuthLayout>
-      <h1 className="font-display text-3xl text-ink sm:text-4xl">{t('title')}</h1>
-      <OrnamentDivider className="mt-2 text-gold-500" />
-      <p className="mt-3 text-ink/65">{t('subtitle')}</p>
+      <h1 className="font-display text-3xl text-ink sm:text-4xl max-lg:text-[28px] max-lg:leading-normal">{t('title')}</h1>
+      <OrnamentDivider className="mt-2 text-gold-500 max-lg:hidden" />
+      <p className="mt-3 text-ink/65 max-lg:mt-1 max-lg:text-[15px]">{t('subtitle')}</p>
 
-      <div role="tablist" aria-label={t('title')} className="mt-8 grid grid-cols-2 gap-1 rounded-2xl bg-ink/5 p-1">
+      <div role="tablist" aria-label={t('title')} className="mt-8 grid grid-cols-2 gap-1 rounded-2xl bg-ink/5 p-1 max-lg:mt-5 max-lg:gap-[3px] max-lg:rounded-ctl max-lg:p-[3px]">
         {(['password', 'otp'] as const).map((m) => (
           <button
             key={m}
@@ -43,8 +43,8 @@ export default function LoginPage() {
             aria-selected={mode === m}
             aria-controls={`panel-${m}`}
             onClick={() => setMode(m)}
-            className={`rounded-xl px-3 py-2.5 text-sm font-semibold transition focus-visible:outline-2 focus-visible:outline-brand-500 ${
-              mode === m ? 'bg-white text-ink shadow-sm' : 'text-ink/65 hover:text-ink'
+            className={`rounded-xl px-3 py-2.5 text-sm font-semibold transition focus-visible:outline-2 focus-visible:outline-brand-500 max-lg:min-h-11 max-lg:rounded-lg max-lg:px-2 max-lg:py-1.5 ${
+              mode === m ? 'bg-white text-ink shadow-sm max-lg:text-brand-700 max-lg:shadow-card' : 'text-ink/65 hover:text-ink'
             }`}
           >
             {t(`tabs.${m}`)}
@@ -52,16 +52,16 @@ export default function LoginPage() {
         ))}
       </div>
 
-      <section id={`panel-${mode}`} role="tabpanel" aria-labelledby={`tab-${mode}`} className="mt-6">
-        <p className="mb-5 text-sm text-ink/55">{t(`tab_hints.${mode}`)}</p>
+      <section id={`panel-${mode}`} role="tabpanel" aria-labelledby={`tab-${mode}`} className="mt-6 max-lg:mt-4">
+        <p className="mb-5 text-sm text-ink/55 max-lg:mb-4 max-lg:text-[13px] max-lg:text-ink/65">{t(`tab_hints.${mode}`)}</p>
         {mode === 'password' ? <PasswordForm /> : <OtpForm />}
       </section>
 
-      <div className="mt-8 space-y-2 border-t border-ink/10 pt-6 text-center text-sm">
-        <Link to="/register" className="block font-medium text-brand-700 hover:underline">
+      <div className="mt-8 space-y-2 border-t border-ink/10 pt-6 text-center text-sm max-lg:mt-6 max-lg:space-y-0 max-lg:pt-3 max-lg:text-[15px]">
+        <Link to="/register" className="block font-medium text-brand-700 hover:underline max-lg:flex max-lg:min-h-11 max-lg:items-center max-lg:justify-center max-lg:font-semibold">
           {t('register_cta')}
         </Link>
-        <Link to="/track" className="block text-ink/55 hover:text-ink/80 hover:underline">
+        <Link to="/track" className="block text-ink/55 hover:text-ink/80 hover:underline max-lg:flex max-lg:min-h-11 max-lg:items-center max-lg:justify-center max-lg:text-ink/65">
           {t('track_cta')}
         </Link>
       </div>
@@ -122,7 +122,7 @@ function PasswordForm() {
           <button
             type="button"
             onClick={() => setShow((s) => !s)}
-            className="rounded-lg px-2.5 py-1.5 text-sm font-medium text-ink/55 hover:bg-ink/5 hover:text-ink"
+            className="rounded-lg px-2.5 py-1.5 text-sm font-medium text-ink/55 hover:bg-ink/5 hover:text-ink max-lg:min-h-11 max-lg:text-ink/65"
           >
             {show ? t('hide_password') : t('show_password')}
           </button>
@@ -240,14 +240,14 @@ function OtpForm() {
         {t('verify')}
       </Button>
       <div className="flex items-center justify-between text-sm">
-        <button type="button" onClick={() => setSent(null)} className="font-medium text-ink/65 hover:text-ink hover:underline">
+        <button type="button" onClick={() => setSent(null)} className="font-medium text-ink/65 hover:text-ink hover:underline max-lg:min-h-11">
           {t('change_phone')}
         </button>
         <button
           type="button"
           disabled={cooldown > 0}
           onClick={() => requestCode(sent.phone)}
-          className="font-medium text-brand-700 hover:underline disabled:cursor-not-allowed disabled:text-ink/40 disabled:no-underline"
+          className="font-medium text-brand-700 hover:underline disabled:cursor-not-allowed disabled:text-ink/40 disabled:no-underline max-lg:min-h-11 max-lg:tabular-nums max-lg:disabled:text-ink/65"
         >
           {cooldown > 0 ? t('resend_in', { seconds: cooldown }) : t('resend')}
         </button>

@@ -82,5 +82,10 @@
   "age_range": "Ages {{min}}–{{max}}",
   "unfit_age": "Not available: the student’s age is outside this package",
   "unfit_gender": "Not available: this package is for the other gender track",
-  "unfit_circle": "Not available: no circle you can enroll into fits this student"
+  "unfit_circle": "Not available: no circle you can enroll into fits this student",
+  "mobile": {
+    "total": "Total",
+    "waitlist": "Waitlist",
+    "free": "Free"
+  }
 }
