@@ -16,7 +16,8 @@ export default function RecipientCertificates({ type, id, summaryTypes = [] }: {
 }) {
   const { t, locale } = useCertT()
   const { api, ui, formatDate, formatNumber } = useCertificates()
-  const options = useCertificateOptions()
+  // Labels are only needed for summary types without one; family pages always pass labels, and the endpoint is staff-only.
+  const options = useCertificateOptions(summaryTypes.some((s) => !s.label))
   const q = useQuery({ queryKey: ['certificates', 'recipient', type, String(id), locale], queryFn: () => api.forRecipient(type, id) })
   const actions = useCertificateActions()
   const [issuing, setIssuing] = useState(false)

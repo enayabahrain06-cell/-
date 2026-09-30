@@ -68,10 +68,11 @@ export function useInvalidateCertificates() {
   }
 }
 
-export function useCertificateOptions() {
+/** Type, status, grade and source labels (staff endpoint). Pass enabled=false where none is needed, e.g. read-only family pages. */
+export function useCertificateOptions(enabled = true) {
   const { api } = useCertificates()
   const { locale } = useCertT()
-  return useQuery({ queryKey: ['certificates', 'options', locale], queryFn: api.options, staleTime: 5 * 60_000 })
+  return useQuery({ queryKey: ['certificates', 'options', locale], queryFn: api.options, staleTime: 5 * 60_000, enabled })
 }
 
 /**
