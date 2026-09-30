@@ -11,6 +11,7 @@ import { Badge, ErrorState, LoadingState, PrimaryButton, type Tone, EmptyCard, S
 import { formatDate, formatNumber } from '../../lib/format'
 import { GENDER_TONE } from '../lessons/LessonsHomePage'
 import ExamFormDialog from './ExamFormDialog'
+import MobileExams from './MobileExams'
 
 export const EXAM_STATUS_TONE: Record<string, Tone> = { draft: 'muted', published: 'brand', closed: 'gold', graded: 'info' }
 
@@ -28,8 +29,13 @@ export default function ExamsHomePage() {
   const n = (v: number) => formatNumber(v, locale)
   const dt = (iso: string) => formatDate(iso, locale, { day: 'numeric', month: 'short', hour: 'numeric', minute: '2-digit' })
 
+  const pagination = q.data ? <Pagination page={q.data.meta.current_page} lastPage={q.data.meta.last_page} total={q.data.meta.total} onPage={(p) => set('page', String(p))} /> : null
+
   return (
-    <div className="space-y-5">
+    <>
+    <MobileExams exams={q.data?.data} loading={q.isLoading} error={q.isError || (!q.isLoading && !q.data)} onRetry={() => void q.refetch()} filters={filters} onSet={set}
+      canCreate={can('exams.manage')} onCreate={() => setOpen(true)} pagination={pagination} />
+    <div className="hidden space-y-5 lg:block">
       <PageBand title={t('title')} subtitle={t('subtitle')} />
       <FilterBar>
         <SelectField className="sm:w-40" label={t('filters.all_types')} hideLabel value={filters.type ?? ''} onChange={(e) => set('type', e.target.value)}
@@ -69,8 +75,9 @@ export default function ExamsHomePage() {
           <Pagination page={q.data.meta.current_page} lastPage={q.data.meta.last_page} total={q.data.meta.total} onPage={(p) => set('page', String(p))} />
         </>
       )}
+    </div>
       {/* A new exam opens on its Questions tab with the question editor ready (ExamDetailPage reads ?add=1). */}
       {open && <ExamFormDialog onClose={() => setOpen(false)} onSaved={(e) => { setOpen(false); navigate(`/exams/${e.id}?tab=questions&add=1`) }} />}
-    </div>
+    </>
   )
 }

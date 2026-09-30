@@ -112,3 +112,16 @@ left out and listed under the page.
 - Not in the app: the spec's grade buttons (ممتاز ٥ … إعادة ٢) — scores are four criteria out of 10; verse text for
   the preview (the API has surah names and ayah counts only, so the preview names the surah and range); a recitation
   history view (the header's history icon).
+
+## Exams (/exams) — Exams.dc.html
+
+- `MobileExams` under `lg:hidden`, same `['exams', filters]` query and URL params. Segmented الكل / القادمة /
+  للتصحيح / المنتهية on the existing `status` filter (published / closed / graded; drafts stay under الكل), type chips
+  on `type`.
+- Cards: date block (day number and short month, the paper exam's day or the online window's start), title (links to
+  the exam), status pill, circle (link) or package · attempts, type · marks, countdown pill (مفتوح الآن / اليوم /
+  بعد n يوم) on published exams. Two secondary buttons: قائمة الطلاب (grading tab) and النتائج (الأسئلة on drafts).
+  Awaiting-grading cards are gold-tinted and their first button is إدخال النتائج. FAB اختبار جديد (existing dialog).
+  Skeleton, empty and error states.
+- The spec's primary إدخال النتائج on the gold card is a secondary here: the FAB is the screen's one primary.
+- Not in the app: reminding guardians of an exam (تذكير أولياء الأمور) — the API only sends results.
