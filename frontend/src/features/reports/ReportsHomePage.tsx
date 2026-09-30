@@ -11,6 +11,8 @@ import { EmptyState, PageBand } from '../../components/ornaments'
 import { formatNumber, formatPercent } from '../../lib/format'
 import AttendanceRateChart from './AttendanceRateChart'
 import ReportTable from './ReportTable'
+import { presets } from './presets'
+import { MobileCatalog, MobileViewerBar } from './MobileReports'
 
 /** Reports: a catalog grouped by subject; ?report=<key> opens one with its filters kept in the URL. */
 export default function ReportsHomePage() {
@@ -22,6 +24,7 @@ export default function ReportsHomePage() {
 
   return (
     <div className="space-y-5">
+      <div className="hidden lg:block">
       <PageBand
         title={entry ? entry.title : t('title')}
         subtitle={entry ? entry.description : t('subtitle')}
@@ -34,6 +37,7 @@ export default function ReportsHomePage() {
           )
         }
       />
+      </div>
       {catalog.isLoading ? (
         <LoadingState />
       ) : catalog.isError || !catalog.data ? (
@@ -60,7 +64,9 @@ function Catalog({ catalog }: { catalog: ReportCatalog }) {
     .filter((g) => g.reports.length > 0)
 
   return (
-    <div className="space-y-5">
+    <>
+    <MobileCatalog catalog={catalog} groups={groups} query={query} onQuery={setQuery} />
+    <div className="hidden space-y-5 lg:block">
       <div className="flex flex-wrap items-center gap-3">
         <SearchInput className="w-full sm:w-80" label={t('search')} value={query} onChange={(e) => setQuery(e.target.value)} />
         <p className="text-sm tabular-nums text-ink/55" aria-live="polite">
@@ -102,22 +108,8 @@ function Catalog({ catalog }: { catalog: ReportCatalog }) {
         </div>
       )}
     </div>
+    </>
   )
-}
-
-const iso = (d: Date) => d.toLocaleDateString('en-CA')
-
-/** This month, last month, and the school term (September–January or February–June), each up to today at most. */
-function presets(): { key: string; from: string; to: string }[] {
-  const now = new Date()
-  const y = now.getFullYear()
-  const m = now.getMonth()
-  const termStart = m >= 8 ? new Date(y, 8, 1) : m === 0 ? new Date(y - 1, 8, 1) : new Date(y, 1, 1)
-  return [
-    { key: 'this_month', from: iso(new Date(y, m, 1)), to: iso(now) },
-    { key: 'last_month', from: iso(new Date(y, m - 1, 1)), to: iso(new Date(y, m, 0)) },
-    { key: 'this_term', from: iso(termStart), to: iso(now) },
-  ]
 }
 
 const PARAM_KEYS = ['from', 'to', 'lesson_id', 'package_id', 'teacher_id', 'gender', 'min_absences', 'months', 'status'] as const
@@ -167,46 +159,62 @@ function Viewer({ entry, catalog }: { entry: CatalogEntry; catalog: ReportCatalo
   const lessons = o.lessons.filter((l) => !values.package_id || String(l.package_id) === values.package_id).filter((l) => !values.teacher_id || String(l.teacher_id) === values.teacher_id)
   const activePreset = presets().find((p) => p.from === values.from && p.to === values.to)?.key
 
+  const dateFields = (
+    <>
+      <TextInput className="w-full sm:w-40" label={t('filters.from')} type="date" value={values.from} max={values.to} onChange={(e) => set({ from: e.target.value })} />
+      <TextInput className="w-full sm:w-40" label={t('filters.to')} type="date" value={values.to} min={values.from} onChange={(e) => set({ to: e.target.value })} />
+    </>
+  )
+  const otherFields = (
+    <>
+      {has('months') && (
+        <SelectField className="w-full sm:w-36" label={t('filters.months')} value={values.months ?? '12'} onChange={(e) => set({ months: e.target.value })}
+          options={['3', '6', '12', '24'].map((m) => ({ value: m, label: t('filters.last_months', { n: formatNumber(Number(m), locale) }) }))} />
+      )}
+      {has('gender') && o.track === 'both' && (
+        <SelectField className="w-full sm:w-36" label={t('filters.track')} value={values.gender ?? ''} onChange={(e) => set({ gender: e.target.value, lesson_id: undefined })}
+          options={[{ value: '', label: t('filters.both_tracks') }, { value: 'male', label: t('filters.boys') }, { value: 'female', label: t('filters.girls') }]} />
+      )}
+      {has('package') && o.packages.length > 0 && (
+        <SelectField className="w-full sm:w-52" label={t('filters.package')} value={values.package_id ?? ''} onChange={(e) => set({ package_id: e.target.value, lesson_id: undefined })}
+          options={[{ value: '', label: t('filters.all_packages') }, ...o.packages.map((p) => ({ value: String(p.id), label: p.name }))]} />
+      )}
+      {has('teacher') && o.teachers.length > 1 && (
+        <SelectField className="w-full sm:w-48" label={t('filters.teacher')} value={values.teacher_id ?? ''} onChange={(e) => set({ teacher_id: e.target.value, lesson_id: undefined })}
+          options={[{ value: '', label: t('filters.all_teachers') }, ...o.teachers.map((x) => ({ value: String(x.id), label: x.name }))]} />
+      )}
+      {has('lesson') && lessons.length > 0 && (
+        <SelectField className="w-full sm:w-52" label={t('filters.circle')} value={values.lesson_id ?? ''} onChange={(e) => set({ lesson_id: e.target.value })}
+          options={[{ value: '', label: t('filters.all_circles') }, ...lessons.map((l) => ({ value: String(l.id), label: l.active ? l.name : `${l.name} (${t('filters.ended')})` }))]} />
+      )}
+      {has('min_absences') && (
+        <TextInput className="w-full sm:w-32" label={t('filters.min_absences')} type="number" min={1} max={100} inputMode="numeric"
+          value={values.min_absences ?? ''} placeholder={t('filters.default_limit')} onChange={(e) => set({ min_absences: e.target.value })} />
+      )}
+      {has('issue_status') && (
+        <SelectField className="w-full sm:w-40" label={t('filters.status')} value={values.status ?? 'unresolved'} onChange={(e) => set({ status: e.target.value })}
+          options={[{ value: 'unresolved', label: t('filters.open_only') }, { value: 'all', label: t('filters.all_statuses') }]} />
+      )}
+    </>
+  )
+  const filterCount = PARAM_KEYS.filter((k) => k !== 'from' && k !== 'to' && params.get(k)).length
+
   return (
     <div className="space-y-5">
-      <div className={`${SURFACE} flex flex-wrap items-end gap-3 p-4`}>
+      <MobileViewerBar entry={entry} periodKeys={has('period') ? presets().map((p) => p.key) : null} activePreset={activePreset}
+        onPreset={(k) => { const p = presets().find((x) => x.key === k); if (p) set({ from: p.from, to: p.to }) }}
+        fields={<>{has('period') && <div className="grid grid-cols-2 gap-3">{dateFields}</div>}{otherFields}</>} filterCount={filterCount}
+        exporting={exporting} canExport={!!q.data} onExport={(f) => void exportAs(f)} />
+      <div className={`${SURFACE} hidden flex-wrap items-end gap-3 p-4 lg:flex`}>
         {has('period') && (
           <>
-            <TextInput className="w-full sm:w-40" label={t('filters.from')} type="date" value={values.from} max={values.to} onChange={(e) => set({ from: e.target.value })} />
-            <TextInput className="w-full sm:w-40" label={t('filters.to')} type="date" value={values.to} min={values.from} onChange={(e) => set({ to: e.target.value })} />
+            {dateFields}
             <Segmented name="report-period" label={t('filters.presets')} value={activePreset ?? null}
               options={presets().map((p) => ({ value: p.key, label: t(`filters.${p.key}`) }))}
               onChange={(k) => { const p = presets().find((x) => x.key === k); if (p) set({ from: p.from, to: p.to }) }} />
           </>
         )}
-        {has('months') && (
-          <SelectField className="w-full sm:w-36" label={t('filters.months')} value={values.months ?? '12'} onChange={(e) => set({ months: e.target.value })}
-            options={['3', '6', '12', '24'].map((m) => ({ value: m, label: t('filters.last_months', { n: formatNumber(Number(m), locale) }) }))} />
-        )}
-        {has('gender') && o.track === 'both' && (
-          <SelectField className="w-full sm:w-36" label={t('filters.track')} value={values.gender ?? ''} onChange={(e) => set({ gender: e.target.value, lesson_id: undefined })}
-            options={[{ value: '', label: t('filters.both_tracks') }, { value: 'male', label: t('filters.boys') }, { value: 'female', label: t('filters.girls') }]} />
-        )}
-        {has('package') && o.packages.length > 0 && (
-          <SelectField className="w-full sm:w-52" label={t('filters.package')} value={values.package_id ?? ''} onChange={(e) => set({ package_id: e.target.value, lesson_id: undefined })}
-            options={[{ value: '', label: t('filters.all_packages') }, ...o.packages.map((p) => ({ value: String(p.id), label: p.name }))]} />
-        )}
-        {has('teacher') && o.teachers.length > 1 && (
-          <SelectField className="w-full sm:w-48" label={t('filters.teacher')} value={values.teacher_id ?? ''} onChange={(e) => set({ teacher_id: e.target.value, lesson_id: undefined })}
-            options={[{ value: '', label: t('filters.all_teachers') }, ...o.teachers.map((x) => ({ value: String(x.id), label: x.name }))]} />
-        )}
-        {has('lesson') && lessons.length > 0 && (
-          <SelectField className="w-full sm:w-52" label={t('filters.circle')} value={values.lesson_id ?? ''} onChange={(e) => set({ lesson_id: e.target.value })}
-            options={[{ value: '', label: t('filters.all_circles') }, ...lessons.map((l) => ({ value: String(l.id), label: l.active ? l.name : `${l.name} (${t('filters.ended')})` }))]} />
-        )}
-        {has('min_absences') && (
-          <TextInput className="w-full sm:w-32" label={t('filters.min_absences')} type="number" min={1} max={100} inputMode="numeric"
-            value={values.min_absences ?? ''} placeholder={t('filters.default_limit')} onChange={(e) => set({ min_absences: e.target.value })} />
-        )}
-        {has('issue_status') && (
-          <SelectField className="w-full sm:w-40" label={t('filters.status')} value={values.status ?? 'unresolved'} onChange={(e) => set({ status: e.target.value })}
-            options={[{ value: 'unresolved', label: t('filters.open_only') }, { value: 'all', label: t('filters.all_statuses') }]} />
-        )}
+        {otherFields}
         {entry.formats.length > 0 && (
           <div className="ms-auto flex gap-2">
             {entry.formats.includes('xlsx') && (

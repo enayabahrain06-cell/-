@@ -47,5 +47,25 @@
     "average": "المتوسط {{rate}}",
     "rate": "الحضور {{rate}}",
     "breakdown": "{{present}} حاضر · {{late}} متأخر · {{absent}} غائب · {{excused}} معذور"
+  },
+  "mobile": {
+    "daily_title": "نسبة الحضور اليومية",
+    "dist_title": "توزيع الحالات",
+    "insight": "المتوسط {{avg}} · أدنى يوم {{day}} بنسبة {{low}}",
+    "no_days": "لا توجد جلسات مرصودة في هذه الفترة.",
+    "states": {
+      "present": "حاضر",
+      "late": "متأخر",
+      "absent": "غائب",
+      "excused": "معذور"
+    },
+    "open_attendance": "فتح تقرير الحضور",
+    "all_reports": "تقارير أخرى",
+    "error": "تعذر تحميل البيانات.",
+    "filters": "التصفية",
+    "done": "تم",
+    "export": "تصدير",
+    "export_pdf": "ملف PDF",
+    "export_xlsx": "ملف Excel"
   }
 }

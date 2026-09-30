@@ -9,6 +9,7 @@ import SelectField from '../../components/SelectField'
 import { PageBand } from '../../components/ornaments'
 import { ErrorState, LoadingState, SecondaryButton, SURFACE, TABLE_HEAD, TableWrap, TextInput, EmptyCard } from '../../components/ui'
 import { formatDate } from '../../lib/format'
+import MobileAudit from './MobileAudit'
 
 const KEYS = ['action', 'user_id', 'from', 'to', 'page'] as const
 
@@ -30,7 +31,10 @@ export default function AuditLogPage() {
   const filtered = KEYS.some((k) => k !== 'page' && f[k])
 
   return (
-    <div className="space-y-5">
+    <>
+    <MobileAudit rows={q.data?.data} meta={q.data?.meta} loading={q.isLoading} error={q.isError} onRetry={() => void q.refetch()} f={f} setFilter={setFilter}
+      onClear={() => setParams({}, { replace: true })} filtered={filtered} groups={options.data?.groups ?? []} users={options.data?.users ?? []} />
+    <div className="hidden space-y-5 lg:block">
       <PageBand title={t('title')} subtitle={t('subtitle')} />
       <section aria-label={t('title')} className={`${SURFACE} grid gap-3 p-4 sm:grid-cols-2 lg:grid-cols-5`}>
         <SelectField label={t('group')} value={f.action} onChange={(e) => setFilter('action', e.target.value)}
@@ -82,6 +86,7 @@ export default function AuditLogPage() {
         </>
       )}
     </div>
+    </>
   )
 }
 

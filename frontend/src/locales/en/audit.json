@@ -20,5 +20,12 @@
   "system": "System",
   "empty": "No entries",
   "empty_body": "Changes to settings, money, users, enrollment and certificates are recorded here.",
-  "no_changes": "No field values recorded."
+  "no_changes": "No field values recorded.",
+  "mobile": {
+    "all": "All",
+    "filters": "Filters",
+    "done": "Done",
+    "error": "Could not load the log.",
+    "by_user": "Show only this staff member's events"
+  }
 }

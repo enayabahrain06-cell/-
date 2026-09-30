@@ -263,5 +263,25 @@
       "status": "Status",
       "time": "Time"
     }
+  },
+  "mobile": {
+    "recipients": "Recipients",
+    "add_placeholder": "Add a student by name, number or phone",
+    "to": {
+      "guardian": "Guardian",
+      "student": "Student",
+      "both": "Both"
+    },
+    "recent": "Recent messages",
+    "all": "All",
+    "done": "Done",
+    "send_guardian_one": "Send to {{n}} guardian",
+    "send_guardian_other": "Send to {{n}} guardians",
+    "send_student_one": "Send to {{n}} student",
+    "send_student_other": "Send to {{n}} students",
+    "send_both_one": "Send to {{n}} student and guardian",
+    "send_both_other": "Send to {{n}} students and guardians",
+    "send_phones_one": "Send to {{n}} number",
+    "send_phones_other": "Send to {{n}} numbers"
   }
 }

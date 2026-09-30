@@ -177,3 +177,102 @@ left out and listed under the page.
 - Not in the backend: الاشتراكات النشطة and الخصومات tabs (no subscriptions or discounts API; the segmented control
   keeps the app's الباقات / طلبات التسجيل), a "recommended" package flag, feature lists per package, a billing period
   (packages have a price per term).
+
+## Payments & wallets (/payments) — Payments.dc.html
+
+- `MobilePayments` under `lg:hidden`; the desktop page is unchanged under `hidden lg:block`. The payment, invoice,
+  refund and adjustment dialogs stay in `PaymentsHomePage` and open from both layouts.
+- Header: back + title + ⋯ (فاتورة جديدة، تسجيل استرداد، تسوية رصيد, by permission). Save messages show as a
+  4-second toast (its own state, so the desktop notice is untouched).
+- Two KPI cards from the same `['finance', this year]` query as the desktop overview: المحصَّل هذا الشهر with the
+  change on last month, and المستحق (gold-tinted, n عليهم مستحقات) which opens المتأخرات. One column below 360px.
+- Segmented آخر العمليات / المتأخرات / المحافظ on the same `?tab=` param (payments / invoices / wallets).
+  - آخر العمليات: this month's payments (same query key as the desktop tab): student, time · method · invoice,
+    amount, مسدد pill. A row opens a sheet with the receipt facts, الإيصال (PDF) and إعادة الإرسال, and a link to
+    the student's wallet. Note "الإيصال يُطبع من صفحة العملية" under the list.
+  - المتأخرات: invoices with chips المتأخرة / مفتوحة / جزئية / مسددة / الكل; due date · package, amount (clay when
+    overdue), status pill (متأخرة / مفتوحة / جزئي / مسدد). Rows open the student's wallet.
+  - المحافظ: students with dues from the finance report (amount owed in clay), linking to the wallet.
+- Sticky تسجيل دفعة (the one primary). New shared file `components/mobile/MPager.tsx` (44px previous / next).
+- Desktop only: the refunds list, the finance report tab (period, package and track filters, exports) and
+  cancelling an invoice.
+
+## Messages (/messages, compose = /messages?tab=send) — Messages.dc.html
+
+- Below lg the page band and segmented tabs are replaced by a chip row of the same tabs (same `?tab=` param) under
+  the shell's page header.
+- Compose (send tab): `MobileCompose` under `lg:hidden`. Its state, validation and send call come from
+  `useSendForm` (moved out of `SendTab` unchanged, so the desktop form and the mobile screen share one hook).
+  Card: students / phone numbers (when allowed), recipient tags (removable, 44px remove target) with a 48px
+  student search, recipient segmented (ولي الأمر / الطالب / كلاهما), language, message textarea with the n / 1000
+  counter. آخر الرسائل: the last five log rows with status pills and a الكل link to the log. Sticky
+  "إرسال إلى n ولي أمر" (Arabic plural forms; student / both / numbers variants). Result as a 4-second toast.
+- Log tab: `MobileLog` under `lg:hidden` (state stays in `LogTab`): phone search + filter sheet (type, from, to),
+  status chips with counts, resend-all as a secondary button, rows (name, phone · type, time, error, status pill)
+  opening the existing details dialog, 44px resend on failed rows, `MPager`.
+- Inbox, templates, rules and WhatsApp tabs render their existing (already stacking) layouts on mobile.
+- Not in the app: channel choice (SMS / in-app; only WhatsApp exists), the template row (manual send has no
+  per-student placeholders such as {اسم_الطالب}), recipients prefilled from a student, circle or overdue list
+  (the send tab takes no query params), delivery and reply counts per sent message.
+- Open: the inbox tab still shows one primary قبول button per excuse card on mobile.
+
+## Reports (/reports, /reports?report=…) — Reports.dc.html
+
+- Page band hidden below lg; the shell header carries the title (the report's title inside a report, back to the
+  catalog, breadcrumb الرئيسية › التقارير › report).
+- Catalog: `MobileCatalog` under `lg:hidden` (catalog query and search state shared with desktop). Period chips
+  (هذا الشهر / الشهر الماضي / هذا الفصل) → "نسبة الحضور اليومية": the last seven taken days as 14px bars
+  (chart-present, chart-late below 80%), value above each bar, day number and weekday below (weekday hidden under
+  360px), one-line insight (average and lowest day) → "توزيع الحالات": one stacked bar with 2px gaps and a
+  labelled legend (count · %) → link to the full attendance report with the same period → other reports as grouped
+  lists (icon badge, title, two-line description). The attendance data is the attendance report's own endpoint with
+  the same query key as the viewer, fetched only below lg (`components/mobile/useBelowLg.ts`, new).
+- Report viewer: period chips + filter button (sheet with the report's own filter controls, shared JSX with the
+  desktop filter card) and a download icon in the header opening an export sheet (PDF / Excel, same export call).
+  Report tables become card rows below lg (naming column as the title, the other columns as label / value pairs);
+  the "show all" limit is shared with the table.
+- `presets()` moved to `features/reports/presets.ts` (unchanged) so both layouts use it.
+- Not on mobile: column sorting of report tables (desktop header buttons).
+
+## Users & permissions (/users, /users?tab=roles) — Users.dc.html
+
+- Page band hidden below lg; tabs المستخدمون / الأدوار والصلاحيات as a segmented control; notices as a 4-second
+  toast (own state; the desktop notice is unchanged).
+- Users: `MobileUsersList` under `lg:hidden` (query, debounced search, filters and the activate / deactivate
+  mutation stay in `UsersList`). Search, role chips (الكل + each role) plus a معطّل chip (the `active=0`
+  filter), "n مستخدم" count, rows: avatar (initials skip honorifics, as on desktop), name (+ أنت), phone
+  (`dir=ltr`), role pill (مدير النظام / مشرف = info, معلم = ok, others neutral, "+n" for extra roles), معطّل pill
+  and last login; deactivated users at 70% opacity. A row opens a sheet with تعديل (existing dialog) and
+  تعطيل / تفعيل (same confirm dialog). Note linking to سجل التدقيق (with audit.view). FAB مستخدم جديد.
+- Roles: `MobileMatrix` under `lg:hidden` (draft, dirty tracking and save stay in `PermissionMatrix`): role chips
+  (a gold dot on edited roles), one card per module with a module switch (n/N) and a switch per permission
+  (label + code); مدير النظام is locked. Sticky تجاهل + حفظ when there are unsaved changes.
+- New shared file `components/mobile/MSwitch.tsx` (44×26 track in a 44px hit area, `role="switch"`).
+- Not in the app: an accountant or read-only role (so no warn/neutral staff role pills beyond the existing roles).
+
+## Settings (/settings, /settings?group=…) — Settings.dc.html
+
+- `MobileSettings` under `lg:hidden`; the desktop page (index + all group cards) is unchanged under
+  `hidden lg:block`.
+- Grouped lists: حسابي (avatar, name, phone `dir=ltr`, roles) · العرض (language segmented العربية / English, same
+  switch as the المزيد sheet; الزخرفة with its current level, opening the ui group) · المؤسسة (every settings group
+  as a 52px row with icon badge and description).
+- A group opens at `?group=<key>` (header back to /settings, breadcrumb) and shows the same `GroupCard` as desktop:
+  fields, validation, save / discard and notices are the desktop logic. On mobile its on/off fields use the new
+  44px `MSwitch`; the mobile copy has no section id so ids stay unique.
+- Not in the app: password change (no API), numerals and dark-mode choices, notification switches, a per-user
+  ornament choice (ornament is the organisation-wide `ui.ornament_level`), and calendar / holidays and templates
+  entries (templates live in Messages).
+
+## Audit log (/audit) — Audit.dc.html
+
+- `MobileAudit` under `lg:hidden`; filters, query and paging stay in `AuditLogPage` on the same URL params
+  (`action`, `user_id`, `from`, `to`, `page`).
+- Area chips (الكل + each area from the options endpoint) and a filter button (sheet: staff member, from, to,
+  clear). Events grouped under day headers (weekday, Gregorian · Hijri). Row: 30px icon badge by area, coloured by
+  kind (records ok, money gold, users / settings lapis, removals / cancellations / refunds clay), "actor · action"
+  (the actor filters the log to that staff member), the record as a link when it has a page (student, circle,
+  registration requests, users), time on the end, and a 44px expand button showing before / after as stacked
+  pairs (no table).
+- Not in the app: infinite scroll by day (the API pages by 20 rows; `MPager` is used), actor profile pages, and
+  a detail caption beyond the record reference (the API sends no summary line).

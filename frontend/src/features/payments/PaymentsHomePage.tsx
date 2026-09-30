@@ -14,6 +14,7 @@ import { EmptyState, PageBand } from '../../components/ornaments'
 import { Badge, buttonClass, Card, CardTitle, ErrorState, LoadingState, Modal, Notice, PrimaryButton, SecondaryButton, Segmented, TableWrap, TextArea, TextInput, type Tone, SURFACE, EmptyCard, FilterBar, ROW_MAIN } from '../../components/ui'
 import { formatDate, formatMoney, formatNumber } from '../../lib/format'
 import { FinanceOverview, MethodBars, OutstandingBars, PackageBars } from './FinanceCharts'
+import MobilePayments from './MobilePayments'
 import { AdjustDialog, InvoiceDialog, RecordPaymentDialog, RefundDialog } from './PaymentDialogs'
 
 type Tab = 'payments' | 'invoices' | 'refunds' | 'report'
@@ -28,10 +29,14 @@ export default function PaymentsHomePage() {
   const tab = (tabs as string[]).includes(params.get('tab') ?? '') ? (params.get('tab') as Tab) : 'payments'
   const [dialog, setDialog] = useState<'pay' | 'invoice' | 'refund' | 'adjust' | null>(null)
   const [notice, setNotice] = useState<string | null>(null)
-  const done = (m?: string) => { setDialog(null); setNotice(m ?? null) }
+  // The mobile toast clears itself after 4s; it has its own state so the desktop notice is untouched.
+  const [toast, setToast] = useState<string | null>(null)
+  const done = (m?: string) => { setDialog(null); setNotice(m ?? null); setToast(m ?? null) }
 
   return (
-    <div className="space-y-5">
+    <>
+    <MobilePayments onDialog={setDialog} notice={toast} onNoticeDone={() => setToast(null)} />
+    <div className="hidden space-y-5 lg:block">
       <PageBand title={t('title')} subtitle={t('subtitle')}
         actions={<div className="flex flex-wrap gap-2">
           {can('payments.record') && (
@@ -54,11 +59,12 @@ export default function PaymentsHomePage() {
       {tab === 'invoices' && <Invoices />}
       {tab === 'refunds' && <Refunds />}
       {tab === 'report' && <Report />}
+    </div>
       {dialog === 'pay' && <RecordPaymentDialog onClose={() => setDialog(null)} onDone={done} />}
       {dialog === 'invoice' && <InvoiceDialog onClose={() => setDialog(null)} onDone={() => done()} />}
       {dialog === 'refund' && <RefundDialog onClose={() => setDialog(null)} onDone={() => done()} />}
       {dialog === 'adjust' && <AdjustDialog onClose={() => setDialog(null)} onDone={() => done()} />}
-    </div>
+    </>
   )
 }
 

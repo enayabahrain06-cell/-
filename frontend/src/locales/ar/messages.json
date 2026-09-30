@@ -266,5 +266,41 @@
       "status": "الحالة",
       "time": "الوقت"
     }
+  },
+  "mobile": {
+    "recipients": "المستلمون",
+    "add_placeholder": "أضف طالباً بالاسم أو الرقم أو الهاتف",
+    "to": {
+      "guardian": "ولي الأمر",
+      "student": "الطالب",
+      "both": "كلاهما"
+    },
+    "recent": "آخر الرسائل",
+    "all": "الكل",
+    "done": "تم",
+    "send_guardian_zero": "إرسال",
+    "send_guardian_one": "إرسال إلى ولي أمر واحد",
+    "send_guardian_two": "إرسال إلى وليَّي أمر",
+    "send_guardian_few": "إرسال إلى {{n}} أولياء أمور",
+    "send_guardian_many": "إرسال إلى {{n}} ولي أمر",
+    "send_guardian_other": "إرسال إلى {{n}} ولي أمر",
+    "send_student_zero": "إرسال",
+    "send_student_one": "إرسال إلى طالب واحد",
+    "send_student_two": "إرسال إلى طالبين",
+    "send_student_few": "إرسال إلى {{n}} طلاب",
+    "send_student_many": "إرسال إلى {{n}} طالباً",
+    "send_student_other": "إرسال إلى {{n}} طالب",
+    "send_both_zero": "إرسال",
+    "send_both_one": "إرسال لطالب واحد وولي أمره",
+    "send_both_two": "إرسال لطالبين وأولياء أمورهما",
+    "send_both_few": "إرسال لـ {{n}} طلاب وأولياء أمورهم",
+    "send_both_many": "إرسال لـ {{n}} طالباً وأولياء أمورهم",
+    "send_both_other": "إرسال لـ {{n}} طالب وأولياء أمورهم",
+    "send_phones_zero": "إرسال",
+    "send_phones_one": "إرسال إلى رقم واحد",
+    "send_phones_two": "إرسال إلى رقمين",
+    "send_phones_few": "إرسال إلى {{n}} أرقام",
+    "send_phones_many": "إرسال إلى {{n}} رقماً",
+    "send_phones_other": "إرسال إلى {{n}} رقم"
   }
 }

@@ -65,7 +65,29 @@ export default function ReportTable({ section, locale }: { section: ReportSectio
 
   return (
     <div>
-      <div className="max-h-[32rem] overflow-auto rounded-xl border border-ink/8">
+      {/* Below lg each row is a card: the naming column as the title, the other columns as label / value pairs. */}
+      <ul className="divide-y divide-ink/10 overflow-hidden rounded-card border border-ink/10 lg:hidden">
+        {rows.slice(0, limit).map((r, ri) => (
+          <li key={ri} className="px-4 py-3">
+            <p dir="auto" className="text-start text-[15px] font-semibold text-ink">{formatCell(r[primary], types[primary] ?? 'text', locale)}</p>
+            <dl className="mt-1.5 grid grid-cols-2 gap-x-4 gap-y-1.5">
+              {r.map((c, ci) => {
+                if (ci === primary) return null
+                const type = types[ci] ?? 'text'
+                const ltr = type === 'phone' || type === 'datetime'
+                const long = type === 'text' && String(c ?? '').length > 24
+                return (
+                  <div key={ci} className={`min-w-0 ${long ? 'col-span-2' : ''}`}>
+                    <dt className="truncate text-xs text-ink/65">{section.headings[ci]}</dt>
+                    <dd dir={ltr ? 'ltr' : 'auto'} className={`text-start text-[13px] text-ink ${NUMERIC.includes(type) || ltr ? 'tabular-nums' : ''} ${long ? '' : 'truncate'}`}>{formatCell(c, type, locale)}</dd>
+                  </div>
+                )
+              })}
+            </dl>
+          </li>
+        ))}
+      </ul>
+      <div className="hidden max-h-[32rem] overflow-auto rounded-xl border border-ink/8 lg:block">
         <table className="w-full min-w-max text-sm">
           <thead className={TABLE_HEAD_STICKY}>
             <tr>
@@ -113,7 +135,7 @@ export default function ReportTable({ section, locale }: { section: ReportSectio
       <div className="mt-2 flex flex-wrap items-center justify-between gap-2 text-xs text-ink/55">
         <span>{t('rows', { shown: formatNumber(Math.min(limit, rows.length), locale), total: formatNumber(rows.length, locale) })}</span>
         {rows.length > limit && (
-          <button type="button" className="rounded-lg px-2 py-1 font-medium text-brand-700 hover:bg-brand-50" onClick={() => setLimit(rows.length)}>
+          <button type="button" className="rounded-lg px-2 py-1 font-medium text-brand-700 hover:bg-brand-50 max-lg:min-h-11 max-lg:text-[13px]" onClick={() => setLimit(rows.length)}>
             {t('show_all')}
           </button>
         )}
