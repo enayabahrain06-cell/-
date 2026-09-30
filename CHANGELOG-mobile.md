@@ -94,3 +94,13 @@ left out and listed under the page.
 - Count pills now cover every open alert type, on the section that handles it: الباقات والتسجيل (registration
   requests), الحلقات والقاعات (hall conflicts + circles without a teacher), الحضور (repeated absence), القرعة
   (draws awaiting approval), المدفوعات (overdue invoices). Same `['alerts-count']` query as the bell.
+
+## Login (/login) — Login.dc.html
+
+- `AuthLayout` below lg: a deep-emerald header replaces the thin ornament band and the logo row — logo tile, app
+  name, today's Hijri date, the language pill (44px) and one Qur'an line in `font-quran`, with a 10% khatam star in
+  the corner. The desktop split screen is unchanged.
+- Page: title Amiri 28, one-line welcome, segmented الموظفون / الطلاب وأولياء الأمور (44px items, active in
+  brand-700), same forms and validation. إظهار and the OTP change-number / resend buttons get 44px hit areas; footer
+  links become 44px rows (قدّم طلب تسجيل bold brand, تتبع طلب التسجيل muted ink/65).
+- The OTP code stays the existing single 6-digit field (spaced digits, `one-time-code`) with its resend timer.
