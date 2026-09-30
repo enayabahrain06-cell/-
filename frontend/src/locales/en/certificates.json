@@ -37,5 +37,18 @@
         "subtitle": "Check a certificate issued by the Authority using the QR code printed on it.",
         "valid_body": "This certificate was issued and approved by the Authority.",
         "recipient": "Student"
+    },
+    "mobile": {
+        "preview": "Certificate preview",
+        "print": "Print PDF",
+        "template": "Change template",
+        "more_actions": "More actions",
+        "filters": "Filters",
+        "done": "Done",
+        "error": "Could not load the certificates.",
+        "issue_new": "Issue a new certificate",
+        "prev": "Previous",
+        "next": "Next",
+        "page": "Page {{page}} of {{last}}"
     }
 }

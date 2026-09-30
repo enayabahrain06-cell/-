@@ -125,3 +125,20 @@ left out and listed under the page.
   Skeleton, empty and error states.
 - The spec's primary إدخال النتائج on the gold card is a secondary here: the FAB is the screen's one primary.
 - Not in the app: reminding guardians of an exam (تذكير أولياء الأمور) — the API only sends results.
+
+## Certificates (/certificates) — Certificates.dc.html
+
+- The page comes from `@ahl/certificates-react`; the package is unchanged. The app route now renders
+  `features/certificates/MobileCertificates.tsx` (`CertificatesHome`): its own mobile screen under `lg:hidden`, and the
+  package's `CertificatesPage` under `hidden lg:block`. The mobile screen uses the package's API, hooks
+  (`useCertificateActions`, `useCertificateOptions`), `IssueCertificateDialog` and `TemplatesPanel`, with the same URL
+  params and list query key as the package list.
+- Header with a templates action (template managers); live preview of the selected certificate (A-landscape ratio,
+  bg-deep, gold inner frame, corner khatam, type, Amiri title and student name, achievement · date, status pill) →
+  three secondary buttons: طباعة PDF (print, else download / view), إرسال لولي الأمر, تغيير القالب (or إجراءات أخرى)
+  and a link to the rest of the actions (approve, edit, delete, revoke…) in a bottom sheet.
+- Search + filter sheet (type, from, to), status chips with counts (the package's tabs), issued list rows (gold icon
+  badge, title, student · date · issuer, status pill); tapping a row previews it. Prev / next paging.
+- Sticky إصدار شهادة جديدة opens the package's issue dialog (student picker inside). Action results show as the
+  4-second toast. `?view=templates` shows the package's template panel under a mobile header.
+- Not on mobile: bulk approval of selected drafts (approve one at a time from the actions sheet).

@@ -23,7 +23,8 @@ import PublicRegisterPage from '../features/registration/PublicRegisterPage'
 import TrackRequestPage from '../features/registration/TrackRequestPage'
 import PackagesHomePage from '../features/registration/PackagesHomePage'
 import PaymentsHomePage from '../features/payments/PaymentsHomePage'
-import { CertificatesPage, VerifyCertificatePage } from '@ahl/certificates-react'
+import { VerifyCertificatePage } from '@ahl/certificates-react'
+import CertificatesHome from '../features/certificates/MobileCertificates'
 import ExamsHomePage from '../features/exams/ExamsHomePage'
 import ExamDetailPage from '../features/exams/ExamDetailPage'
 import MyExamsPage from '../features/exams/MyExamsPage'
@@ -87,7 +88,7 @@ const BUILT: Record<string, React.ReactNode> = {
   lessons: <LessonsHomePage />,
   packages: <PackagesHomePage />,
   payments: <PaymentsHomePage />,
-  certificates: <CertificatesPage />,
+  certificates: <CertificatesHome />,
   exams: <ExamsHomePage />,
   lottery: <LotteryListPage />,
   honor: <HonorBoardPage />,
