@@ -155,6 +155,7 @@ export const attendanceMessagingApi = {
   saveRules: (d: Partial<MessagingRules>) => api.put<{ message: string; data: MessagingRules }>('/messages/rules', d).then((r) => r.data),
   lessonRule: (lessonId: number, d: { reminders_enabled: boolean; second_reminder_enabled: boolean }) => api.put(`/lessons/${lessonId}/messaging-rule`, d),
   session: (id: number) => api.get<{ data: SessionDelivery }>(`/sessions/${id}/messages`).then((r) => r.data.data),
+  sendResults: (id: number) => api.post<{ message: string; data: { queued: number; skipped: number } }>(`/sessions/${id}/messages/send-results`).then((r) => r.data),
   sendNow: (id: number) => api.post<{ message: string; data: { queued: number; skipped: number } }>(`/sessions/${id}/messages/send-now`).then((r) => r.data),
   inbox: (status = 'open', page = 1) => api.get<{ data: InboxRow[]; meta: { current_page: number; last_page: number; total: number; open: number } }>('/messages/inbox', { params: { status, page } }).then((r) => r.data),
   resolve: (id: number) => api.post(`/messages/inbox/${id}/resolve`),

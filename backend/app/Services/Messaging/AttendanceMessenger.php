@@ -426,6 +426,48 @@ class AttendanceMessenger
     }
 
     /**
+     * Manual "send the result" from the attendance popup: each guardian of a student marked present, late or
+     * excused gets their child's status. Absent students are skipped, since the absence notice covers them.
+     * One message per student and status, so pressing it again sends nothing new but a corrected status does.
+     *
+     * @return array{queued: int, skipped: int}
+     */
+    public function sendAttendanceResults(LessonSession $session): array
+    {
+        $records = Attendance::with(['student.guardian', 'student.user'])
+            ->where('lesson_session_id', $session->id)
+            ->where('status', '!=', AttendanceStatus::Absent->value)
+            ->get();
+
+        $queued = 0;
+        $skipped = 0;
+        foreach ($records as $attendance) {
+            $student = $attendance->student;
+            $recipients = $student ? $this->recipients($student, $session->session_date, includeStudent: false) : [];
+            if ($recipients === []) {
+                $skipped++;
+
+                continue;
+            }
+            foreach ($recipients as $r) {
+                $vars = $this->varsFor($session, $student, $r);
+                $vars['assignment'] = $attendance->memorization_assignment ?: $vars['assignment'];
+                $vars['status'] = $attendance->status->label($r['locale']);
+                // Used only while the attendance_result template is not in the database yet.
+                $vars['body'] = __('messages.attendance_result_body', [], $r['locale']);
+                $log = $this->messages->send(
+                    phone: $r['phone'], type: MessageType::AttendanceResult, vars: $vars, locale: $r['locale'],
+                    student: $student, user: $r['user'], recipientType: $r['type'], session: $session, sendAt: $this->sendAt(),
+                    dedupeKey: $this->dedupeKey($session, MessageType::AttendanceResult, $r['phone'], false, $student->id).':'.$attendance->status->value,
+                );
+                $log ? $queued++ : $skipped++;
+            }
+        }
+
+        return ['queued' => $queued, 'skipped' => $skipped];
+    }
+
+    /**
      * 3 absences in 30 days (settings): the guardian gets repeated_absence, at most once per 14 days
      * per student. The supervisor alert is raised by RepeatedAbsenceDetector.
      */

@@ -7,6 +7,7 @@ import { useAuth } from '../../app/AuthContext'
 import Icon from '../../components/Icon'
 import { buttonClass, ErrorState, Notice, SURFACE, ROW_MAIN } from '../../components/ui'
 import { formatDate, formatHijri, formatMoney, formatNumber, formatPercent, formatTime, formatWeekday } from '../../lib/format'
+import QuickAttendanceDialog from '../attendance/QuickAttendanceDialog'
 import { RecordPaymentDialog } from '../payments/PaymentDialogs'
 import AgeDonut from './AgeDonut'
 import AlertsCard from './AlertsCard'
@@ -308,13 +309,17 @@ function SessionAction({ session: s, locale }: { session: TodaySession; locale: 
   const { can } = useAuth()
   const canRecord = can('attendance.record')
   const canView = canRecord || can('attendance.view')
+  const [quick, setQuick] = useState(false)
 
   if (!s.attendance_taken) {
     return canRecord ? (
-      <Link to={`/attendance/${s.id}`} className={buttonClass('primary', 'shrink-0')}>
-        <Icon name="attendance" className="size-4" />
-        {t('today.take_attendance')}
-      </Link>
+      <>
+        <button type="button" onClick={() => setQuick(true)} aria-haspopup="dialog" className={buttonClass('primary', 'shrink-0')}>
+          <Icon name="attendance" className="size-4" />
+          {t('today.take_attendance')}
+        </button>
+        {quick && <QuickAttendanceDialog sessionId={s.id} onClose={() => setQuick(false)} />}
+      </>
     ) : (
       <span className="rounded-full bg-ink/6 px-2.5 py-1 text-xs text-ink/60">{t('today.attendance_pending')}</span>
     )
