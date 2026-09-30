@@ -251,5 +251,16 @@
     "ornament": "Ornament",
     "authority": "Organisation",
     "error": "Could not load the settings."
+  },
+  "authority": {
+    "arabic": "العربية",
+    "english": "English",
+    "name": "Name",
+    "address": "Address",
+    "phone": "Phone",
+    "preview": "Preview",
+    "preview_note": "As shown on the login and registration pages and printouts.",
+    "empty": "Not set",
+    "logo_help": "Logo: PNG, JPEG or WebP, square, up to 2 MB."
   }
 }
