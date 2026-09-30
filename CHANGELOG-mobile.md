@@ -142,3 +142,16 @@ left out and listed under the page.
 - Sticky إصدار شهادة جديدة opens the package's issue dialog (student picker inside). Action results show as the
   4-second toast. `?view=templates` shows the package's template panel under a mobile header.
 - Not on mobile: bulk approval of selected drafts (approve one at a time from the actions sheet).
+
+## Teachers (/teachers) — Teachers.dc.html
+
+- `MobileTeachers` under `lg:hidden`, same query, debounced search and `gender` / `active` params. Search → chips
+  (كل المسارات n، البنين، البنات for staff on both tracks; نشط / غير نشط) → cards: 44px avatar (initial without the
+  honorific), name, circles · students with the status pill (نشط / بلا حلقة بعد / غير نشط), and this month's stats row
+  (حضور طلابه · تقييمات الشهر · متوسط الدرجات). Cards open `/teachers?teacher=:id`. Skeleton, empty (with clear
+  filters) and error states.
+- FAB إضافة معلم (users.manage) opens the users screen's new-account dialog, where the teacher role is already the
+  default; saving refreshes the list and shows a toast.
+- Teacher page: the mobile header shows the teacher's name, back to the list and a breadcrumb (also while loading).
+  The page body is unchanged.
+- Not in the app: a "today" pill per teacher (the list has no per-day sessions) and a role preset passed from here.

@@ -83,5 +83,12 @@
     "uploading": "Uploading…",
     "remove": "Remove photo",
     "remove_confirm": "Remove this teacher's photo?"
+  },
+  "mobile": {
+    "retry": "Try again",
+    "attendance": "Attendance",
+    "evaluations": "Evaluations",
+    "avg": "Avg. score",
+    "new_teacher": "Add teacher"
   }
 }

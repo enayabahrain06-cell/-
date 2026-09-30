@@ -10,6 +10,7 @@ import { EmptyState } from '../../components/ornaments'
 import { Badge, buttonClass, Card, CardTitle, ErrorState, IconButton, LoadingState, Modal, Notice, PrimaryButton, SecondaryButton, TextArea, TextInput, type Tone, SURFACE, ROW_MAIN } from '../../components/ui'
 import { formatDate, formatNumber, formatPercent } from '../../lib/format'
 import { initialOf } from './initial'
+import { MobilePage } from '../../components/mobile/MobileChrome'
 
 const STATUS_TONE: Record<string, Tone> = { active: 'brand', paused: 'gold', ended: 'muted' }
 
@@ -54,8 +55,11 @@ export default function TeacherDetailView({ id }: { id: number }) {
   const [editing, setEditing] = useState(false)
   const [saved, setSaved] = useState(false)
 
-  if (q.isLoading) return <LoadingState />
-  if (q.isError || !q.data) return <ErrorState message={t('error')} onRetry={() => void q.refetch()} />
+  // Below lg: back to the list with the teacher's name as the page title (claimed while loading too, no CLS).
+  const crumbs = [{ label: t('mobile:home'), to: '/' }, { label: t('title'), to: '/teachers' }]
+  const header = <MobilePage title={q.data?.name ?? t('title')} back="/teachers" breadcrumb={q.data ? [...crumbs, { label: q.data.name }] : crumbs} />
+  if (q.isLoading) return <>{header}<LoadingState /></>
+  if (q.isError || !q.data) return <>{header}<ErrorState message={t('error')} onRetry={() => void q.refetch()} /></>
   const d = q.data
   const n = (v: number) => formatNumber(v, locale)
   const score = (v: number | null) => (v === null ? '—' : formatNumber(v, locale, { maximumFractionDigits: 1 }))
@@ -72,6 +76,7 @@ export default function TeacherDetailView({ id }: { id: number }) {
 
   return (
     <div className="space-y-5">
+      {header}
       <Link to="/teachers" className="inline-flex items-center gap-1 text-sm text-brand-700 hover:underline">
         <Icon name="chevron" className="size-4 ltr:rotate-180" /> {t('detail.back')}
       </Link>

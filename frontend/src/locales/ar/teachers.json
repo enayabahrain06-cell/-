@@ -83,5 +83,12 @@
     "uploading": "جارٍ الرفع…",
     "remove": "حذف الصورة",
     "remove_confirm": "حذف صورة المعلم؟"
+  },
+  "mobile": {
+    "retry": "إعادة المحاولة",
+    "attendance": "حضور طلابه",
+    "evaluations": "تقييمات الشهر",
+    "avg": "متوسط الدرجات",
+    "new_teacher": "إضافة معلم"
   }
 }
