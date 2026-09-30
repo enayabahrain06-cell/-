@@ -19,6 +19,7 @@ export const NAV_SECTIONS: NavSection[] = [
   { key: 'enrollment', path: '/enrollment', icon: 'enroll', permissions: ['enrollment.quick'], group: 'people' },
   { key: 'teachers', path: '/teachers', icon: 'teachers', permissions: ['teachers.view'], group: 'people' },
   { key: 'lessons', path: '/lessons', icon: 'lessons', permissions: ['lessons.view', 'locations.view'], group: 'teaching' },
+  { key: 'term_setup', path: '/term-setup', icon: 'clock', permissions: ['term_setup.view', 'term_setup.manage'], group: 'teaching' },
   { key: 'attendance', path: '/attendance', icon: 'attendance', permissions: ['attendance.view', 'attendance.record'], group: 'teaching' },
   { key: 'evaluation', path: '/evaluation', icon: 'evaluation', permissions: ['evaluations.view', 'evaluations.record'], group: 'teaching' },
   { key: 'exams', path: '/exams', icon: 'exams', permissions: ['exams.view'], group: 'teaching' },

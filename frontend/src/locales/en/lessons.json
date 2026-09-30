@@ -4,7 +4,7 @@
   "tabs": { "circles": "Circles", "halls": "Halls", "bookings": "Bookings" },
   "gender": { "male": "Boys", "female": "Girls", "mixed": "Early years (mixed)", "shared": "Shared by schedule" },
   "status": { "active": "Active", "paused": "Paused", "ended": "Ended" },
-  "filters": { "all_tracks": "All tracks", "all_statuses": "All statuses", "search": "Search circles" },
+  "filters": { "all_levels": "All levels", "no_level": "No level", "all_tracks": "All tracks", "all_statuses": "All statuses", "search": "Search circles" },
   "new_circle": "New circle",
   "new_hall": "New hall",
   "new_booking": "New booking",

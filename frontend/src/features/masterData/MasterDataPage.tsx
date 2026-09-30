@@ -7,8 +7,9 @@ import { levelsApi, subjectsApi, termsApi, type AcademicTerm, type Level, type L
 import { useAuth } from '../../app/AuthContext'
 import Icon from '../../components/Icon'
 import { PageBand } from '../../components/ornaments'
-import { Badge, EmptyCard, ErrorState, LoadingState, Modal, Notice, PrimaryButton, SecondaryButton, Segmented, SURFACE, TextArea, TextInput } from '../../components/ui'
+import { Badge, EmptyCard, ErrorState, LoadingState, Modal, Notice, SecondaryButton, Segmented, SURFACE, TextArea, TextInput } from '../../components/ui'
 import { formatDate, formatNumber } from '../../lib/format'
+import { DialogFooter, Field, ItemActions, Toolbar, useRemove } from '../common/crud'
 
 type Tab = 'terms' | 'levels' | 'subjects'
 const TABS: { key: Tab; permission: string }[] = [
@@ -40,38 +41,6 @@ export default function MasterDataPage() {
       {tab === 'terms' && <Terms />}
       {tab === 'levels' && <Levels />}
       {tab === 'subjects' && <Subjects />}
-    </div>
-  )
-}
-
-/** Delete with confirmation; the server's refusal (in use, current, system) shows as a notice. */
-function useRemove(fn: (id: number) => Promise<{ message: string }>, keys: string[][], confirmText: string) {
-  const qc = useQueryClient()
-  const [notice, setNotice] = useState<{ tone: 'success' | 'error'; text: string } | null>(null)
-  const m = useMutation({
-    mutationFn: fn,
-    onSuccess: (r) => { setNotice({ tone: 'success', text: r.message }); keys.forEach((k) => void qc.invalidateQueries({ queryKey: k })) },
-    onError: (e) => { const p = parseApiError(e); setNotice({ tone: 'error', text: Object.values(p.fields)[0]?.[0] ?? p.message }) },
-  })
-  return { notice, setNotice, remove: (id: number) => { if (window.confirm(confirmText)) m.mutate(id) } }
-}
-
-function Toolbar({ label, onAdd, notice }: { label: string; onAdd: () => void; notice: { tone: 'success' | 'error'; text: string } | null }) {
-  return (
-    <>
-      <div className="flex justify-end"><PrimaryButton onClick={onAdd}><Icon name="plus" className="size-4" />{label}</PrimaryButton></div>
-      {notice && <Notice tone={notice.tone}>{notice.text}</Notice>}
-    </>
-  )
-}
-
-function ItemActions({ onEdit, onDelete, canDelete = true, children }: { onEdit: () => void; onDelete: () => void; canDelete?: boolean; children?: React.ReactNode }) {
-  const { t } = useTranslation('masterData')
-  return (
-    <div className="mt-3 flex flex-wrap gap-2">
-      <SecondaryButton onClick={onEdit}><Icon name="edit" className="size-4" />{t('edit')}</SecondaryButton>
-      {children}
-      {canDelete && <SecondaryButton onClick={onDelete} className="text-danger"><Icon name="trash" className="size-4" />{t('delete')}</SecondaryButton>}
     </div>
   )
 }
@@ -148,7 +117,7 @@ function TermDialog({ term, onClose, onSaved }: { term?: AcademicTerm; onClose: 
 
   return (
     <Modal title={term ? t('terms.title_edit') : t('terms.title_new')} onClose={onClose}
-      footer={<><SecondaryButton onClick={onClose}>{t('cancel')}</SecondaryButton><PrimaryButton loading={save.isPending} onClick={() => save.mutate()}>{t('save')}</PrimaryButton></>}>
+      footer={<DialogFooter onCancel={onClose} onSave={() => save.mutate()} saving={save.isPending} />}>
       <Field error={errors.name_ar?.[0]}><TextInput label={t('fields.name_ar')} dir="rtl" placeholder={t('terms.name_placeholder')} value={form.name_ar} onChange={(e) => set('name_ar', e.target.value)} /></Field>
       <Field error={errors.name_en?.[0]}><TextInput label={t('fields.name_en')} dir="ltr" value={form.name_en} onChange={(e) => set('name_en', e.target.value)} /></Field>
       <Field error={errors.academic_year?.[0]}><TextInput label={t('fields.academic_year')} dir="ltr" inputMode="numeric" placeholder="2026/2027" value={form.academic_year ?? ''} onChange={(e) => set('academic_year', e.target.value)} /></Field>
@@ -164,15 +133,6 @@ function TermDialog({ term, onClose, onSaved }: { term?: AcademicTerm; onClose: 
       )}
       {errors.is_current?.[0] && <Notice tone="error">{errors.is_current[0]}</Notice>}
     </Modal>
-  )
-}
-
-function Field({ error, children }: { error?: string; children: React.ReactNode }) {
-  return (
-    <div>
-      {children}
-      {error && <p className="mt-1 text-sm text-danger">{error}</p>}
-    </div>
   )
 }
 
@@ -207,7 +167,7 @@ function NamedDialog<T extends Named>({ kind, item, locked = false, save: saveFn
 
   return (
     <Modal title={t(item ? `${kind}.title_edit` : `${kind}.title_new`)} onClose={onClose}
-      footer={<><SecondaryButton onClick={onClose}>{t('cancel')}</SecondaryButton><PrimaryButton loading={save.isPending} onClick={() => save.mutate()}>{t('save')}</PrimaryButton></>}>
+      footer={<DialogFooter onCancel={onClose} onSave={() => save.mutate()} saving={save.isPending} />}>
       <Field error={errors.name_ar?.[0]}><TextInput label={t('fields.name_ar')} dir="rtl" placeholder={t(`${kind}.name_placeholder`)} value={form.name_ar} onChange={(e) => set('name_ar', e.target.value)} /></Field>
       <Field error={errors.name_en?.[0]}><TextInput label={t('fields.name_en')} dir="ltr" value={form.name_en} onChange={(e) => set('name_en', e.target.value)} /></Field>
       <div className="grid gap-4 sm:grid-cols-2">

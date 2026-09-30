@@ -110,7 +110,8 @@
     "whatsapp": "WhatsApp",
     "terms": "Academic terms",
     "levels": "Levels",
-    "subjects": "Subjects"
+    "subjects": "Subjects",
+    "term_setup": "Term setup"
   },
   "mobile": {
     "all": "All",

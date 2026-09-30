@@ -4,7 +4,7 @@
   "tabs": { "circles": "الحلقات", "halls": "القاعات", "bookings": "الحجوزات" },
   "gender": { "male": "بنين", "female": "بنات", "mixed": "مبكر (مختلط)", "shared": "مشتركة حسب الجدول" },
   "status": { "active": "نشطة", "paused": "متوقفة", "ended": "منتهية" },
-  "filters": { "all_tracks": "كل المسارات", "all_statuses": "كل الحالات", "search": "بحث باسم الحلقة" },
+  "filters": { "all_levels": "كل المستويات", "no_level": "بدون مستوى", "all_tracks": "كل المسارات", "all_statuses": "كل الحالات", "search": "بحث باسم الحلقة" },
   "new_circle": "حلقة جديدة",
   "new_hall": "قاعة جديدة",
   "new_booking": "حجز جديد",

@@ -3,6 +3,7 @@ import { keepPreviousData, useMutation, useQuery, useQueryClient } from '@tansta
 import { Link, useNavigate, useSearchParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { bookingsApi, hallsApi, lessonsApi, type Conflict, type Hall } from '../../api/lessons'
+import { levelsApi } from '../../api/masterData'
 import { useAuth } from '../../app/AuthContext'
 import Icon from '../../components/Icon'
 import Pagination from '../../components/Pagination'
@@ -47,7 +48,8 @@ function Circles() {
   const [params, setParams] = useSearchParams()
   const [dialog, setDialog] = useState(false)
   const [conflicts, setConflicts] = useState<Conflict[] | null>(null)
-  const filters = { gender: params.get('gender') ?? undefined, status: params.get('status') ?? undefined, search: params.get('search') ?? undefined, page: Number(params.get('page') ?? 1), per_page: 24 }
+  const filters = { gender: params.get('gender') ?? undefined, status: params.get('status') ?? undefined, search: params.get('search') ?? undefined, level_id: params.get('level_id') ?? undefined, page: Number(params.get('page') ?? 1), per_page: 24 }
+  const levels = useQuery({ queryKey: ['level-options'], queryFn: () => levelsApi.list({ active: true }), staleTime: 5 * 60_000 })
   const q = useQuery({ queryKey: ['lessons', filters], queryFn: () => lessonsApi.list(filters), placeholderData: keepPreviousData })
   const set = (k: string, v: string) => { const n = new URLSearchParams(params); if (v) n.set(k, v); else n.delete(k); if (k !== 'page') n.delete('page'); setParams(n, { replace: true }) }
   const both = hasRole('super_admin') || !user?.track || user.track === 'both'
@@ -58,7 +60,7 @@ function Circles() {
 
   return (
     <>
-    <MobileCircles lessons={q.data?.data} total={q.data?.meta.total} loading={q.isLoading} filters={filters} showTracks={both} onSet={set}
+    <MobileCircles lessons={q.data?.data} total={q.data?.meta.total} loading={q.isLoading} filters={filters} showTracks={both} onSet={set} levels={levels.data ?? []}
       canCreate={can('lessons.manage')} onCreate={() => setDialog(true)} pagination={pager} notice={conflictNotice} />
     <div className="hidden space-y-4 lg:block">
       <FilterBar>
@@ -68,6 +70,8 @@ function Circles() {
           options={[{ value: '', label: t('filters.all_tracks') }, ...(['male', 'female', 'mixed'] as const).map((g) => ({ value: g, label: t(`gender.${g}`) }))]} />}
         <SelectField label={t('filters.all_statuses')} hideLabel className="sm:w-40" value={filters.status ?? ''} onChange={(e) => set('status', e.target.value)}
           options={[{ value: '', label: t('filters.all_statuses') }, ...(['active', 'paused', 'ended'] as const).map((s) => ({ value: s, label: t(`status.${s}`) }))]} />
+        {(levels.data?.length ?? 0) > 0 && <SelectField label={t('filters.all_levels')} hideLabel className="sm:w-44" value={filters.level_id ?? ''} onChange={(e) => set('level_id', e.target.value)}
+          options={[{ value: '', label: t('filters.all_levels') }, ...(levels.data ?? []).map((l) => ({ value: String(l.id), label: l.name })), { value: '0', label: t('filters.no_level') }]} />}
         {can('lessons.manage') && <PrimaryButton className="sm:ms-auto" onClick={() => setDialog(true)}>+ {t('new_circle')}</PrimaryButton>}
       </FilterBar>
 
@@ -96,6 +100,7 @@ function Circles() {
                     <span className="ms-auto tabular-nums text-ink/70">{t('students_of', { n: n(l.student_count), c: n(l.capacity) })}</span>
                     {l.status !== 'active' && <Badge tone="muted">{t(`status.${l.status}`)}</Badge>}
                   </div>
+                  {l.level && <div className="mt-2"><Badge tone="info"><bdi>{l.level.name}</bdi></Badge></div>}
                 </Link>
               </li>
             ))}

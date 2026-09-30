@@ -128,7 +128,8 @@ it('migrates free-text terms into linked academic terms without changing the tex
     // SQLite rebuilds "packages" to add/drop the column. Inside the test's own transaction the foreign-key pragma
     // cannot be switched off, so ON DELETE SET NULL would clear invoices.package_id (a real migrate keeps it), hence
     // the invoice here carries its own label instead of a package.
-    Artisan::call('migrate:rollback', ['--step' => 2, '--force' => true]);
+    // Back to before the academic-terms migration (it and the three that follow it), then forward again.
+    Artisan::call('migrate:rollback', ['--step' => 4, '--force' => true]);
     Artisan::call('migrate', ['--force' => true]);
 
     $terms = AcademicTerm::orderBy('id')->get();

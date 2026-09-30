@@ -22,4 +22,5 @@ return [
     'reports.view' => 'عرض التقارير', 'reports.export' => 'تصدير التقارير',
     'settings.manage' => 'إدارة الإعدادات', 'audit.view' => 'عرض سجل التدقيق',
     'terms.manage' => 'إدارة الفصول الدراسية', 'levels.manage' => 'إدارة المستويات', 'subjects.manage' => 'إدارة المواد',
+    'term_setup.view' => 'عرض إعدادات الفصل (الخطة والجدول)', 'term_setup.manage' => 'إدارة إعدادات الفصل',
 ];

@@ -38,5 +38,6 @@
         "change": "Change",
         "placeholder": "Search by name, number or phone",
         "none": "No results"
-    }
+    },
+  "crud": { "edit": "Edit", "delete": "Delete", "save": "Save", "cancel": "Cancel" }
 }

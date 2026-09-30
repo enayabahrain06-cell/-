@@ -33,5 +33,6 @@
     "communication": "Communication",
     "admin": "Administration"
   },
-  "master_data": "Master data"
+  "master_data": "Master data",
+  "term_setup": "Term setup"
 }

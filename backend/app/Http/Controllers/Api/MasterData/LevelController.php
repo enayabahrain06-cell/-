@@ -56,6 +56,10 @@ class LevelController extends Controller
         if ($level->lessons()->exists()) {
             throw ValidationException::withMessages(['level' => __('levels.errors.in_use')]);
         }
+        if (\App\Models\LevelSubject::where('level_id', $level->id)->exists() || \App\Models\SubjectLesson::where('level_id', $level->id)->exists()
+            || \App\Models\TimetableSlot::where('level_id', $level->id)->exists() || \App\Models\LevelRoom::where('level_id', $level->id)->exists()) {
+            throw ValidationException::withMessages(['level' => __('term_setup.errors.in_use')]);
+        }
         $this->audit->record('level.deleted', $level, $level->only(['name_ar', 'code']), []);
         $level->delete();
 

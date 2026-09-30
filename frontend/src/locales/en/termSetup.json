@@ -1,0 +1,119 @@
+{
+  "title": "Term setup",
+  "subtitle": "Level subjects and their lessons, the plan, night supervisors and the timetable of the selected term.",
+  "tabs": {
+    "level_rooms": "Level rooms",
+    "level_subjects": "Level subjects",
+    "subject_lessons": "Subject lessons",
+    "plan": "Plan",
+    "plan_view": "View plan",
+    "supervisors": "Night supervisors",
+    "timetable": "Timetable"
+  },
+  "term_bar": "Term: {{name}}",
+  "term_bar_all": "(All terms is selected at the top; showing the current term)",
+  "edit": "Edit",
+  "delete": "Delete",
+  "inactive": "Inactive",
+  "no_teacher": "No teacher",
+  "no_levels": "No levels yet. Add them on the Master data page.",
+  "fields": {
+    "subject": "Subject",
+    "level": "Level",
+    "teacher": "Teacher",
+    "weekly_sessions": "Periods per week",
+    "sort": "Order",
+    "notes": "Notes",
+    "title": "Lesson title",
+    "description": "Description",
+    "is_active": "Active",
+    "week": "Week",
+    "lesson": "Lesson",
+    "plan_title": "Free title",
+    "circle": "Circle",
+    "weekday": "Night",
+    "start_time": "From",
+    "end_time": "To",
+    "room": "Room"
+  },
+  "level_subjects": {
+    "hint": "The subjects each level studies this term, and their default teacher.",
+    "count": "Subjects: {{n}}",
+    "none": "No subjects yet.",
+    "add": "Add subject",
+    "weekly": "{{n}} a week",
+    "title_new": "Add a subject to {{level}}",
+    "title_edit": "Edit a subject of {{level}}",
+    "delete_confirm": "Remove this subject from the level? Its plan for this term goes too."
+  },
+  "subject_lessons": {
+    "hint": "Each subject's lessons in order, for one level or all levels. Not tied to a term, so every term's plan uses them.",
+    "new": "New lesson",
+    "empty": "No lessons for this subject yet.",
+    "all_levels": "All levels",
+    "all_levels_filter": "All levels (no filter)",
+    "title_new": "New lesson",
+    "title_edit": "Edit lesson",
+    "delete_confirm": "Delete this lesson? Plan items that use it keep its title."
+  },
+  "plan": {
+    "no_subjects": "This level has no subjects this term. Add them under Level subjects.",
+    "week": "Week {{n}}",
+    "add": "Add",
+    "no_lesson": "No lesson (free title)",
+    "title_hint": "Pick one of the subject's lessons, or write a free title (revision, test...).",
+    "item_title": "Plan item for {{subject}}",
+    "delete_confirm": "Remove this plan item?"
+  },
+  "supervisors": {
+    "hint": "Supervisors on duty each night this term.",
+    "none": "No supervisor.",
+    "add": "Add",
+    "choose": "Choose a supervisor",
+    "delete_confirm": "Remove this supervisor from the night?"
+  },
+  "timetable": {
+    "all_levels": "All levels",
+    "all_teachers": "All teachers",
+    "none": "No periods.",
+    "add": "Add period",
+    "title_new": "New period",
+    "title_edit": "Edit period",
+    "whole_level": "Whole level",
+    "default_teacher": "Subject's default teacher",
+    "no_room": "No room",
+    "warnings": "Heads-up:",
+    "delete_confirm": "Delete this period?",
+    "level_room": "{{name}} (level's room)"
+  },
+  "copy": {
+    "open": "Copy from another term",
+    "title": "Copy setup from another term",
+    "from": "Copy from",
+    "parts": "What to copy",
+    "part": {
+      "level_subjects": "Level subjects with their plan",
+      "night_supervisors": "Night supervisors",
+      "timetable": "Timetable (whole-level periods)",
+      "level_rooms": "Level rooms"
+    },
+    "hint": "Nothing this term already has is duplicated. Circle periods are not copied: circles belong to their own term.",
+    "run": "Copy",
+    "close": "Close",
+    "no_source": "There is no other term to copy from."
+  },
+  "list_sep": " · ",
+  "level_rooms": {
+    "hint": "Each level's rooms this term: the ones assigned here, and the ones its circles and timetable already use.",
+    "count": "Rooms: {{n}}",
+    "none": "No rooms for this level yet.",
+    "add": "Add",
+    "choose": "Choose a room",
+    "delete_confirm": "Remove this room from the level?",
+    "source": {
+      "assigned": "Assigned",
+      "circle": "Circle hall",
+      "timetable": "In timetable"
+    }
+  }
+}

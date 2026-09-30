@@ -25,9 +25,10 @@ export function MobileLessonsHeader({ tab, onTab }: { tab: 'circles' | 'halls' |
   )
 }
 
-export function MobileCircles({ lessons, total, loading, filters, showTracks, onSet, canCreate, onCreate, pagination, notice }: {
+export function MobileCircles({ lessons, total, loading, filters, showTracks, onSet, canCreate, onCreate, pagination, notice, levels = [] }: {
   lessons: Lesson[] | undefined; total: number | undefined; loading: boolean
-  filters: { gender?: string; status?: string; search?: string }; showTracks: boolean
+  filters: { gender?: string; status?: string; search?: string; level_id?: string }; showTracks: boolean
+  levels?: { id: number; name: string }[]
   onSet: (k: string, v: string) => void; canCreate: boolean; onCreate: () => void; pagination: ReactNode; notice?: ReactNode
 }) {
   const { t, i18n } = useTranslation('lessons')
@@ -53,6 +54,12 @@ export function MobileCircles({ lessons, total, loading, filters, showTracks, on
         <ChipRow label={t('filters.all_tracks')}>
           <Chip active={!filters.gender} onClick={() => onSet('gender', '')}>{t('mobile.all')}{total !== undefined && !filters.gender && <> {n(total)}</>}</Chip>
           {(['male', 'female', 'mixed'] as const).map((g) => <Chip key={g} active={filters.gender === g} onClick={() => onSet('gender', g)}>{t(`gender.${g}`)}</Chip>)}
+        </ChipRow>
+      )}
+      {levels.length > 0 && (
+        <ChipRow label={t('filters.all_levels')}>
+          <Chip active={!filters.level_id} onClick={() => onSet('level_id', '')}>{t('filters.all_levels')}</Chip>
+          {levels.map((l) => <Chip key={l.id} active={filters.level_id === String(l.id)} onClick={() => onSet('level_id', String(l.id))}><bdi>{l.name}</bdi></Chip>)}
         </ChipRow>
       )}
       {notice}
@@ -82,9 +89,10 @@ export function MobileCircles({ lessons, total, loading, filters, showTracks, on
                     </div>
                     <span className="shrink-0 text-xs tabular-nums text-ink/65">{t('students_of', { n: n(l.student_count), c: n(l.capacity) })}</span>
                   </div>
-                  {(l.status !== 'active' || l.gender) && (
+                  {(l.status !== 'active' || l.gender || l.level) && (
                     <div className="mt-2 flex flex-wrap gap-1.5">
                       {l.gender && <Pill tone={GENDER_PILL[l.gender]}>{t(`gender.${l.gender}`)}</Pill>}
+                      {l.level && <Pill><bdi>{l.level.name}</bdi></Pill>}
                       {l.status !== 'active' && <Pill>{t(`status.${l.status}`)}</Pill>}
                     </div>
                   )}

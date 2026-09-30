@@ -11,10 +11,6 @@
     "all": "All terms",
     "current": "{{name}} (current)"
   },
-  "edit": "Edit",
-  "delete": "Delete",
-  "save": "Save",
-  "cancel": "Cancel",
   "inactive": "Inactive",
   "fields": {
     "name_ar": "Arabic name",

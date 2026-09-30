@@ -78,6 +78,19 @@ final class TermScope
         };
     }
 
+    /**
+     * Screens that work on exactly one term (term setup): the requested ?term_id=, or the current term when "all"
+     * or nothing is requested. 422 when no term exists yet.
+     */
+    public static function single(Request $request): AcademicTerm
+    {
+        $term = self::fromRequest($request);
+        $found = is_int($term) ? AcademicTerm::find($term) : AcademicTerm::current();
+        abort_if($found === null, 422, __('terms.errors.none'));
+
+        return $found;
+    }
+
     /** Term for a new package or invoice when none was chosen: the current one. */
     public static function defaultId(): ?int
     {

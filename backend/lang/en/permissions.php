@@ -22,4 +22,5 @@ return [
     'reports.view' => 'View reports', 'reports.export' => 'Export reports',
     'settings.manage' => 'Manage settings', 'audit.view' => 'View audit log',
     'terms.manage' => 'Manage academic terms', 'levels.manage' => 'Manage levels', 'subjects.manage' => 'Manage subjects',
+    'term_setup.view' => 'View term setup (plan and timetable)', 'term_setup.manage' => 'Manage term setup',
 ];

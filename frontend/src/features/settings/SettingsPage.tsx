@@ -142,13 +142,23 @@ function GroupCard({ group, logoUrl, anchor = true, mobile = false }: { group: S
         <p className="mt-0.5 text-sm text-ink/55">{t(`groups.${group.key}.desc`)}</p>
       </header>
 
-      {group.key === 'authority' && <LogoField url={logoUrl} />}
-
-      <div className="divide-y divide-ink/6">
-        {items.map((s) => (
-          <Field key={s.key} item={s} value={draft[s.key]} error={errors[s.key]?.[0]} onChange={(v) => set(s.key, v)} mobile={mobile} />
-        ))}
-      </div>
+      {group.key === 'authority' ? (
+        // Compact identity layout: logo in a side column, Arabic/English pairs side by side.
+        <div className="grid gap-5 lg:grid-cols-[11rem_minmax(0,1fr)] lg:gap-6">
+          <LogoField url={logoUrl} />
+          <div className="grid content-start gap-x-4 gap-y-3 sm:grid-cols-2">
+            {items.map((s) => (
+              <Field key={s.key} item={s} value={draft[s.key]} error={errors[s.key]?.[0]} onChange={(v) => set(s.key, v)} mobile={mobile} stacked />
+            ))}
+          </div>
+        </div>
+      ) : (
+        <div className="divide-y divide-ink/6">
+          {items.map((s) => (
+            <Field key={s.key} item={s} value={draft[s.key]} error={errors[s.key]?.[0]} onChange={(v) => set(s.key, v)} mobile={mobile} />
+          ))}
+        </div>
+      )}
 
       {group.key === 'registration' && (
         <p className="mt-3 text-sm text-ink/60">
@@ -173,7 +183,8 @@ function GroupCard({ group, logoUrl, anchor = true, mobile = false }: { group: S
   )
 }
 
-function Field({ item: s, value, error, onChange, mobile = false }: { item: SettingItem; value: SettingValue; error?: string; onChange: (v: SettingValue) => void; mobile?: boolean }) {
+/** `stacked`: label above a full-width control (the authority grid) instead of the label | control row. */
+function Field({ item: s, value, error, onChange, mobile = false, stacked = false }: { item: SettingItem; value: SettingValue; error?: string; onChange: (v: SettingValue) => void; mobile?: boolean; stacked?: boolean }) {
   const { t, i18n } = useTranslation('settings')
   const id = useId()
   const label = t(`fields.${s.key}.label`, { defaultValue: s.key })
@@ -230,13 +241,24 @@ function Field({ item: s, value, error, onChange, mobile = false }: { item: Sett
     control = (
       <TextInput id={id} label={label} hideLabel value={String(value ?? '')} onChange={(e) => onChange(e.target.value)}
         dir={LTR_KEYS.has(s.key) ? 'ltr' : RTL_KEYS.has(s.key) ? 'rtl' : 'auto'} aria-invalid={!!error} aria-describedby={describedBy}
-        className="w-full sm:max-w-md" type={s.key === 'authority.phone' ? 'tel' : 'text'} />
+        className={stacked ? 'w-full' : 'w-full sm:max-w-md'} type={s.key === 'authority.phone' ? 'tel' : 'text'} />
     )
   }
 
   const labelEl = s.type === 'bool' || (s.options && s.options.length <= 4) || !s.editable
     ? <span id={`${id}-label`} className="text-sm font-medium text-ink">{label}</span>
     : <label htmlFor={id} className="text-sm font-medium text-ink">{label}</label>
+
+  if (stacked) {
+    return (
+      <div className="min-w-0">
+        <div className="mb-1.5">{labelEl}</div>
+        {control}
+        {help && <p id={helpId} className="mt-1 text-xs leading-relaxed text-ink/55">{help}</p>}
+        {error && <p id={errId} dir="auto" className="mt-1.5 text-start text-sm text-danger">{error}</p>}
+      </div>
+    )
+  }
 
   return (
     <div className="grid gap-2 py-3.5 sm:grid-cols-[minmax(0,15rem)_minmax(0,1fr)] sm:gap-6">
@@ -292,14 +314,15 @@ function LogoField({ url }: { url: string | null }) {
   const remove = useMutation({ mutationFn: settingsApi.deleteLogo, onSuccess: done, onError: fail })
 
   return (
-    <div className="mb-2 grid gap-2 border-b border-ink/6 pb-4 sm:grid-cols-[minmax(0,15rem)_minmax(0,1fr)] sm:gap-6">
-      <div>
-        <span className="text-sm font-medium text-ink">{t('logo.title')}</span>
-        <p className="mt-0.5 text-xs leading-relaxed text-ink/55">{t('logo.help')}</p>
+    // Side column on desktop (tile above buttons); tile beside the text and buttons below lg.
+    <div className="flex items-start gap-4 border-b border-ink/6 pb-4 lg:flex-col lg:gap-3 lg:border-b-0 lg:border-e lg:pb-0 lg:pe-6">
+      <div className="grid size-20 shrink-0 place-items-center overflow-hidden rounded-xl border border-dashed border-ink/20 bg-ink/[0.03] lg:size-28">
+        {url ? <img src={url} alt={t('logo.alt')} className="size-full object-contain p-1.5" /> : <Icon name="camera" className="size-6 text-ink/30" />}
       </div>
-      <div className="flex flex-wrap items-center gap-3">
-        <div className="grid size-20 shrink-0 place-items-center overflow-hidden rounded-xl border border-dashed border-ink/20 bg-ink/[0.03]">
-          {url ? <img src={url} alt={t('logo.alt')} className="size-full object-contain p-1.5" /> : <Icon name="camera" className="size-6 text-ink/30" />}
+      <div className="min-w-0 flex-1 space-y-2">
+        <div>
+          <span className="text-sm font-medium text-ink">{t('logo.title')}</span>
+          <p className="mt-0.5 text-xs leading-relaxed text-ink/55">{t('logo.help')}</p>
         </div>
         <div className="flex flex-wrap gap-2">
           <input
