@@ -37,6 +37,7 @@ enum MessageType: string
     case NotificationsStopped = 'notifications_stopped';
     case NotificationsResumed = 'notifications_resumed';
     case AutoReplyGeneric = 'auto_reply_generic';
+    case AttendanceResult = 'attendance_result';
 
     // Honor board, competitions and challenges (sections 13–14); templates in EngagementTemplateSeeder.
     case HonorCongrats = 'honor_congrats';
@@ -66,7 +67,7 @@ enum MessageType: string
         return in_array($this, [
             self::AttendanceReminderLong, self::AttendanceReminderShort, self::AbsenceNotice, self::RepeatedAbsence,
             self::LocationChange, self::SessionCancelled, self::ExcuseReceived, self::NotificationsStopped,
-            self::NotificationsResumed, self::AutoReplyGeneric,
+            self::NotificationsResumed, self::AutoReplyGeneric, self::AttendanceResult,
         ], true);
     }
 

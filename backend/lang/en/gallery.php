@@ -11,9 +11,9 @@ return [
         'video_unreadable' => 'The video file could not be read.',
         'video_too_long' => 'The video is longer than :max seconds.',
         'gender_required' => 'Choose the track (boys or girls).',
-        'gender_from_link' => 'The track follows the class or competition the album is linked to.',
+        'gender_from_link' => 'The track follows the class, competition, program or trip the album is linked to.',
         'link_missing' => 'The linked record does not exist.',
-        'linked_needs_link' => 'Link the album to a class, level or competition before sharing it with their guardians.',
+        'linked_needs_link' => 'Link the album to a class, level, competition, program or trip before sharing it with their guardians.',
         'cover' => 'The cover must be one of this album\'s photos.',
     ],
 ];

@@ -2,6 +2,7 @@ import type { AlbumLinkType, GalleryOptions } from '../../api/gallery'
 
 /** Options of the link picker for one link type. */
 export function linkOptions(o: GalleryOptions, type: AlbumLinkType) {
+  if (type === 'activity') return o.activities.map((a) => ({ value: String(a.id), label: a.name, group: a.type }))
   const rows = type === 'lesson' ? o.classes : type === 'level' ? o.levels : o.competitions
   return rows.map((r) => ({ value: String(r.id), label: r.name }))
 }

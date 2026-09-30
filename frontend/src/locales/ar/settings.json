@@ -255,5 +255,16 @@
     "ornament": "الزخرفة",
     "authority": "المؤسسة",
     "error": "تعذر تحميل الإعدادات."
+  },
+  "authority": {
+    "arabic": "العربية",
+    "english": "English",
+    "name": "الاسم",
+    "address": "العنوان",
+    "phone": "الهاتف",
+    "preview": "معاينة",
+    "preview_note": "كما يظهر في صفحات الدخول والتسجيل والمطبوعات.",
+    "empty": "غير محدد",
+    "logo_help": "الشعار: PNG أو JPEG أو WebP، مربع، حتى ٢ ميغابايت."
   }
 }

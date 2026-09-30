@@ -14,11 +14,12 @@ class Album extends Model
 {
     public const VISIBILITIES = ['staff', 'linked', 'all_guardians'];
 
-    /** link_type => model. Activities join once phase 7 (البرامج والرحلات) is merged. */
+    /** link_type => model. An activity is a program or a trip (البرامج والرحلات). */
     public const LINKS = [
         'lesson' => Lesson::class,
         'level' => Level::class,
         'competition' => Competition::class,
+        'activity' => Activity::class,
     ];
 
     protected $guarded = ['id'];

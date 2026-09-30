@@ -115,6 +115,16 @@ class AttendanceMessagingController extends Controller
         return response()->json(['message' => __('messages.send_now_done', ['n' => $result['queued']]), 'data' => $result]);
     }
 
+    /** Manual "send the result": each guardian gets their child's status for this session (absent ones get the absence notice). */
+    public function sendResults(Request $request, LessonSession $session, AttendanceMessenger $messenger): JsonResponse
+    {
+        $this->authorize('viewAttendance', $session);
+        abort_unless($request->user()->can('messages.send'), 403);
+        $result = $messenger->sendAttendanceResults($session);
+
+        return response()->json(['message' => __('messages.send_results_done', ['n' => $result['queued']]), 'data' => $result]);
+    }
+
     /** Supervisor inbox: replies that were not a keyword (status open), newest first. */
     public function inbox(Request $request): JsonResponse
     {

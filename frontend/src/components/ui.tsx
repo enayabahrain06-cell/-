@@ -291,6 +291,7 @@ export const TABLE_HEAD_STICKY = 'sticky top-0 z-10 bg-page text-start text-xs t
  */
 export function TableWrap({ children, surface = false, className = '' }: { children: ReactNode; surface?: boolean; className?: string }) {
   return surface
-    ? <div className={`${SURFACE} overflow-hidden ${className}`}><div className="overflow-x-auto">{children}</div></div>
-    : <div className={`-mx-4 overflow-x-auto px-4 sm:-mx-5 sm:px-5 ${className}`}>{children}</div>
+    // `relative`: absolutely positioned children (sr-only header labels) stay inside the scroll box, not the page.
+    ? <div className={`${SURFACE} overflow-hidden ${className}`}><div className="relative overflow-x-auto">{children}</div></div>
+    : <div className={`relative -mx-4 overflow-x-auto px-4 sm:-mx-5 sm:px-5 ${className}`}>{children}</div>
 }

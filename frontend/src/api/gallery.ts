@@ -3,7 +3,7 @@ import { api } from './client'
 /** معرض الصور (Phase 8). Files are never URLs in these payloads: load them with galleryFileUrl() through authBlob. */
 
 export type AlbumVisibility = 'staff' | 'linked' | 'all_guardians'
-export type AlbumLinkType = 'lesson' | 'level' | 'competition'
+export type AlbumLinkType = 'lesson' | 'level' | 'competition' | 'activity'
 export type AlbumGender = 'male' | 'female' | 'mixed'
 export type GalleryVariant = 'thumb' | 'image' | 'video'
 
@@ -46,6 +46,8 @@ export interface GalleryOptions {
   classes: { id: number; name: string; gender: AlbumGender | null; level_id: number | null }[]
   levels: { id: number; name: string }[]
   competitions: { id: number; name: string; gender: AlbumGender }[]
+  /** Programs and trips of the term (managers only). */
+  activities: { id: number; name: string; type: 'program' | 'trip'; gender: AlbumGender | null }[]
   link_types: AlbumLinkType[]
   video_enabled: boolean
   max_upload_mb: number

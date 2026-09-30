@@ -74,5 +74,21 @@
     "next_day": "Next day",
     "done": "Done",
     "hold_hint": "Press and hold a student to add a note or excuse."
+  },
+  "quick": {
+    "print": "Print sheet",
+    "share": "Share on WhatsApp",
+    "send_results": "Send result to guardians",
+    "send_results_confirm": "Each guardian will get their child's status (present, late, excused) on WhatsApp. Absent students already get the absence notice. Continue?",
+    "view_messages": "Track messages",
+    "col_no": "#",
+    "col_student": "Student",
+    "col_status": "Status",
+    "teacher": "Teacher",
+    "hall": "Room",
+    "printed_at": "Printed {{date}}",
+    "summary": "{{present}} present · {{late}} late · {{absent}} absent · {{excused}} excused",
+    "absent_list": "Absent: {{names}}",
+    "late_list": "Late: {{names}}"
   }
 }

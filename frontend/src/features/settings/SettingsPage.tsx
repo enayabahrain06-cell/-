@@ -143,15 +143,7 @@ function GroupCard({ group, logoUrl, anchor = true, mobile = false }: { group: S
       </header>
 
       {group.key === 'authority' ? (
-        // Compact identity layout: logo in a side column, Arabic/English pairs side by side.
-        <div className="grid gap-5 lg:grid-cols-[11rem_minmax(0,1fr)] lg:gap-6">
-          <LogoField url={logoUrl} />
-          <div className="grid content-start gap-x-4 gap-y-3 sm:grid-cols-2">
-            {items.map((s) => (
-              <Field key={s.key} item={s} value={draft[s.key]} error={errors[s.key]?.[0]} onChange={(v) => set(s.key, v)} mobile={mobile} stacked />
-            ))}
-          </div>
-        </div>
+        <AuthorityLayout items={items} draft={draft} errors={errors} onChange={set} logoUrl={logoUrl} />
       ) : (
         <div className="divide-y divide-ink/6">
           {items.map((s) => (
@@ -183,7 +175,93 @@ function GroupCard({ group, logoUrl, anchor = true, mobile = false }: { group: S
   )
 }
 
-/** `stacked`: label above a full-width control (the authority grid) instead of the label | control row. */
+const AUTHORITY_ROWS = [
+  { label: 'name', keys: ['authority.name_ar', 'authority.name_en'] },
+  { label: 'address', keys: ['authority.address_ar', 'authority.address_en'] },
+  { label: 'phone', keys: ['authority.phone'] },
+] as const
+
+/**
+ * Authority identity: a bilingual grid (row label | Arabic | English) beside a live preview card that holds the logo.
+ * Keys the registry adds later and the grid does not know still render, as a plain row under it.
+ */
+function AuthorityLayout({ items, draft, errors, onChange, logoUrl }: {
+  items: SettingItem[]; draft: Record<string, SettingValue>; errors: FieldErrors; onChange: (key: string, v: SettingValue) => void; logoUrl: string | null
+}) {
+  const { t, i18n } = useTranslation('settings')
+  const localAddress = i18n.language === 'en' ? 'authority.address_en' : 'authority.address_ar'
+  const byKey = new Map(items.map((s) => [s.key, s]))
+  const known = new Set<string>(AUTHORITY_ROWS.flatMap((r) => r.keys))
+  const rest = items.filter((s) => !known.has(s.key))
+  const field = (key: string) => {
+    const s = byKey.get(key)
+    return s ? <Field key={key} item={s} value={draft[key]} error={errors[key]?.[0]} onChange={(v) => onChange(key, v)} stacked /> : null
+  }
+  const text = (key: string) => (typeof draft[key] === 'string' ? (draft[key] as string).trim() : '')
+
+  return (
+    <div className="space-y-5">
+      <aside aria-label={t('authority.preview')} className="rounded-2xl border border-ink/8 bg-page/60 p-4">
+        <div className="flex flex-wrap items-center gap-x-5 gap-y-3">
+          <LogoTile url={logoUrl} />
+          <div className="min-w-0 flex-1 basis-40">
+            <p lang="ar" dir="rtl" className="truncate text-start font-display text-xl leading-snug text-ink">{text('authority.name_ar') || t('authority.empty')}</p>
+            <p lang="en" dir="ltr" className="truncate text-start text-sm text-ink/60">{text('authority.name_en') || t('authority.empty')}</p>
+          </div>
+          <dl className="min-w-0 flex-1 basis-52 space-y-1 text-sm text-ink/70 sm:border-s sm:border-ink/8 sm:ps-5">
+            <div className="flex items-start gap-2">
+              <dt className="sr-only">{t('authority.address')}</dt>
+              <Icon name="pin" className="mt-0.5 size-4 shrink-0 text-ink/40" />
+              <dd className="min-w-0 truncate" dir="auto">{text(localAddress) || text('authority.address_ar') || text('authority.address_en') || '—'}</dd>
+            </div>
+            <div className="flex items-center gap-2">
+              <dt className="sr-only">{t('authority.phone')}</dt>
+              <Icon name="phone" className="size-4 shrink-0 text-ink/40" />
+              <dd dir="ltr" className="tabular-nums">{text('authority.phone') || '—'}</dd>
+            </div>
+          </dl>
+          <LogoField url={logoUrl} />
+        </div>
+        <p className="mt-3 text-xs leading-relaxed text-ink/50">{t('authority.preview_note')} {t('authority.logo_help')}</p>
+      </aside>
+
+      {/* Bilingual columns only when the card itself is wide enough (container query), not by viewport. */}
+      <div className="@container min-w-0">
+        <div className="grid gap-x-4 gap-y-4 @xl:grid-cols-[6rem_minmax(0,1fr)_minmax(0,1fr)] @xl:gap-y-3">
+          <div aria-hidden className="hidden @xl:contents">
+            <span />
+            <span lang="ar" dir="rtl" className="text-start text-xs font-semibold text-ink/50">{t('authority.arabic')}</span>
+            <span lang="en" dir="ltr" className="text-start text-xs font-semibold text-ink/50">{t('authority.english')}</span>
+          </div>
+          {AUTHORITY_ROWS.map((r) => (
+            <div key={r.label} className="contents">
+              <span aria-hidden className="hidden pt-2.5 text-sm font-medium text-ink @xl:block">{t(`authority.${r.label}`)}</span>
+              {field(r.keys[0])}
+              {r.keys[1] ? field(r.keys[1]) : <span className="hidden @xl:block" />}
+            </div>
+          ))}
+        </div>
+        {rest.length > 0 && (
+          <div className="mt-2 divide-y divide-ink/6">
+            {rest.map((s) => <Field key={s.key} item={s} value={draft[s.key]} error={errors[s.key]?.[0]} onChange={(v) => onChange(s.key, v)} />)}
+          </div>
+        )}
+      </div>
+
+    </div>
+  )
+}
+
+function LogoTile({ url }: { url: string | null }) {
+  const { t } = useTranslation('settings')
+  return (
+    <div className="grid size-16 shrink-0 place-items-center overflow-hidden rounded-xl border border-dashed border-ink/20 bg-white">
+      {url ? <img src={url} alt={t('logo.alt')} className="size-full object-contain p-1" /> : <Icon name="camera" className="size-6 text-ink/30" />}
+    </div>
+  )
+}
+
+/** `stacked`: a full-width control for the authority grid (label shown above it only on phones) instead of the label | control row. */
 function Field({ item: s, value, error, onChange, mobile = false, stacked = false }: { item: SettingItem; value: SettingValue; error?: string; onChange: (v: SettingValue) => void; mobile?: boolean; stacked?: boolean }) {
   const { t, i18n } = useTranslation('settings')
   const id = useId()
@@ -250,9 +328,10 @@ function Field({ item: s, value, error, onChange, mobile = false, stacked = fals
     : <label htmlFor={id} className="text-sm font-medium text-ink">{label}</label>
 
   if (stacked) {
+    // The authority grid names rows and columns visually once its container is @xl; the control keeps its own (sr-only) full label.
     return (
       <div className="min-w-0">
-        <div className="mb-1.5">{labelEl}</div>
+        <span aria-hidden className="mb-1.5 block text-sm font-medium text-ink @xl:hidden">{label}</span>
         {control}
         {help && <p id={helpId} className="mt-1 text-xs leading-relaxed text-ink/55">{help}</p>}
         {error && <p id={errId} dir="auto" className="mt-1.5 text-start text-sm text-danger">{error}</p>}
@@ -314,17 +393,9 @@ function LogoField({ url }: { url: string | null }) {
   const remove = useMutation({ mutationFn: settingsApi.deleteLogo, onSuccess: done, onError: fail })
 
   return (
-    // Side column on desktop (tile above buttons); tile beside the text and buttons below lg.
-    <div className="flex items-start gap-4 border-b border-ink/6 pb-4 lg:flex-col lg:gap-3 lg:border-b-0 lg:border-e lg:pb-0 lg:pe-6">
-      <div className="grid size-20 shrink-0 place-items-center overflow-hidden rounded-xl border border-dashed border-ink/20 bg-ink/[0.03] lg:size-28">
-        {url ? <img src={url} alt={t('logo.alt')} className="size-full object-contain p-1.5" /> : <Icon name="camera" className="size-6 text-ink/30" />}
-      </div>
-      <div className="min-w-0 flex-1 space-y-2">
-        <div>
-          <span className="text-sm font-medium text-ink">{t('logo.title')}</span>
-          <p className="mt-0.5 text-xs leading-relaxed text-ink/55">{t('logo.help')}</p>
-        </div>
-        <div className="flex flex-wrap gap-2">
+    // Logo actions at the end of the authority preview banner (the tile itself is LogoTile).
+    <div className="space-y-2">
+      <div className="flex flex-wrap gap-2">
           <input
             ref={input}
             type="file"
@@ -347,9 +418,8 @@ function LogoField({ url }: { url: string | null }) {
               {t('logo.remove')}
             </SecondaryButton>
           )}
-        </div>
-        {notice && <div className="w-full"><Notice tone={notice.tone}>{notice.text}</Notice></div>}
       </div>
+      {notice && <Notice tone={notice.tone}>{notice.text}</Notice>}
     </div>
   )
 }

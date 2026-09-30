@@ -2,6 +2,7 @@
 
 namespace App\Console\Commands;
 
+use App\Services\Backup\MediaArchive;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\File;
 use Symfony\Component\Process\Process;
@@ -12,13 +13,17 @@ use Symfony\Component\Process\Process;
  * mysql  -> mysql < file.sql
  * pgsql  -> psql  -f file.sql
  * sqlite -> replaces the database file with the backup copy
+ *
+ * A .zip from db:backup --with-files restores the database, then puts the uploaded files back into the media folder
+ * (same names are overwritten, other files are kept). --skip-files restores only the database from the zip.
  */
 class DbRestoreCommand extends Command
 {
     protected $signature = 'db:restore
         {file : Backup file produced by db:backup}
         {--connection= : Connection name (defaults to DB_CONNECTION)}
-        {--force : Skip the confirmation prompt}';
+        {--force : Skip the confirmation prompt}
+        {--skip-files : With a .zip backup, restore only the database}';
 
     protected $description = 'Restore a backup produced by db:backup into the current database';
 
@@ -44,6 +49,19 @@ class DbRestoreCommand extends Command
             return self::INVALID;
         }
 
+        $zip = strtolower(pathinfo($file, PATHINFO_EXTENSION)) === 'zip' ? $file : null;
+        $tmp = null;
+        if ($zip) {
+            $tmp = storage_path('app/tmp/restore-'.uniqid());
+            try {
+                $file = app(MediaArchive::class)->extractDatabase($zip, $tmp);
+            } catch (\Throwable $e) {
+                $this->error($e->getMessage());
+
+                return self::FAILURE;
+            }
+        }
+
         try {
             match ($config['driver']) {
                 'mysql', 'mariadb' => $this->restoreMysql($config, $file),
@@ -55,6 +73,19 @@ class DbRestoreCommand extends Command
             $this->error($e->getMessage());
 
             return self::FAILURE;
+        }
+
+        if ($zip && ! $this->option('skip-files')) {
+            try {
+                $this->line('Files restored: '.app(MediaArchive::class)->restoreFiles($zip));
+            } catch (\Throwable $e) {
+                $this->error($e->getMessage());
+
+                return self::FAILURE;
+            }
+        }
+        if ($tmp) {
+            File::deleteDirectory($tmp);
         }
 
         $this->info('Restore completed.');

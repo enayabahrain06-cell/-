@@ -65,12 +65,22 @@ Files go through the existing `media` table and `MediaService` (single source of
 
 Built from `feature/school-management` at 146a3b7 (phases 4–6) in its own worktree, so phase 7's uncommitted work was not touched.
 
-- **Pending, phase 7:** the activity (trip / program) link. `Album::LINKS` gets `'activity' => Activity::class`, `GalleryAccess::linkedStudentIds()` gets the activity's registered students, and the activity page renders `<LinkedAlbums type="activity" id=… />`. Nothing else changes.
+- **Programs and trips (added at the merge with phase 7):** `link_type = activity`. The linked students are the activity's registrations with status `registered` (not the waitlist or cancelled ones). The album takes the activity's track and term; an activity open to both tracks gives a `mixed` album. Only managers link activities. The album shows on the program's الطلبة المسجلون tab and on the trip's متابعة حضور الرحلة tab.
 - Files are never URLs: the screens fetch `GET /api/gallery/photos/{photo}/{thumb|image|video}` with the session token and show them as object URLs (`lib/authBlob.ts`). No signed links, unlike student photos. The route has its own limiter (600 a minute) because each thumbnail is one request.
 - Photos are resized in the browser to 2560 px before upload (fast on mobile data), then on the server to 2048 px WebP plus a 480 px square thumbnail. Re-encoding drops EXIF and GPS. Max 15 MB per photo (`GALLERY_MAX_UPLOAD_MB`).
 - Videos: `GALLERY_VIDEO=auto` turns them on when `ffmpeg` and `ffprobe` run (`FFMPEG_PATH`, `FFPROBE_PATH`), and `off` never allows them. Max 50 MB and 60 s.
-- Assumptions to confirm:
+- Confirmed by the user (2026-09-30):
   - "All guardians" means the guardians of the album's gender track (a girls' album never reaches boys' guardians).
   - Students with their own login see the albums shared with their family.
-  - A teacher deletes only the photos they uploaded, and edits (title, order, cover, captions) only the albums they created.
-  - Albums follow the gender track of their class or competition. Albums with no link, or linked to a level, choose the track.
+  - A teacher deletes only the photos they uploaded, and edits (title, order, cover, captions) only the albums they created. Supervisors and super_admin edit or delete any album and photo of their track.
+- Albums follow the gender track of their class, competition, program or trip. Albums with no link, or linked to a level, choose the track.
+- Menu: an entry of the `communication` section (الرسائل، التقارير، معرض الصور). When the section-tabs navigation (`nav_v2`, proposed, not built) lands, it becomes the third tab of the التواصل والتقارير page, because those tabs are generated from the section's entries.
+
+## Where the files are, and backups
+
+Every upload is on the media disk (`MEDIA_DISK`, default `local`), whose root is `backend/storage/app/private`. Gallery files are in `backend/storage/app/private/media/album-photo/<photo id>/` (`gallery_image-*.webp`, `gallery_thumb-*.webp`, and `gallery_video-*.mp4|mov|webm` for videos). Student and teacher photos, receipts, exam sheets, recitations, certificates, the logo and signatures are in sibling folders of the same `media/` folder. Back up the whole `backend/storage/app/private/media` folder, not only `album-photo`. With Docker it is inside the `storage` volume.
+
+- `php artisan db:backup --with-files` writes `storage/app/backups/backup_<date>_<time>.zip` (or `--path=`): the database dump plus the whole `media/` folder and a `manifest.json`. Photos are stored in the zip without recompression.
+- `php artisan db:restore storage/app/backups/backup_<…>.zip --force` restores the database, then puts the files back (existing files with the same name are overwritten, others are kept). `--skip-files` restores only the database.
+- Without `--with-files`, `db:backup` behaves as before (database only).
+- When `MEDIA_DISK=s3`, the files are in the bucket: `--with-files` saves the database and warns you to back up the bucket.

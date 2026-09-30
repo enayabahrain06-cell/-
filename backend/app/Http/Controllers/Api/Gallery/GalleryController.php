@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api\Gallery;
 
 use App\Http\Controllers\Controller;
 use App\Models\AcademicTerm;
+use App\Models\Activity;
 use App\Models\Album;
 use App\Models\AlbumPhoto;
 use App\Models\Competition;
@@ -51,6 +52,9 @@ class GalleryController extends Controller
             'levels' => $manager ? Level::query()->ordered()->get()->map(fn (Level $l) => ['id' => $l->id, 'name' => $l->name($locale)]) : [],
             'competitions' => $manager ? Track::scope(Competition::query(), $user)->orderByDesc('id')->limit(200)->get()
                 ->map(fn (Competition $c) => ['id' => $c->id, 'name' => $c->name($locale), 'gender' => $c->gender]) : [],
+            'activities' => $manager ? Activity::query()->forTrack($user)->when($termId, fn ($q) => $q->where('academic_term_id', $termId))
+                ->orderByDesc('starts_on')->limit(300)->get()
+                ->map(fn (Activity $a) => ['id' => $a->id, 'name' => $a->name($locale), 'type' => $a->type, 'gender' => $a->gender]) : [],
             'link_types' => array_keys(Album::LINKS),
             'video_enabled' => $video->enabled(),
             'max_upload_mb' => (int) config('ahl.gallery.max_upload_mb', 15),
@@ -135,7 +139,7 @@ class GalleryController extends Controller
             [$gender, $termId] = $this->derive(['link_type' => $type, 'link_id' => $id, 'gender' => $data['gender'] ?? $album->gender, 'academic_term_id' => $data['academic_term_id'] ?? $album->academic_term_id], $user);
             $data = array_merge($data, ['link_type' => $type, 'link_id' => $id, 'gender' => $gender, 'academic_term_id' => $termId]);
         } elseif (isset($data['gender'])) {
-            abort_if($album->link_type === 'lesson' || $album->link_type === 'competition', 422, __('gallery.errors.gender_from_link'));
+            abort_if(in_array($album->link_type, ['lesson', 'competition', 'activity'], true), 422, __('gallery.errors.gender_from_link'));
             abort_unless(Track::allows($user, $data['gender']), 403);
         }
         if (array_key_exists('cover_photo_id', $data) && $data['cover_photo_id'] !== null) {
@@ -213,8 +217,8 @@ class GalleryController extends Controller
     }
 
     /**
-     * Gender and term follow the linked class or competition; a level or no link takes the chosen gender (a single
-     * track user's own by default) and the chosen term (the current one by default).
+     * Gender and term follow the linked class, competition, program or trip; a level or no link takes the chosen
+     * gender (a single-track user's own by default) and the chosen term (the current one by default).
      *
      * @return array{0: string, 1: ?int}
      */
@@ -235,6 +239,10 @@ class GalleryController extends Controller
                 $termId = $linked->package?->academic_term_id ?? $termId;
             } elseif ($linked instanceof Competition) {
                 $gender = $linked->gender;
+            } elseif ($linked instanceof Activity) {
+                // An activity open to both tracks (no gender) gives a mixed album: both tracks' staff see it.
+                $gender = $linked->gender ?? 'mixed';
+                $termId = $linked->academic_term_id ?? $termId;
             }
         }
         if (! $gender) {

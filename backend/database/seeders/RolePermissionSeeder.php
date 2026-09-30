@@ -42,6 +42,7 @@ class RolePermissionSeeder extends Seeder
         'subject_progress.record', // تحديث دروس المواد
         'staff_attendance.view', 'staff_attendance.record', // حضور المشرفين والمعلمين
         'grades.view', 'grades.record', 'grades.manage', // الدرجات: عرض، رصد، توزيع الدرجات والدروس المطلوبة
+        'activities.view', 'activities.manage', 'activities.register', 'activities.attendance', 'activities.evaluate', // البرامج والرحلات
         'gallery.view', 'gallery.upload', 'gallery.manage', // معرض الصور: عرض، رفع لصفوف المعلم، إدارة ومشاركة
     ];
 
@@ -71,6 +72,7 @@ class RolePermissionSeeder extends Seeder
             'notes.view', 'notes.manage', 'divisions.manage', 'evaluation_criteria.manage', 'subject_progress.record',
             'staff_attendance.view', 'staff_attendance.record',
             'grades.view', 'grades.record', 'grades.manage',
+            'activities.view', 'activities.manage', 'activities.register', 'activities.attendance', 'activities.evaluate',
             'gallery.view', 'gallery.upload', 'gallery.manage',
         ],
         'teacher' => [
@@ -89,6 +91,7 @@ class RolePermissionSeeder extends Seeder
             'divisions.manage', // own classes only
             'subject_progress.record', // subjects they teach only
             'grades.view', 'grades.record', // subjects they teach only
+            'activities.view', 'activities.attendance', 'activities.evaluate', // البرامج والرحلات: attendance and evaluation, no registration or fees
             'gallery.view', 'gallery.upload', // albums of own classes, always staff-only
         ],
         'student' => [],

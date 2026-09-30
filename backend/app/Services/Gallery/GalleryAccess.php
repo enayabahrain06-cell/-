@@ -4,6 +4,7 @@ namespace App\Services\Gallery;
 
 use App\Enums\LessonStudentStatus;
 use App\Enums\PackageGender;
+use App\Models\ActivityRegistration;
 use App\Models\Album;
 use App\Models\AlbumPhoto;
 use App\Models\CompetitionParticipant;
@@ -25,8 +26,9 @@ use Illuminate\Support\Collection;
  * - gallery.upload (teachers): create albums linked to a class they teach and upload into them. Those albums stay
  *   staff-only; a teacher edits their own album and deletes the photos they uploaded.
  * - Guardians (and students with their own account) see an album only after it is shared: `linked` when one of
- *   their children is in the linked class / level / competition, `all_guardians` when one of their children is in
- *   the album's gender track. They download only when the album allows it.
+ *   their children is in the linked class / level / competition / program or trip, `all_guardians` when one of
+ *   their children is in the album's gender track.
+ * - Program and trip links are for managers: teachers link only their own classes. They download only when the album allows it.
  */
 final class GalleryAccess
 {
@@ -186,7 +188,8 @@ final class GalleryAccess
 
     /**
      * Students in the linked record: the class's active students, the active students of the level's classes in the
-     * album's term, or a competition's participants. Empty when the album has no link.
+     * album's term, a competition's participants, or the students registered in a program or trip (not the waitlist
+     * or cancelled ones). Empty when the album has no link.
      */
     public static function linkedStudentIds(Album $album): Builder
     {
@@ -196,6 +199,7 @@ final class GalleryAccess
                 ->whereIn('lesson_id', Lesson::select('lessons.id')->where('level_id', $album->link_id)
                     ->tap(fn ($q) => TermScope::via($q, $album->academic_term_id))),
             'competition' => CompetitionParticipant::select('student_id')->where('competition_id', $album->link_id),
+            'activity' => ActivityRegistration::select('student_id')->where('activity_id', $album->link_id)->where('status', 'registered'),
             default => null,
         };
 

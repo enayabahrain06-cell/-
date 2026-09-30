@@ -73,6 +73,8 @@ Set `RUN_MIGRATIONS=false` for `app` to run `docker compose exec app php artisan
 
 ```bash
 docker compose exec app php artisan db:backup                       # into storage/app/backups (storage volume)
+docker compose exec app php artisan db:backup --with-files          # one zip: database + every uploaded file (storage/app/private/media)
+docker compose exec app php artisan db:restore storage/app/backups/backup_<date>.zip --force   # database and files
 docker compose exec app php artisan db:restore storage/app/backups/<file> --force
 docker run --rm -v ahl-alquran_storage:/s -v "$PWD":/b alpine tar czf /b/storage-$(date +%F).tgz -C /s .   # uploads and photos
 ```

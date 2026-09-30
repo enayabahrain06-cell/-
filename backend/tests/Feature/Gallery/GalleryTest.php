@@ -231,3 +231,44 @@ it('refuses videos when ffmpeg is off, and accepts a short one when it runs', fu
     $this->get('/api/gallery/photos/'.$res->json('data.id').'/video')->assertOk();
     @unlink($path);
 });
+
+it('links albums to programs and trips: registered students only, track and term from the activity', function () {
+    $trip = App\Models\Activity::create(['type' => 'trip', 'academic_term_id' => $this->term->id, 'name_ar' => 'رحلة المتحف', 'starts_on' => today()->toDateString(), 'gender' => 'male', 'status' => 'open']);
+    App\Models\ActivityRegistration::create(['activity_id' => $trip->id, 'student_id' => $this->kid->id, 'status' => 'registered']);
+    App\Models\ActivityRegistration::create(['activity_id' => $trip->id, 'student_id' => $this->otherKid->id, 'status' => 'waitlist']);
+
+    actingAsRole('supervisor');
+    expect($this->getJson('/api/gallery/options')->json('activities.*.id'))->toBe([$trip->id]);
+    $id = $this->postJson('/api/gallery/albums', ['title' => 'صور الرحلة', 'album_date' => today()->toDateString(), 'link_type' => 'activity', 'link_id' => $trip->id])
+        ->assertCreated()->assertJsonPath('data.gender', 'male')->assertJsonPath('data.link.name', 'رحلة المتحف')->json('data.id');
+    $this->putJson("/api/gallery/albums/{$id}/sharing", ['visibility' => 'linked', 'allow_download' => false])->assertOk();
+
+    $this->actingAs($this->parent, 'sanctum');
+    expect($this->getJson('/api/me/gallery')->json('data.*.id'))->toBe([$id]);
+    $this->actingAs($this->otherParent, 'sanctum');
+    expect($this->getJson('/api/me/gallery')->json('data'))->toBe([]); // waitlisted, not registered
+
+    // A trip open to both tracks gives a mixed album; teachers cannot link activities.
+    $both = App\Models\Activity::create(['type' => 'program', 'academic_term_id' => $this->term->id, 'name_ar' => 'برنامج صيفي', 'starts_on' => today()->toDateString(), 'status' => 'open']);
+    actingAsRole('supervisor');
+    $this->postJson('/api/gallery/albums', ['title' => 'البرنامج', 'album_date' => today()->toDateString(), 'link_type' => 'activity', 'link_id' => $both->id])
+        ->assertCreated()->assertJsonPath('data.gender', 'mixed');
+    $this->actingAs($this->teacher, 'sanctum');
+    $this->postJson('/api/gallery/albums', ['title' => 'ألبوم المعلم', 'album_date' => today()->toDateString(), 'link_type' => 'activity', 'link_id' => $trip->id])->assertForbidden();
+});
+
+it('lets supervisors edit any album and delete any photo; teachers only their own', function () {
+    $album = ($this->makeAlbum)(['created_by' => $this->teacher->id]);
+    $this->actingAs($this->teacher, 'sanctum');
+    $photo = $this->post("/api/gallery/albums/{$album->id}/photos", ['file' => ($this->jpeg)(600, 400)])->json('data.id');
+
+    $colleague = User::factory()->role('teacher')->create();
+    $this->mine->update(['teacher_id' => $colleague->id]);
+    $this->actingAs($colleague, 'sanctum');
+    $this->putJson("/api/gallery/albums/{$album->id}", ['title' => 'ليس ألبومي'])->assertForbidden();
+    $this->deleteJson("/api/gallery/photos/{$photo}")->assertForbidden();
+
+    actingAsRole('supervisor');
+    $this->putJson("/api/gallery/albums/{$album->id}", ['title' => 'عنوان المشرف'])->assertOk()->assertJsonPath('data.title', 'عنوان المشرف');
+    $this->deleteJson("/api/gallery/photos/{$photo}")->assertOk();
+});

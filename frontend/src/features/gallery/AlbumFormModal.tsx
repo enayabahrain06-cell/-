@@ -29,7 +29,7 @@ export default function AlbumFormModal({ options: o, album, onClose, onSaved }: 
       const data: AlbumInput = {
         title: title.trim(), description: description.trim() || null, album_date: date,
         link_type: linkType || null, link_id: linkType ? Number(linkId) : null,
-        gender: linkType === 'lesson' || linkType === 'competition' ? undefined : (gender || null),
+        gender: linkType === 'lesson' || linkType === 'competition' || linkType === 'activity' ? undefined : (gender || null),
       }
       return album ? galleryApi.update(album.id, data) : galleryApi.create(data)
     },

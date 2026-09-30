@@ -33,5 +33,7 @@ return [
     'subject_progress.record' => 'Update subject lessons',
     'staff_attendance.view' => 'View supervisor and teacher attendance', 'staff_attendance.record' => 'Record supervisor and teacher attendance',
     'grades.view' => 'View grades', 'grades.record' => 'Record grades', 'grades.manage' => 'Grade distribution and required lessons',
-    'gallery.view' => 'View the photo gallery', 'gallery.upload' => 'Upload photos to own classes' albums', 'gallery.manage' => 'Manage the photo gallery and share it with guardians',
+    'activities.view' => 'View programs and trips', 'activities.manage' => 'Manage programs and trips and hand program books', 'activities.register' => 'Register students in programs and trips',
+    'activities.attendance' => 'Record program and trip attendance', 'activities.evaluate' => 'Evaluate program students',
+    'gallery.view' => 'View the photo gallery', 'gallery.upload' => 'Upload photos to albums of own classes', 'gallery.manage' => 'Manage the photo gallery and share it with guardians',
 ];

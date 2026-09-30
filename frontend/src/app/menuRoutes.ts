@@ -44,6 +44,24 @@ export const BUILT_ENTRIES: Record<string, Pick<MenuEntry, 'path' | 'permissions
   download_grades: { path: '/grades', query: { tab: 'download' }, permissions: ['grades.view'] },
   grade_submission_monitor: { path: '/grade-submission-monitor', permissions: ['grades.manage'] },
   top_students: { path: '/honor', query: { tab: 'grades' }, permissions: ['grades.view'] },
+  // Phase 7, البرامج والرحلات (one activities engine; each entry opens its tab)
+  programs: { path: '/programs', query: { tab: 'list' }, isDefault: true, permissions: ['activities.view', 'activities.manage'] },
+  program_registration: { path: '/programs', query: { tab: 'register' }, permissions: ['activities.register'] },
+  program_students: { path: '/programs', query: { tab: 'students' }, permissions: ['activities.view'] },
+  program_fee_payment: { path: '/programs', query: { tab: 'fee_payment' }, permissions: ['payments.record'] },
+  program_fee_followup: { path: '/programs', query: { tab: 'fee_followup' }, permissions: ['wallets.view'] },
+  program_book_delivery: { path: '/programs', query: { tab: 'book_delivery' }, permissions: ['activities.manage'] },
+  program_book_followup: { path: '/programs', query: { tab: 'book_followup' }, permissions: ['activities.view'] },
+  program_attendance: { path: '/programs', query: { tab: 'attendance' }, permissions: ['activities.attendance'] },
+  program_attendance_followup: { path: '/programs', query: { tab: 'attendance_followup' }, permissions: ['activities.view'] },
+  program_evaluation: { path: '/programs', query: { tab: 'evaluation' }, permissions: ['activities.evaluate'] },
+  view_program_evaluation: { path: '/programs', query: { tab: 'evaluation_view' }, permissions: ['activities.view'] },
+  trips: { path: '/trips', query: { tab: 'list' }, isDefault: true, permissions: ['activities.view', 'activities.manage'] },
+  trip_registration: { path: '/trips', query: { tab: 'register' }, permissions: ['activities.register'] },
+  trip_attendance: { path: '/trips', query: { tab: 'attendance' }, permissions: ['activities.attendance'] },
+  trip_attendance_followup: { path: '/trips', query: { tab: 'attendance_followup' }, permissions: ['activities.view'] },
+  trip_fee_payment: { path: '/trips', query: { tab: 'fee_payment' }, permissions: ['payments.record'] },
+  trip_fee_followup: { path: '/trips', query: { tab: 'fee_followup' }, permissions: ['wallets.view'] },
 }
 
 /** Routes of those screens (path → page is mapped in routes.tsx by key). */
@@ -74,6 +92,9 @@ export const EXTRA_ROUTES: NavSection[] = [
   { key: 'upload_exam_grades', path: '/upload-exam-grades', icon: 'download', permissions: ['exams.grade'] },
   { key: 'gradebook', path: '/grades', icon: 'exams', permissions: ['grades.view', 'grades.record'] },
   { key: 'grade_monitor', path: '/grade-submission-monitor', icon: 'alert', permissions: ['grades.manage'] },
+  // Phase 7, البرامج والرحلات
+  { key: 'activities_programs', path: '/programs', icon: 'trophy', permissions: ['activities.view', 'activities.manage', 'activities.register', 'activities.attendance', 'activities.evaluate', 'payments.record', 'wallets.view'] },
+  { key: 'activities_trips', path: '/trips', icon: 'pin', permissions: ['activities.view', 'activities.manage', 'activities.register', 'activities.attendance', 'activities.evaluate', 'payments.record', 'wallets.view'] },
   // Phase 8, معرض الصور
   { key: 'gallery', path: '/gallery', icon: 'camera', permissions: ['gallery.view'] },
 ]

@@ -9,7 +9,7 @@ use Illuminate\Database\Seeder;
  * Reference data: WhatsApp templates for automatic attendance messaging (section 23), AR/EN.
  * Idempotent; admin edits survive re-seeding (only missing templates are created).
  * Variables: {name} {guardian_name} {lesson} {teacher} {date} {time} {location} {map_link} {assignment}
- * {next_date} {supervisor_phone} {absence_count} {authority}
+ * {next_date} {supervisor_phone} {absence_count} {status} {authority}
  */
 class AttendanceTemplateSeeder extends Seeder
 {
@@ -29,6 +29,16 @@ class AttendanceTemplateSeeder extends Seeder
                 "السلام عليكم {guardian_name}،\nنفيدكم بغياب {name} عن صف {lesson} يوم {date}.\nالمقرر الفائت: {assignment}\nموعد الصف القادم: {next_date}\nللاستفسار: {supervisor_phone}",
                 "Peace be upon you {guardian_name},\n{name} was absent from {lesson} on {date}.\nMissed assignment: {assignment}\nNext lesson: {next_date}\nQuestions: {supervisor_phone}",
                 $common],
+            ['attendance_result', 'نتيجة الحضور', 'Attendance result',
+                "السلام عليكم {guardian_name}،
+حالة {name} في صف {lesson} يوم {date}: {status}.
+واجب الحفظ: {assignment}
+موعد الصف القادم: {next_date}",
+                "Peace be upon you {guardian_name},
+{name}'s status in {lesson} on {date}: {status}.
+Memorization: {assignment}
+Next lesson: {next_date}",
+                array_merge($common, ['status'])],
             ['repeated_absence', 'غياب متكرر', 'Repeated absence',
                 "السلام عليكم {guardian_name}،\nتغيّب {name} {absence_count} مرات خلال الثلاثين يومًا الماضية. نرجو التواصل مع المشرف على الرقم {supervisor_phone}.",
                 "Peace be upon you {guardian_name},\n{name} has been absent {absence_count} times in the last 30 days. Please contact the supervisor on {supervisor_phone}.",

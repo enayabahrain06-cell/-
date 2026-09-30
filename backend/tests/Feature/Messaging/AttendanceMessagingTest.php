@@ -186,3 +186,24 @@ it('approves an excuse received after attendance was taken', function () {
     actingAsRole('supervisor', ['gender' => 'female', 'track' => 'female']);
     $this->getJson('/api/attendance/excuses?status=approved')->assertOk()->assertJsonCount(0, 'data');
 });
+
+it('sends each guardian the attendance result once per status, skipping absent students', function () {
+    Attendance::create(['lesson_session_id' => $this->session->id, 'student_id' => $this->kid->id, 'status' => 'present', 'memorization_assignment' => 'سورة القلم']);
+    Attendance::create(['lesson_session_id' => $this->session->id, 'student_id' => $this->teen->id, 'status' => 'absent']);
+
+    actingAsRole('supervisor', ['gender' => 'male', 'track' => 'male']);
+    $this->postJson("/api/sessions/{$this->session->id}/messages/send-results")->assertOk()->assertJsonPath('data.queued', 1);
+    $log = MessageLog::where('type', 'attendance_result')->sole();
+    expect($log->recipient_phone)->toBe('+97336400001')
+        ->and($log->body)->toContain('حاضر')->toContain('سورة القلم')->toContain('حلقة الفجر');
+
+    // Pressing again sends nothing new; a corrected status does.
+    $this->postJson("/api/sessions/{$this->session->id}/messages/send-results")->assertOk()->assertJsonPath('data.queued', 0);
+    Attendance::where('student_id', $this->kid->id)->update(['status' => 'late']);
+    $this->postJson("/api/sessions/{$this->session->id}/messages/send-results")->assertOk()->assertJsonPath('data.queued', 1);
+
+    actingAsRole('supervisor', ['gender' => 'female', 'track' => 'female']);
+    $this->postJson("/api/sessions/{$this->session->id}/messages/send-results")->assertForbidden();
+    actingAsRole('teacher', ['gender' => 'male', 'track' => 'male']);
+    $this->postJson("/api/sessions/{$this->session->id}/messages/send-results")->assertForbidden();
+});
