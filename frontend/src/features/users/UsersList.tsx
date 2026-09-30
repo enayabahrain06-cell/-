@@ -10,6 +10,7 @@ import Pagination from '../../components/Pagination'
 import SelectField from '../../components/SelectField'
 import { Badge, ErrorState, LoadingState, Modal, Notice, PrimaryButton, SecondaryButton, type Tone, SURFACE, FilterBar, SearchInput, EmptyCard, ROW_MAIN } from '../../components/ui'
 import { formatDate, formatNumber } from '../../lib/format'
+import { MobileUsersList } from './MobileUsers'
 
 const ROLE_TONE: Record<string, Tone> = { super_admin: 'gold', supervisor: 'info', teacher: 'brand' }
 const ALL_ROLES = ['super_admin', 'supervisor', 'teacher', 'student', 'guardian'] as const
@@ -20,7 +21,7 @@ function initialOf(name: string): string {
   return name.trim().replace(HONORIFIC, '').trim().charAt(0) || name.trim().charAt(0)
 }
 
-export default function UsersList({ onEdit, onNotice }: { onEdit: (u: AdminUser) => void; onNotice: (m: string | null) => void }) {
+export default function UsersList({ onEdit, onNotice, onNew }: { onEdit: (u: AdminUser) => void; onNotice: (m: string | null) => void; onNew?: () => void }) {
   const { t, i18n } = useTranslation('users')
   const locale = i18n.language
   const { can, user: me } = useAuth()
@@ -49,7 +50,11 @@ export default function UsersList({ onEdit, onNotice }: { onEdit: (u: AdminUser)
   const set = (patch: Partial<UserFilters>) => setFilters((f) => ({ ...f, ...patch, page: 1 }))
 
   return (
-    <div className="space-y-4">
+    <>
+    <MobileUsersList data={q.data} loading={q.isLoading} error={q.isError} onRetry={() => void q.refetch()} search={search} onSearch={setSearch}
+      filters={filters} set={set} onPage={(p) => setFilters((f) => ({ ...f, page: p }))} onEdit={onEdit} onNew={manage ? onNew : undefined}
+      onToggle={(u) => (u.is_active ? setConfirm(u) : toggle.mutate(u))} toggling={toggle.isPending ? toggle.variables?.id ?? null : null} />
+    <div className="hidden space-y-4 lg:block">
       <FilterBar>
         <SearchInput className="sm:min-w-56 sm:flex-1" label={t('list.search')} value={search} onChange={(e) => setSearch(e.target.value)} />
         <SelectField className="w-full sm:w-44" label={t('list.role')} hideLabel value={filters.role ?? ''} onChange={(e) => set({ role: e.target.value || undefined })}
@@ -113,6 +118,7 @@ export default function UsersList({ onEdit, onNotice }: { onEdit: (u: AdminUser)
           </div>
         </section>
       )}
+    </div>
 
       {confirm && (
         <Modal title={t('list.deactivate_title')} onClose={() => setConfirm(null)}
@@ -123,6 +129,6 @@ export default function UsersList({ onEdit, onNotice }: { onEdit: (u: AdminUser)
           <Notice tone="info">{t('list.deactivate_body', { name: confirm.name })}</Notice>
         </Modal>
       )}
-    </div>
+    </>
   )
 }

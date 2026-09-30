@@ -108,5 +108,11 @@
     "users": "Users",
     "wallets": "Wallets",
     "whatsapp": "WhatsApp"
+  },
+  "mobile": {
+    "all": "All",
+    "error": "Could not load the users.",
+    "audit_note": "Every user added, changed or deactivated is recorded in the",
+    "audit_link": "audit log"
   }
 }

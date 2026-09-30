@@ -6,6 +6,7 @@ import { usersApi, type RoleRow } from '../../api/users'
 import { useAuth } from '../../app/AuthContext'
 import { ErrorState, LoadingState, Notice, PrimaryButton, SecondaryButton, SURFACE } from '../../components/ui'
 import { formatNumber } from '../../lib/format'
+import { MobileMatrix } from './MobileUsers'
 
 /** The Super Admin always holds every permission; the server refuses edits to it. */
 const LOCKED = 'super_admin'
@@ -72,7 +73,9 @@ export default function PermissionMatrix({ onNotice }: { onNotice: (m: string | 
       <Notice tone="info">{editable ? t('matrix.intro') : t('matrix.read_only')}</Notice>
       {error && <Notice tone="error">{error}</Notice>}
 
-      <section className={`${SURFACE} overflow-hidden`} aria-label={t('tabs.roles')}>
+      <MobileMatrix roles={roles} groups={groups} has={has} setMany={setMany} locked={locked} isDirty={isDirty} dirtyCount={editable ? dirty.length : 0}
+        saving={save.isPending} onSave={() => save.mutate()} onDiscard={() => setDraft({})} />
+      <section className={`${SURFACE} hidden overflow-hidden lg:block`} aria-label={t('tabs.roles')}>
         <div className="max-h-[70vh] overflow-auto">
           <table className="w-full min-w-[40rem] border-separate border-spacing-0 text-sm">
             <thead>
@@ -127,7 +130,7 @@ export default function PermissionMatrix({ onNotice }: { onNotice: (m: string | 
       </section>
 
       {editable && dirty.length > 0 && (
-        <div className="sticky bottom-4 z-30 flex flex-wrap items-center gap-3 rounded-2xl border border-gold-500/30 bg-white px-4 py-3 shadow-lg">
+        <div className="sticky bottom-4 z-30 hidden flex-wrap items-center gap-3 rounded-2xl border border-gold-500/30 bg-white px-4 py-3 shadow-lg lg:flex">
           <p className="flex-1 text-sm text-ink/75">{t('matrix.pending', { roles: dirty.map((r) => r.label).join(locale === 'ar' ? '، ' : ', ') })}</p>
           <SecondaryButton disabled={save.isPending} onClick={() => setDraft({})}>{t('matrix.discard')}</SecondaryButton>
           <PrimaryButton loading={save.isPending} onClick={() => save.mutate()}>{t('matrix.save')}</PrimaryButton>

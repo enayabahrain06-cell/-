@@ -141,3 +141,19 @@ left out and listed under the page.
   the "show all" limit is shared with the table.
 - `presets()` moved to `features/reports/presets.ts` (unchanged) so both layouts use it.
 - Not on mobile: column sorting of report tables (desktop header buttons).
+
+## Users & permissions (/users, /users?tab=roles) — Users.dc.html
+
+- Page band hidden below lg; tabs المستخدمون / الأدوار والصلاحيات as a segmented control; notices as a 4-second
+  toast (own state; the desktop notice is unchanged).
+- Users: `MobileUsersList` under `lg:hidden` (query, debounced search, filters and the activate / deactivate
+  mutation stay in `UsersList`). Search, role chips (الكل + each role) plus a معطّل chip (the `active=0`
+  filter), "n مستخدم" count, rows: avatar (initials skip honorifics, as on desktop), name (+ أنت), phone
+  (`dir=ltr`), role pill (مدير النظام / مشرف = info, معلم = ok, others neutral, "+n" for extra roles), معطّل pill
+  and last login; deactivated users at 70% opacity. A row opens a sheet with تعديل (existing dialog) and
+  تعطيل / تفعيل (same confirm dialog). Note linking to سجل التدقيق (with audit.view). FAB مستخدم جديد.
+- Roles: `MobileMatrix` under `lg:hidden` (draft, dirty tracking and save stay in `PermissionMatrix`): role chips
+  (a gold dot on edited roles), one card per module with a module switch (n/N) and a switch per permission
+  (label + code); مدير النظام is locked. Sticky تجاهل + حفظ when there are unsaved changes.
+- New shared file `components/mobile/MSwitch.tsx` (44×26 track in a 44px hit area, `role="switch"`).
+- Not in the app: an accountant or read-only role (so no warn/neutral staff role pills beyond the existing roles).
