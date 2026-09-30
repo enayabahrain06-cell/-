@@ -149,3 +149,18 @@ left out and listed under the page.
 - Not in the backend: per-status counts for every chip (the list returns only the filtered total), a suggested
   circle per request without one call per card (the matcher runs in the accept dialog), "طلب استكمال" (request
   missing data) and an incomplete-request flag.
+
+## Quick register (/enrollment) — QuickRegister.dc.html
+
+- Same page and form (one `QuickEnrollForm`, same state, validation and API call); below lg only classes change.
+  The band is hidden (the shell's page header تسجيل سريع + breadcrumb replaces it), the single / Excel tabs are a
+  full-width segmented control with 44px items.
+- Sections are grouped by 12px labels (الطالب، ولي الأمر، الباقة والحلقة، الدفع) in 16px-padded cards; package and
+  circle pickers keep their seats-left / free-seats captions.
+- Total row (bg-brand-50: package name, price or مجانية, waitlist note) above the sticky bar once a package is picked.
+- Sticky bar: حفظ وتسجيل (primary; the label follows the mode, e.g. حفظ بدون باقة / قائمة الانتظار) and حفظ وإضافة
+  آخر (secondary). The circle page's "add student" dialog uses the same form and keeps its inline buttons.
+- The ID card reader bar is hidden below lg: the reader is a USB device on the reception PC, and its button is a
+  second bg-brand-700 on the screen.
+- Differs from the spec: payment is recorded in the same save (the existing "record a cash payment" option) rather
+  than "حفظ وتسجيل دفعة → payments/new"; the halaqa capacity shows as free seats per circle.
