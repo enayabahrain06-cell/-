@@ -30,7 +30,7 @@ class UpdateExamRequest extends FormRequest
             'pass_mark' => ['sometimes', 'integer', 'min:0'],
             'syllabus' => ['nullable', 'string', 'max:5000'],
             'randomize' => ['nullable', 'boolean'],
-        ] + $this->placementRules();
+        ] + $this->placementRules() + \App\Services\Grades\ExamGradeLinks::rules();
     }
 
     public function validated($key = null, $default = null)

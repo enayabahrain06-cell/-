@@ -107,6 +107,7 @@ export default function ExamDetailPage() {
               <div key={k} className={`${SURFACE} p-4`}><p className="text-sm text-ink/60">{t(`stats.${k}`)}</p><p className="mt-1 text-2xl font-semibold tabular-nums text-ink">{v}</p></div>
             ))}
           </div>
+          {!placement && <ExamGradeLinks exam={exam} />}
           {exam.syllabus && <Card><CardTitle>{t('form.syllabus')}</CardTitle><p dir="auto" className="whitespace-pre-line text-ink/80">{exam.syllabus}</p></Card>}
         </div>
       )}
@@ -116,6 +117,30 @@ export default function ExamDetailPage() {
       {tab === 'results' && (placement ? <PlacementResults exam={exam} /> : <Results exam={exam} />)}
       {edit && <ExamFormDialog exam={exam} onClose={() => setEdit(false)} onSaved={() => { setEdit(false); refresh() }} />}
     </div>
+  )
+}
+
+/** U10: the grade component the exam counts for and its required lessons (الدروس المطلوبة). */
+function ExamGradeLinks({ exam }: { exam: Exam }) {
+  const { t, i18n } = useTranslation('grades')
+  const lessons = exam.required_lessons ?? []
+  if (!exam.grade_component && lessons.length === 0) return null
+  return (
+    <Card>
+      {exam.grade_component && (
+        <p className="text-sm text-ink/75">
+          {t('links.counts_for', { name: exam.grade_component.name, subject: exam.grade_component.subject ?? '', weight: formatNumber(exam.grade_component.weight, i18n.language, { maximumFractionDigits: 2 }) })}
+        </p>
+      )}
+      {lessons.length > 0 && (
+        <>
+          <CardTitle actions={<Link to={`/required-lessons?exam=${exam.id}`} className="text-sm font-medium text-brand-700 hover:underline">{t('links.edit_lessons')}</Link>}>{t('nav:menu.required_lessons')}</CardTitle>
+          <ul className="grid gap-1.5 text-sm sm:grid-cols-2">
+            {lessons.map((l) => <li key={l.id} dir="auto" className="flex items-start gap-2 text-ink/80"><Icon name="check" className="mt-0.5 size-4 shrink-0 text-brand-700" />{l.title}</li>)}
+          </ul>
+        </>
+      )}
+    </Card>
   )
 }
 
@@ -192,7 +217,7 @@ function Questions({ exam, editable }: { exam: Exam; editable: boolean }) {
   )
 }
 
-function PaperGrading({ exam, onSaved }: { exam: Exam; onSaved: () => void }) {
+export function PaperGrading({ exam, onSaved }: { exam: Exam; onSaved: () => void }) {
   const { t, i18n } = useTranslation('exams')
   const qc = useQueryClient()
   const r = useQuery({ queryKey: ['exam-results', exam.id], queryFn: () => examsApi.results(exam.id) })

@@ -35,6 +35,15 @@ export const BUILT_ENTRIES: Record<string, Pick<MenuEntry, 'path' | 'permissions
   supervisor_attendance: { path: '/supervisor-attendance', query: { tab: 'record' }, isDefault: true, permissions: ['staff_attendance.record'] },
   view_supervisor_attendance: { path: '/supervisor-attendance', query: { tab: 'view' }, permissions: ['staff_attendance.view', 'staff_attendance.record'] },
   view_teacher_attendance: { path: '/teacher-attendance', permissions: ['staff_attendance.view', 'staff_attendance.record'] },
+  // Phase 6, الدرجات
+  grade_distribution: { path: '/grade-distribution', permissions: ['grades.manage'] },
+  required_lessons: { path: '/required-lessons', permissions: ['grades.manage', 'exams.manage'] },
+  upload_exam_grades: { path: '/upload-exam-grades', permissions: ['exams.grade'] },
+  grades: { path: '/grades', query: { tab: 'record' }, isDefault: true, permissions: ['grades.record'] },
+  view_grades: { path: '/grades', query: { tab: 'view' }, permissions: ['grades.view'] },
+  download_grades: { path: '/grades', query: { tab: 'download' }, permissions: ['grades.view'] },
+  grade_submission_monitor: { path: '/grade-submission-monitor', permissions: ['grades.manage'] },
+  top_students: { path: '/honor', query: { tab: 'grades' }, permissions: ['grades.view'] },
 }
 
 /** Routes of those screens (path → page is mapped in routes.tsx by key). */
@@ -59,6 +68,12 @@ export const EXTRA_ROUTES: NavSection[] = [
   { key: 'attendance_monitor', path: '/attendance-monitor', icon: 'alert', permissions: ['lessons.manage'] },
   { key: 'supervisor_attendance', path: '/supervisor-attendance', icon: 'attendance', permissions: ['staff_attendance.view', 'staff_attendance.record'] },
   { key: 'teacher_attendance', path: '/teacher-attendance', icon: 'eye', permissions: ['staff_attendance.view', 'staff_attendance.record'] },
+  // Phase 6, الدرجات
+  { key: 'grade_distribution', path: '/grade-distribution', icon: 'chart', permissions: ['grades.manage'] },
+  { key: 'required_lessons', path: '/required-lessons', icon: 'lessons', permissions: ['grades.manage', 'exams.manage'] },
+  { key: 'upload_exam_grades', path: '/upload-exam-grades', icon: 'download', permissions: ['exams.grade'] },
+  { key: 'gradebook', path: '/grades', icon: 'exams', permissions: ['grades.view', 'grades.record'] },
+  { key: 'grade_monitor', path: '/grade-submission-monitor', icon: 'alert', permissions: ['grades.manage'] },
 ]
 
 /** Every staff route: the core ones in nav.ts plus EXTRA_ROUTES. */

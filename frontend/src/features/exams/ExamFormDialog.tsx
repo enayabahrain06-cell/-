@@ -8,6 +8,7 @@ import { parseApiError, type FieldErrors } from '../../api/client'
 import SelectField from '../../components/SelectField'
 import { IconButton, Modal, Notice, PrimaryButton, SecondaryButton, Segmented, TextArea, TextInput, inputClass } from '../../components/ui'
 import { formatNumber } from '../../lib/format'
+import ExamLinksFields, { type ExamLinks } from '../grades/ExamLinksFields'
 
 /** <input type="datetime-local"> works in local time; the API accepts ISO strings (converted server-side to UTC). */
 const toLocal = (iso?: string | null) => (iso ? iso.slice(0, 16) : '')
@@ -49,6 +50,11 @@ export default function ExamFormDialog({ exam, onClose, onSaved }: { exam?: Exam
   }))
   // Shown lowest first while editing; the server stores them highest first.
   const [bands, setBands] = useState<Band[]>(() => (exam?.level_bands?.length ? [...exam.level_bands].map((b) => ({ min: b.min, level: b.level })).sort((a, b) => a.min - b.min) : DEFAULT_BANDS))
+  // U10: subject, grade component and required lessons (exams of a class or package in the term).
+  const [links, setLinks] = useState<ExamLinks>(() => ({
+    active: false, subject_id: exam?.subject_id ?? null, grade_component_id: exam?.grade_component?.id ?? null,
+    required_lesson_ids: (exam?.required_lessons ?? []).map((l) => l.id),
+  }))
   const [errors, setErrors] = useState<FieldErrors>({})
   const [msg, setMsg] = useState<string | null>(null)
   const set = <K extends keyof ExamInput>(k: K, v: ExamInput[K]) => setForm((f) => ({ ...f, [k]: v }))
@@ -67,6 +73,7 @@ export default function ExamFormDialog({ exam, onClose, onSaved }: { exam?: Exam
         package_id: effectiveScope === 'package' ? form.package_id : null,
         lesson_id: effectiveScope === 'lesson' ? form.lesson_id : null,
         ...(placement ? { pass_mark: 0, level_bands: bands } : {}),
+        ...(!placement && links.active ? { subject_id: links.subject_id, grade_component_id: links.grade_component_id, required_lesson_ids: links.required_lesson_ids } : {}),
       }
       return exam ? examsApi.update(exam.id, d) : examsApi.create(d)
     },
@@ -96,6 +103,10 @@ export default function ExamFormDialog({ exam, onClose, onSaved }: { exam?: Exam
           options={[{ value: '', label: t('form.none') }, ...(packages.data ?? []).map((p) => ({ value: String(p.id), label: p.name }))]} />
       )}
       {(err('lesson_id') || err('package_id') || err('gender')) && <Notice tone="error">{err('lesson_id') ?? err('package_id') ?? err('gender')}</Notice>}
+      {!placement && (
+        <ExamLinksFields lessonId={effectiveScope === 'lesson' ? form.lesson_id : null} packageId={effectiveScope === 'package' ? form.package_id : null}
+          examId={exam?.id} value={links} onChange={setLinks} errors={errors} />
+      )}
       <div className="grid gap-4 sm:grid-cols-3">
         <TextInput label={t('form.exam_date')} type="date" value={form.exam_date} onChange={(e) => set('exam_date', e.target.value)} />
         <TextInput label={t('form.opens_at')} type="datetime-local" value={form.opens_at} onChange={(e) => set('opens_at', e.target.value)} />

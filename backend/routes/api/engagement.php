@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Route;
 // Honor board, competitions and challenges (sections 13-14), inside auth:sanctum
 Route::get('honor/board', [HonorController::class, 'board']);
 Route::get('honor/periods', [HonorController::class, 'periods']);
+Route::get('honor/top-students', [HonorController::class, 'topStudents']); // تحديد المتفوقين (grades source)
 Route::post('honor/compute', [HonorController::class, 'compute']);
 Route::post('honor/periods/{period}/honor', [HonorController::class, 'honor']);
 Route::post('honor/periods/{period}/publish', [HonorController::class, 'publish']);

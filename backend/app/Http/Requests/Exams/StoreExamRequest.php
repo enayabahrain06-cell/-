@@ -31,7 +31,7 @@ class StoreExamRequest extends FormRequest
             'pass_mark' => ['required', 'integer', 'min:0', 'lte:total_marks'],
             'syllabus' => ['nullable', 'string', 'max:5000'],
             'randomize' => ['nullable', 'boolean'],
-        ] + $this->placementRules();
+        ] + $this->placementRules() + \App\Services\Grades\ExamGradeLinks::rules();
     }
 
     public function validated($key = null, $default = null)

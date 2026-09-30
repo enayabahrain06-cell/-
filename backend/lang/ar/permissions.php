@@ -32,4 +32,5 @@ return [
     'evaluation_criteria.manage' => 'إدارة معايير التقييم',
     'subject_progress.record' => 'تحديث دروس المواد',
     'staff_attendance.view' => 'عرض حضور المشرفين والمعلمين', 'staff_attendance.record' => 'تسجيل حضور المشرفين والمعلمين',
+    'grades.view' => 'عرض الدرجات', 'grades.record' => 'رصد الدرجات', 'grades.manage' => 'توزيع الدرجات والدروس المطلوبة',
 ];

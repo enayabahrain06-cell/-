@@ -130,6 +130,47 @@ class HonorController extends Controller
         ]]);
     }
 
+    /**
+     * تحديد المتفوقين: the honor board's grades source. Students of the term ranked by their weighted grade totals
+     * (الدرجات), per level or class and optionally one subject; ties share a rank. grades.view; teachers see the
+     * classes they teach (with a subject: the classes they teach it in).
+     */
+    public function topStudents(Request $request): JsonResponse
+    {
+        $user = $request->user();
+        abort_unless($user->can('grades.view'), 403);
+        $term = \App\Support\TermScope::single($request);
+        $data = $request->validate([
+            'level_id' => ['nullable', 'integer'], 'lesson_id' => ['nullable', 'integer'], 'subject_id' => ['nullable', 'integer'],
+            'limit' => ['nullable', 'integer', 'min:1', 'max:500'],
+            'gender' => ['nullable', Rule::in(HonorService::GENDERS)],
+        ]);
+        $gender = $this->genderFor($request, $data['gender'] ?? null);
+        $reach = \App\Services\Grades\Gradebook::termLessons($user, $term)->whereNotNull('lessons.level_id')->with('level');
+        $classes = (clone $reach)->orderBy('lessons.name')->get(['lessons.id', 'lessons.name', 'lessons.level_id']);
+        $lessons = $reach
+            ->when($data['level_id'] ?? null, fn ($q, $v) => $q->where('lessons.level_id', $v))
+            ->when($data['lesson_id'] ?? null, fn ($q, $v) => $q->whereKey($v))
+            ->when(($data['subject_id'] ?? null) && ! $user->can('lessons.manage'), fn ($q) => $q->whereIn('lessons.id', \App\Support\TeacherScope::lessonIds($user, (int) $data['subject_id'])))
+            ->get();
+        $rows = \App\Services\Grades\Gradebook::ranking($lessons, $term, $data['subject_id'] ?? null, $gender);
+        $limit = $data['limit'] ?? 20;
+        // Keep everyone tied with the last place shown.
+        $cut = isset($rows[$limit - 1]) ? $rows[$limit - 1]['rank'] : null;
+        $shown = $cut === null ? $rows : array_values(array_filter($rows, fn ($r) => $r['rank'] <= $cut));
+        $levelSubjects = \App\Models\LevelSubject::with('subject')->where('academic_term_id', $term->id)->get();
+
+        return response()->json([
+            'term' => ['id' => $term->id, 'name' => $term->name()],
+            'gender' => $gender,
+            'levels' => $classes->pluck('level')->filter()->unique('id')->sortBy('sort')->map(fn ($l) => ['id' => $l->id, 'name' => $l->name()])->values(),
+            'classes' => $classes->map(fn ($l) => ['id' => $l->id, 'name' => $l->name, 'level_id' => $l->level_id])->values(),
+            'subjects' => $levelSubjects->pluck('subject')->filter()->unique('id')->sortBy('sort')->map(fn ($s) => ['id' => $s->id, 'name' => $s->name()])->values(),
+            'rows' => $shown,
+            'ranked' => count($rows),
+        ]);
+    }
+
     public function badges(Request $request): JsonResponse
     {
         $this->authorize('viewAny', HonorPeriod::class);

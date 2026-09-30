@@ -1,4 +1,5 @@
 import { useCallback, useState } from 'react'
+import { useSearchParams } from 'react-router-dom'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useTranslation } from 'react-i18next'
 import { honorApi, type BadgeRow, type HonorBoard, type HonorRow } from '../../api/engagement'
@@ -11,6 +12,9 @@ import { Badge, buttonClass, Card, CardTitle, ErrorState, FilterBar, LoadingStat
 import { formatDate, formatNumber, formatPercent } from '../../lib/format'
 import MobileHonor from './MobileHonor'
 import MobileToast from '../../components/mobile/Toast'
+import TopStudentsPanel from './TopStudentsPanel'
+
+export type HonorTab = 'board' | 'badges' | 'grades'
 
 /** Categorical order from the validated palette: attendance, evaluation, memorization, bonus. */
 export const BREAKDOWN_COLORS = { attendance: '#2E8B57', evaluation: '#B8872E', memorization: '#3F74C0', bonus: '#B0413A' } as const
@@ -36,7 +40,13 @@ export default function HonorBoardPage() {
   const [period, setPeriod] = useState(currentMonth())
   const [gender, setGender] = useState<'male' | 'female'>(user?.track === 'female' ? 'female' : 'male')
   const [level, setLevel] = useState<'track' | 'package' | 'circle'>('track')
-  const [tab, setTab] = useState<'board' | 'badges'>('board')
+  // The tab lives in the URL: the menu entry تحديد المتفوقين opens ?tab=grades (the grades source of the board).
+  const [params, setParams] = useSearchParams()
+  const grades = can('grades.view')
+  const asked = params.get('tab')
+  const tab: HonorTab = asked === 'badges' ? 'badges' : asked === 'grades' && grades ? 'grades' : 'board'
+  const setTab = (v: HonorTab) => setParams(v === 'board' ? {} : { tab: v }, { replace: true })
+  const tabOptions = [{ value: 'board' as const, label: t('honor.tab_board') }, { value: 'badges' as const, label: t('honor.tab_badges') }, ...(grades ? [{ value: 'grades' as const, label: t('nav:menu.top_students') }] : [])]
   const [honorOpen, setHonorOpen] = useState(false)
   const [notice, setNotice] = useState<{ tone: 'success' | 'error'; text: string } | null>(null)
   const manage = can('honor.manage')
@@ -65,9 +75,10 @@ export default function HonorBoardPage() {
   return (
     <>
     <MobileHonor board={board} loading={q.isLoading} error={q.isError} onRetry={() => void q.refetch()} period={period} maxPeriod={currentMonth()} onPeriod={setPeriod}
-      both={both} gender={gender} onGender={setGender} tab={tab} onTab={setTab} level={level} onLevel={setLevel} manage={manage} displayKey={displayKey} tvUrl={tvUrl}
+      both={both} gender={gender} onGender={setGender} tab={tab} onTab={setTab} tabOptions={tabOptions} level={level} onLevel={setLevel} manage={manage} displayKey={displayKey} tvUrl={tvUrl}
       computing={compute.isPending} publishing={publish.isPending} onCompute={() => compute.mutate()} onPublish={(v) => publish.mutate(v)} onHonor={() => setHonorOpen(true)}
-      badges={<div className="lg:hidden"><BadgesPanel manage={manage} /></div>} />
+      badges={<div className="lg:hidden"><BadgesPanel manage={manage} /></div>}
+      grades={tab === 'grades' ? <div className="lg:hidden"><TopStudentsPanel gender={both ? gender : undefined} /></div> : null} />
     <MobileToast message={toast?.text ?? null} tone={toast?.tone} onDone={clearToast} />
     <div className="hidden space-y-5 lg:block">
       <PageBand
@@ -82,18 +93,20 @@ export default function HonorBoardPage() {
       />
 
       <FilterBar label={t('honor.filters')}>
-        <label className="block min-w-0 sm:w-48">
-          <span className="mb-1.5 block text-sm font-medium text-ink/75">{t('honor.month')}</span>
-          <input type="month" value={period} max={currentMonth()} onChange={(e) => e.target.value && setPeriod(e.target.value)} className={inputClass('md', 'w-full')} />
-        </label>
+        {tab !== 'grades' && (
+          <label className="block min-w-0 sm:w-48">
+            <span className="mb-1.5 block text-sm font-medium text-ink/75">{t('honor.month')}</span>
+            <input type="month" value={period} max={currentMonth()} onChange={(e) => e.target.value && setPeriod(e.target.value)} className={inputClass('md', 'w-full')} />
+          </label>
+        )}
         {both && <Segmented name="honor-gender" label={t('honor.track')} value={gender} onChange={setGender} options={[{ value: 'male', label: t('display.boys') }, { value: 'female', label: t('display.girls') }]} />}
-        <Segmented name="honor-tab" label={t('honor.view')} value={tab} onChange={setTab} options={[{ value: 'board', label: t('honor.tab_board') }, { value: 'badges', label: t('honor.tab_badges') }]} />
+        <Segmented name="honor-tab" label={t('honor.view')} value={tab} onChange={setTab} options={tabOptions} />
       </FilterBar>
 
       {notice && <Notice tone={notice.tone}>{notice.text}</Notice>}
       {manage && !displayKey && tab === 'board' && <p className="text-xs text-ink/50">{t('honor.tv_no_key')}</p>}
 
-      {tab === 'badges' ? <BadgesPanel manage={manage} /> : q.isLoading ? <LoadingState /> : q.isError || !board ? <ErrorState onRetry={() => void q.refetch()} /> : (
+      {tab === 'grades' ? <TopStudentsPanel gender={both ? gender : undefined} /> : tab === 'badges' ? <BadgesPanel manage={manage} /> : q.isLoading ? <LoadingState /> : q.isError || !board ? <ErrorState onRetry={() => void q.refetch()} /> : (
         <>
           <div className="flex flex-wrap items-center gap-2 text-sm">
             <Badge tone={STATUS_TONE[board.status]}>{t(`honor.status.${board.status}`)}</Badge>

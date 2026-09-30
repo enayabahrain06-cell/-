@@ -135,6 +135,18 @@ class Exam extends Model
         return $this->hasMany(ExamAttempt::class);
     }
 
+    /** The grade component (توزيع الدرجات) this exam counts for, if any (U10). */
+    public function gradeComponent(): \Illuminate\Database\Eloquent\Relations\HasOne
+    {
+        return $this->hasOne(GradeComponent::class);
+    }
+
+    /** الدروس المطلوبة: the subject lessons this exam covers. */
+    public function requiredLessons(): \Illuminate\Database\Eloquent\Relations\BelongsToMany
+    {
+        return $this->belongsToMany(SubjectLesson::class, 'exam_required_lessons')->withTimestamps()->orderBy('subject_lessons.sort')->orderBy('subject_lessons.id');
+    }
+
     /** Exam-pass certificates (source exam, source_id = exam id). */
     public function certificates(): HasMany
     {

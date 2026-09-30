@@ -70,6 +70,11 @@ import SupervisorAttendancePage from '../features/attendanceFollowup/SupervisorA
 import TeacherAttendancePage from '../features/attendanceFollowup/TeacherAttendancePage'
 import QuranLessonsPage from '../features/progress/QuranLessonsPage'
 import SubjectProgressPage from '../features/progress/SubjectProgressPage'
+import GradeDistributionPage from '../features/grades/GradeDistributionPage'
+import RequiredLessonsPage from '../features/grades/RequiredLessonsPage'
+import UploadExamGradesPage from '../features/grades/UploadExamGradesPage'
+import GradesPage from '../features/grades/GradesPage'
+import GradeMonitorPage from '../features/grades/GradeMonitorPage'
 
 function FullScreenLoader() {
   const { t } = useTranslation()
@@ -165,6 +170,11 @@ const BUILT: Record<string, React.ReactNode> = {
   attendance_monitor: <AttendanceMonitorPage />,
   supervisor_attendance: <SupervisorAttendancePage />,
   teacher_attendance: <TeacherAttendancePage />,
+  grade_distribution: <GradeDistributionPage />,
+  required_lessons: <RequiredLessonsPage />,
+  upload_exam_grades: <UploadExamGradesPage />,
+  gradebook: <GradesPage />,
+  grade_monitor: <GradeMonitorPage />,
 }
 
 /** Detail pages under a section: [path, permissions (any), element]. */

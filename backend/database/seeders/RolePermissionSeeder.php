@@ -41,6 +41,7 @@ class RolePermissionSeeder extends Seeder
         'evaluation_criteria.manage', // التقييمات (معايير التقييم لكل مادة)
         'subject_progress.record', // تحديث دروس المواد
         'staff_attendance.view', 'staff_attendance.record', // حضور المشرفين والمعلمين
+        'grades.view', 'grades.record', 'grades.manage', // الدرجات: عرض، رصد، توزيع الدرجات والدروس المطلوبة
     ];
 
     /** Default matrix (editable later from the admin panel). */
@@ -68,6 +69,7 @@ class RolePermissionSeeder extends Seeder
             'distribution.manage', 'archive.view', 'archive.manage', 'books.view', 'books.manage',
             'notes.view', 'notes.manage', 'divisions.manage', 'evaluation_criteria.manage', 'subject_progress.record',
             'staff_attendance.view', 'staff_attendance.record',
+            'grades.view', 'grades.record', 'grades.manage',
         ],
         'teacher' => [
             'dashboard.view',
@@ -84,6 +86,7 @@ class RolePermissionSeeder extends Seeder
             'notes.view', 'notes.manage', // own classes, levels and subjects only
             'divisions.manage', // own classes only
             'subject_progress.record', // subjects they teach only
+            'grades.view', 'grades.record', // subjects they teach only
         ],
         'student' => [],
         'guardian' => [],

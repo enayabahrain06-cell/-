@@ -32,4 +32,5 @@ return [
     'evaluation_criteria.manage' => 'Manage evaluation criteria',
     'subject_progress.record' => 'Update subject lessons',
     'staff_attendance.view' => 'View supervisor and teacher attendance', 'staff_attendance.record' => 'Record supervisor and teacher attendance',
+    'grades.view' => 'View grades', 'grades.record' => 'Record grades', 'grades.manage' => 'Grade distribution and required lessons',
 ];

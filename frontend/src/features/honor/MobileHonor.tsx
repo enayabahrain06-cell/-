@@ -1,6 +1,7 @@
 import type { ReactNode } from 'react'
 import { useTranslation } from 'react-i18next'
 import type { HonorBoard, HonorRow } from '../../api/engagement'
+import type { HonorTab } from './HonorBoardPage'
 import Icon from '../../components/Icon'
 import { Khatam } from '../../components/ornaments'
 import { StickyActionBar } from '../../components/mobile/ActionBars'
@@ -14,14 +15,14 @@ type Level = 'track' | 'package' | 'circle'
 const STATUS_TONE: Record<HonorBoard['status'], PillTone> = { none: 'neutral', open: 'warn', finalized: 'ok', honored: 'ok' }
 const MEDAL = ['text-gold-500', 'text-ink/65', 'text-gold-700']
 
-export default function MobileHonor({ board, loading, error, onRetry, period, maxPeriod, onPeriod, both, gender, onGender, tab, onTab, level, onLevel, manage, displayKey, tvUrl, computing, publishing, onCompute, onPublish, onHonor, badges }: {
+export default function MobileHonor({ board, loading, error, onRetry, period, maxPeriod, onPeriod, both, gender, onGender, tab, onTab, tabOptions, level, onLevel, manage, displayKey, tvUrl, computing, publishing, onCompute, onPublish, onHonor, badges, grades }: {
   board: HonorBoard | undefined; loading: boolean; error: boolean; onRetry: () => void
   period: string; maxPeriod: string; onPeriod: (v: string) => void
   both: boolean; gender: 'male' | 'female'; onGender: (v: 'male' | 'female') => void
-  tab: 'board' | 'badges'; onTab: (v: 'board' | 'badges') => void; level: Level; onLevel: (v: Level) => void
+  tab: HonorTab; onTab: (v: HonorTab) => void; tabOptions: { value: HonorTab; label: string }[]; level: Level; onLevel: (v: Level) => void
   manage: boolean; displayKey: string | null | undefined; tvUrl: string | null
   computing: boolean; publishing: boolean; onCompute: () => void; onPublish: (v: boolean) => void; onHonor: () => void
-  badges: ReactNode
+  badges: ReactNode; grades: ReactNode
 }) {
   const { t, i18n } = useTranslation('engagement')
   const locale = i18n.language
@@ -39,11 +40,11 @@ export default function MobileHonor({ board, loading, error, onRetry, period, ma
         ) : undefined} />
 
       <div className={`grid gap-3 ${both ? 'min-[400px]:grid-cols-[minmax(0,1fr)_auto] min-[400px]:items-end' : ''}`}>
-        <label className="block min-w-0">
+        {tab !== 'grades' && <label className="block min-w-0">
           <span className="mb-1.5 block text-[13px] font-medium text-ink/75">{t('honor.month')}</span>
           <input type="month" value={period} max={maxPeriod} onChange={(e) => e.target.value && onPeriod(e.target.value)}
             className="h-12 w-full min-w-0 rounded-md border border-ink/10 bg-white px-3 text-[15px] tabular-nums text-ink" />
-        </label>
+        </label>}
         {both && (
           <div role="group" aria-label={t('honor.track')} className="flex h-12 gap-[3px] rounded-ctl bg-ink/5 p-[3px]">
             {(['male', 'female'] as const).map((g) => (
@@ -55,9 +56,9 @@ export default function MobileHonor({ board, loading, error, onRetry, period, ma
           </div>
         )}
       </div>
-      <MSegmented label={t('honor.view')} value={tab} onChange={onTab} options={[{ value: 'board', label: t('honor.tab_board') }, { value: 'badges', label: t('honor.tab_badges') }]} />
+      <MSegmented label={t('honor.view')} value={tab} onChange={onTab} options={tabOptions} />
 
-      {tab === 'badges' ? badges : loading ? <BoardSkeleton /> : error || !board ? (
+      {tab === 'grades' ? grades : tab === 'badges' ? badges : loading ? <BoardSkeleton /> : error || !board ? (
         <MCard><MEmpty icon="alert" text={t('mobile.error')} action={<button type="button" onClick={onRetry} className={M_BTN_SECONDARY}>{t('mobile.retry')}</button>} /></MCard>
       ) : (
         <>

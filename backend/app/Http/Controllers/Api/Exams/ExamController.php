@@ -16,7 +16,9 @@ use App\Models\Lesson;
 use App\Models\Student;
 use App\Services\Exams\ExamPaperPresenter;
 use App\Services\Exams\ExamService;
+use App\Services\Grades\ExamGradeLinks;
 use App\Services\Media\MediaService;
+use Illuminate\Support\Facades\DB;
 use App\Services\Pdf\PdfService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -57,18 +59,42 @@ class ExamController extends Controller
         return ExamResource::collection($q->paginate((int) $request->integer('per_page', 25)));
     }
 
-    public function store(StoreExamRequest $request): ExamResource
+    public function store(StoreExamRequest $request, ExamGradeLinks $links): ExamResource
     {
-        $exam = Exam::create($request->validated() + ['status' => 'draft', 'created_by' => $request->user()->id]);
+        [$fields, $link] = $this->splitLinks($request->validated());
+        $exam = DB::transaction(function () use ($fields, $link, $links, $request) {
+            $exam = Exam::create($fields + ['status' => 'draft', 'created_by' => $request->user()->id]);
+            $links->apply($exam, $link);
 
-        return new ExamResource($exam->load(['package', 'lesson'])->loadCount(['questions', 'attempts']));
+            return $exam;
+        });
+
+        return new ExamResource($exam->load(['package', 'lesson', 'gradeComponent.levelSubject.subject', 'requiredLessons'])->loadCount(['questions', 'attempts']));
+    }
+
+    /**
+     * The exam's own fields and its U10 links (grade component, required lessons). Choosing a component without a
+     * subject gives the exam the component's subject.
+     *
+     * @return array{0: array, 1: array}
+     */
+    private function splitLinks(array $data): array
+    {
+        $keys = ['grade_component_id', 'required_lesson_ids'];
+        $link = array_intersect_key($data, array_flip($keys));
+        $fields = array_diff_key($data, array_flip($keys));
+        if (! empty($link['grade_component_id']) && ! array_key_exists('subject_id', $fields)) {
+            $fields['subject_id'] = ExamGradeLinks::subjectOf((int) $link['grade_component_id']);
+        }
+
+        return [$fields, $link];
     }
 
     /** Exam with its questions and quick stats. */
     public function show(Exam $exam): JsonResponse
     {
         $this->authorize('view', $exam);
-        $exam->load(['package', 'lesson', 'questions'])->loadCount(['questions', 'attempts']);
+        $exam->load(['package', 'lesson', 'questions', 'gradeComponent.levelSubject.subject', 'requiredLessons.level'])->loadCount(['questions', 'attempts']);
         $r = $this->exams->results($exam);
 
         return response()->json([
@@ -77,11 +103,15 @@ class ExamController extends Controller
         ]);
     }
 
-    public function update(UpdateExamRequest $request, Exam $exam): ExamResource
+    public function update(UpdateExamRequest $request, Exam $exam, ExamGradeLinks $links): ExamResource
     {
-        $exam->update($request->validated());
+        [$fields, $link] = $this->splitLinks($request->validated());
+        DB::transaction(function () use ($exam, $fields, $link, $links) {
+            $exam->update($fields);
+            $links->apply($exam, $link);
+        });
 
-        return new ExamResource($exam->fresh()->load(['package', 'lesson', 'questions'])->loadCount(['questions', 'attempts']));
+        return new ExamResource($exam->fresh()->load(['package', 'lesson', 'questions', 'gradeComponent.levelSubject.subject', 'requiredLessons'])->loadCount(['questions', 'attempts']));
     }
 
     public function destroy(Exam $exam): JsonResponse

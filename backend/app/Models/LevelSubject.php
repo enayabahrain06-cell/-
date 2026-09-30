@@ -40,4 +40,10 @@ class LevelSubject extends Model
     {
         return $this->hasMany(PlanItem::class);
     }
+
+    /** توزيع الدرجات: the parts this subject is graded on. */
+    public function gradeComponents(): HasMany
+    {
+        return $this->hasMany(GradeComponent::class)->orderBy('sort')->orderBy('id');
+    }
 }

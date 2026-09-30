@@ -32,6 +32,12 @@ class ExamResource extends JsonResource
             'level_bands' => $this->when($this->isPlacement(), fn () => collect($this->level_bands ?? [])
                 ->map(fn ($b) => $b + ['level_label' => \App\Enums\MemorizationLevel::tryFrom($b['level'])?->label()])->values()),
             'syllabus' => $this->syllabus,
+            // U10: the grade component the exam counts for and the subject lessons it covers.
+            'grade_component' => $this->whenLoaded('gradeComponent', fn () => $this->gradeComponent ? [
+                'id' => $this->gradeComponent->id, 'name' => $this->gradeComponent->name(), 'weight' => (float) $this->gradeComponent->weight,
+                'subject' => $this->gradeComponent->levelSubject?->subject?->name(), 'level_subject_id' => $this->gradeComponent->level_subject_id,
+            ] : null),
+            'required_lessons' => $this->whenLoaded('requiredLessons', fn () => $this->requiredLessons->map(fn ($l) => \App\Services\Grades\ExamGradeLinks::presentLesson($l))->values()),
             'randomize' => $this->randomize,
             'questions_count' => $this->whenCounted('questions'),
             'attempts_count' => $this->whenCounted('attempts'),

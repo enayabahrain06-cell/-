@@ -54,6 +54,10 @@ class LevelSubjectController extends TermSetupBase
     public function destroy(Request $request, LevelSubject $levelSubject): JsonResponse
     {
         $this->authorizeManage($request);
+        // توزيع الدرجات hangs on the level subject: remove its grade components first.
+        if (\App\Models\GradeComponent::where('level_subject_id', $levelSubject->id)->exists()) {
+            throw \Illuminate\Validation\ValidationException::withMessages(['level_subject' => __('grades.errors.level_subject_in_use')]);
+        }
         $levelSubject->delete();
 
         return response()->json(['message' => __('term_setup.deleted')]);

@@ -27,6 +27,10 @@ export interface Exam {
   pass_mark: number
   syllabus: string | null
   randomize: boolean
+  subject_id?: number | null
+  /** U10: the grade component (توزيع الدرجات) the exam counts for, and the subject lessons it covers. */
+  grade_component?: { id: number; name: string; weight: number; subject: string | null; level_subject_id: number } | null
+  required_lessons?: { id: number; title: string; description: string | null; level: { id: number; name: string } | null }[]
   questions_count?: number
   attempts_count?: number
   questions?: Question[]
@@ -112,6 +116,9 @@ export interface ExamInput {
   syllabus: string | null
   randomize: boolean
   level_bands?: { min: number; level: string }[] | null
+  subject_id?: number | null
+  grade_component_id?: number | null
+  required_lesson_ids?: number[]
 }
 
 export interface QuestionInput {
