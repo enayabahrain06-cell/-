@@ -1,0 +1,187 @@
+{
+  "nav_label": "أقسام البوابة",
+  "tabs": {
+    "children": "أبنائي",
+    "invoices": "الفواتير",
+    "messages": "الرسائل",
+    "account": "حسابي",
+    "progress": "تقدّمي",
+    "schedule": "جدولي",
+    "challenges": "التحديات"
+  },
+  "links": {
+    "exams": "الاختبارات",
+    "honor": "لوحة الشرف والتحديات",
+    "schedule": "جدول الحلقات",
+    "memorization": "تفاصيل الحفظ والتقييم",
+    "certificates": "شهاداتي",
+    "invoices": "الفواتير والمدفوعات",
+    "messages": "الرسائل"
+  },
+  "all": "الكل",
+  "all_children": "كل الأبناء",
+  "filter_child": "تصفية حسب الابن",
+  "no_circle": "لم يُسجَّل في حلقة بعد",
+  "not_found": "لا توجد بيانات لهذا الطالب في حسابك.",
+  "error": "تعذّر تحميل البيانات.",
+  "retry": "إعادة المحاولة",
+  "loading": "جارٍ التحميل…",
+  "load_more": "عرض المزيد",
+  "home": {
+    "greeting": "السلام عليكم، {{name}}",
+    "children": "أبنائي",
+    "empty": "لا يوجد أبناء مرتبطون بحسابك بعد. تواصل مع إدارة المركز.",
+    "due_title": "مستحقات بقيمة {{amount}}",
+    "due_sub_zero": "لا توجد مستحقات",
+    "due_sub_one": "على ابن واحد",
+    "due_sub_two": "على ابنين",
+    "due_sub_few": "على {{n}} أبناء",
+    "due_sub_many": "على {{n}} ابنًا",
+    "due_sub_other": "على {{n}} من الأبناء",
+    "due_action": "عرض الفواتير"
+  },
+  "today": {
+    "present_m": "حضر اليوم",
+    "present_f": "حضرت اليوم",
+    "late_m": "حضر متأخرًا اليوم",
+    "late_f": "حضرت متأخرة اليوم",
+    "absent_m": "غاب اليوم",
+    "absent_f": "غابت اليوم",
+    "excused_m": "غائب بعذر اليوم",
+    "excused_f": "غائبة بعذر اليوم",
+    "at": "الحلقة اليوم {{time}}",
+    "next": "الحلقة القادمة {{day}}",
+    "cancelled": "أُلغيت حلقة اليوم",
+    "none": "لا حلقات قادمة"
+  },
+  "kpi": {
+    "attendance": "الحضور",
+    "juz": "الجزء",
+    "rating": "التقييم",
+    "memorized_ayahs": "آيات محفوظة",
+    "completed_juz": "أجزاء مكتملة",
+    "quran": "من القرآن",
+    "plan": "الخطة السنوية",
+    "rank": "الترتيب في الحلقة"
+  },
+  "actions": {
+    "attendance": "الحضور",
+    "memorization": "الحفظ",
+    "certificates": "الشهادات",
+    "invoices": "الفواتير",
+    "memorization_details": "تفاصيل الحفظ"
+  },
+  "status": {
+    "present": "حاضر",
+    "late": "متأخر",
+    "absent": "غائب",
+    "excused": "بعذر"
+  },
+  "criteria": {
+    "memorization": "الحفظ",
+    "tajweed": "التجويد",
+    "revision": "المراجعة",
+    "behavior": "السلوك"
+  },
+  "days": {
+    "sat": "السبت",
+    "sun": "الأحد",
+    "mon": "الاثنين",
+    "tue": "الثلاثاء",
+    "wed": "الأربعاء",
+    "thu": "الخميس",
+    "fri": "الجمعة"
+  },
+  "progress": {
+    "empty": "لا يوجد سجل طالب مرتبط بحسابك بعد.",
+    "well_done": "أحسنت يا {{name}}",
+    "ring": "الجزء {{juz}}: {{percent}} محفوظ",
+    "juz_line": "{{memorized}} من {{total}} آية في الجزء {{juz}}",
+    "next_surah": "التالي: سورة {{surah}}، الآية {{ayah}}",
+    "this_week": "هذا الأسبوع",
+    "attendance_week": "الحضور",
+    "attended_of": "حضر {{n}} من {{of}}",
+    "no_sessions": "لا حلقات بعد",
+    "recitations": "آخر التسميع",
+    "no_recitations": "لا تسميع مسجّل هذا الأسبوع.",
+    "achievements": "إنجازاتي",
+    "honor_link": "لوحة الشرف",
+    "no_badges": "لا توجد أوسمة مفعّلة بعد.",
+    "earned": "حصلت عليه",
+    "locked": "لم تحصل عليه بعد",
+    "times": "{{n}} مرات"
+  },
+  "attendance": {
+    "title": "الحضور",
+    "rate": "نسبة الحضور",
+    "excused_n": "بعذر: {{n}}",
+    "history": "سجل الحضور",
+    "filter": "تصفية حسب الحالة",
+    "empty": "لا يوجد حضور مسجّل.",
+    "assignment": "الواجب: {{text}}"
+  },
+  "memorization": {
+    "title": "الحفظ والتقييم",
+    "quran_share": "{{percent}} من القرآن",
+    "plan_of": "{{n}} من {{of}} آية",
+    "rank_of": "{{n}} من {{of}}",
+    "current": "الموضع الحالي",
+    "next": "المقطع التالي",
+    "not_started": "لم يبدأ الحفظ بعد",
+    "khatm": "أتمّ حفظ القرآن الكريم",
+    "teacher_note": "ملاحظة المعلم",
+    "juz_map": "خريطة الأجزاء",
+    "latest_scores": "آخر التقييمات",
+    "no_scores": "لا توجد تقييمات بعد.",
+    "ledger": "سجل الحفظ والمراجعة",
+    "no_ledger": "لا يوجد حفظ مسجّل بعد.",
+    "point": "سورة {{surah}}، الآية {{ayah}} (الجزء {{juz}})"
+  },
+  "certificates": {
+    "title": "الشهادات"
+  },
+  "invoices": {
+    "title": "الفواتير والمدفوعات",
+    "outstanding": "المستحق",
+    "last_payment": "آخر دفعة",
+    "tab_invoices": "الفواتير",
+    "tab_payments": "المدفوعات",
+    "due_on": "الاستحقاق {{date}}",
+    "overdue": "متأخرة",
+    "empty": "لا توجد فواتير.",
+    "no_payments": "لا توجد مدفوعات مسجّلة.",
+    "receipt": "تنزيل الإيصال {{no}}",
+    "read_only": "للاطلاع فقط. للدفع أو الاستفسار تواصل مع إدارة المركز."
+  },
+  "schedule": {
+    "title": "جدول الحلقات",
+    "weekly": "المواعيد الأسبوعية",
+    "days": "أيام الحلقة",
+    "day_on": "يوم حلقة",
+    "day_off": "لا حلقة",
+    "upcoming": "الأسبوعان القادمان",
+    "empty": "لا حلقات في الأسبوعين القادمين.",
+    "no_circle": "لا توجد حلقة مسجّلة.",
+    "cancelled": "ملغاة",
+    "moved": "تغيّر المكان"
+  },
+  "messages": {
+    "title": "الرسائل",
+    "intro": "رسائل واتساب التي أرسلها المركز إليك.",
+    "empty": "لا توجد رسائل بعد.",
+    "general": "عام"
+  },
+  "account": {
+    "title": "حسابي",
+    "role_guardian": "ولي أمر",
+    "role_student": "طالب",
+    "language": "اللغة",
+    "photos": "صور الأبناء",
+    "photos_hint": "صورة واضحة للوجه بصيغة JPG أو PNG، حتى ٥ ميغابايت.",
+    "add_photo": "إضافة صورة",
+    "change_photo": "تغيير الصورة",
+    "uploading": "جارٍ الرفع…",
+    "photo_saved": "حُفظت الصورة.",
+    "more": "صفحات أخرى"
+  }
+}

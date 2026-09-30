@@ -1,0 +1,183 @@
+{
+  "nav_label": "Portal sections",
+  "tabs": {
+    "children": "My children",
+    "invoices": "Invoices",
+    "messages": "Messages",
+    "account": "Account",
+    "progress": "Progress",
+    "schedule": "Schedule",
+    "challenges": "Challenges"
+  },
+  "links": {
+    "exams": "Exams",
+    "honor": "Honor board and challenges",
+    "schedule": "Circle schedule",
+    "memorization": "Memorization and evaluation",
+    "certificates": "My certificates",
+    "invoices": "Invoices and payments",
+    "messages": "Messages"
+  },
+  "all": "All",
+  "all_children": "All children",
+  "filter_child": "Filter by child",
+  "no_circle": "Not in a circle yet",
+  "not_found": "This student is not linked to your account.",
+  "error": "The data could not be loaded.",
+  "retry": "Try again",
+  "loading": "Loading…",
+  "load_more": "Show more",
+  "home": {
+    "greeting": "Peace be upon you, {{name}}",
+    "children": "My children",
+    "empty": "No children are linked to your account yet. Please contact the centre.",
+    "due_title": "{{amount}} due",
+    "due_sub_one": "for one child",
+    "due_sub_other": "for {{n}} children",
+    "due_action": "View invoices"
+  },
+  "today": {
+    "present_m": "Attended today",
+    "present_f": "Attended today",
+    "late_m": "Late today",
+    "late_f": "Late today",
+    "absent_m": "Absent today",
+    "absent_f": "Absent today",
+    "excused_m": "Excused today",
+    "excused_f": "Excused today",
+    "at": "Circle today at {{time}}",
+    "next": "Next circle {{day}}",
+    "cancelled": "Today's circle cancelled",
+    "none": "No upcoming circles"
+  },
+  "kpi": {
+    "attendance": "Attendance",
+    "juz": "Juz",
+    "rating": "Rating",
+    "memorized_ayahs": "Ayahs memorized",
+    "completed_juz": "Juz completed",
+    "quran": "Of the Quran",
+    "plan": "Yearly plan",
+    "rank": "Rank in circle"
+  },
+  "actions": {
+    "attendance": "Attendance",
+    "memorization": "Memorization",
+    "certificates": "Certificates",
+    "invoices": "Invoices",
+    "memorization_details": "Memorization details"
+  },
+  "status": {
+    "present": "Present",
+    "late": "Late",
+    "absent": "Absent",
+    "excused": "Excused"
+  },
+  "criteria": {
+    "memorization": "Memorization",
+    "tajweed": "Tajweed",
+    "revision": "Revision",
+    "behavior": "Behaviour"
+  },
+  "days": {
+    "sat": "Sat",
+    "sun": "Sun",
+    "mon": "Mon",
+    "tue": "Tue",
+    "wed": "Wed",
+    "thu": "Thu",
+    "fri": "Fri"
+  },
+  "progress": {
+    "empty": "No student record is linked to your account yet.",
+    "well_done": "Well done, {{name}}",
+    "ring": "Juz {{juz}}: {{percent}} memorized",
+    "juz_line": "{{memorized}} of {{total}} ayahs in juz {{juz}}",
+    "next_surah": "Next: Surah {{surah}}, ayah {{ayah}}",
+    "this_week": "This week",
+    "attendance_week": "Attendance",
+    "attended_of": "Attended {{n}} of {{of}}",
+    "no_sessions": "No circles yet",
+    "recitations": "Latest recitations",
+    "no_recitations": "No recitation recorded this week.",
+    "achievements": "My achievements",
+    "honor_link": "Honor board",
+    "no_badges": "No badges are active yet.",
+    "earned": "Earned",
+    "locked": "Not earned yet",
+    "times": "{{n}} times"
+  },
+  "attendance": {
+    "title": "Attendance",
+    "rate": "Attendance rate",
+    "excused_n": "Excused: {{n}}",
+    "history": "Attendance history",
+    "filter": "Filter by status",
+    "empty": "No attendance recorded.",
+    "assignment": "Homework: {{text}}"
+  },
+  "memorization": {
+    "title": "Memorization and evaluation",
+    "quran_share": "{{percent}} of the Quran",
+    "plan_of": "{{n}} of {{of}} ayahs",
+    "rank_of": "{{n}} of {{of}}",
+    "current": "Current position",
+    "next": "Next passage",
+    "not_started": "Memorization not started yet",
+    "khatm": "Completed the whole Quran",
+    "teacher_note": "Teacher's note",
+    "juz_map": "Juz map",
+    "latest_scores": "Latest evaluations",
+    "no_scores": "No evaluations yet.",
+    "ledger": "Memorization and revision log",
+    "no_ledger": "No memorization recorded yet.",
+    "point": "Surah {{surah}}, ayah {{ayah}} (juz {{juz}})"
+  },
+  "certificates": {
+    "title": "Certificates"
+  },
+  "invoices": {
+    "title": "Invoices and payments",
+    "outstanding": "Outstanding",
+    "last_payment": "Last payment",
+    "tab_invoices": "Invoices",
+    "tab_payments": "Payments",
+    "due_on": "Due {{date}}",
+    "overdue": "Overdue",
+    "empty": "No invoices.",
+    "no_payments": "No payments recorded.",
+    "receipt": "Download receipt {{no}}",
+    "read_only": "Read only. To pay or ask a question, please contact the centre."
+  },
+  "schedule": {
+    "title": "Circle schedule",
+    "weekly": "Weekly times",
+    "days": "Circle days",
+    "day_on": "circle day",
+    "day_off": "no circle",
+    "upcoming": "Next two weeks",
+    "empty": "No circles in the next two weeks.",
+    "no_circle": "No circle registered.",
+    "cancelled": "Cancelled",
+    "moved": "Room changed"
+  },
+  "messages": {
+    "title": "Messages",
+    "intro": "WhatsApp messages the centre sent you.",
+    "empty": "No messages yet.",
+    "general": "General"
+  },
+  "account": {
+    "title": "Account",
+    "role_guardian": "Guardian",
+    "role_student": "Student",
+    "language": "Language",
+    "photos": "Children's photos",
+    "photos_hint": "A clear face photo, JPG or PNG, up to 5 MB.",
+    "add_photo": "Add photo",
+    "change_photo": "Change photo",
+    "uploading": "Uploading…",
+    "photo_saved": "Photo saved.",
+    "more": "More pages"
+  }
+}
