@@ -56,3 +56,10 @@ whatsapp/.env
 /node_modules/
 /package.json
 /package-lock.json
+
+# Databases, dumps and backups anywhere in the repo (the per-folder rules above only cover their own folders)
+*.sqlite
+*.sqlite-*
+*.sqlite3
+backup_*.zip
+**/storage/app/backups/
