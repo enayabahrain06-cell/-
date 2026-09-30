@@ -13,7 +13,7 @@ import { formatDate, formatMoney, formatNumber, formatTime } from '../../lib/for
 import { toLatinDigits } from '../../lib/phone'
 import { PlacementResultView, PlacementTest } from './PlacementStep'
 import { clearPlacementToken } from './placementToken'
-import { Field, FormSection, StepFooter, StepHeading } from './StepParts'
+import { Field, FormSection, StepBar, StepFooter, StepHeading } from './StepParts'
 
 type Step = 'who' | 'package' | 'details' | 'placement' | 'result' | 'confirm' | 'done'
 const BASE_STEPS: Step[] = ['who', 'package', 'details', 'done']
@@ -76,21 +76,22 @@ export default function PublicRegisterPage() {
   const idx = STEPS.indexOf(step)
   const formSteps = STEPS.length - 1
   const stepLabel = (k: Step) => t('public.step_of', { n: n(STEPS.indexOf(k) + 1), total: n(formSteps) })
+  const mobileHeader = { title: t('mobile.register_title'), back: '/login' }
 
-  if (settings.isLoading) return <PublicLayout><LoadingState /></PublicLayout>
-  if (s && !s.registration_open) return <PublicLayout><Notice tone="info">{t('public.closed')}</Notice></PublicLayout>
+  if (settings.isLoading) return <PublicLayout mobile={mobileHeader}><LoadingState /></PublicLayout>
+  if (s && !s.registration_open) return <PublicLayout mobile={mobileHeader}><Notice tone="info">{t('public.closed')}</Notice></PublicLayout>
 
   return (
-    <PublicLayout>
+    <PublicLayout mobile={mobileHeader}>
       <div className="space-y-6">
-        <div className="text-center">
+        <div className="text-center max-lg:hidden">
           <h1 className="font-display text-3xl text-ink sm:text-4xl">{t('public.title')}</h1>
           <p className="mx-auto mt-2 max-w-xl text-ink/60">{t('public.subtitle')}</p>
           <OrnamentDivider align="center" className="mx-auto mt-3 text-gold-500" />
         </div>
 
         {/* Stepper: numbered circles joined by a line that fills as the steps complete. */}
-        <ol className="mx-auto flex max-w-2xl items-start" aria-label={t('public.title')}>
+        <ol className="mx-auto flex max-w-2xl items-start max-lg:hidden" aria-label={t('public.title')}>
           {STEPS.map((k, i) => (
             <li key={k} className="flex flex-1 flex-col items-center gap-1.5 text-center" aria-current={k === step ? 'step' : undefined}>
               <div className="flex w-full items-center">
@@ -107,11 +108,23 @@ export default function PublicRegisterPage() {
           ))}
         </ol>
 
+        {/* Below lg: 4px step segments and one line "step n of N · name" (spec §6.2). */}
+        {step !== 'done' && (
+          <div className="space-y-2 lg:hidden">
+            <div aria-hidden className="flex gap-1">
+              {STEPS.slice(0, formSteps).map((k, i) => (
+                <span key={k} className={`h-1 flex-1 rounded-full ${i < idx ? 'bg-brand-700' : i === idx ? 'bg-gold-500' : 'bg-ink/10'}`} />
+              ))}
+            </div>
+            <p className="text-[13px] text-ink/65" aria-current="step"><span className="font-semibold tabular-nums text-ink">{stepLabel(step)}</span> · {t(`public.steps.${step}`)}</p>
+          </div>
+        )}
+
         {message && step !== 'done' && Object.keys(errors).length === 0 && <div className="mx-auto max-w-2xl"><Notice tone="error">{message}</Notice></div>}
 
         {step === 'who' && (
           <div className="mx-auto max-w-lg space-y-4">
-            <section aria-labelledby="step-title" className={`${SURFACE} space-y-5 p-6`}>
+            <section aria-labelledby="step-title" className={`${SURFACE} space-y-5 p-6 max-lg:p-4`}>
               <StepHeading step={stepLabel('who')} title={t('public.who_title')} help={t('public.who_help')} />
               <fieldset>
                 <legend className="mb-2 text-sm font-medium text-ink/75">{t('public.gender_q')}</legend>
@@ -128,19 +141,21 @@ export default function PublicRegisterPage() {
                 </div>
               </fieldset>
               <TextInput label={t('public.birth_date')} type="date" value={birth} max={new Date().toISOString().slice(0, 10)} onChange={(e) => setBirth(e.target.value)} />
-              <PrimaryButton className="w-full" disabled={!gender || !birth} onClick={() => { setPkg(null); setStep('package') }}>
-                {t('public.next')}<Icon name="chevron" className="size-4 rtl:rotate-180" />
-              </PrimaryButton>
+              <StepBar>
+                <PrimaryButton className="w-full" disabled={!gender || !birth} onClick={() => { setPkg(null); setStep('package') }}>
+                  {t('public.next')}<Icon name="chevron" className="size-4 rtl:rotate-180" />
+                </PrimaryButton>
+              </StepBar>
             </section>
-            <p className="flex flex-wrap justify-center gap-x-4 gap-y-1 text-sm">
-              <Link to="/login" className="text-brand-700 hover:underline">{t('public.have_account')}</Link>
-              <Link to="/track" className="text-brand-700 hover:underline">{t('public.track_link')}</Link>
+            <p className="flex flex-wrap justify-center gap-x-4 gap-y-1 text-sm max-lg:gap-y-0 max-lg:text-[15px]">
+              <Link to="/login" className="text-brand-700 hover:underline max-lg:inline-flex max-lg:min-h-11 max-lg:items-center">{t('public.have_account')}</Link>
+              <Link to="/track" className="text-brand-700 hover:underline max-lg:inline-flex max-lg:min-h-11 max-lg:items-center">{t('public.track_link')}</Link>
             </p>
           </div>
         )}
 
         {step === 'package' && (
-          <section aria-labelledby="step-title" className={`${SURFACE} mx-auto max-w-2xl space-y-5 p-6`}>
+          <section aria-labelledby="step-title" className={`${SURFACE} mx-auto max-w-2xl space-y-5 p-6 max-lg:p-4`}>
             <StepHeading step={stepLabel('package')} title={t('public.choose_package')} help={t('public.package_help')} />
             {err('package_id') && <Notice tone="error">{err('package_id')}</Notice>}
             {packages.isLoading ? <LoadingState /> : (packages.data ?? []).length === 0 ? <Notice tone="info">{t('public.no_packages')}</Notice> : (
@@ -181,7 +196,7 @@ export default function PublicRegisterPage() {
         )}
 
         {step === 'details' && pkg && (
-          <form aria-labelledby="step-title" className={`${SURFACE} mx-auto max-w-2xl space-y-6 p-6`} onSubmit={(e) => { e.preventDefault(); if (pkg.placement) go(placement ? 'result' : 'placement'); else submit.mutate() }}>
+          <form aria-labelledby="step-title" className={`${SURFACE} mx-auto max-w-2xl space-y-6 p-6 max-lg:p-4`} onSubmit={(e) => { e.preventDefault(); if (pkg.placement) go(placement ? 'result' : 'placement'); else submit.mutate() }}>
             <StepHeading step={stepLabel('details')} title={t('public.details_title')} help={t('public.details_help')} />
 
             <div className="flex flex-wrap items-center gap-3 rounded-xl bg-brand-50/60 px-4 py-3">
@@ -249,7 +264,7 @@ export default function PublicRegisterPage() {
         )}
 
         {step === 'confirm' && pkg && placement && (
-          <section aria-labelledby="step-title" className={`${SURFACE} mx-auto max-w-2xl space-y-5 p-6`}>
+          <section aria-labelledby="step-title" className={`${SURFACE} mx-auto max-w-2xl space-y-5 p-6 max-lg:p-4`}>
             <StepHeading step={stepLabel('confirm')} title={t('placement.confirm_step_title')} help={t('placement.confirm_step_help')} />
             <dl className="divide-y divide-ink/6 rounded-xl border border-ink/8 text-sm">
               <SummaryRow label={t('placement.summary_student')} onEdit={() => go('details')} editLabel={t('public.change')}><span dir="auto">{form.full_name}</span></SummaryRow>

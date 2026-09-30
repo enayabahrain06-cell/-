@@ -227,5 +227,10 @@
     "delete": "Delete",
     "delete_confirm": "Delete this package?"
   },
-  "gender": { "male": "Boys", "female": "Girls", "mixed": "Early years (mixed)" }
+  "gender": { "male": "Boys", "female": "Girls", "mixed": "Early years (mixed)" },
+  "mobile": {
+    "register_title": "Register",
+    "track_title": "Track a request",
+    "track_contact": "Questions about your request? Call us"
+  }
 }

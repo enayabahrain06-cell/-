@@ -104,3 +104,27 @@ left out and listed under the page.
   brand-700), same forms and validation. إظهار and the OTP change-number / resend buttons get 44px hit areas; footer
   links become 44px rows (قدّم طلب تسجيل bold brand, تتبع طلب التسجيل muted ink/65).
 - The OTP code stays the existing single 6-digit field (spaced digits, `one-time-code`) with its resend timer.
+
+## Register (/register) — Register.dc.html
+
+- `PublicLayout` takes an optional `mobile` header: below lg the deep brand header gives way to the mobile page
+  header (back to /login, title, language pill). The certificate verification page does not pass it and is unchanged.
+- Progress: 4px step segments (done emerald, current gold) and one line "الخطوة ١ من ٣ · الطالب"; the numbered
+  desktop stepper and the page hero are hidden below lg, and so is the "step n of N" line inside each step card.
+- `StepFooter` (and the new `StepBar` for the first step) is the sticky action bar below lg: السابق secondary,
+  التالي / إرسال الطلب primary filling the row at 48px. Cards use 16px padding; the footer links are 44px.
+- The flow stays the app's own (spec rule 7): الطالب (track + birth date) → الباقة → البيانات (+ placement test,
+  result and review when the package has one) → done screen with the request number and a link to /track/:no.
+- Not in the app: CPR, school and a separate guardian step in the public form (the API takes gender, birth date,
+  package, names, phones, level, photo, notes); landing on /track?ref= (the done screen links to /track/:no).
+
+## Track (/track, /track/:no) — Track.dc.html
+
+- Mobile header (back, تتبع الطلب, language pill); the search card is the existing form (request no. + guardian
+  phone, primary عرض الحالة). Both fields must match on the server, so "request no. or phone" stays "and".
+- Result below lg: student name, request number · package, status pill (pending/lottery warn, waitlist info,
+  accepted/enrolled ok, rejected err), the status sentence, waitlist position, then a vertical timeline (done =
+  emerald dot, current = gold ring, pending = hollow; rejected decision in clay) with dates, and the reason.
+- Lapis note with the authority phone from `/public/settings` (tel: link, Latin digits, `dir=ltr`).
+- Not in the backend: the spec's five stages (اكتمال البيانات، تحديد الحلقة، السداد); the request only has
+  created / decided dates, so the timeline shows the app's three steps.

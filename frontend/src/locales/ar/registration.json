@@ -227,5 +227,10 @@
     "delete": "حذف",
     "delete_confirm": "حذف هذه الباقة؟"
   },
-  "gender": { "male": "بنين", "female": "بنات", "mixed": "مبكر (مختلط)" }
+  "gender": { "male": "بنين", "female": "بنات", "mixed": "مبكر (مختلط)" },
+  "mobile": {
+    "register_title": "طلب تسجيل",
+    "track_title": "تتبع الطلب",
+    "track_contact": "للاستفسار عن طلبك تواصل معنا"
+  }
 }
