@@ -7,6 +7,9 @@
 #
 # Configuration comes from ./.env (copy .env.production.example). See docs/04-DEPLOYMENT.md.
 
+# Fixed project name: without it Compose derives one from the checkout folder, which can be empty or change.
+name: ahl-alquran
+
 x-backend: &backend
   build:
     context: ./backend

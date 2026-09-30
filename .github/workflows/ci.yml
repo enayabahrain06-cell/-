@@ -84,13 +84,26 @@ jobs:
 
       - name: Migrate, roll back, migrate again, seed
         if: matrix.db != 'sqlite'
+        shell: bash
         run: |
-          php artisan migrate:fresh --force
-          php artisan migrate:rollback --force
-          php artisan migrate --force --seed
+          set -o pipefail
+          { php artisan migrate:fresh --force && php artisan migrate:rollback --force && php artisan migrate --force --seed; } 2>&1 | tee ../ci-output.txt
 
       - name: Run test suite
-        run: php artisan test --compact
+        shell: bash
+        run: |
+          set -o pipefail
+          php artisan test --compact 2>&1 | tee ../ci-output.txt
+
+      # The failing step's last lines as an annotation, readable without opening the job log.
+      - name: Report failure output
+        if: failure()
+        shell: bash
+        working-directory: .
+        run: |
+          [ -f ci-output.txt ] || exit 0
+          tail -n 60 ci-output.txt | sed 's/\x1b\[[0-9;]*m//g' | awk '{ gsub(/%/, "%25"); printf "%s%%0A", $0 }' > ci-tail.txt
+          echo "::error title=Backend (${{ matrix.db }}) output::$(cat ci-tail.txt)"
 
   frontend:
     name: Frontend build
