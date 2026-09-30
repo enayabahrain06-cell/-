@@ -21,7 +21,7 @@
     "suppressed": "محجوبة"
   },
   "types": {
-    "pre_lesson_reminder": "تذكير قبل الحلقة",
+    "pre_lesson_reminder": "تذكير قبل موعد الصف",
     "absence": "غياب",
     "location_change": "تغيير مكان",
     "registration_received": "استلام طلب",
@@ -139,7 +139,7 @@
     "submit": "إرسال",
     "sending": "جارٍ الإرسال…",
     "need_recipient": "اختر طالباً واحداً أو رقماً واحداً على الأقل.",
-    "teacher_note": "يمكنك مراسلة أسر طلاب حلقاتك."
+    "teacher_note": "يمكنك مراسلة أسر طلاب صفوفك."
   },
   "templates": {
     "empty": "لا توجد قوالب.",
@@ -214,7 +214,7 @@
     "reminders": "التذكيرات",
     "reminder_1": "التذكير الأول (المفصّل)",
     "reminder_2": "التذكير الثاني (المختصر)",
-    "minutes_before": "دقائق قبل الحلقة",
+    "minutes_before": "دقائق قبل موعد الصف",
     "absence": "إشعار الغياب لولي الأمر",
     "repeated": "الغياب المتكرر",
     "repeated_count": "عدد الغيابات",
@@ -245,13 +245,13 @@
     }
   },
   "delivery": {
-    "title": "رسائل هذه الحلقة",
+    "title": "رسائل حصة الصف",
     "back": "الرسائل",
     "send_now": "إرسال التذكيرات الآن",
     "send_now_hint": "يرسل التذكير المفصّل الآن لكل من لم يستلمه.",
-    "circle_rule": "إعدادات الحلقة",
-    "reminders_on": "التذكيرات لهذه الحلقة",
-    "second_on": "التذكير الثاني لهذه الحلقة",
+    "circle_rule": "إعدادات الصف",
+    "reminders_on": "التذكيرات لهذا الصف",
+    "second_on": "التذكير الثاني لهذا الصف",
     "confirmations": "تأكيدات الحضور",
     "no_confirmations": "لم يؤكد أحد بعد.",
     "excuses": "الأعذار",

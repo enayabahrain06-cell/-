@@ -25,8 +25,15 @@ class EnrollmentImport
     private const ALIASES = [
         'الاسم' => 'full_name', 'اسم الطالب' => 'full_name', 'تاريخ الميلاد' => 'birth_date', 'الجنس' => 'gender',
         'اسم ولي الأمر' => 'guardian_name', 'هاتف ولي الأمر' => 'guardian_phone', 'هاتف الطالب' => 'student_phone',
-        'مستوى الحفظ' => 'memorization_level', 'رقم الحلقة' => 'circle_id', 'الحلقة' => 'circle_id', 'ملاحظات' => 'notes',
+        'مستوى الحفظ' => 'memorization_level', 'رقم الصف' => 'circle_id', 'الصف' => 'circle_id', 'ملاحظات' => 'notes',
+        // Headers from before the "class" rename, kept so old sheets still import.
+        'رقم الحلقة' => 'circle_id', 'الحلقة' => 'circle_id',
+        // English headers (matched after lower-casing, spaces and dashes to underscores).
+        'class_id' => 'circle_id', 'class' => 'circle_id',
     ];
+
+    /** Column headers written to the template: the COLUMNS keys, with circle_id shown under its UI name. */
+    public const TEMPLATE_HEADINGS = ['full_name', 'birth_date', 'gender', 'guardian_name', 'guardian_phone', 'student_phone', 'memorization_level', 'class_id', 'notes'];
 
     private const MAX_ROWS = 500;
 
@@ -125,7 +132,7 @@ class EnrollmentImport
         $h = trim($h);
         $key = strtolower(str_replace([' ', '-'], '_', $h));
 
-        return in_array($key, self::COLUMNS, true) ? $key : (self::ALIASES[$h] ?? null);
+        return in_array($key, self::COLUMNS, true) ? $key : (self::ALIASES[$h] ?? self::ALIASES[$key] ?? null);
     }
 
     /** Excel serial dates, Arabic gender words and memorization labels to the API's values. */

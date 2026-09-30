@@ -12,7 +12,7 @@ it('creates every domain table', function () {
         'exams', 'exam_questions', 'exam_attempts', 'exam_answers', 'certificates',
         'wallets', 'invoices', 'payments', 'invoice_payments', 'wallet_transactions', 'refunds',
         'message_templates', 'message_logs', 'alerts',
-        'academic_terms', 'levels', 'subjects', 'level_subjects', 'subject_lessons', 'plan_items', 'night_supervisors', 'timetable_slots', 'level_rooms',
+        'academic_terms', 'levels', 'subjects', 'level_subjects', 'subject_lessons', 'plan_items', 'night_supervisors', 'timetable_slots', 'level_rooms', 'nights',
         'permissions', 'roles', 'model_has_roles', 'personal_access_tokens', 'jobs', 'failed_jobs', 'cache',
     ];
 

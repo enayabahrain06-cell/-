@@ -30,7 +30,7 @@
     "week": "Week",
     "lesson": "Lesson",
     "plan_title": "Free title",
-    "circle": "Circle",
+    "circle": "Class",
     "weekday": "Night",
     "start_time": "From",
     "end_time": "To",
@@ -97,14 +97,14 @@
       "timetable": "Timetable (whole-level periods)",
       "level_rooms": "Level rooms"
     },
-    "hint": "Nothing this term already has is duplicated. Circle periods are not copied: circles belong to their own term.",
+    "hint": "Nothing this term already has is duplicated. Class periods are not copied: classes belong to their own term.",
     "run": "Copy",
     "close": "Close",
     "no_source": "There is no other term to copy from."
   },
   "list_sep": " · ",
   "level_rooms": {
-    "hint": "Each level's rooms this term: the ones assigned here, and the ones its circles and timetable already use.",
+    "hint": "Each level's rooms this term: the ones assigned here, and the ones its classes and timetable already use.",
     "count": "Rooms: {{n}}",
     "none": "No rooms for this level yet.",
     "add": "Add",
@@ -112,7 +112,7 @@
     "delete_confirm": "Remove this room from the level?",
     "source": {
       "assigned": "Assigned",
-      "circle": "Circle hall",
+      "circle": "Class hall",
       "timetable": "In timetable"
     }
   }

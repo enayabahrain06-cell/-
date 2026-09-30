@@ -12,7 +12,7 @@ return [
         'full' => 'That teacher has no free seats in this lottery.',
         'already_approved' => 'This lottery was already approved.',
         'not_run' => 'Run the lottery before approving it.',
-        'lesson_package' => 'The circle must belong to the lottery package.',
-        'lesson_teacher' => 'The circle must be taught by the selected teacher.',
+        'lesson_package' => 'The class must belong to the lottery package.',
+        'lesson_teacher' => 'The class must be taught by the selected teacher.',
     ],
 ];

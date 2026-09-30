@@ -1,6 +1,6 @@
 {
   "public": {
-    "title": "Register for Quran circles",
+    "title": "Register for Quran classes",
     "subtitle": "Submit a registration request for your son or daughter. You will get a WhatsApp confirmation.",
     "closed": "Registration is currently closed.",
     "steps": { "who": "Student", "package": "Package", "details": "Details", "placement": "Test", "result": "Result", "confirm": "Send", "done": "Done" },
@@ -81,7 +81,7 @@
     "step_submitted": "Submitted",
     "step_review": "Under review",
     "step_decision": "Decision",
-    "enrolled_body": "The student is enrolled in a circle. You will receive a message explaining how to sign in.",
+    "enrolled_body": "The student is enrolled in a class. You will receive a message explaining how to sign in.",
     "pending_lottery_body": "Your request is in the draw for the remaining seats. You will be told the result after the draw.",
     "position_label": "Waitlist position",
     "student": "Student"
@@ -153,12 +153,12 @@
       "final": "Confirmed level: {{level}}"
     },
     "accept_title": "Accept {{name}}",
-    "accept_circle": "Circle",
+    "accept_circle": "Class",
     "recommended_circle": "Recommended",
     "free_seats": "{{n}} free seats",
     "lottery_path": "Seat draw instead",
-    "lottery_path_hint": "Hold a seat in the package and choose the circle by lottery later.",
-    "no_circles": "No circle of this package fits this student. Take the seat draw path, or add a circle first.",
+    "lottery_path_hint": "Hold a seat in the package and choose the class by lottery later.",
+    "no_circles": "No class of this package fits this student. Take the seat draw path, or add a class first.",
     "final_level": "Final level",
     "recommended_level": "Recommended by the placement test",
     "declared_level": "Declared by the family",

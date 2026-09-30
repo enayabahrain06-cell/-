@@ -1,9 +1,8 @@
-import { Fragment } from 'react'
-import { NavLink, Outlet } from 'react-router-dom'
+import { Outlet } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { useAuth } from '../app/AuthContext'
-import { NAV_SECTIONS } from '../app/nav'
 import Icon from '../components/Icon'
+import SideMenu from '../components/SideMenu'
 import LanguageSwitcher from '../components/LanguageSwitcher'
 import { LogoMark, OrnamentStrip } from '../components/ornaments'
 import { MobileChromeProvider } from '../components/mobile/MobileChrome'
@@ -26,33 +25,10 @@ export default function AppLayout() {
 
 function StaffShell() {
   const { t } = useTranslation('nav')
-  const { user, can, signOut } = useAuth()
+  const { user, signOut } = useAuth()
   const { ready } = useTerm()
-  const sections = NAV_SECTIONS.filter((s) => can(...s.permissions))
 
-  const nav = (
-    <nav aria-label={t('main')} className="flex flex-col gap-0.5 p-3">
-      {sections.map((s, i) => (
-        <Fragment key={s.key}>
-          {s.group && s.group !== sections[i - 1]?.group && (
-            <p className="mt-4 px-3 pb-1 text-xs font-semibold text-gold-300/70">{t(`groups.${s.group}`)}</p>
-          )}
-          <NavLink
-            to={s.path}
-            end={s.path === '/'}
-            className={({ isActive }) =>
-              `flex min-h-10 items-center gap-3 rounded-xl px-3 py-2 text-[0.9375rem] font-medium transition ${
-                isActive ? 'bg-white/12 text-white shadow-[inset_3px_0_0_var(--color-gold-500)] rtl:shadow-[inset_-3px_0_0_var(--color-gold-500)]' : 'text-white/75 hover:bg-white/6 hover:text-white'
-              }`
-            }
-          >
-            <Icon name={s.icon} className="size-5 shrink-0 opacity-90" />
-            <span className="truncate">{t(s.key)}</span>
-          </NavLink>
-        </Fragment>
-      ))}
-    </nav>
-  )
+  const nav = <SideMenu />
 
   const brand = (
     <div className="flex items-center gap-3 px-5 pb-2 pt-5">

@@ -12,7 +12,7 @@
   "links": {
     "exams": "Exams",
     "honor": "Honor board and challenges",
-    "schedule": "Circle schedule",
+    "schedule": "Class schedule",
     "memorization": "Memorization and evaluation",
     "certificates": "My certificates",
     "invoices": "Invoices and payments",
@@ -21,7 +21,7 @@
   "all": "All",
   "all_children": "All children",
   "filter_child": "Filter by child",
-  "no_circle": "Not in a circle yet",
+  "no_circle": "Not in a class yet",
   "not_found": "This student is not linked to your account.",
   "error": "The data could not be loaded.",
   "retry": "Try again",
@@ -45,10 +45,10 @@
     "absent_f": "Absent today",
     "excused_m": "Excused today",
     "excused_f": "Excused today",
-    "at": "Circle today at {{time}}",
-    "next": "Next circle {{day}}",
-    "cancelled": "Today's circle cancelled",
-    "none": "No upcoming circles"
+    "at": "Class today at {{time}}",
+    "next": "Next class {{day}}",
+    "cancelled": "Today's class cancelled",
+    "none": "No upcoming classes"
   },
   "kpi": {
     "attendance": "Attendance",
@@ -58,7 +58,7 @@
     "completed_juz": "Juz completed",
     "quran": "Of the Quran",
     "plan": "Yearly plan",
-    "rank": "Rank in circle"
+    "rank": "Rank in class"
   },
   "actions": {
     "attendance": "Attendance",
@@ -97,7 +97,7 @@
     "this_week": "This week",
     "attendance_week": "Attendance",
     "attended_of": "Attended {{n}} of {{of}}",
-    "no_sessions": "No circles yet",
+    "no_sessions": "No classes yet",
     "recitations": "Latest recitations",
     "no_recitations": "No recitation recorded this week.",
     "achievements": "My achievements",
@@ -150,14 +150,14 @@
     "read_only": "Read only. To pay or ask a question, please contact the centre."
   },
   "schedule": {
-    "title": "Circle schedule",
+    "title": "Class schedule",
     "weekly": "Weekly times",
-    "days": "Circle days",
-    "day_on": "circle day",
-    "day_off": "no circle",
+    "days": "Class days",
+    "day_on": "class day",
+    "day_off": "no class",
     "upcoming": "Next two weeks",
-    "empty": "No circles in the next two weeks.",
-    "no_circle": "No circle registered.",
+    "empty": "No classes in the next two weeks.",
+    "no_circle": "No class registered.",
     "cancelled": "Cancelled",
     "moved": "Room changed"
   },

@@ -40,6 +40,9 @@ export interface Subject {
   is_active: boolean
 }
 
+export interface Night { id: number; weekday: string; label: string; is_active: boolean; start_time: string | null; end_time: string | null; notes: string | null }
+export interface SupervisorRow { id: number; name: string; phone: string; track: string | null; is_active: boolean; nights: string[] }
+
 export type TermInput = Pick<AcademicTerm, 'name_ar' | 'name_en' | 'academic_year' | 'start_date' | 'end_date'> & { is_current?: boolean }
 export type LevelInput = Pick<Level, 'name_ar' | 'name_en' | 'code' | 'description' | 'sort' | 'is_active'>
 export type SubjectInput = Pick<Subject, 'name_ar' | 'name_en' | 'code' | 'description' | 'sort' | 'is_active'>
@@ -52,6 +55,12 @@ export const termsApi = {
   update: (id: number, d: TermInput) => api.put<Saved<AcademicTerm>>(`/academic-terms/${id}`, d).then((r) => r.data),
   makeCurrent: (id: number) => api.post<Saved<AcademicTerm>>(`/academic-terms/${id}/current`).then((r) => r.data),
   remove: (id: number) => api.delete<{ message: string }>(`/academic-terms/${id}`).then((r) => r.data),
+}
+
+export const nightsApi = {
+  list: () => api.get<{ data: Night[] }>('/nights').then((r) => r.data.data),
+  update: (id: number, d: Partial<Night>) => api.put<{ message: string; data: Night }>(`/nights/${id}`, d).then((r) => r.data),
+  supervisors: () => api.get<{ data: SupervisorRow[] }>('/master-data/supervisors').then((r) => r.data.data),
 }
 
 export const levelsApi = {

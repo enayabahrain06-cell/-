@@ -16,7 +16,7 @@
     "status": { "none": "لم يُحسب", "open": "جارٍ", "finalized": "مغلق", "honored": "مُكرَّم" },
     "published": "منشورة",
     "not_published": "غير منشورة",
-    "level": { "track": "المسار كاملًا", "package": "حسب الباقة", "circle": "حسب الحلقة" },
+    "level": { "track": "المسار كاملًا", "package": "حسب الباقة", "circle": "حسب الصف" },
     "empty": "لا يوجد ترتيب لهذا الشهر بعد",
     "empty_body": "تُحسب النقاط كل ليلة من الحضور والتقييمات وسجل الحفظ، ويمكنك إعادة الحساب الآن.",
     "podium": "الثلاثة الأوائل",
@@ -26,7 +26,7 @@
     "change": "التغيّر عن الشهر السابق",
     "rank": "الترتيب",
     "student": "الطالب",
-    "circle": "الحلقة",
+    "circle": "الصف",
     "attendance": "الحضور",
     "evaluation": "التقييم",
     "memorization": "الحفظ",
@@ -34,7 +34,7 @@
     "new_ayahs": "آيات جديدة",
     "breakdown": "توزيع النقاط",
     "breakdown_hint": "الأوزان: الحضور {{a}}، التقييم {{e}}، الحفظ {{m}}",
-    "circle_of_month": "حلقة الشهر",
+    "circle_of_month": "صف الشهر",
     "circle_of_month_body": "{{teacher}} · متوسط {{points}} نقطة · {{n}} طلاب",
     "students_ranked": "{{n}} طالبًا في الترتيب",
     "badges_awarded": "{{n}} وسامًا هذا الشهر",
@@ -78,7 +78,7 @@
     "month": "شهر {{month}}",
     "boys": "البنين",
     "girls": "البنات",
-    "circle_of_month": "حلقة الشهر",
+    "circle_of_month": "صف الشهر",
     "badges": "أوسمة جديدة",
     "nothing": "ستُعلن لوحة التميز لهذا الشهر قريبًا بإذن الله.",
     "denied": "تحتاج هذه الشاشة إلى مفتاح عرض صحيح."
@@ -93,7 +93,7 @@
     "empty_body": "أنشئ مسابقة، وافتح التسجيل، وعيّن محكّمين من المسار نفسه، ثم انشر النتائج.",
     "type": { "memorization": "حفظ", "tajweed": "تجويد", "recitation": "تلاوة", "knowledge": "معلومات" },
     "status": { "draft": "مسودة", "open": "التسجيل مفتوح", "running": "جارية", "judging": "التحكيم", "finished": "منتهية", "cancelled": "ملغاة" },
-    "scope": { "circle": "حلقة واحدة", "package": "باقة واحدة", "authority": "الهيئة كاملة" },
+    "scope": { "circle": "صف واحد", "package": "باقة واحدة", "authority": "الهيئة كاملة" },
     "tie_break": { "last_round": "الأعلى في الجولة الأخيرة", "criterion_order": "المعايير بالترتيب", "age_younger": "الأصغر سنًا", "registration_order": "الأسبق تسجيلًا" },
     "counts": "{{p}} مشاركًا · {{r}} جولات · {{j}} محكّمين",
     "registration": "التسجيل {{from}} – {{to}}",
@@ -118,7 +118,7 @@
     "search": "ابحث بالاسم أو الرقم",
     "eligible": "مؤهل",
     "registered": "مسجّل",
-    "reason": { "inactive": "غير نشط", "gender": "مسار آخر", "age": "خارج الفئة العمرية", "scope": "ليس في حلقة أو باقة المسابقة" },
+    "reason": { "inactive": "غير نشط", "gender": "مسار آخر", "age": "خارج الفئة العمرية", "scope": "ليس في صف المسابقة أو باقتها" },
     "register_selected": "تسجيل {{n}} طلاب",
     "registered_n": "سُجّل {{n}}",
     "failed_n": "تعذّر تسجيل {{n}}",
@@ -151,7 +151,7 @@
     "gender": "المسار",
     "type": "النوع",
     "scope": "من يحق له المشاركة",
-    "lesson": "الحلقة",
+    "lesson": "الصف",
     "package": "الباقة",
     "min_age": "أقل عمر",
     "max_age": "أكبر عمر",
@@ -187,7 +187,7 @@
     "empty_body": "يُقاس التقدم في التحديات تلقائيًا من الحضور والتقييمات وسجل الحفظ.",
     "goal": {
       "memorize_range": "حفظ مقطع",
-      "attendance_days": "حضور حلقات",
+      "attendance_days": "حضور حصص الصف",
       "revision_range": "مراجعة مقطع",
       "score_streak": "سلسلة درجات",
       "points": "نقاط التميز"
@@ -195,8 +195,8 @@
     "goal_text": {
       "memorize_range": "حفظ سورة {{surah}} {{from}}–{{to}}",
       "revision_range": "مراجعة سورة {{surah}} {{from}}–{{to}}",
-      "attendance_days": "حضور {{n}} حلقات",
-      "score_streak": "{{n}} حلقات متتالية بدرجة {{criterion}} ≥ {{min}}",
+      "attendance_days": "حضور {{n}} حصص للصف",
+      "score_streak": "{{n}} حصص صف متتالية بدرجة {{criterion}} ≥ {{min}}",
       "points": "الوصول إلى {{n}} نقطة تميز"
     },
     "criterion": { "memorization": "الحفظ", "tajweed": "التجويد", "revision": "المراجعة", "behavior": "السلوك", "total": "المتوسط" },
@@ -259,6 +259,6 @@
     "register": "تسجيل طلاب",
     "error": "تعذّر تحميل لوحة التميز.",
     "retry": "إعادة المحاولة",
-    "level": {"track":"المسار","package":"الباقة","circle":"الحلقة"}
+    "level": {"track":"المسار","package":"الباقة","circle":"الصف"}
   }
 }

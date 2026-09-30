@@ -40,7 +40,7 @@
     "type": "Type",
     "scope": "For",
     "package": "Package",
-    "lesson": "Circle",
+    "lesson": "Class",
     "none": "—",
     "exam_date": "Exam date",
     "opens_at": "Opens at",
@@ -151,7 +151,7 @@
     "result": "Result: {{score}} of {{total}}",
     "awaiting": "Awaiting grading",
     "student": "Student",
-    "paper_note": "Paper exam in the circle"
+    "paper_note": "Paper exam in the class"
   },
   "player": {
     "remaining": "Time remaining",

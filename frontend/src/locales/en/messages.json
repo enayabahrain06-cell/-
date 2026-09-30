@@ -28,7 +28,7 @@
     "registration_accepted": "Registration accepted",
     "registration_waitlist": "Waitlist",
     "registration_rejected": "Registration declined",
-    "lottery_result": "Circle assignment",
+    "lottery_result": "Class assignment",
     "evaluation_result": "Evaluation result",
     "exam_reminder": "Exam reminder",
     "exam_result": "Exam result",
@@ -136,7 +136,7 @@
     "submit": "Send",
     "sending": "Sending…",
     "need_recipient": "Choose at least one student or phone number.",
-    "teacher_note": "You can message the families of students in your circles."
+    "teacher_note": "You can message the families of students in your classes."
   },
   "templates": {
     "empty": "No templates.",
@@ -246,9 +246,9 @@
     "back": "Messages",
     "send_now": "Send reminders now",
     "send_now_hint": "Sends the long reminder now to everyone who has not received it.",
-    "circle_rule": "Circle settings",
-    "reminders_on": "Reminders for this circle",
-    "second_on": "Second reminder for this circle",
+    "circle_rule": "Class settings",
+    "reminders_on": "Reminders for this class",
+    "second_on": "Second reminder for this class",
     "confirmations": "Confirmed attendance",
     "no_confirmations": "Nobody confirmed yet.",
     "excuses": "Excuses",

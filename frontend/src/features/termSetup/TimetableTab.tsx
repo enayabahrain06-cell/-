@@ -8,7 +8,7 @@ import Icon from '../../components/Icon'
 import { EmptyCard, ErrorState, FilterBar, IconButton, LoadingState, Modal, Notice, SURFACE, TextArea, TextInput } from '../../components/ui'
 import { formatTime } from '../../lib/format'
 import { DialogFooter, Field, Toolbar, useRemove, type CrudNotice } from '../common/crud'
-import { WEEKDAYS, useCanManage, useSetupOptions } from './shared'
+import { useCanManage, useNights, useSetupOptions } from './shared'
 
 /** الجدول الدراسي: one card per night with its periods, filtered by level or teacher. */
 export default function TimetableTab() {
@@ -26,6 +26,7 @@ export default function TimetableTab() {
   const { notice, setNotice, remove } = useRemove(termSetupApi.removeSlot, [['term-setup-timetable']], t('timetable.delete_confirm'))
   const [warnings, setWarnings] = useState<string[]>([])
   const time = (v: string) => formatTime(v, i18n.language)
+  const nights = useNights((q.data?.data ?? []).map((s) => s.weekday))
   const opts = options.data
 
   return (
@@ -40,7 +41,7 @@ export default function TimetableTab() {
       {warnings.length > 0 && <Notice tone="error"><b>{t('timetable.warnings')}</b> {warnings.join(' ')}</Notice>}
       {(opts?.levels.length ?? 0) === 0 ? <EmptyCard icon="lessons" title={t('no_levels')} /> : q.isLoading ? <LoadingState /> : q.isError ? <ErrorState onRetry={() => void q.refetch()} /> : (
         <ul className="grid gap-3 *:min-w-0 md:grid-cols-2 xl:grid-cols-3">
-          {WEEKDAYS.map((d) => {
+          {nights.map((d) => {
             const rows = (q.data?.data ?? []).filter((s) => s.weekday === d)
             if (rows.length === 0 && !canManage) return null
             return (
@@ -108,6 +109,7 @@ function SlotDialog({ weekday, slot, levelId, onClose, onSaved }: { weekday: str
     onError: (e) => setErrors(parseApiError(e).fields),
   })
   const set = <K extends keyof SlotInput>(k: K, v: SlotInput[K]) => setForm((f) => ({ ...f, [k]: v }))
+  const nights = useNights([form.weekday])
   const circles = opts.circles.filter((c) => c.level_id === form.level_id)
   const mine = new Set(opts.level_rooms.filter((r) => r.level_id === form.level_id).map((r) => r.location_id))
   const halls = [...opts.halls.filter((h) => mine.has(h.id)), ...opts.halls.filter((h) => !mine.has(h.id))]
@@ -123,7 +125,7 @@ function SlotDialog({ weekday, slot, levelId, onClose, onSaved }: { weekday: str
             options={[{ value: '', label: t('timetable.whole_level') }, ...circles.map((c) => ({ value: String(c.id), label: c.name }))]} />
         </Field>
         <SelectField label={t('fields.weekday')} value={form.weekday} onChange={(e) => set('weekday', e.target.value)}
-          options={WEEKDAYS.map((d) => ({ value: d, label: t(`lessons:days.${d}`) }))} />
+          options={nights.map((d) => ({ value: d, label: t(`lessons:days.${d}`) }))} />
         <div className="grid grid-cols-2 gap-2">
           <TextInput label={t('fields.start_time')} type="time" value={form.start_time} onChange={(e) => set('start_time', e.target.value)} />
           <TextInput label={t('fields.end_time')} type="time" value={form.end_time} onChange={(e) => set('end_time', e.target.value)} />

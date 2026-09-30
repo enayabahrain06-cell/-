@@ -50,7 +50,9 @@ class TermSetupController extends TermSetupBase
                 ->tap(fn ($q) => TermScope::via($q, $term->id))->orderBy('name')->get(['id', 'name', 'level_id']),
             // Rooms assigned to each level this term (the timetable lists them first for that level).
             'level_rooms' => LevelRoom::where('academic_term_id', $term->id)->get(['level_id', 'location_id']),
-            'weekdays' => array_map(fn (WeekDay $d) => ['value' => $d->value, 'label' => $d->label()], WeekDay::cases()),
+            // الليالي: only the nights the centre runs (all seven if the nights list is empty).
+            'weekdays' => array_map(fn (WeekDay $d) => ['value' => $d->value, 'label' => $d->label()],
+                \App\Models\Night::where('is_active', true)->orderBy('sort')->get()->map(fn ($n) => $n->weekday)->all() ?: WeekDay::cases()),
         ]]);
     }
 

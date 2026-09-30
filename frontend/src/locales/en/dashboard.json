@@ -6,14 +6,14 @@
     "female": "Girls track",
     "both": "Both tracks"
   },
-  "own_circles": "Your circles only",
+  "own_circles": "Your classes only",
   "refresh": "Refresh",
   "error": "Could not load the dashboard.",
   "retry": "Try again",
   "kpi": {
     "active_students": "Active students",
-    "active_circles": "Active circles",
-    "sessions_today": "Circles today",
+    "active_circles": "Active classes",
+    "sessions_today": "Classes today",
     "attendance_taken": "Attendance taken in {{taken}} of {{total}}",
     "attendance_rate_7d": "Attendance rate (7 days)",
     "pending_registrations": "Pending registrations",
@@ -22,8 +22,8 @@
     "outstanding": "Total outstanding {{amount}}"
   },
   "today": {
-    "title": "Today's circles",
-    "empty": "No circles today.",
+    "title": "Today's classes",
+    "empty": "No classes today.",
     "attendance_done": "Attendance taken",
     "attendance_pending": "Attendance not taken",
     "present_of": "{{present}} present of {{enrolled}}",
@@ -37,7 +37,7 @@
     },
     "take_attendance": "Take attendance",
     "evaluate": "Evaluate",
-    "fix_hall": "Open the circle to change its hall"
+    "fix_hall": "Open the class to change its hall"
   },
   "chart": {
     "title": "Attendance — last 14 days",
@@ -73,7 +73,7 @@
       "lottery_pending": "Lottery awaiting approval",
       "exam_upcoming": "Upcoming exam",
       "invoice_overdue": "Overdue invoice",
-      "lesson_no_teacher": "Circle without a teacher"
+      "lesson_no_teacher": "Class without a teacher"
     },
     "priority": {
       "danger": "Urgent",
@@ -83,7 +83,7 @@
     "view_all_short": "View all",
     "show_less": "Show less",
     "error": "Could not load alerts.",
-    "empty_hint": "Conflicts, repeated absences and circles without a teacher will appear here.",
+    "empty_hint": "Conflicts, repeated absences and classes without a teacher will appear here.",
     "action_failed": "That did not work. Try again.",
     "handled_by": "Marked as handled by {{name}} at {{time}}.",
     "no_phone": "No guardian phone number",
@@ -97,7 +97,7 @@
       "message_parents": "Message parents",
       "open_student": "Student profile",
       "assign_teacher": "Assign a teacher",
-      "circle_students": "Circle students",
+      "circle_students": "Class students",
       "review_requests": "Review requests",
       "open_wallet": "Open wallet",
       "invoices": "Invoices",
@@ -112,7 +112,7 @@
     "attendance": "Take attendance",
     "enroll": "Quick enrollment",
     "requests": "Registration requests",
-    "halls": "Circles and halls",
+    "halls": "Classes and halls",
     "payment": "Record payment"
   },
   "age": {

@@ -7,7 +7,8 @@ import { authApi } from '../../api/auth'
 import { tokenStore } from '../../api/client'
 import { dashboardApi } from '../../api/dashboard'
 import { useAuth } from '../../app/AuthContext'
-import { NAV_SECTIONS, type NavSection } from '../../app/nav'
+import { NAV_SECTIONS, entryHref, type MenuEntry, type NavSection } from '../../app/nav'
+import { useMenu } from '../../app/menu'
 import { useTerm } from '../../app/term'
 import TermSelector from '../TermSelector'
 import { ChromeContext, TAB_ICON, useMobileChrome, useMobileTabs, type ChromeState, type Crumb } from './chrome'
@@ -154,9 +155,21 @@ export function HeaderAction({ icon, label, to, onClick }: { icon: string; label
 /** Header for pages that have not declared their own: the section name, back to its list (or home). */
 function DefaultPageHeader({ pathname }: { pathname: string }) {
   const { t } = useTranslation('nav')
+  const { sections, active } = useMenu()
+  const entry: MenuEntry | undefined = sections.flatMap((s) => s.entries).find((e) => e.key === active)
   const section = sectionOf(pathname)
-  const detail = !!section && pathname !== section.path
   const home = { label: t('mobile:home'), to: '/' }
+  if (entry?.path) {
+    const detail = pathname !== entry.path
+    return (
+      <MobilePageHeader
+        title={t(`menu.${entry.key}`)}
+        back={detail ? entryHref(entry) : '/'}
+        breadcrumb={detail ? [home, { label: t(`menu.${entry.key}`), to: entryHref(entry) }] : [home, { label: t(`menu.${entry.key}`) }]}
+      />
+    )
+  }
+  const detail = !!section && pathname !== section.path
   if (!section) return <MobilePageHeader title={t('common:app_name')} back="/" />
   return (
     <MobilePageHeader
@@ -201,14 +214,16 @@ function MoreSheet({ open, onClose }: { open: boolean; onClose: () => void }) {
   const byType = alerts.data?.meta.by_type ?? {}
   const counts: Record<string, number> = {
     packages: byType.registration_request ?? 0,
-    lessons: (byType.location_conflict ?? 0) + (byType.lesson_no_teacher ?? 0),
-    attendance: byType.repeated_absence ?? 0,
+    classes: (byType.location_conflict ?? 0) + (byType.lesson_no_teacher ?? 0),
+    student_attendance: byType.repeated_absence ?? 0,
     lottery: byType.lottery_pending ?? 0,
-    payments: byType.invoice_overdue ?? 0,
+    payment: byType.invoice_overdue ?? 0,
   }
 
-  const sections = NAV_SECTIONS.filter((s) => s.path !== '/' && can(...s.permissions))
-  const groups = [...new Set(sections.map((s) => s.group))]
+  const { sections, active } = useMenu()
+  const activeSection = sections.find((s) => s.entries.some((e) => e.key === active))?.key
+  const [expanded, setExpanded] = useState<string | null>(null)
+  const openKey = expanded ?? activeSection ?? null
   const switchTo = (next: 'ar' | 'en') => {
     if (next === locale) return
     setLocale(next)
@@ -239,23 +254,36 @@ function MoreSheet({ open, onClose }: { open: boolean; onClose: () => void }) {
           </div>
         )}
 
-        {groups.map((g) => (
-          <section key={g ?? 'top'} className="space-y-2">
-            {g && <h3 className="px-1 text-xs font-semibold text-ink/65">{t(`nav:groups.${g}`)}</h3>}
-            <ul className="divide-y divide-ink/10 overflow-hidden rounded-card border border-ink/10 bg-white shadow-card">
-              {sections.filter((s) => s.group === g).map((s) => (
-                <li key={s.key}>
-                  <NavLink to={s.path} onClick={onClose} className={({ isActive }) => `flex min-h-[52px] items-center gap-3 px-4 py-2 ${isActive ? 'bg-brand-50/60' : ''}`}>
-                    <span className="inline-grid size-8 shrink-0 place-items-center rounded-lg bg-brand-50 text-brand-700"><Icon name={s.icon} className="size-[18px]" /></span>
-                    <span className="min-w-0 flex-1 truncate text-[15px] text-ink">{t(`nav:${s.key}`)}</span>
-                    {counts[s.key] > 0 && <Pill tone="warn">{formatNumber(counts[s.key], locale)}</Pill>}
-                    <Icon name="chevron" className="size-4 shrink-0 text-ink/40 rtl:rotate-180" />
-                  </NavLink>
-                </li>
-              ))}
-            </ul>
-          </section>
-        ))}
+        <ul className="divide-y divide-ink/10 overflow-hidden rounded-card border border-ink/10 bg-white shadow-card">
+          {sections.map((s) => {
+            const isOpen = openKey === s.key
+            const total = s.entries.reduce((n, e) => n + (counts[e.key] ?? 0), 0)
+            return (
+              <li key={s.key}>
+                <button type="button" onClick={() => setExpanded(isOpen ? '' : s.key)} aria-expanded={isOpen}
+                  className="flex min-h-[52px] w-full items-center gap-3 px-4 py-2 text-start">
+                  <span className="inline-grid size-8 shrink-0 place-items-center rounded-lg bg-brand-50 text-brand-700"><Icon name={s.icon} className="size-[18px]" /></span>
+                  <span className={`min-w-0 flex-1 truncate text-[15px] ${s.key === activeSection ? 'font-semibold text-brand-800' : 'text-ink'}`}>{t(`nav:sections.${s.key}`)}</span>
+                  {!isOpen && total > 0 && <Pill tone="warn">{formatNumber(total, locale)}</Pill>}
+                  <Icon name="chevron" className={`size-4 shrink-0 text-ink/40 transition-transform ${isOpen ? 'rotate-90' : 'rtl:rotate-180'}`} />
+                </button>
+                {isOpen && (
+                  <ul className="border-t border-ink/10 bg-page/40">
+                    {s.entries.map((e) => (
+                      <li key={e.key}>
+                        <Link to={entryHref(e)} onClick={onClose} aria-current={active === e.key ? 'page' : undefined}
+                          className={`flex min-h-[48px] items-center gap-3 py-2 pe-4 ps-[3.75rem] ${active === e.key ? 'bg-brand-50/70 font-semibold text-brand-800' : 'text-ink'}`}>
+                          <span className="min-w-0 flex-1 truncate text-[15px]">{t(`nav:menu.${e.key}`)}</span>
+                          {counts[e.key] > 0 && <Pill tone="warn">{formatNumber(counts[e.key], locale)}</Pill>}
+                        </Link>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </li>
+            )
+          })}
+        </ul>
 
         <div className="flex min-h-[52px] items-center gap-3 rounded-card border border-ink/10 bg-white px-4 py-2 shadow-card">
           <span className="inline-grid size-8 shrink-0 place-items-center rounded-lg bg-brand-50 text-brand-700"><Icon name="globe" className="size-[18px]" /></span>

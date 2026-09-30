@@ -12,7 +12,7 @@ return [
         'already_accepted' => 'This request was already accepted.',
         'photo_required' => 'A student photo is required before acceptance (see settings).',
         'not_found' => 'No request matches that number and phone.',
-        'package_in_use' => 'A package with requests or circles cannot be deleted.',
+        'package_in_use' => 'A package with requests or classes cannot be deleted.',
     ],
     'alerts' => [
         'pending_title' => ':count registration requests awaiting a decision — :package',

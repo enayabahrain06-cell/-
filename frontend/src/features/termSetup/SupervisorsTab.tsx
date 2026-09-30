@@ -6,7 +6,7 @@ import { termSetupApi } from '../../api/termSetup'
 import SelectField from '../../components/SelectField'
 import { ErrorState, IconButton, LoadingState, Notice, SecondaryButton, SURFACE } from '../../components/ui'
 import { useRemove } from '../common/crud'
-import { WEEKDAYS, useCanManage, useSetupOptions } from './shared'
+import { useCanManage, useNights, useSetupOptions } from './shared'
 
 /** مشرفو الليالي: who is on duty each weekday of the term. */
 export default function SupervisorsTab() {
@@ -14,6 +14,7 @@ export default function SupervisorsTab() {
   const canManage = useCanManage()
   const options = useSetupOptions()
   const q = useQuery({ queryKey: ['term-setup-supervisors'], queryFn: termSetupApi.supervisors })
+  const nights = useNights((q.data?.data ?? []).map((r) => r.weekday))
   const { notice, setNotice, remove } = useRemove(termSetupApi.removeSupervisor, [['term-setup-supervisors']], t('supervisors.delete_confirm'))
 
   if (q.isLoading) return <LoadingState />
@@ -24,7 +25,7 @@ export default function SupervisorsTab() {
       {notice && <Notice tone={notice.tone}>{notice.text}</Notice>}
       <p className="text-sm text-ink/60">{t('supervisors.hint')}</p>
       <ul className="grid gap-3 *:min-w-0 sm:grid-cols-2 xl:grid-cols-4">
-        {WEEKDAYS.map((d) => {
+        {nights.map((d) => {
           const rows = (q.data?.data ?? []).filter((r) => r.weekday === d)
           return (
             <li key={d} className={`${SURFACE} p-4`}>

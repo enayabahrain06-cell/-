@@ -1,0 +1,11 @@
+{
+  "subtitle": "Order the menu sections and entries, and hide what you do not use, for everyone. Names do not change; permissions still decide who sees each entry.",
+  "save": "Save order",
+  "reset": "Default order",
+  "up": "Move up",
+  "down": "Move down",
+  "hide": "Hide",
+  "show": "Show",
+  "hidden": "Hidden",
+  "not_built": "Not built yet"
+}

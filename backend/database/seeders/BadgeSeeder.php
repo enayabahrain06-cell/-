@@ -13,7 +13,7 @@ class BadgeSeeder extends Seeder
         $badges = [
             ['hafiz_juz_amma', 'حافظ جزء عمّ', 'Hafiz of Juz Amma', 'أتمّ حفظ جزء عمّ كاملاً.', 'Completed memorizing Juz Amma.', 'medal', 'completed_juz', 30, false, 50],
             ['hafiz_juz_tabarak', 'حافظ جزء تبارك', 'Hafiz of Juz Tabarak', 'أتمّ حفظ جزء تبارك كاملاً.', 'Completed memorizing Juz Tabarak.', 'medal', 'completed_juz', 29, false, 50],
-            ['full_attendance', 'حضور كامل', 'Full attendance', 'حضر جميع حلقات الشهر.', 'Attended every session of the month.', 'calendar', 'full_attendance', 100, true, 10],
+            ['full_attendance', 'حضور كامل', 'Full attendance', 'حضر جميع حصص الشهر.', 'Attended every session of the month.', 'calendar', 'full_attendance', 100, true, 10],
             ['excellent_tajweed', 'تجويد ممتاز', 'Excellent tajweed', 'متوسط التجويد ٩ فأكثر خلال الشهر.', 'Tajweed average of 9 or more in the month.', 'star', 'tajweed_average', 900, true, 10],
             ['most_improved', 'الأكثر تقدماً', 'Most improved', 'أكبر زيادة في النقاط مقارنة بالشهر السابق.', 'Largest points increase compared with the previous month.', 'trend', 'most_improved', null, true, 15],
             ['competition_winner', 'فائز في مسابقة', 'Competition winner', 'حصل على أحد المراكز الأولى في مسابقة.', 'Placed in the top ranks of a competition.', 'trophy', 'competition', null, true, 0],

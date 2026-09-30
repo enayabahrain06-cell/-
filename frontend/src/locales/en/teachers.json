@@ -15,7 +15,7 @@
   },
   "columns": {
     "teacher": "Teacher",
-    "circles": "Circles",
+    "circles": "Classes",
     "students": "Students",
     "taken_rate": "Attendance taken",
     "avg_evaluation": "Average score",
@@ -23,9 +23,9 @@
   },
   "active": "Active",
   "inactive": "Inactive",
-  "no_circles": "No circle yet",
+  "no_circles": "No class yet",
   "no_specialization": "No specialization set",
-  "card_line": "{{circles}} circles · {{students}} students",
+  "card_line": "{{circles}} classes · {{students}} students",
   "empty": "No teachers yet",
   "empty_body": "Teachers are added from Users & permissions with the teacher role.",
   "empty_filtered": "No teacher matches these filters.",
@@ -52,8 +52,8 @@
       "attendance_rate": "Student attendance",
       "evaluations": "Evaluations (30 days)"
     },
-    "circles": "Circles",
-    "no_circles": "This teacher has no circles.",
+    "circles": "Classes",
+    "no_circles": "This teacher has no classes.",
     "capacity": "{{students}} of {{capacity}}",
     "status": {
       "active": "Active",

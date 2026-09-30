@@ -12,7 +12,7 @@ return [
         'teacher_role' => 'Choose a user with the teacher role.',
         'plan_title' => 'Choose a curriculum lesson or write a title.',
         'lesson_subject' => 'This lesson does not belong to this subject or level.',
-        'circle_level' => 'This circle is not in this level.',
+        'circle_level' => 'This class is not in this level.',
         'level_clash' => 'The level already has a period at this time: :subject (:from–:to).',
         'same_term' => 'Choose a different term to copy from.',
         'in_use' => 'Used in term setup (level subjects, lessons or the timetable); deactivate it instead of deleting it.',

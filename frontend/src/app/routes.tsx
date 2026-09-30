@@ -33,6 +33,8 @@ import UsersHomePage from '../features/users/UsersHomePage'
 import SettingsPage from '../features/settings/SettingsPage'
 import MasterDataPage from '../features/masterData/MasterDataPage'
 import TermSetupPage from '../features/termSetup/TermSetupPage'
+import MenuSettingsPage from '../features/menu/MenuSettingsPage'
+import StudentLookupPage from '../features/students/StudentLookupPage'
 import ReportsHomePage from '../features/reports/ReportsHomePage'
 import MessagesHomePage from '../features/messages/MessagesHomePage'
 import TeachersHomePage from '../features/teachers/TeachersHomePage'
@@ -124,6 +126,8 @@ const BUILT: Record<string, React.ReactNode> = {
   settings: <SettingsPage />,
   master_data: <MasterDataPage />,
   term_setup: <TermSetupPage />,
+  menu: <MenuSettingsPage />,
+  student_lookup: <StudentLookupPage />,
   reports: <ReportsHomePage />,
   messages: <MessagesHomePage />,
   teachers: <TeachersHomePage />,

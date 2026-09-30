@@ -1,5 +1,5 @@
 {
-  "title": "Payments & wallets",
+  "title": "Payment",
   "subtitle": "Record payments, invoices, refunds and the finance report",
   "tabs": { "payments": "Payments", "invoices": "Invoices", "refunds": "Refunds", "report": "Finance report" },
   "methods": { "cash": "Cash", "benefit": "BenefitPay", "bank_transfer": "Bank transfer", "card": "Card" },

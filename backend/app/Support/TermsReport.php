@@ -40,7 +40,7 @@ final class TermsReport
             $c->warn('Exams that would fall under no term:');
             $c->table(['id', 'name', 'exam_date', 'package_id', 'reason'], array_map(fn ($e) => [
                 $e->id, $e->name, $e->exam_date, $e->package_id ?? $e->lesson_package_id ?? '—',
-                $e->reason === 'package_without_term' ? 'its package has no term' : 'no package or circle, and its date is outside every term',
+                $e->reason === 'package_without_term' ? 'its package has no term' : 'no package or class, and its date is outside every term',
             ], $u['exams']));
         }
 

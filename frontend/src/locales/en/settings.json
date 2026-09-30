@@ -12,7 +12,7 @@
   "off": "Off",
   "read_only": "fixed",
   "range": "{{min}}–{{max}}",
-  "age_groups_note": "Age groups for placing students in circles are managed with the circles.",
+  "age_groups_note": "Age groups for placing students in classes are managed with the classes.",
   "age_groups_link": "Open age groups",
   "logo": {
     "title": "Logo",

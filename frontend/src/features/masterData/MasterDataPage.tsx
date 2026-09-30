@@ -10,12 +10,16 @@ import { PageBand } from '../../components/ornaments'
 import { Badge, EmptyCard, ErrorState, LoadingState, Modal, Notice, SecondaryButton, Segmented, SURFACE, TextArea, TextInput } from '../../components/ui'
 import { formatDate, formatNumber } from '../../lib/format'
 import { DialogFooter, Field, ItemActions, Toolbar, useRemove } from '../common/crud'
+import { NightsTab, SupervisorsTab } from './NightsTab'
 
-type Tab = 'terms' | 'levels' | 'subjects'
-const TABS: { key: Tab; permission: string }[] = [
-  { key: 'terms', permission: 'terms.manage' },
-  { key: 'levels', permission: 'levels.manage' },
-  { key: 'subjects', permission: 'subjects.manage' },
+type Tab = 'terms' | 'nights' | 'subjects' | 'levels' | 'supervisors'
+/** In the order of the other system's القوائم menu (الغرف، الصفوف and المعلمين open their own screens). */
+const TABS: { key: Tab; permissions: string[] }[] = [
+  { key: 'terms', permissions: ['terms.manage'] },
+  { key: 'nights', permissions: ['nights.manage'] },
+  { key: 'subjects', permissions: ['subjects.manage'] },
+  { key: 'levels', permissions: ['levels.manage'] },
+  { key: 'supervisors', permissions: ['users.view', 'term_setup.manage'] },
 ]
 
 /** القوائم: academic terms, levels and subjects. Each tab shows only for the permission that manages it. */
@@ -23,7 +27,7 @@ export default function MasterDataPage() {
   const { t } = useTranslation('masterData')
   const { can } = useAuth()
   const [params, setParams] = useSearchParams()
-  const tabs = TABS.filter((x) => can(x.permission))
+  const tabs = TABS.filter((x) => can(...x.permissions))
   const tab = tabs.find((x) => x.key === params.get('tab'))?.key ?? tabs[0]?.key ?? 'terms'
 
   return (
@@ -39,7 +43,9 @@ export default function MasterDataPage() {
         </div>
       )}
       {tab === 'terms' && <Terms />}
+      {tab === 'nights' && <NightsTab />}
       {tab === 'levels' && <Levels />}
+      {tab === 'supervisors' && <SupervisorsTab />}
       {tab === 'subjects' && <Subjects />}
     </div>
   )

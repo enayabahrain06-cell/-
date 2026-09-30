@@ -7,7 +7,7 @@ return [
             'inactive' => 'The student is not active.',
             'gender' => 'The student is not in this competition\'s track.',
             'age' => 'The student\'s age is outside the allowed range.',
-            'scope' => 'The student is not in the circle or package this is limited to.',
+            'scope' => 'The student is not in the class or package this is limited to.',
         ],
         'full' => 'The maximum number of participants has been reached.',
         'judge_track' => 'The judge must belong to the same track as the competition.',
@@ -50,7 +50,7 @@ return [
         'joined' => 'Joined',
         'completed' => 'Completed',
         'month' => 'Month',
-        'circle' => 'Circle',
+        'circle' => 'Class',
         'points' => 'Points',
         'type' => [
             'memorization' => 'Memorization',

@@ -16,7 +16,7 @@
     "gap": "{{pages}} pages behind",
     "of_plan": "{{percent}} of plan",
     "plan_aria": "Plan completed by {{name}}",
-    "empty": "No students in your circles yet.",
+    "empty": "No students in your classes yet.",
     "empty_body": "Memorization figures appear once students are enrolled and their progress is recorded."
   },
   "fees": {

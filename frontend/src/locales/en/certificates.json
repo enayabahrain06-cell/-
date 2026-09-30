@@ -18,12 +18,12 @@
         "direct_note": "Certificates are approved on issue and sent to guardians.",
         "pick_one": "Add at least one student."
     },
-    "detail": { "recipient": "Student", "context": "Circle", "sent_at": "Sent to guardian", "open_recipient": "Student profile" },
+    "detail": { "recipient": "Student", "context": "Class", "sent_at": "Sent to guardian", "open_recipient": "Student profile" },
     "templates": {
         "intro": "Each certificate type has a bilingual template. The fields below can be used in the text and are replaced with the certificate's values on issue.",
         "title_in": "{{language}} title",
         "body_in": "{{language}} text",
-        "placeholder": { "name": "Student name", "context": "Circle", "lesson": "Circle" },
+        "placeholder": { "name": "Student name", "context": "Class", "lesson": "Class" },
         "show_photo": "Show the student's photo on the certificate"
     },
     "recipient": { "title": "Student certificates" },

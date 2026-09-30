@@ -7,7 +7,7 @@ return [
     'conflict_title' => 'Conflict in :location: :lesson',
     'conflict_summary' => 'With :with — :count sessions between :from and :to, every :days :time',
     'absent_in_a_row' => 'Absent :count times in a row',
-    'no_teacher_title' => 'Circle without a teacher: :lesson',
+    'no_teacher_title' => 'Class without a teacher: :lesson',
     'guardian_messaged' => 'Message sent to the guardian.',
     'guardian_no_phone' => 'There is no guardian phone number.',
     'guardian_already_messaged' => 'The guardian was already messaged today.',

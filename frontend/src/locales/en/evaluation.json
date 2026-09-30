@@ -1,9 +1,9 @@
 {
-  "title": "Evaluation & memorization",
-  "subtitle": "Daily scores out of 10 per criterion, plus a monthly evaluation per circle",
+  "title": "Student evaluation",
+  "subtitle": "Daily scores out of 10 per criterion, plus a monthly evaluation per class",
   "tabs": { "daily": "Daily evaluation", "monthly": "Monthly evaluation" },
   "sheet_title": "Evaluation sheet",
-  "back": "Back to the day's circles",
+  "back": "Back to the day's classes",
   "criteria": { "memorization": "Memorization", "tajweed": "Tajweed", "revision": "Revision", "behavior": "Behavior" },
   "total": "Total",
   "note": "Note for the student and guardian",
@@ -19,7 +19,7 @@
   "sending": "Sending…",
   "send_done": "Evaluation sent on WhatsApp.",
   "save_first": "Save the evaluation first",
-  "empty_roster": "No students are enrolled in this circle.",
+  "empty_roster": "No students are enrolled in this class.",
   "ledger": "Progress today",
   "add_range": "Add memorized or revised range",
   "scored": "{{n}} of {{total}} scored",
@@ -53,10 +53,10 @@
     "cancel": "Cancel"
   },
   "monthly": {
-    "circle": "Circle",
+    "circle": "Class",
     "period": "Month",
-    "choose_circle": "Choose a circle",
-    "hint": "One monthly evaluation per student, circle and month; saving again updates it."
+    "choose_circle": "Choose a class",
+    "hint": "One monthly evaluation per student, class and month; saving again updates it."
   },
   "mobile": {
     "position": "{{n}} of {{total}}",
@@ -68,6 +68,6 @@
     "to_ayah": "To ayah",
     "ayahs": "Ayahs {{from}}–{{to}}",
     "done": "Done",
-    "circle_empty": "Choose a circle to see its students"
+    "circle_empty": "Choose a class to see its students"
   }
 }

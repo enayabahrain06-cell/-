@@ -6,14 +6,14 @@
     "female": "مسار البنات",
     "both": "المساران"
   },
-  "own_circles": "حلقاتك فقط",
+  "own_circles": "صفوفك فقط",
   "refresh": "تحديث",
   "error": "تعذر تحميل لوحة التحكم.",
   "retry": "إعادة المحاولة",
   "kpi": {
     "active_students": "الطلاب النشطون",
-    "active_circles": "الحلقات النشطة",
-    "sessions_today": "حلقات اليوم",
+    "active_circles": "الصفوف النشطة",
+    "sessions_today": "صفوف اليوم",
     "attendance_taken": "رُصد الحضور في {{taken}} من {{total}}",
     "attendance_rate_7d": "الحضور خلال ٧ أيام",
     "pending_registrations": "طلبات تسجيل معلقة",
@@ -22,8 +22,8 @@
     "outstanding": "إجمالي المستحق {{amount}}"
   },
   "today": {
-    "title": "حلقات اليوم",
-    "empty": "لا توجد حلقات اليوم.",
+    "title": "صفوف اليوم",
+    "empty": "لا توجد صفوف اليوم.",
     "attendance_done": "تم رصد الحضور",
     "attendance_pending": "لم يُرصد الحضور",
     "present_of": "{{present}} حاضر من {{enrolled}}",
@@ -33,11 +33,11 @@
       "changed": "تغيّرت القاعة اليوم",
       "conflict": "تعارض في القاعة",
       "no_hall": "لا توجد قاعة",
-      "cancelled": "ملغاة"
+      "cancelled": "ملغى"
     },
     "take_attendance": "سجّل الحضور",
     "evaluate": "التقييم",
-    "fix_hall": "افتح الحلقة لتغيير القاعة"
+    "fix_hall": "افتح الصف لتغيير القاعة"
   },
   "chart": {
     "title": "الحضور — آخر ١٤ يوماً",
@@ -73,7 +73,7 @@
       "lottery_pending": "قرعة بانتظار الاعتماد",
       "exam_upcoming": "اختبار قريب",
       "invoice_overdue": "فاتورة متأخرة",
-      "lesson_no_teacher": "حلقة بلا معلم"
+      "lesson_no_teacher": "صف بلا معلم"
     },
     "priority": {
       "danger": "عاجل",
@@ -83,7 +83,7 @@
     "view_all_short": "عرض الكل",
     "show_less": "عرض أقل",
     "error": "تعذّر تحميل التنبيهات.",
-    "empty_hint": "ستظهر هنا تعارضات القاعات والغياب المتكرر والحلقات بلا معلم.",
+    "empty_hint": "ستظهر هنا تعارضات القاعات والغياب المتكرر والصفوف بلا معلم.",
     "action_failed": "لم تنجح العملية، حاول مرة أخرى.",
     "handled_by": "تم التعامل بواسطة {{name}} الساعة {{time}}.",
     "no_phone": "لا يوجد رقم لولي الأمر",
@@ -97,7 +97,7 @@
       "message_parents": "مراسلة ولي الأمر",
       "open_student": "ملف الطالب",
       "assign_teacher": "تعيين معلم",
-      "circle_students": "طلاب الحلقة",
+      "circle_students": "طلاب الصف",
       "review_requests": "مراجعة الطلبات",
       "open_wallet": "فتح المحفظة",
       "invoices": "الفواتير",
@@ -112,7 +112,7 @@
     "attendance": "تسجيل الحضور",
     "enroll": "تسجيل سريع",
     "requests": "طلبات التسجيل",
-    "halls": "الحلقات والقاعات",
+    "halls": "الصفوف والقاعات",
     "payment": "تسجيل دفعة"
   },
   "age": {

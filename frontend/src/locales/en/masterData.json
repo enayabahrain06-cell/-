@@ -1,10 +1,12 @@
 {
   "title": "Master data",
-  "subtitle": "Academic terms, levels and subjects that circles and plans are built on.",
+  "subtitle": "Academic terms, levels and subjects that classes and plans are built on.",
   "tabs": {
     "terms": "Academic terms",
+    "nights": "Nights",
+    "subjects": "Subjects",
     "levels": "Levels",
-    "subjects": "Subjects"
+    "supervisors": "Supervisors"
   },
   "selector": {
     "label": "Academic term",
@@ -43,9 +45,9 @@
     "title_edit": "Edit level",
     "empty": "No levels yet.",
     "delete_confirm": "Delete this level?",
-    "circles": "{{n}} circles",
+    "circles": "{{n}} classes",
     "name_placeholder": "المستوى الأول",
-    "hint": "A level sits above circles: one level holds several circles, chosen on the circle form. Circles without a level work as before."
+    "hint": "A level sits above classes: one level holds several classes, chosen on the class form. Classes without a level work as before."
   },
   "subjects": {
     "new": "New subject",
@@ -57,5 +59,25 @@
     "system_hint": "The Holy Quran is a system subject: only its name and order can change.",
     "name_placeholder": "الفقه",
     "hint": "Subjects taught in the levels (Holy Quran, fiqh, aqeedah, seerah, akhlaq...). Memorization tracking is unchanged."
+  },
+  "nights": {
+    "hint": "The nights the centre runs and their default times. Only active nights are offered in term setup.",
+    "active": "Active",
+    "off": "Off",
+    "from": "From",
+    "to": "To",
+    "save_times": "Save times",
+    "turn_off": "Turn off",
+    "turn_on": "Turn on"
+  },
+  "supervisors": {
+    "hint": "Supervisor accounts and the nights they cover in the selected term.",
+    "manage_accounts": "Manage accounts",
+    "assign_nights": "Night supervisors",
+    "empty": "No supervisors yet.",
+    "name": "Supervisor",
+    "phone": "Phone",
+    "nights": "Nights",
+    "no_nights": "No nights"
   }
 }

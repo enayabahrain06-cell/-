@@ -28,7 +28,7 @@ class EnrollmentTemplateExport implements Export, WithMultipleSheets
 
                 public function headings(): array
                 {
-                    return EnrollmentImport::COLUMNS;
+                    return EnrollmentImport::TEMPLATE_HEADINGS;
                 }
 
                 public function title(): string
@@ -47,12 +47,12 @@ class EnrollmentTemplateExport implements Export, WithMultipleSheets
 
                 public function headings(): array
                 {
-                    return ['circle_id', __('enrollment.col_circle'), __('enrollment.col_package'), __('enrollment.col_teacher'), __('enrollment.col_free_seats')];
+                    return ['class_id', __('enrollment.col_circle'), __('enrollment.col_package'), __('enrollment.col_teacher'), __('enrollment.col_free_seats')];
                 }
 
                 public function title(): string
                 {
-                    return 'circles';
+                    return 'classes';
                 }
             },
         ];

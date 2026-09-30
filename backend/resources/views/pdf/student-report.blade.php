@@ -6,7 +6,7 @@
     <td class="ar" style="width:55%">
         <div><span class="muted">{{ pdf_ar('الطالب') }}:</span> <b>{{ pdf_ar($student->full_name) }}</b></div>
         <div><span class="muted">{{ pdf_ar('رقم الطالب') }}:</span> {{ $student->student_no }}</div>
-        @if($h['lesson'])<div><span class="muted">{{ pdf_ar('الحلقة') }}:</span> {{ pdf_ar($h['lesson']['name']) }}</div>@endif
+        @if($h['lesson'])<div><span class="muted">{{ pdf_ar('الصف') }}:</span> {{ pdf_ar($h['lesson']['name']) }}</div>@endif
         @if($h['teacher'])<div><span class="muted">{{ pdf_ar('المعلم') }}:</span> {{ pdf_ar($h['teacher']) }}</div>@endif
         <div><span class="muted">{{ pdf_ar('ولي الأمر') }}:</span> {{ pdf_ar($student->guardian_name) }} — {{ $student->guardian_phone }}</div>
     </td>

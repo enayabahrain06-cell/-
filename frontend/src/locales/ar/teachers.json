@@ -1,5 +1,5 @@
 {
-  "title": "المعلمون",
+  "title": "المعلمين",
   "subtitle": "{{n}} معلمًا",
   "search": "ابحث بالاسم أو الهاتف",
   "filters": {
@@ -15,7 +15,7 @@
   },
   "columns": {
     "teacher": "المعلم",
-    "circles": "الحلقات",
+    "circles": "الصفوف",
     "students": "الطلاب",
     "taken_rate": "تسجيل الحضور",
     "avg_evaluation": "متوسط الدرجات",
@@ -23,9 +23,9 @@
   },
   "active": "نشط",
   "inactive": "غير نشط",
-  "no_circles": "بلا حلقة بعد",
+  "no_circles": "بلا صف بعد",
   "no_specialization": "لم يُحدَّد التخصص",
-  "card_line": "{{circles}} حلقات · {{students}} طالبًا",
+  "card_line": "{{circles}} صفوف ·{{students}} طالبًا",
   "empty": "لا يوجد معلمون بعد",
   "empty_body": "يُضاف المعلمون من شاشة المستخدمين والصلاحيات بدور معلم.",
   "empty_filtered": "لا يوجد معلم يطابق هذه التصفية.",
@@ -45,25 +45,25 @@
     "saved": "تم الحفظ.",
     "kpi": {
       "students": "الطلاب النشطون",
-      "sessions": "حلقات هذا الشهر",
+      "sessions": "حصص الصفوف هذا الشهر",
       "taken_rate": "تسجيل الحضور",
       "on_time": "التسجيل في الوقت",
       "avg_evaluation": "متوسط الدرجات",
       "attendance_rate": "حضور الطلاب",
       "evaluations": "التقييمات (30 يومًا)"
     },
-    "circles": "الحلقات",
-    "no_circles": "لا توجد حلقات لهذا المعلم.",
+    "circles": "الصفوف",
+    "no_circles": "لا توجد صفوف لهذا المعلم.",
     "capacity": "{{students}} من {{capacity}}",
     "status": {
-      "active": "نشطة",
-      "paused": "موقوفة",
-      "ended": "منتهية"
+      "active": "نشط",
+      "paused": "موقوف",
+      "ended": "منتهٍ"
     },
     "timetable": "الجدول الأسبوعي",
     "free": "—",
     "upcoming": "الأيام السبعة القادمة",
-    "no_upcoming": "لا حلقات في الأيام السبعة القادمة.",
+    "no_upcoming": "لا حصص للصفوف في الأيام السبعة القادمة.",
     "taken": "سُجّل",
     "take": "تسجيل الحضور",
     "days": {
@@ -75,7 +75,7 @@
       "thu": "الخميس",
       "fri": "الجمعة"
     },
-    "messages": "رسائل هذه الحلقة"
+    "messages": "رسائل حصة الصف"
   },
   "photo": {
     "add": "إضافة صورة",

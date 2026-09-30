@@ -9,8 +9,14 @@ import Icon from '../../components/Icon'
 import SelectField from '../../components/SelectField'
 import { Modal, Notice, PrimaryButton, SecondaryButton } from '../../components/ui'
 
+const WEEK = ['sat', 'sun', 'mon', 'tue', 'wed', 'thu', 'fri']
+
+/** The nights to show: the active ones (الليالي) plus any other weekday that already has rows, in week order. */
 // eslint-disable-next-line react-refresh/only-export-components
-export const WEEKDAYS = ['sat', 'sun', 'mon', 'tue', 'wed', 'thu', 'fri'] as const
+export function useNights(used: string[] = []): string[] {
+  const active = useSetupOptions().data?.weekdays.map((d) => d.value) ?? WEEK
+  return WEEK.filter((d) => active.includes(d) || used.includes(d))
+}
 
 /** Form choices for the selected term (levels, subjects, teachers, supervisors, halls, circles). */
 // eslint-disable-next-line react-refresh/only-export-components

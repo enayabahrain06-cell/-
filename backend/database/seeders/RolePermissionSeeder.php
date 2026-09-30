@@ -31,6 +31,8 @@ class RolePermissionSeeder extends Seeder
         'settings.manage', 'audit.view',
         'terms.manage', 'levels.manage', 'subjects.manage',
         'term_setup.view', 'term_setup.manage',
+        'menu.manage', // القائمة: menu order and hidden entries (Super Admin only)
+        'nights.manage', // الليالي
     ];
 
     /** Default matrix (editable later from the admin panel). */
@@ -54,7 +56,7 @@ class RolePermissionSeeder extends Seeder
             'messages.view', 'messages.manage', 'messages.send', 'whatsapp.status',
             'reports.view', 'reports.export',
             'levels.manage', 'subjects.manage', // term setup master data; terms themselves stay with the Super Admin
-            'term_setup.view', 'term_setup.manage',
+            'term_setup.view', 'term_setup.manage', 'nights.manage',
         ],
         'teacher' => [
             'dashboard.view',
