@@ -188,3 +188,17 @@ left out and listed under the page.
 - Badges tab: the existing badges panel.
 - Not in the app: term and year boards (the board is monthly; the month picker replaces the segmented period) and
   exporting the board as an image (the share icon is the TV display link).
+
+## Competitions (/competitions) — Competitions.dc.html
+
+- Below lg the page header carries the title; المسابقات / التحديات is one segmented control on the same `tab` param.
+- Competitions: segmented جارية / قادمة / منتهية with counts, grouping the existing statuses (running + judging,
+  draft + open, finished + cancelled; starts on the first non-empty group), over the desktop list query. Cards: title
+  (links to the competition), status pill, type · scope · track · ages, the registration window (upcoming) or the
+  competition dates, a 6px participants bar against the maximum with n of max · rounds. Registration-open cards get a
+  secondary تسجيل طلاب. FAB مسابقة جديدة (existing form). Skeleton, empty and error states.
+- Challenges tab: the existing challenges panel with a FAB تحدٍّ جديد.
+- Competition page: the mobile header shows its name, back to the list and a breadcrumb (also while loading); the
+  body is unchanged.
+- Not in the app: the participants' avatar stack and current leader on list cards (the list API has counts only), and
+  opening the competition straight on its participants tab (the tab is not in the URL).
