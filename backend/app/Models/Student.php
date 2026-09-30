@@ -33,6 +33,7 @@ class Student extends Model implements Recipient
             'locale' => Locale::class,
             'birth_date' => \App\Casts\DateOnly::class,
             'yearly_target_ayahs' => 'integer',
+            'photo_consent_withheld' => 'boolean',
             'progress_surah' => 'integer', 'progress_ayah' => 'integer', 'progress_juz' => 'integer', 'memorized_ayahs' => 'integer',
         ];
     }

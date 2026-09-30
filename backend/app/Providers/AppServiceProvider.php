@@ -45,6 +45,8 @@ class AppServiceProvider extends ServiceProvider
         ]);
         RateLimiter::for('otp-verify', fn (Request $request) => Limit::perMinute(10)->by((string) $request->input('phone').'|'.$request->ip()));
         RateLimiter::for('api', fn (Request $request) => Limit::perMinute(120)->by($request->user()?->id ?: $request->ip()));
+        // Gallery files: one request per thumbnail, so an album page would use up the api limit on its own.
+        RateLimiter::for('gallery-files', fn (Request $request) => Limit::perMinute((int) config('ahl.gallery.files_per_minute', 600))->by('gallery|'.($request->user()?->id ?: $request->ip())));
         // Public pages. Unnamed throttles (throttle:60,1 next to throttle:10,1) share one counter per IP, so page
         // loads used up the submit limit; named limiters keep separate counters.
         RateLimiter::for('public', fn (Request $request) => Limit::perMinute(60)->by('public|'.$request->ip()));

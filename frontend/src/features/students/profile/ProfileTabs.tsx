@@ -370,6 +370,11 @@ export function DetailsTab({ student, canEdit, canPhoto }: { student: StudentDet
     onSuccess: () => { setEditing(false); setSaved(true); setError(null); invalidate() },
     onError: (e) => setError(parseApiError(e).message),
   })
+  const consent = useMutation({
+    mutationFn: (withheld: boolean) => studentsApi.update(student.id, { photo_consent_withheld: withheld }),
+    onSuccess: () => { setError(null); invalidate() },
+    onError: (e) => setError(parseApiError(e).message),
+  })
   const photo = useMutation({
     mutationFn: (file: File) => studentsApi.uploadPhoto(student.id, file),
     onSuccess: () => { setError(null); invalidate() },
@@ -414,6 +419,18 @@ export function DetailsTab({ student, canEdit, canPhoto }: { student: StudentDet
             {photo.isPending ? t('details.uploading') : t('details.change_photo')}
             <input type="file" accept="image/jpeg,image/png,image/heic,image/heif" capture="environment" className="sr-only" disabled={photo.isPending}
               onChange={(e) => { const f = e.target.files?.[0]; if (f) photo.mutate(f); e.target.value = '' }} />
+          </label>
+        </section>
+      )}
+
+      {student.photo_consent_withheld !== undefined && (
+        <section className={card}>
+          <h3 className="mb-1 font-semibold text-ink">{t('details.photo_consent')}</h3>
+          <p className="mb-3 text-sm text-ink/55">{t('details.photo_consent_hint')}</p>
+          <label className="flex items-center gap-2 text-sm text-ink/80">
+            <input type="checkbox" className="size-4 accent-brand-700" checked={!!student.photo_consent_withheld} disabled={!canEdit || consent.isPending}
+              onChange={(e) => consent.mutate(e.target.checked)} />
+            {t('details.photo_consent_withheld')}
           </label>
         </section>
       )}

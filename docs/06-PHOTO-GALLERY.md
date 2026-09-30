@@ -60,3 +60,17 @@ Files go through the existing `media` table and `MediaService` (single source of
 2. Videos: optional add-on, hidden when ffmpeg is missing (production ffmpeg still to be confirmed by the user).
 3. Guardian downloads: per-album "السماح بالتحميل" toggle, off by default; off means view only.
 4. Teachers create albums for their own classes, always staff-only; only supervisor and super_admin change visibility to guardians.
+
+## Built (2026-09-30, branch `feature/photo-gallery`)
+
+Built from `feature/school-management` at 146a3b7 (phases 4–6) in its own worktree, so phase 7's uncommitted work was not touched.
+
+- **Pending, phase 7:** the activity (trip / program) link. `Album::LINKS` gets `'activity' => Activity::class`, `GalleryAccess::linkedStudentIds()` gets the activity's registered students, and the activity page renders `<LinkedAlbums type="activity" id=… />`. Nothing else changes.
+- Files are never URLs: the screens fetch `GET /api/gallery/photos/{photo}/{thumb|image|video}` with the session token and show them as object URLs (`lib/authBlob.ts`). No signed links, unlike student photos. The route has its own limiter (600 a minute) because each thumbnail is one request.
+- Photos are resized in the browser to 2560 px before upload (fast on mobile data), then on the server to 2048 px WebP plus a 480 px square thumbnail. Re-encoding drops EXIF and GPS. Max 15 MB per photo (`GALLERY_MAX_UPLOAD_MB`).
+- Videos: `GALLERY_VIDEO=auto` turns them on when `ffmpeg` and `ffprobe` run (`FFMPEG_PATH`, `FFPROBE_PATH`), and `off` never allows them. Max 50 MB and 60 s.
+- Assumptions to confirm:
+  - "All guardians" means the guardians of the album's gender track (a girls' album never reaches boys' guardians).
+  - Students with their own login see the albums shared with their family.
+  - A teacher deletes only the photos they uploaded, and edits (title, order, cover, captions) only the albums they created.
+  - Albums follow the gender track of their class or competition. Albums with no link, or linked to a level, choose the track.

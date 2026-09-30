@@ -138,7 +138,8 @@
     "honor": "Honor board",
     "certificates": "Certificates",
     "messages": "Messages",
-    "reports": "Reports"
+    "reports": "Reports",
+    "gallery": "Photo gallery"
   },
   "coming_soon": "This page is being built",
   "coming_soon_body": "The backend for this section is ready; the screens come in the next stage.",
@@ -153,5 +154,6 @@
     "trips": "Trips",
     "grades": "Grades",
     "communication": "Communication & reports"
-  }
+  },
+  "gallery": "Photo gallery"
 }

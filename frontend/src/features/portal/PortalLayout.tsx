@@ -60,6 +60,7 @@ export default function PortalLayout({ children, title, back, breadcrumb, action
           <nav className="flex min-w-0 flex-wrap gap-1" aria-label={t('nav_label')}>
             {tabs.filter((x) => x.key !== 'account').map((x) => <NavLink key={x.key} to={x.to} className={topLink}>{t(`tabs.${x.key}`)}</NavLink>)}
             <NavLink to="/my/exams" className={topLink}>{t('links.exams')}</NavLink>
+            <NavLink to="/my-gallery" className={topLink}>{t('links.gallery')}</NavLink>
           </nav>
           <div className="ms-auto flex shrink-0 items-center gap-2">
             <LanguageSwitcher className="text-white/85" />

@@ -14,6 +14,7 @@ import AddStudentDialog from './AddStudentDialog'
 import ChangeLocationDialog from './ChangeLocationDialog'
 import LessonFormDialog from './LessonFormDialog'
 import { GENDER_TONE } from './LessonsHomePage'
+import LinkedAlbums from '../gallery/LinkedAlbums'
 import { MobileLessonDetail, MobileLessonPending } from './MobileLessons'
 
 export default function LessonDetailPage() {
@@ -121,6 +122,7 @@ export default function LessonDetailPage() {
       </div>
 
     </div>
+    <LinkedAlbums type="lesson" id={lesson.id} className="mt-5" />
       {edit && <LessonFormDialog lesson={lesson} onClose={() => setEdit(false)} onSaved={(_l, c) => { setEdit(false); refresh(); void conflicts.refetch(); setNotice(c.length ? { tone: 'error', text: t('form.conflicts_body') } : { tone: 'success', text: t('form.saved') }) }} />}
       {adding && <AddStudentDialog lesson={lesson} canQuickEnroll={can('enrollment.quick')} onClose={() => setAdding(false)} onChanged={refresh} />}
       {change && <ChangeLocationDialog lesson={lesson} onClose={() => setChange(false)} onDone={(m) => { setChange(false); setNotice({ tone: 'success', text: m }) }} />}

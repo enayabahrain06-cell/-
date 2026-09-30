@@ -74,6 +74,8 @@ export const EXTRA_ROUTES: NavSection[] = [
   { key: 'upload_exam_grades', path: '/upload-exam-grades', icon: 'download', permissions: ['exams.grade'] },
   { key: 'gradebook', path: '/grades', icon: 'exams', permissions: ['grades.view', 'grades.record'] },
   { key: 'grade_monitor', path: '/grade-submission-monitor', icon: 'alert', permissions: ['grades.manage'] },
+  // Phase 8, معرض الصور
+  { key: 'gallery', path: '/gallery', icon: 'camera', permissions: ['gallery.view'] },
 ]
 
 /** Every staff route: the core ones in nav.ts plus EXTRA_ROUTES. */

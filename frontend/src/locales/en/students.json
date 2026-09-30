@@ -218,6 +218,9 @@
         "change_photo": "Change photo",
         "remove_photo": "Remove photo",
         "photo_hint": "JPG, PNG or HEIC up to 5 MB. Cropped square automatically.",
+        "photo_consent": "Photo consent",
+        "photo_consent_hint": "When on, anyone uploading to an album of a class, level or competition with this student sees a warning.",
+        "photo_consent_withheld": "No photos (consent withheld)",
         "uploading": "Uploading…"
     },
     "wallet_charts": {

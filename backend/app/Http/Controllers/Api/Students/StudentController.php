@@ -72,7 +72,7 @@ class StudentController extends Controller
     {
         $this->authorize('update', $student);
 
-        $old = $student->only(['cpr', 'address', 'full_name', 'birth_date', 'gender', 'guardian_name', 'memorization_level', 'status', 'yearly_target_ayahs']);
+        $old = $student->only(['cpr', 'address', 'full_name', 'birth_date', 'gender', 'guardian_name', 'memorization_level', 'status', 'yearly_target_ayahs', 'photo_consent_withheld']);
         $student->update($request->validated());
         $audit->record('student.updated', $student, $old, $student->only(array_keys($old)));
 

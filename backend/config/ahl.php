@@ -32,6 +32,21 @@ return [
         'photo' => ['max_kb' => 5120, 'profile_px' => 512, 'thumb_px' => 96],
     ],
 
+    // معرض الصور (Phase 8). Photos are re-encoded to WebP (EXIF, including GPS, is dropped); originals are not kept.
+    // Videos are an add-on: they are accepted only when ffmpeg and ffprobe run on this server (GALLERY_VIDEO=auto),
+    // or never (GALLERY_VIDEO=off).
+    'gallery' => [
+        'max_upload_mb' => (int) env('GALLERY_MAX_UPLOAD_MB', 15),
+        'image_px' => 2048,
+        'thumb_px' => 480,
+        'video' => env('GALLERY_VIDEO', 'auto'), // auto | off
+        'ffmpeg' => env('FFMPEG_PATH', 'ffmpeg'),
+        'ffprobe' => env('FFPROBE_PATH', 'ffprobe'),
+        'video_max_mb' => (int) env('GALLERY_VIDEO_MAX_MB', 50),
+        'video_max_seconds' => (int) env('GALLERY_VIDEO_MAX_SECONDS', 60),
+        'files_per_minute' => 600, // thumbnails load one request each; kept apart from the api limiter
+    ],
+
     'attendance' => [
         'repeated_absence_count' => 3,
         'repeated_absence_days' => 30,

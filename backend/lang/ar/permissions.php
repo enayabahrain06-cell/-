@@ -33,4 +33,5 @@ return [
     'subject_progress.record' => 'تحديث دروس المواد',
     'staff_attendance.view' => 'عرض حضور المشرفين والمعلمين', 'staff_attendance.record' => 'تسجيل حضور المشرفين والمعلمين',
     'grades.view' => 'عرض الدرجات', 'grades.record' => 'رصد الدرجات', 'grades.manage' => 'توزيع الدرجات والدروس المطلوبة',
+    'gallery.view' => 'عرض معرض الصور', 'gallery.upload' => 'رفع الصور لألبومات صفوفه', 'gallery.manage' => 'إدارة معرض الصور ومشاركته مع أولياء الأمور',
 ];

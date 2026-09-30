@@ -60,6 +60,9 @@ import PromotionPage from '../features/distribution/PromotionPage'
 import UpdateLevelPage from '../features/distribution/UpdateLevelPage'
 import ArchivePage from '../features/archive/ArchivePage'
 import NotesPage from '../features/notes/NotesPage'
+import GalleryPage from '../features/gallery/GalleryPage'
+import AlbumPage from '../features/gallery/AlbumPage'
+import { FamilyAlbumPage, FamilyGalleryPage } from '../features/portal/GalleryPage'
 import DivisionsPage from '../features/divisions/DivisionsPage'
 import CriteriaPage from '../features/evaluation/CriteriaPage'
 import DivisionEvaluationPage from '../features/evaluation/DivisionEvaluationPage'
@@ -120,6 +123,8 @@ const PORTAL: [string, React.ComponentType][] = [
   ['/my-schedule', SchedulePage],
   ['/my-messages', MessagesPage],
   ['/my-account', AccountPage],
+  ['/my-gallery', FamilyGalleryPage],
+  ['/my-gallery/:id', FamilyAlbumPage],
 ]
 
 /** Guards a built page by the same permissions as its sidebar entry. */
@@ -175,6 +180,7 @@ const BUILT: Record<string, React.ReactNode> = {
   upload_exam_grades: <UploadExamGradesPage />,
   gradebook: <GradesPage />,
   grade_monitor: <GradeMonitorPage />,
+  gallery: <GalleryPage />,
 }
 
 /** Detail pages under a section: [path, permissions (any), element]. */
@@ -189,6 +195,7 @@ const DETAIL: [string, string[], React.ReactNode][] = [
   ['evaluation/:sessionId', ['evaluations.record'], <EvaluationSheetPage />],
   ['lessons/halls/:id', ['locations.view', 'lessons.view'], <HallCalendarPage />],
   ['lessons/:id', ['lessons.view'], <LessonDetailPage />],
+  ['gallery/:id', ['gallery.view'], <AlbumPage />],
 ]
 
 /** A section the user has no permission for bounces back to the dashboard. */

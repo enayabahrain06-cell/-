@@ -190,6 +190,7 @@ export const MENU: MenuSectionDef[] = [
     key: 'communication', icon: 'messages', entries: [
       { key: 'messages', path: '/messages', icon: 'messages', permissions: ['messages.view', 'messages.send'] },
       { key: 'reports', path: '/reports', icon: 'reports', isDefault: true, query: { report: '' }, permissions: ['reports.view'] },
+      { key: 'gallery', path: '/gallery', icon: 'camera', permissions: ['gallery.view'] },
     ],
   },
 ]

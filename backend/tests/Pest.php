@@ -3,6 +3,7 @@
 use App\Models\User;
 use Database\Seeders\AttendanceTemplateSeeder;
 use Database\Seeders\EngagementTemplateSeeder;
+use Database\Seeders\GalleryTemplateSeeder;
 use Database\Seeders\MessageTemplateSeeder;
 use Database\Seeders\RolePermissionSeeder;
 use Database\Seeders\SettingsSeeder;
@@ -12,7 +13,7 @@ use Tests\TestCase;
 pest()->extend(TestCase::class)
     ->use(RefreshDatabase::class)
     ->beforeEach(function () {
-        $this->seed([RolePermissionSeeder::class, SettingsSeeder::class, MessageTemplateSeeder::class, EngagementTemplateSeeder::class, AttendanceTemplateSeeder::class]);
+        $this->seed([RolePermissionSeeder::class, SettingsSeeder::class, MessageTemplateSeeder::class, EngagementTemplateSeeder::class, AttendanceTemplateSeeder::class, GalleryTemplateSeeder::class]);
     })
     ->in('Feature', 'Unit');
 

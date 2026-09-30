@@ -40,6 +40,7 @@ class UpdateStudentRequest extends FormRequest
             'status' => ['sometimes', StudentStatus::rule()],
             'yearly_target_ayahs' => ['nullable', 'integer', 'min:0'],
             'notes' => ['nullable', 'string', 'max:2000'],
+            'photo_consent_withheld' => ['sometimes', 'boolean'], // عدم الموافقة على التصوير
         ];
     }
 

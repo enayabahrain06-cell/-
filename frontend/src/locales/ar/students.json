@@ -218,6 +218,9 @@
         "change_photo": "تغيير الصورة",
         "remove_photo": "حذف الصورة",
         "photo_hint": "JPG أو PNG أو HEIC حتى ٥ ميغابايت، وتُقص مربعة تلقائياً.",
+        "photo_consent": "الموافقة على التصوير",
+        "photo_consent_hint": "عند التفعيل يظهر تنبيه لمن يرفع صوراً إلى ألبوم صف أو مستوى أو مسابقة فيها هذا الطالب.",
+        "photo_consent_withheld": "عدم الموافقة على التصوير",
         "uploading": "جارٍ الرفع…"
     },
     "wallet_charts": {

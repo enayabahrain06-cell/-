@@ -17,4 +17,9 @@ enum MediaCollection: string
     case Certificate = 'certificate';
     case Logo = 'logo';
     case Signature = 'signature';
+
+    // معرض الصور (Phase 8): served only by the gallery file route, never by media/{media}.
+    case GalleryImage = 'gallery_image';
+    case GalleryThumb = 'gallery_thumb';
+    case GalleryVideo = 'gallery_video';
 }

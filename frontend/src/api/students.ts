@@ -13,6 +13,8 @@ export interface StudentSummary {
   gender: 'male' | 'female'
   /** Staff only: nine-digit CPR (Bahrain personal number); absent for students and guardians. */
   cpr?: string | null
+  /** Staff only: عدم الموافقة على التصوير (gallery uploads warn about this student). */
+  photo_consent_withheld?: boolean
   birth_date: string | null
   memorization_level: string | null
   status: string
@@ -245,7 +247,7 @@ export const studentsApi = {
   wallet: (id: number) => api.get<WalletView>(`/students/${id}/wallet`).then((r) => r.data),
   /** Placement test results from the student's registration (staff), with the answer key. */
   placement: (id: number) => api.get<{ data: PlacementRecord[] }>(`/students/${id}/placement`).then((r) => r.data.data),
-  update: (id: number, data: Partial<Pick<StudentDetail, 'full_name' | 'birth_date' | 'gender' | 'cpr' | 'address' | 'guardian_name' | 'memorization_level' | 'status' | 'yearly_target_ayahs' | 'notes'>>) =>
+  update: (id: number, data: Partial<Pick<StudentDetail, 'full_name' | 'birth_date' | 'gender' | 'cpr' | 'address' | 'guardian_name' | 'memorization_level' | 'status' | 'yearly_target_ayahs' | 'notes' | 'photo_consent_withheld'>>) =>
     api.put<{ data: StudentDetail }>(`/students/${id}`, data).then((r) => r.data.data),
   uploadPhoto: (id: number, file: File) => {
     const form = new FormData()

@@ -16,6 +16,8 @@ class StudentSummaryResource extends JsonResource
             // National ID number: staff only, never shown to students or guardians.
             'cpr' => $this->when($request->user()?->can('students.view') ?? false, $this->cpr),
             'full_name' => $this->full_name,
+            // عدم الموافقة على التصوير: staff only.
+            'photo_consent_withheld' => $this->when($request->user()?->can('students.view') ?? false, (bool) $this->photo_consent_withheld),
             'initial' => $this->initial(),
             'gender' => $this->gender?->value,
             'birth_date' => $this->birth_date?->toDateString(),

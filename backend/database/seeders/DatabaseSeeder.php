@@ -21,6 +21,7 @@ class DatabaseSeeder extends Seeder
             AgeGroupSeeder::class,
             EngagementTemplateSeeder::class,
             AttendanceTemplateSeeder::class,
+            GalleryTemplateSeeder::class,
         ]);
     }
 }

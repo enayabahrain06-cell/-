@@ -12,6 +12,7 @@ import { EmptyState, OrnamentDivider, PageBand } from '../../components/ornament
 import { Badge, buttonClass, Card, CardTitle, ErrorState, LoadingState, Modal, Notice, PrimaryButton, SecondaryButton, Segmented, TABLE_HEAD, TableWrap, TextInput, type Tone, inputClass, EmptyCard, SURFACE } from '../../components/ui'
 import { formatDate, formatNumber } from '../../lib/format'
 import CompetitionForm from './CompetitionForm'
+import LinkedAlbums from '../gallery/LinkedAlbums'
 import { ChallengesPanel } from './ChallengePages'
 import { MEDAL } from '../honor/HonorBoardPage'
 import { MobileChallengesFab, MobileCompetitionHeader, MobileCompetitionList, MobileCompetitionsTabs } from './MobileCompetitions'
@@ -195,6 +196,7 @@ export function CompetitionDetailPage() {
       {tab === 'judges' && <JudgesTab c={c} onChange={refresh} />}
       {tab === 'judging' && <JudgingTab c={c} />}
       {tab === 'results' && <ResultsTab c={c} onPublish={() => setPublishOpen(true)} />}
+      {tab === 'overview' && <LinkedAlbums type="competition" id={c.id} />}
 
       {editing && <CompetitionForm competition={c} onClose={() => setEditing(false)} onSaved={() => { setEditing(false); refresh() }} />}
       {publishOpen && <PublishDialog c={c} onClose={() => setPublishOpen(false)} onDone={(text) => { setPublishOpen(false); setNotice({ tone: 'success', text }); refresh(); void qc.invalidateQueries({ queryKey: ['standings', cid] }) }} />}

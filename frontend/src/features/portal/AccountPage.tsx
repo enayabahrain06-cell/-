@@ -36,6 +36,7 @@ export default function AccountPage() {
         { to: '/my-schedule', icon: 'clock', key: 'schedule' },
         { to: '/my/exams', icon: 'exams', key: 'exams' },
         { to: '/my/honor', icon: 'trophy', key: 'honor' },
+        { to: '/my-gallery', icon: 'camera', key: 'gallery' },
       ]
     : [
         { to: '/my-progress/memorization', icon: 'evaluation', key: 'memorization' },
@@ -43,6 +44,7 @@ export default function AccountPage() {
         { to: '/my-invoices', icon: 'wallet', key: 'invoices' },
         { to: '/my-messages', icon: 'messages', key: 'messages' },
         { to: '/my/exams', icon: 'exams', key: 'exams' },
+        { to: '/my-gallery', icon: 'camera', key: 'gallery' },
       ]
 
   return (

@@ -48,6 +48,9 @@ enum MessageType: string
     case ChallengeDeadline = 'challenge_deadline';
     case ChallengeCompleted = 'challenge_completed';
 
+    // معرض الصور: an album was shared with the guardian (GalleryTemplateSeeder).
+    case AlbumShared = 'album_shared';
+
     /**
      * Whether a recipient's opt-out (users.notifications_enabled, "إيقاف") and an invalid number block it.
      * Login codes always go out; direct replies to something the person just sent are answers, not notifications.
