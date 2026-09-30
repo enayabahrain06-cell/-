@@ -85,3 +85,12 @@ left out and listed under the page.
   the Share → Add to Home Screen hint on iPhone, hidden once installed.
 - Chrome's installability check (`Page.getInstallabilityErrors`) reports no errors on :5180. On phones the site
   must be served over HTTPS (localhost is the only exception).
+
+## More (المزيد) — More.dc.html
+
+- The المزيد sheet (bottom-nav المزيد, and the app-bar avatar) is the spec's §4.4 page: profile card, the sidebar
+  groups with only the pages the user can open, language row, install row, logout. There is no `/more` route (spec
+  rule 7 keeps routes as they are); the sheet opens over the current root tab and المزيد shows as active while open.
+- Count pills now cover every open alert type, on the section that handles it: الباقات والتسجيل (registration
+  requests), الحلقات والقاعات (hall conflicts + circles without a teacher), الحضور (repeated absence), القرعة
+  (draws awaiting approval), المدفوعات (overdue invoices). Same `['alerts-count']` query as the bell.
