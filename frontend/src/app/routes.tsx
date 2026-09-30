@@ -63,6 +63,11 @@ import NotesPage from '../features/notes/NotesPage'
 import DivisionsPage from '../features/divisions/DivisionsPage'
 import CriteriaPage from '../features/evaluation/CriteriaPage'
 import DivisionEvaluationPage from '../features/evaluation/DivisionEvaluationPage'
+import DivisionAttendancePage from '../features/attendanceFollowup/DivisionAttendancePage'
+import DivisionAttendanceMonitorPage from '../features/attendanceFollowup/DivisionAttendanceMonitorPage'
+import AttendanceMonitorPage from '../features/attendanceFollowup/AttendanceMonitorPage'
+import SupervisorAttendancePage from '../features/attendanceFollowup/SupervisorAttendancePage'
+import TeacherAttendancePage from '../features/attendanceFollowup/TeacherAttendancePage'
 import QuranLessonsPage from '../features/progress/QuranLessonsPage'
 import SubjectProgressPage from '../features/progress/SubjectProgressPage'
 
@@ -155,6 +160,11 @@ const BUILT: Record<string, React.ReactNode> = {
   division_evaluation: <DivisionEvaluationPage />,
   quran_lessons: <QuranLessonsPage />,
   subject_progress: <SubjectProgressPage />,
+  division_attendance: <DivisionAttendancePage />,
+  division_attendance_monitor: <DivisionAttendanceMonitorPage />,
+  attendance_monitor: <AttendanceMonitorPage />,
+  supervisor_attendance: <SupervisorAttendancePage />,
+  teacher_attendance: <TeacherAttendancePage />,
 }
 
 /** Detail pages under a section: [path, permissions (any), element]. */

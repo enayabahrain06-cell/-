@@ -118,7 +118,8 @@
     "notes": "الملاحظات",
     "divisions": "التقسيمات",
     "evaluation_criteria": "التقييمات",
-    "subject_progress": "تحديث دروس المواد"
+    "subject_progress": "تحديث دروس المواد",
+    "staff_attendance": "حضور المشرفين والمعلمين"
   },
   "mobile": {
     "all": "الكل",

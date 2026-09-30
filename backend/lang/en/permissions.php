@@ -31,4 +31,5 @@ return [
     'divisions.manage' => 'Manage divisions',
     'evaluation_criteria.manage' => 'Manage evaluation criteria',
     'subject_progress.record' => 'Update subject lessons',
+    'staff_attendance.view' => 'View supervisor and teacher attendance', 'staff_attendance.record' => 'Record supervisor and teacher attendance',
 ];

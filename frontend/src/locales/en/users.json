@@ -118,7 +118,8 @@
     "notes": "Notes",
     "divisions": "Divisions",
     "evaluation_criteria": "Evaluation criteria",
-    "subject_progress": "Update subject lessons"
+    "subject_progress": "Update subject lessons",
+    "staff_attendance": "Supervisor and teacher attendance"
   },
   "mobile": {
     "all": "All",

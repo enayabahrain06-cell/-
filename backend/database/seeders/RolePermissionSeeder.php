@@ -40,6 +40,7 @@ class RolePermissionSeeder extends Seeder
         'divisions.manage', // التقسيمات
         'evaluation_criteria.manage', // التقييمات (معايير التقييم لكل مادة)
         'subject_progress.record', // تحديث دروس المواد
+        'staff_attendance.view', 'staff_attendance.record', // حضور المشرفين والمعلمين
     ];
 
     /** Default matrix (editable later from the admin panel). */
@@ -66,6 +67,7 @@ class RolePermissionSeeder extends Seeder
             'term_setup.view', 'term_setup.manage', 'nights.manage',
             'distribution.manage', 'archive.view', 'archive.manage', 'books.view', 'books.manage',
             'notes.view', 'notes.manage', 'divisions.manage', 'evaluation_criteria.manage', 'subject_progress.record',
+            'staff_attendance.view', 'staff_attendance.record',
         ],
         'teacher' => [
             'dashboard.view',

@@ -31,4 +31,5 @@ return [
     'divisions.manage' => 'إدارة التقسيمات',
     'evaluation_criteria.manage' => 'إدارة معايير التقييم',
     'subject_progress.record' => 'تحديث دروس المواد',
+    'staff_attendance.view' => 'عرض حضور المشرفين والمعلمين', 'staff_attendance.record' => 'تسجيل حضور المشرفين والمعلمين',
 ];

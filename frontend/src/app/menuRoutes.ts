@@ -28,6 +28,13 @@ export const BUILT_ENTRIES: Record<string, Pick<MenuEntry, 'path' | 'permissions
   view_division_evaluation: { path: '/division-evaluation', query: { tab: 'view' }, permissions: ['evaluations.view'] },
   quran_lessons: { path: '/quran-lessons', query: {}, permissions: ['evaluations.view'] },
   update_subject_lessons: { path: '/subject-progress', permissions: ['subject_progress.record'] },
+  // Phase 5, الحضور
+  division_attendance: { path: '/division-attendance', permissions: ['attendance.record'] },
+  division_attendance_monitor: { path: '/division-attendance-monitor', permissions: ['attendance.view'] },
+  attendance_monitor: { path: '/attendance-monitor', permissions: ['lessons.manage'] },
+  supervisor_attendance: { path: '/supervisor-attendance', query: { tab: 'record' }, isDefault: true, permissions: ['staff_attendance.record'] },
+  view_supervisor_attendance: { path: '/supervisor-attendance', query: { tab: 'view' }, permissions: ['staff_attendance.view', 'staff_attendance.record'] },
+  view_teacher_attendance: { path: '/teacher-attendance', permissions: ['staff_attendance.view', 'staff_attendance.record'] },
 }
 
 /** Routes of those screens (path → page is mapped in routes.tsx by key). */
@@ -46,6 +53,12 @@ export const EXTRA_ROUTES: NavSection[] = [
   { key: 'division_evaluation', path: '/division-evaluation', icon: 'evaluation', permissions: ['evaluations.record', 'evaluations.view'] },
   { key: 'quran_lessons', path: '/quran-lessons', icon: 'lessons', permissions: ['evaluations.view'] },
   { key: 'subject_progress', path: '/subject-progress', icon: 'refresh', permissions: ['subject_progress.record'] },
+  // Phase 5, الحضور
+  { key: 'division_attendance', path: '/division-attendance', icon: 'attendance', permissions: ['attendance.record'] },
+  { key: 'division_attendance_monitor', path: '/division-attendance-monitor', icon: 'alert', permissions: ['attendance.view'] },
+  { key: 'attendance_monitor', path: '/attendance-monitor', icon: 'alert', permissions: ['lessons.manage'] },
+  { key: 'supervisor_attendance', path: '/supervisor-attendance', icon: 'attendance', permissions: ['staff_attendance.view', 'staff_attendance.record'] },
+  { key: 'teacher_attendance', path: '/teacher-attendance', icon: 'eye', permissions: ['staff_attendance.view', 'staff_attendance.record'] },
 ]
 
 /** Every staff route: the core ones in nav.ts plus EXTRA_ROUTES. */
