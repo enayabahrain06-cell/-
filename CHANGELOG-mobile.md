@@ -155,3 +155,21 @@ left out and listed under the page.
 - Teacher page: the mobile header shows the teacher's name, back to the list and a breadcrumb (also while loading).
   The page body is unchanged.
 - Not in the app: a "today" pill per teacher (the list has no per-day sessions) and a role preset passed from here.
+
+## Lottery (/lottery, /lottery/:id) — Lottery.dc.html
+
+- In this app a lottery distributes a package's waiting students over the participating teachers (rule-based, with a
+  seed), so the spec's draw screen maps onto the lottery page. Same queries and mutations as desktop.
+- List: subtitle line, cards (name, status pill, package · run date, pool · teachers pill, track pill), FAB قرعة
+  جديدة (existing dialog). Skeleton, empty and error states.
+- Detail: header with the lottery name and ⋯ (settings, cancel) when editable; breadcrumb. Draw card: package, the
+  rules as labelled chips (الإخوة معاً، توازن الأعمار، توازن المستوى), mini-KPIs (eligible, teachers, draws) and the
+  seed field. Sticky اسحب القرعة before the first draw; after it, إعادة القرعة is secondary and the sticky primary is
+  اعتماد وإرسال الإشعارات.
+- Result banner (bg-deep, corner khatam, Amiri gold "n of N placed", run and seed) with the إبلاغ أولياء الأمور
+  pill toggle (the existing notify flag, `aria-pressed`). Then one list per teacher (circle link, n of capacity pill,
+  students with age and level); moving a student opens a bottom sheet of the other teachers. Students without a seat
+  as labelled pills. Before a draw: the pool list with تحديث القائمة. Results and errors show as toasts.
+- Ages on mobile are shown in whole years (the API sends fractional ages).
+- Not in the app: prize-draw conditions (حضور ≥ ٩٠٪، أتمّ تسميع الأسبوع) and a single winner — the lottery places
+  every eligible student; there is no separate "previous draws" list beyond the run count and seed.
