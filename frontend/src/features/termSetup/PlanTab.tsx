@@ -52,7 +52,7 @@ function WeekLabel({ w }: { w: PlanWeek }) {
 }
 
 function PlanEditor({ levelId }: { levelId: number }) {
-  const { t } = useTranslation('termSetup')
+  const { t, i18n } = useTranslation('termSetup')
   const subjects = useQuery({ queryKey: ['term-setup-level-subjects', levelId], queryFn: () => termSetupApi.levelSubjects({ level_id: levelId }) })
   const [picked, setPicked] = useState<number | null>(null)
   const list = subjects.data?.data ?? []
@@ -81,7 +81,7 @@ function PlanEditor({ levelId }: { levelId: number }) {
                 <ul className="flex min-w-0 flex-[1_1_12rem] flex-wrap gap-2">
                   {items.map((p) => (
                     <li key={p.id} className="inline-flex max-w-full items-center gap-1 rounded-xl border border-ink/10 bg-page/60 py-1 pe-1 ps-3 text-sm">
-                      <span dir="auto" className="min-w-0 break-words text-ink">{p.display_title}</span>
+                      <span dir="auto" className="min-w-0 break-words text-ink">{p.display_title}{p.target_ayahs ? <span className="ms-1 text-xs tabular-nums text-ink/55">({t('plan.ayahs', { n: formatNumber(p.target_ayahs, i18n.language) })})</span> : null}</span>
                       {canManage && <IconButton icon="edit" label={t('edit')} onClick={() => setAdd({ week: w.week_no, item: p })} />}
                       {canManage && <IconButton icon="trash" tone="danger" label={t('delete')} onClick={() => remove(p.id)} />}
                     </li>
@@ -113,7 +113,9 @@ function PlanItemDialog({ levelSubject, week, item, weeks, onClose, onSaved }: {
     queryKey: ['term-setup-subject-lessons', levelSubject.subject.id, levelSubject.level.id, 'active'],
     queryFn: () => termSetupApi.subjectLessons({ subject_id: levelSubject.subject.id, level_id: levelSubject.level.id, active: true }),
   })
-  const [form, setForm] = useState({ week_no: item?.week_no ?? week, subject_lesson_id: item?.subject_lesson_id ?? null as number | null, title: item?.title ?? '', notes: item?.notes ?? '' })
+  const [form, setForm] = useState({ week_no: item?.week_no ?? week, subject_lesson_id: item?.subject_lesson_id ?? null as number | null, title: item?.title ?? '', notes: item?.notes ?? '', target_ayahs: item?.target_ayahs ?? null as number | null })
+  /** U4: a Quran week can say how many ayahs it should add; the dashboard's "behind plan" follows it. */
+  const isQuran = levelSubject.subject.code === 'quran'
   const [errors, setErrors] = useState<FieldErrors>({})
   const save = useMutation({
     mutationFn: () => {
@@ -137,6 +139,12 @@ function PlanItemDialog({ levelSubject, week, item, weeks, onClose, onSaved }: {
         <TextInput label={t('fields.plan_title')} dir="auto" value={form.title} onChange={(e) => setForm({ ...form, title: e.target.value })} />
       </Field>
       <p className="text-xs text-ink/55">{t('plan.title_hint')}</p>
+      {isQuran && (
+        <Field error={errors.target_ayahs?.[0]}>
+          <TextInput label={t('fields.target_ayahs')} type="number" min={1} max={6236} value={form.target_ayahs ?? ''} onChange={(e) => setForm({ ...form, target_ayahs: e.target.value ? Number(e.target.value) : null })} />
+          <p className="mt-1 text-xs text-ink/55">{t('plan.target_hint')}</p>
+        </Field>
+      )}
       <TextArea label={t('fields.notes')} rows={2} dir="auto" value={form.notes} onChange={(e) => setForm({ ...form, notes: e.target.value })} />
     </Modal>
   )
@@ -144,7 +152,7 @@ function PlanItemDialog({ levelSubject, week, item, weeks, onClose, onSaved }: {
 
 /** عرض الخطة: weeks down the side, the level's subjects across. */
 function PlanGrid({ levelId }: { levelId: number }) {
-  const { t } = useTranslation('termSetup')
+  const { t, i18n } = useTranslation('termSetup')
   const q = useQuery({ queryKey: ['term-setup-plan-view', levelId], queryFn: () => termSetupApi.planView(levelId), enabled: levelId > 0 })
 
   if (q.isLoading) return <LoadingState />
@@ -174,7 +182,7 @@ function PlanGrid({ levelId }: { levelId: number }) {
                 return (
                   <td key={s.id} className="px-4 py-3">
                     {items.length === 0 ? <span className="text-ink/30">—</span> : (
-                      <ul className="space-y-1">{items.map((p) => <li key={p.id} dir="auto" className="text-ink">{p.display_title}</li>)}</ul>
+                      <ul className="space-y-1">{items.map((p) => <li key={p.id} dir="auto" className="text-ink">{p.display_title}{p.target_ayahs ? <span className="ms-1 text-xs tabular-nums text-ink/55">({t('plan.ayahs', { n: formatNumber(p.target_ayahs, i18n.language) })})</span> : null}</li>)}</ul>
                     )}
                   </td>
                 )

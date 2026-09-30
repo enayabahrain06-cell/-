@@ -25,6 +25,10 @@ export interface Level {
   description: string | null
   sort: number
   is_active: boolean
+  /** U6: who belongs in the level (empty = anyone). */
+  min_age: number | null
+  max_age: number | null
+  memorization_levels: string[]
   lessons_count: number | null
 }
 
@@ -44,7 +48,7 @@ export interface Night { id: number; weekday: string; label: string; is_active: 
 export interface SupervisorRow { id: number; name: string; phone: string; track: string | null; is_active: boolean; nights: string[] }
 
 export type TermInput = Pick<AcademicTerm, 'name_ar' | 'name_en' | 'academic_year' | 'start_date' | 'end_date'> & { is_current?: boolean }
-export type LevelInput = Pick<Level, 'name_ar' | 'name_en' | 'code' | 'description' | 'sort' | 'is_active'>
+export type LevelInput = Pick<Level, 'name_ar' | 'name_en' | 'code' | 'description' | 'sort' | 'is_active'> & Partial<Pick<Level, 'min_age' | 'max_age' | 'memorization_levels'>>
 export type SubjectInput = Pick<Subject, 'name_ar' | 'name_en' | 'code' | 'description' | 'sort' | 'is_active'>
 
 type Saved<T> = { message: string; data: T }
@@ -64,6 +68,8 @@ export const nightsApi = {
 }
 
 export const levelsApi = {
+  /** Memorization level choices for a level's rules (labels in the UI language). */
+  memorizationLevels: () => api.get<{ memorization_levels: { value: string; label: string }[] }>('/levels').then((r) => r.data.memorization_levels),
   list: (params: { active?: boolean } = {}) => api.get<{ data: Level[] }>('/levels', { params: params.active ? { active: 1 } : {} }).then((r) => r.data.data),
   create: (d: LevelInput) => api.post<Saved<Level>>('/levels', d).then((r) => r.data),
   update: (id: number, d: LevelInput) => api.put<Saved<Level>>(`/levels/${id}`, d).then((r) => r.data),

@@ -92,6 +92,8 @@ class PlanController extends TermSetupBase
             'title' => ['nullable', 'string', 'max:200'],
             'notes' => ['nullable', 'string', 'max:1000'],
             'sort' => ['nullable', 'integer', 'min:0', 'max:999'],
+            // U4: ayahs the week should add (Quran plans); drives "behind plan" on the dashboard.
+            'target_ayahs' => ['nullable', 'integer', 'min:1', 'max:6236'],
         ]);
         $lessonId = array_key_exists('subject_lesson_id', $data) ? $data['subject_lesson_id'] : $item?->subject_lesson_id;
         $title = array_key_exists('title', $data) ? $data['title'] : $item?->title;

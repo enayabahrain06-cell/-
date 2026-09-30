@@ -28,7 +28,11 @@ class LevelController extends Controller
             ->when($request->boolean('active'), fn ($q) => $q->where('is_active', true))
             ->ordered()->get();
 
-        return response()->json(['data' => $levels->map(fn (Level $l) => $this->present($l))]);
+        return response()->json([
+            'data' => $levels->map(fn (Level $l) => $this->present($l)),
+            // For the level's rules (U6): which memorization levels belong in it.
+            'memorization_levels' => \App\Enums\MemorizationLevel::options(app()->getLocale()),
+        ]);
     }
 
     public function store(Request $request): JsonResponse
@@ -75,6 +79,11 @@ class LevelController extends Controller
             'description' => ['nullable', 'string', 'max:1000'],
             'sort' => ['nullable', 'integer', 'min:0', 'max:999'],
             'is_active' => ['boolean'],
+            // U6: who belongs in the level (used by توزيع المستويات); empty = anyone.
+            'min_age' => ['nullable', 'integer', 'min:3', 'max:99'],
+            'max_age' => ['nullable', 'integer', 'min:3', 'max:99', 'gte:min_age'],
+            'memorization_levels' => ['nullable', 'array'],
+            'memorization_levels.*' => [\App\Enums\MemorizationLevel::rule()],
         ]);
     }
 
@@ -89,6 +98,9 @@ class LevelController extends Controller
             'description' => $l->description,
             'sort' => $l->sort,
             'is_active' => $l->is_active,
+            'min_age' => $l->min_age,
+            'max_age' => $l->max_age,
+            'memorization_levels' => $l->memorization_levels ?? [],
             'lessons_count' => $l->lessons_count ?? null,
         ];
     }

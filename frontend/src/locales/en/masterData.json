@@ -47,7 +47,12 @@
     "delete_confirm": "Delete this level?",
     "circles": "{{n}} classes",
     "name_placeholder": "المستوى الأول",
-    "hint": "A level sits above classes: one level holds several classes, chosen on the class form. Classes without a level work as before."
+    "hint": "A level sits above classes: one level holds several classes, chosen on the class form. Classes without a level work as before.",
+    "rules": "Who belongs in this level",
+    "rules_hint": "Optional: used by level distribution. Leave empty to accept anyone.",
+    "min_age": "Age from",
+    "max_age": "Age to",
+    "memorization_levels": "Memorization levels accepted"
   },
   "subjects": {
     "new": "New subject",

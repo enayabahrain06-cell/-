@@ -182,3 +182,30 @@ it('gives supervisors term_setup.manage and teachers only term_setup.view', func
         ->and($teacher->hasPermissionTo('term_setup.view'))->toBeTrue()
         ->and($teacher->hasPermissionTo('term_setup.manage'))->toBeFalse();
 });
+
+it('uses the level Quran plan for "behind plan" when the student has no own target (U4)', function () {
+    actingAsRole('super_admin');
+    $this->term->update(['start_date' => today()->subDays(8)->toDateString(), 'end_date' => today()->addMonths(3)->toDateString()]);
+    $pkg = Package::factory()->create(['academic_term_id' => $this->term->id, 'plan_ayahs' => 0]);
+    $class = Lesson::factory()->create(['package_id' => $pkg->id, 'level_id' => $this->level->id]);
+    $student = \App\Models\Student::factory()->create(['yearly_target_ayahs' => null]);
+    \App\Models\LessonStudent::create(['lesson_id' => $class->id, 'student_id' => $student->id, 'joined_at' => today()->subDays(8)->toDateString(), 'status' => 'active']);
+    $ls = LevelSubject::create(['academic_term_id' => $this->term->id, 'level_id' => $this->level->id, 'subject_id' => $this->quran->id]);
+
+    $this->postJson('/api/term-setup/plan', ['level_subject_id' => $ls->id, 'week_no' => 1, 'title' => 'النبأ', 'target_ayahs' => 40])->assertCreated()->assertJsonPath('data.target_ayahs', 40);
+    $this->postJson('/api/term-setup/plan', ['level_subject_id' => $ls->id, 'week_no' => 2, 'title' => 'النازعات', 'target_ayahs' => 46])->assertCreated();
+    $this->postJson('/api/term-setup/plan', ['level_subject_id' => $ls->id, 'week_no' => 5, 'title' => 'لاحقاً', 'target_ayahs' => 100])->assertCreated();
+
+    $behind = collect($this->getJson('/api/dashboard/memorization')->assertOk()->json('data.behind'));
+    expect($behind->firstWhere('student_id', $student->id)['planned_ayahs'] ?? null)->toBe(86); // weeks 1 and 2 have started
+});
+
+it('stores who belongs in a level (U6)', function () {
+    actingAsRole('super_admin');
+    $this->putJson("/api/levels/{$this->level->id}", ['name_ar' => 'المستوى الأول', 'name_en' => 'Level 1', 'min_age' => 7, 'max_age' => 9, 'memorization_levels' => ['none', 'juz_amma']])
+        ->assertOk()->assertJsonPath('data.memorization_levels', ['none', 'juz_amma']);
+    $level = $this->level->fresh();
+    expect($level->accepts(8, 'juz_amma'))->toBeTrue()->and($level->accepts(10, 'juz_amma'))->toBeFalse()->and($level->accepts(8, 'hafiz'))->toBeFalse()
+        ->and($this->getJson('/api/levels')->json('memorization_levels.0.value'))->toBe('none');
+    $this->putJson("/api/levels/{$this->level->id}", ['name_ar' => 'x', 'name_en' => 'x', 'min_age' => 9, 'max_age' => 7])->assertJsonValidationErrors('max_age');
+});

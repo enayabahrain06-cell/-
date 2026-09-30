@@ -23,7 +23,9 @@ use Illuminate\Support\Collection;
  *  - Reviews due: students with no "revised" ledger row in the last 7 days.
  *  - Finished a juz this month: a juz that is fully memorized now but was not before the month started
  *    (derived from the memorization ledger, independent of whether certificates are auto-drafted).
- *  - Behind plan: planned-to-date = target (student.yearly_target_ayahs ?: package.plan_ayahs) ×
+ *  - Behind plan (U4): when the student has no own yearly target and the class's level has a Quran plan with ayah
+ *    targets this term, planned-to-date = the targets of the weeks started so far (from the term start). Otherwise
+ *    planned-to-date = target (student.yearly_target_ayahs ?: package.plan_ayahs) ×
  *    elapsed share of the package period (start_date → end_date, or one year); actual = ayahs newly
  *    memorized since the period started (ProgressService set maths); gap = planned − actual.
  */
@@ -41,7 +43,7 @@ class MemorizationPanel
         $monthStart = $today->copy()->startOfMonth();
 
         // One enrolment per student (earliest joined), with its circle and package.
-        $enrolments = LessonStudent::with(['lesson:id,name,package_id', 'lesson.package', 'student'])
+        $enrolments = LessonStudent::with(['lesson:id,name,package_id,level_id', 'lesson.package', 'student'])
             ->where('status', LessonStudentStatus::Active->value)
             ->whereIn('lesson_id', $this->dashboard->lessonScope($user, $term)->select('id'))
             ->whereHas('student', fn ($q) => $q->where('status', StudentStatus::Active->value))
@@ -118,20 +120,53 @@ class MemorizationPanel
         return array_diff($complete($set), $complete($before)) !== [];
     }
 
+    /** @var array<int, array{0: int, 1: Carbon, 2: int}|null> level Quran plan per class, memoised for this build */
+    private array $plans = [];
+
+    /**
+     * Ayahs a class's level Quran plan expects by today (weeks counted from the term start), or null when the level
+     * has no Quran plan with ayah targets this term. Returns [planned ayahs, plan start, whole-term target].
+     */
+    private function levelPlan(?\App\Models\Lesson $lesson, Carbon $today): ?array
+    {
+        if (! $lesson || ! $lesson->level_id || ! $lesson->package?->academic_term_id) {
+            return null;
+        }
+        if (array_key_exists($lesson->id, $this->plans)) {
+            return $this->plans[$lesson->id];
+        }
+        $term = \App\Models\AcademicTerm::find($lesson->package->academic_term_id);
+        $startDate = $term?->start_date ?? $lesson->package->start_date;
+        $ls = \App\Models\LevelSubject::where(['academic_term_id' => $lesson->package->academic_term_id, 'level_id' => $lesson->level_id, 'subject_id' => \App\Models\Subject::quranId()])->first();
+        $items = $ls ? \App\Models\PlanItem::where('level_subject_id', $ls->id)->whereNotNull('target_ayahs')->get(['week_no', 'target_ayahs']) : collect();
+        if (! $startDate || $items->isEmpty()) {
+            return $this->plans[$lesson->id] = null;
+        }
+        $start = Carbon::parse($startDate->toDateString());
+        $weeks = $today->lt($start) ? 0 : intdiv((int) $start->diffInDays($today), 7) + 1;
+
+        return $this->plans[$lesson->id] = [(int) $items->where('week_no', '<=', $weeks)->sum('target_ayahs'), $start, max(1, (int) $items->sum('target_ayahs'))];
+    }
+
     private function planGap(LessonStudent $enrolment, array $set, Collection $memorized, Carbon $today): ?array
     {
         $student = $enrolment->student;
         $package = $enrolment->lesson?->package;
-        $target = (int) ($student->yearly_target_ayahs ?: $package?->plan_ayahs ?: 0);
-        if ($target <= 0) {
-            return null;
+        // U4: the student's own target, else the level's Quran plan (ayahs of the weeks started so far), else the package.
+        $levelPlan = $student->yearly_target_ayahs ? null : $this->levelPlan($enrolment->lesson, $today);
+        if ($levelPlan) {
+            [$planned, $start, $target] = $levelPlan;
+        } else {
+            $target = (int) ($student->yearly_target_ayahs ?: $package?->plan_ayahs ?: 0);
+            if ($target <= 0) {
+                return null;
+            }
+            $start = $package?->start_date && $package->start_date->lte($today) ? Carbon::parse($package->start_date->toDateString()) : $today->copy()->startOfYear();
+            $end = $package?->end_date && $package->end_date->gt($start) ? Carbon::parse($package->end_date->toDateString()) : $start->copy()->addYear();
+            $span = max(1, $start->diffInDays($end));
+            $elapsed = min(1, max(0, $start->diffInDays($today) / $span));
+            $planned = (int) round($target * $elapsed);
         }
-
-        $start = $package?->start_date && $package->start_date->lte($today) ? Carbon::parse($package->start_date->toDateString()) : $today->copy()->startOfYear();
-        $end = $package?->end_date && $package->end_date->gt($start) ? Carbon::parse($package->end_date->toDateString()) : $start->copy()->addYear();
-        $span = max(1, $start->diffInDays($end));
-        $elapsed = min(1, max(0, $start->diffInDays($today) / $span));
-        $planned = (int) round($target * $elapsed);
 
         $before = $this->progress->memorizedSet($student, $memorized->filter(fn ($r) => $r->recorded_on->lt($start)));
         $actual = count(array_diff_key($set, $before));

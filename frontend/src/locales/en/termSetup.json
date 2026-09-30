@@ -34,7 +34,8 @@
     "weekday": "Night",
     "start_time": "From",
     "end_time": "To",
-    "room": "Room"
+    "room": "Room",
+    "target_ayahs": "Ayahs to add this week"
   },
   "level_subjects": {
     "hint": "The subjects each level studies this term, and their default teacher.",
@@ -63,7 +64,9 @@
     "no_lesson": "No lesson (free title)",
     "title_hint": "Pick one of the subject's lessons, or write a free title (revision, exam...).",
     "item_title": "Plan item for {{subject}}",
-    "delete_confirm": "Remove this plan item?"
+    "delete_confirm": "Remove this plan item?",
+    "target_hint": "For the Quran plan: the dashboard's \"behind plan\" follows it (unless the student has their own yearly target).",
+    "ayahs": "{{n}} ayahs"
   },
   "supervisors": {
     "hint": "Supervisors on duty each night this term.",

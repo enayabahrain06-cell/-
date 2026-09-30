@@ -30,7 +30,7 @@ export interface LevelSubject {
 
 export interface SubjectLesson { id: number; subject: Ref; level: Ref | null; title: string; description: string | null; sort: number; is_active: boolean }
 
-export interface PlanItem { id: number; level_subject_id: number; week_no: number; subject_lesson_id: number | null; title: string | null; display_title: string; notes: string | null; sort: number }
+export interface PlanItem { id: number; level_subject_id: number; week_no: number; subject_lesson_id: number | null; title: string | null; display_title: string; notes: string | null; sort: number; target_ayahs: number | null }
 export interface PlanWeek { week_no: number; starts_on: string | null }
 export interface PlanView { term: SetupTerm; weeks: PlanWeek[]; subjects: (LevelSubject & { items: PlanItem[] })[] }
 
@@ -57,7 +57,7 @@ type Termed<T> = { term: SetupTerm; data: T }
 
 export interface LevelSubjectInput { academic_term_id: number; level_id: number; subject_id: number; teacher_id: number | null; weekly_sessions: number | null; notes: string | null; sort: number }
 export interface SubjectLessonInput { subject_id: number; level_id: number | null; title: string; description: string | null; sort: number; is_active: boolean }
-export interface PlanItemInput { level_subject_id: number; week_no: number; subject_lesson_id: number | null; title: string | null; notes: string | null }
+export interface PlanItemInput { level_subject_id: number; week_no: number; subject_lesson_id: number | null; title: string | null; notes: string | null; target_ayahs?: number | null }
 export interface SlotInput { academic_term_id: number; level_id: number | null; lesson_id: number | null; weekday: string; start_time: string; end_time: string; subject_id: number; teacher_id: number | null; location_id: number | null; notes: string | null }
 export type CopyPart = 'level_rooms' | 'level_subjects' | 'night_supervisors' | 'timetable'
 

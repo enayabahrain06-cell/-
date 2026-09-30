@@ -13,7 +13,17 @@ class Level extends Model
 
     protected function casts(): array
     {
-        return ['is_active' => 'boolean', 'sort' => 'integer'];
+        return ['is_active' => 'boolean', 'sort' => 'integer', 'min_age' => 'integer', 'max_age' => 'integer', 'memorization_levels' => 'array'];
+    }
+
+    /** Does a student of this age and memorization level fit the level's rules (U6)? Missing rules fit anyone. */
+    public function accepts(?int $age, ?string $memorizationLevel): bool
+    {
+        if ($age !== null && (($this->min_age !== null && $age < $this->min_age) || ($this->max_age !== null && $age > $this->max_age))) {
+            return false;
+        }
+
+        return empty($this->memorization_levels) || $memorizationLevel === null || in_array($memorizationLevel, $this->memorization_levels, true);
     }
 
     public function lessons(): HasMany

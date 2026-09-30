@@ -77,6 +77,7 @@ abstract class TermSetupBase extends Controller
             'display_title' => $p->displayTitle(),
             'notes' => $p->notes,
             'sort' => $p->sort,
+            'target_ayahs' => $p->target_ayahs,
         ];
     }
 

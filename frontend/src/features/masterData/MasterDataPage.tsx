@@ -162,7 +162,10 @@ function NamedDialog<T extends Named>({ kind, item, locked = false, save: saveFn
   const qc = useQueryClient()
   const [form, setForm] = useState<Named>(() => ({
     name_ar: item?.name_ar ?? '', name_en: item?.name_en ?? '', code: item?.code ?? '', description: item?.description ?? '', sort: item?.sort ?? 0, is_active: item?.is_active ?? true,
+    ...(kind === 'levels' ? { min_age: (item as Partial<Level> | undefined)?.min_age ?? null, max_age: (item as Partial<Level> | undefined)?.max_age ?? null, memorization_levels: (item as Partial<Level> | undefined)?.memorization_levels ?? [] } : {}),
   }))
+  const levelForm = form as LevelInput
+  const memLevels = useQuery({ queryKey: ['memorization-level-options'], queryFn: levelsApi.memorizationLevels, enabled: kind === 'levels', staleTime: 60 * 60_000 })
   const [errors, setErrors] = useState<FieldErrors>({})
   const save = useMutation({
     mutationFn: () => saveFn({ ...form, code: form.code || null, description: form.description || null }),
@@ -181,6 +184,30 @@ function NamedDialog<T extends Named>({ kind, item, locked = false, save: saveFn
         <Field error={errors.sort?.[0]}><TextInput label={t('fields.sort')} type="number" min={0} max={999} value={form.sort} onChange={(e) => set('sort', Number(e.target.value))} /></Field>
       </div>
       <TextArea label={t('fields.description')} rows={2} dir="auto" value={form.description ?? ''} onChange={(e) => set('description', e.target.value)} />
+      {kind === 'levels' && (
+        <fieldset className="space-y-3 rounded-xl border border-ink/10 p-3">
+          <legend className="px-1 text-sm font-medium text-ink/75">{t('levels.rules')}</legend>
+          <p className="text-xs text-ink/55">{t('levels.rules_hint')}</p>
+          <div className="grid grid-cols-2 gap-3">
+            <Field error={errors.min_age?.[0]}><TextInput label={t('levels.min_age')} type="number" min={3} max={99} value={levelForm.min_age ?? ''} onChange={(e) => setForm({ ...levelForm, min_age: e.target.value ? Number(e.target.value) : null })} /></Field>
+            <Field error={errors.max_age?.[0]}><TextInput label={t('levels.max_age')} type="number" min={3} max={99} value={levelForm.max_age ?? ''} onChange={(e) => setForm({ ...levelForm, max_age: e.target.value ? Number(e.target.value) : null })} /></Field>
+          </div>
+          <div>
+            <p className="mb-1.5 text-sm font-medium text-ink/75">{t('levels.memorization_levels')}</p>
+            <div className="flex flex-wrap gap-2">
+              {(memLevels.data ?? []).map((m) => {
+                const on = (levelForm.memorization_levels ?? []).includes(m.value)
+                return (
+                  <label key={m.value} className={`cursor-pointer rounded-xl border px-3 py-1.5 text-sm has-[:focus-visible]:outline-2 has-[:focus-visible]:outline-brand-500 ${on ? 'border-brand-600 bg-brand-50 font-medium text-brand-800' : 'border-ink/15 text-ink/70 hover:bg-ink/5'}`}>
+                    <input type="checkbox" className="sr-only" checked={on} onChange={() => setForm({ ...levelForm, memorization_levels: on ? (levelForm.memorization_levels ?? []).filter((x) => x !== m.value) : [...(levelForm.memorization_levels ?? []), m.value] })} />
+                    {m.label}
+                  </label>
+                )
+              })}
+            </div>
+          </div>
+        </fieldset>
+      )}
       <label className="flex items-center gap-2 text-sm text-ink/80">
         <input type="checkbox" className="size-4 accent-brand-700" disabled={locked} checked={form.is_active} onChange={(e) => set('is_active', e.target.checked)} />
         {t('fields.is_active')}
