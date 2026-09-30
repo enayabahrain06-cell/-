@@ -11,6 +11,7 @@ import { formatMoney, formatNumber, formatPercent } from '../../lib/format'
 import { AttendanceTab, DetailsTab, EvaluationTab, IssuesTab, OverviewTab, WalletTab } from './profile/ProfileTabs'
 import StudentCertificatesTab from '../certificates/StudentCertificatesTab'
 import PlacementTab from './profile/PlacementTab'
+import MobileProfileHeader, { MobileProfileActions, MobileProfilePending } from './MobileProfileHeader'
 import { openObjectUrl, studentReportObjectUrl } from '../../api/certificates'
 import { ErrorState, SURFACE } from '../../components/ui'
 
@@ -35,11 +36,12 @@ export default function StudentProfilePage() {
   const tab: Tab = (tabs as readonly string[]).includes(params.get('tab') ?? '') ? (params.get('tab') as Tab) : 'overview'
 
   if (profile.isLoading || detail.isLoading) {
-    return <div className="grid place-items-center py-24"><StarSpinner className="size-10 text-brand-600" /></div>
+    return <div className="grid place-items-center py-24"><MobileProfilePending /><StarSpinner className="size-10 text-brand-600" /></div>
   }
   if (profile.isError || !profile.data || !detail.data) {
     return (
       <div className="space-y-5">
+        <MobileProfilePending />
         <BackLink />
         <ErrorState message={t('error')} />
       </div>
@@ -63,8 +65,13 @@ export default function StudentProfilePage() {
     }
   }
 
+  const selectTab = (k: string) => { const next = new URLSearchParams(params); next.set('tab', k); setParams(next, { replace: true }) }
+
   return (
+    <>
     <div className="space-y-5">
+      <MobileProfileHeader header={h} tabs={tabs} tab={tab} onTab={selectTab} readOnly={readOnly} report={report} onReport={() => void printReport()} />
+      <div className="hidden space-y-5 lg:block">
       <BackLink />
 
       <header className={`${SURFACE} relative overflow-hidden`}>
@@ -146,6 +153,7 @@ export default function StudentProfilePage() {
           </button>
         ))}
       </div>
+      </div>
 
       <div role="tabpanel" id={`panel-${tab}`} aria-labelledby={`tab-${tab}`}>
         {tab === 'overview' && <OverviewTab profile={p} />}
@@ -158,6 +166,8 @@ export default function StudentProfilePage() {
         {tab === 'details' && <DetailsTab student={detail.data} canEdit={!readOnly && can('students.manage')} canPhoto={can('students.photo')} />}
       </div>
     </div>
+    <MobileProfileActions onTab={selectTab} />
+    </>
   )
 }
 

@@ -48,6 +48,28 @@ function PlacementCard({ record: r }: { record: PlacementRecord }) {
       </div>
 
       <h3 className="mb-2 mt-5 text-sm font-semibold text-ink">{t('placement_tab.answers')}</h3>
+      {/* Below lg: one card per answer (no sideways-scrolling table on phones). */}
+      <ul className="space-y-2 lg:hidden">
+        {r.answers.map((a) => (
+          <li key={a.position} className={`rounded-card border px-3.5 py-3 ${a.is_correct ? 'border-ink/10 bg-white' : 'border-danger/25 bg-danger/5'}`}>
+            <div className="flex items-start justify-between gap-3">
+              <p className="min-w-0 text-[15px] text-ink"><span className="me-1.5 tabular-nums text-ink/65">{n(a.position)}.</span><bdi>{a.prompt}</bdi></p>
+              <span className="shrink-0 text-[13px] font-semibold tabular-nums text-ink/75">{n(a.score)} / {n(a.marks)}</span>
+            </div>
+            <dl className="mt-2 space-y-1 text-[13px]">
+              <div className={`flex items-start gap-1.5 ${a.is_correct ? 'text-brand-700' : 'text-danger'}`}>
+                <Icon name={a.is_correct ? 'check' : 'close'} className="mt-0.5 size-4 shrink-0" />
+                <dt className="sr-only">{t('placement_tab.answer')}</dt>
+                <dd><span className="sr-only">{a.is_correct ? t('placement_tab.right') : t('placement_tab.wrong')} </span><AnswerText a={a} value={a.answer} /></dd>
+              </div>
+              {!a.is_correct && (
+                <div className="flex items-start gap-1.5 text-ink/75"><dt className="shrink-0 font-medium">{t('placement_tab.key')}:</dt><dd><AnswerText a={a} value={a.correct_answer} /></dd></div>
+              )}
+            </dl>
+          </li>
+        ))}
+      </ul>
+      <div className="hidden lg:block">
       <TableWrap>
         <table className="w-full min-w-[40rem] text-sm">
           <thead className={TABLE_HEAD}>
@@ -86,6 +108,7 @@ function PlacementCard({ record: r }: { record: PlacementRecord }) {
           </tbody>
         </table>
       </TableWrap>
+      </div>
     </Card>
   )
 }

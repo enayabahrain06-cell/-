@@ -234,5 +234,21 @@
         "axis_bhd": "المبالغ بالدينار البحريني",
         "show_table": "عرض كجدول",
         "show_chart": "عرض الرسم"
-    }
+    },
+  "mobile": {
+    "all": "الكل",
+    "dues": "مستحقات",
+    "sort": "الترتيب",
+    "filters": "تصفية",
+    "showing": "{{n}} من {{total}}",
+    "new": "تسجيل طالب",
+    "done": "تم",
+    "clear": "مسح الفلاتر",
+    "juz": "الجزء {{n}}",
+    "profile_juz": "الجزء",
+    "new_recitation": "تسميع جديد",
+    "issue_certificate": "إصدار شهادة",
+    "message": "مراسلة ولي الأمر",
+    "more_actions": "إجراءات أخرى"
+  }
 }

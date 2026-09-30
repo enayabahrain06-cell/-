@@ -11,6 +11,7 @@ import Pagination from '../../components/Pagination'
 import SelectField from '../../components/SelectField'
 import { EmptyState, PageBand, StarSpinner } from '../../components/ornaments'
 import AddToCircleDialog from './AddToCircleDialog'
+import MobileStudents from './MobileStudents'
 import { ageFrom, formatMoney, formatNumber } from '../../lib/format'
 
 const FILTER_KEYS = ['search', 'gender', 'status', 'lesson_id', 'juz', 'age', 'due', 'sort', 'page'] as const
@@ -70,8 +71,21 @@ export default function StudentsListPage() {
   const hasFilters = FILTER_KEYS.some((k) => k !== 'page' && k !== 'sort' && params.get(k))
   const n = (v: number) => formatNumber(v, locale)
 
+  const clearAll = () => {
+    setSearch('')
+    setParams(new URLSearchParams(params.get('sort') ? { sort: params.get('sort')! } : {}), { replace: true })
+  }
+  const ageLabel = (b: (typeof AGE_BANDS)[number]) => b.min === undefined ? t('filters.age_under', { n: n(b.max! + 1) }) : b.max === undefined ? t('filters.age_over', { n: n(b.min) }) : t('filters.age_range', { from: n(b.min), to: n(b.max) })
+
   return (
-    <div className="space-y-5">
+    <>
+    <MobileStudents rows={query.data?.data} total={query.data?.meta.total} loading={query.isLoading} filters={filters} ageValue={band?.value ?? ''}
+      ageOptions={[{ value: '', label: t('filters.all_ages') }, ...AGE_BANDS.map((b) => ({ value: b.value, label: ageLabel(b) }))]}
+      circleOptions={[{ value: '', label: t('filters.all_circles') }, { value: 'none', label: t('filters.without_package') }, ...(lessons.data ?? []).map((l) => ({ value: String(l.id), label: l.name }))]}
+      bothTracks={bothTracks} search={search} onSearch={setSearch} setFilter={setFilter} onClear={clearAll}
+      onAllChips={() => { const next = new URLSearchParams(params); next.delete('lesson_id'); next.delete('due'); next.delete('page'); setParams(next, { replace: true }) }}
+      pagination={query.data ? <Pagination page={query.data.meta.current_page} lastPage={query.data.meta.last_page} total={query.data.meta.total} onPage={(p) => setFilter('page', String(p))} /> : null} />
+    <div className="hidden space-y-5 lg:block">
       <PageBand title={t('title')} subtitle={query.data ? t('subtitle', { n: n(query.data.meta.total) }) : undefined} />
 
       {/* Filters: one row above the list */}
@@ -177,6 +191,7 @@ export default function StudentsListPage() {
         </>
       )}
     </div>
+    </>
   )
 }
 

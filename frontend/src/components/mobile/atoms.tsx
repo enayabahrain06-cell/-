@@ -149,3 +149,16 @@ export function MSearch({ label, value, onChange }: { label: string; value: stri
     </label>
   )
 }
+
+/** Mobile select (48px), label 13px above; used in filter sheets and forms below lg. */
+export function MSelect({ label, value, onChange, options }: { label: string; value: string; onChange: (v: string) => void; options: { value: string; label: string }[] }) {
+  return (
+    <label className="block min-w-0">
+      <span className="mb-1.5 block text-[13px] font-medium text-ink/75">{label}</span>
+      <select value={value} onChange={(e) => onChange(e.target.value)}
+        className="h-12 w-full rounded-md border border-ink/10 bg-white px-3.5 text-[15px] text-ink">
+        {options.map((o) => <option key={o.value} value={o.value}>{o.label}</option>)}
+      </select>
+    </label>
+  )
+}

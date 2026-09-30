@@ -234,5 +234,21 @@
         "axis_bhd": "Amounts in BHD",
         "show_table": "Show as table",
         "show_chart": "Show chart"
-    }
+    },
+  "mobile": {
+    "all": "All",
+    "dues": "Dues",
+    "sort": "Sort",
+    "filters": "Filters",
+    "showing": "{{n}} of {{total}}",
+    "new": "Enroll a student",
+    "done": "Done",
+    "clear": "Clear filters",
+    "juz": "Juz {{n}}",
+    "profile_juz": "Juz",
+    "new_recitation": "Recitation",
+    "issue_certificate": "Certificate",
+    "message": "Message the guardian",
+    "more_actions": "More actions"
+  }
 }

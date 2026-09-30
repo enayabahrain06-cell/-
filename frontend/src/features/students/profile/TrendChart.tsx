@@ -5,6 +5,7 @@ import type { StudentProfile } from '../../../api/students'
 import Icon from '../../../components/Icon'
 import { formatDate, formatNumber } from '../../../lib/format'
 import { SURFACE } from '../../../components/ui'
+import ScoreRows from '../../../components/mobile/ScoreRows'
 import { CHART_AXIS_LINE, CHART_GRID, CHART_LINE_CURSOR, CHART_TICK } from '../../../components/chart'
 
 /**
@@ -55,7 +56,9 @@ export default function TrendChart({ weeks }: { weeks: Week[] }) {
       {!hasData ? (
         <p className="py-10 text-center text-sm text-ink/50">{t('evaluation.empty')}</p>
       ) : asTable ? (
-        <div className="mt-4 overflow-x-auto">
+        <>
+        <ScoreRows className="mt-4" rows={weeks.map((w) => ({ key: w.week_start, title: formatDate(w.week_start, locale, { day: 'numeric', month: 'short' }), values: SERIES.map((s) => ({ label: t(`evaluation.criteria.${s.key}`), value: num(w[s.key]) })) }))} />
+        <div className="mt-4 hidden overflow-x-auto lg:block">
           <table className="w-full min-w-[30rem] text-sm">
             <thead>
               <tr className="border-b border-ink/10 text-ink/55">
@@ -73,6 +76,7 @@ export default function TrendChart({ weeks }: { weeks: Week[] }) {
             </tbody>
           </table>
         </div>
+        </>
       ) : (
         <div className="mt-4 h-56" dir="ltr">
           <ResponsiveContainer width="100%" height="100%">

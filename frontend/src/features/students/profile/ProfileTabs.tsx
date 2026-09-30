@@ -16,6 +16,7 @@ import CardApplyDialog from '../../enrollment/CardApplyDialog'
 import JuzMap from './JuzMap'
 import TrendChart from './TrendChart'
 import WalletCharts from './WalletCharts'
+import ScoreRows from '../../../components/mobile/ScoreRows'
 
 const card = `${SURFACE} p-4 sm:p-5`
 
@@ -129,7 +130,14 @@ export function EvaluationTab({ profile }: { profile: StudentProfile }) {
           {e.latest_daily.length === 0 ? (
             <EmptyState size="sm" icon="evaluation" title={t('evaluation.empty')} />
           ) : (
-            <div className="overflow-x-auto">
+            <>
+            <ScoreRows rows={e.latest_daily.map((r) => ({
+              key: String(r.id),
+              title: formatDate(r.date, locale, { day: 'numeric', month: 'short' }),
+              total: formatNumber(r.total, locale),
+              values: CRITERIA.map((c) => ({ label: t(`evaluation.criteria.${c}`), value: formatNumber(r[c], locale), danger: r[c] < 6 })),
+            }))} />
+            <div className="hidden overflow-x-auto lg:block">
               <table className="w-full min-w-[26rem] text-sm">
                 <thead><tr className="border-b border-ink/10 text-ink/55">
                   <th className="py-2 text-start font-medium" />
@@ -147,6 +155,7 @@ export function EvaluationTab({ profile }: { profile: StudentProfile }) {
                 </tbody>
               </table>
             </div>
+            </>
           )}
         </section>
 
@@ -155,7 +164,13 @@ export function EvaluationTab({ profile }: { profile: StudentProfile }) {
           {e.monthly_averages.length === 0 ? (
             <EmptyState size="sm" icon="evaluation" title={t('evaluation.empty')} />
           ) : (
-            <div className="overflow-x-auto">
+            <>
+            <ScoreRows rows={e.monthly_averages.map((m) => ({
+              key: m.period,
+              title: formatDate(`${m.period}-15`, locale, { month: 'long', year: 'numeric' }),
+              values: CRITERIA.map((c) => ({ label: t(`evaluation.criteria.${c}`), value: n1(m[c]) })),
+            }))} />
+            <div className="hidden overflow-x-auto lg:block">
               <table className="w-full min-w-[26rem] text-sm">
                 <thead><tr className="border-b border-ink/10 text-ink/55">
                   <th className="py-2 text-start font-medium" />
@@ -171,6 +186,7 @@ export function EvaluationTab({ profile }: { profile: StudentProfile }) {
                 </tbody>
               </table>
             </div>
+            </>
           )}
         </section>
       </div>
