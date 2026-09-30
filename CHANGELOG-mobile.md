@@ -202,3 +202,7 @@ left out and listed under the page.
   body is unchanged.
 - Not in the app: the participants' avatar stack and current leader on list cards (the list API has counts only), and
   opening the competition straight on its participants tab (the tab is not in the URL).
+- Competition page below lg: the title block takes the full row (`max-lg:basis-full`), so the name no longer squeezes
+  to a sliver beside the status buttons (390–414px).
+- Shared: the page-header breadcrumb truncates on an inner line inside the gutter, so a long last crumb (a long
+  Arabic name in English) is clipped with an ellipsis instead of running past the screen edge.

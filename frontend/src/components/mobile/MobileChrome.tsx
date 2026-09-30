@@ -125,13 +125,16 @@ export function MobilePageHeader({ title, back, actions, breadcrumb }: { title: 
         {actions && <div className="flex shrink-0 items-center">{actions}</div>}
       </header>
       {breadcrumb && breadcrumb.length > 0 && (
-        <nav aria-label={t('breadcrumb')} className="truncate px-4 pb-2 text-xs text-ink/65">
-          {breadcrumb.map((c, i) => (
-            <Fragment key={i}>
-              {i > 0 && <span aria-hidden className="mx-1">›</span>}
-              {c.to ? <Link to={c.to} className="text-info">{c.label}</Link> : <span aria-current="page">{c.label}</span>}
-            </Fragment>
-          ))}
+        <nav aria-label={t('breadcrumb')} className="px-4 pb-2 text-xs text-ink/65">
+          {/* The ellipsis sits on an inner line inside the gutter, so a long last crumb is clipped there, not at the screen edge. */}
+          <p className="truncate">
+            {breadcrumb.map((c, i) => (
+              <Fragment key={i}>
+                {i > 0 && <span aria-hidden className="mx-1">›</span>}
+                {c.to ? <Link to={c.to} className="text-info">{c.label}</Link> : <span aria-current="page">{c.label}</span>}
+              </Fragment>
+            ))}
+          </p>
         </nav>
       )}
     </div>

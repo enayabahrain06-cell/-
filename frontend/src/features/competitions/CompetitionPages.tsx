@@ -122,7 +122,7 @@ export function CompetitionDetailPage() {
       <MobileCompetitionHeader name={c.name} />
       <Link to="/competitions" className="inline-flex items-center gap-1 text-sm text-brand-700 hover:underline"><Icon name="chevron" className="size-4 ltr:rotate-180" /> {t('competitions.title')}</Link>
       <header className="flex flex-wrap items-start gap-4">
-        <div className="min-w-0 flex-1 space-y-1">
+        <div className="min-w-0 flex-1 space-y-1 max-lg:basis-full">
           <h1 dir="auto" className="font-display text-3xl text-ink">{c.name}</h1>
           <p className="flex flex-wrap items-center gap-2 text-sm text-ink/60">
             <Badge tone={COMP_TONE[c.status]}>{t(`competitions.status.${c.status}`)}</Badge>
