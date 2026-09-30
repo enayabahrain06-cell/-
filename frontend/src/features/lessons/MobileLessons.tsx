@@ -6,7 +6,7 @@ import Icon from '../../components/Icon'
 import BottomSheet from '../../components/mobile/BottomSheet'
 import { Fab, StickyActionBar, StickySquare } from '../../components/mobile/ActionBars'
 import { HeaderAction, MobilePage } from '../../components/mobile/MobileChrome'
-import { Chip, ChipRow, MAvatar, MCard, MEmpty, MList, MListSkeleton, MRow, MSearch, MSegmented, Pill, M_BTN_PRIMARY, M_BTN_SECONDARY, M_CARD, type PillTone } from '../../components/mobile/atoms'
+import { Chip, ChipRow, MAvatar, MCard, MEmpty, MList, MListSkeleton, MRow, MSearch, MSegmented, Pill, Skeleton, M_BTN_PRIMARY, M_BTN_SECONDARY, M_CARD, type PillTone } from '../../components/mobile/atoms'
 import { formatDate, formatNumber, formatTime } from '../../lib/format'
 
 /** Circles and halls below lg (mobile-redesign-spec.md §6.6–6.7). Queries, filters and dialogs stay in the pages. */
@@ -171,8 +171,8 @@ export function MobileBookings({ bookings, loading, canManage, onNew, onDelete, 
 }
 
 /** /lessons/:id */
-export function MobileLessonDetail({ lesson, manage, canMessage, notice, conflicts, onEdit, onChangeHall, onAdd, onUnenroll }: {
-  lesson: Lesson; manage: boolean; canMessage: boolean; notice?: ReactNode; conflicts?: ReactNode
+export function MobileLessonDetail({ lesson, manage, canMessage, notice, conflicts, pending, onEdit, onChangeHall, onAdd, onUnenroll }: {
+  lesson: Lesson; manage: boolean; canMessage: boolean; notice?: ReactNode; conflicts?: ReactNode; pending?: boolean
   onEdit: () => void; onChangeHall: () => void; onAdd: () => void; onUnenroll: (studentId: number, name: string) => void
 }) {
   const { t, i18n } = useTranslation('lessons')
@@ -184,6 +184,21 @@ export function MobileLessonDetail({ lesson, manage, canMessage, notice, conflic
   const todaySession = (lesson.next_sessions ?? []).find((s) => s.session_date === todayIso && s.status !== 'cancelled')
   const full = lesson.student_count >= lesson.capacity
   const canAdd = !!lesson.can_add_students && !full
+
+  // The hall-conflict notice sits above the tabs; wait for it so the content does not jump down when it arrives (CLS).
+  if (pending) {
+    return (
+      <div className="space-y-4 lg:hidden">
+        <MobileLessonPending />
+        <MCard>
+          <Skeleton className="h-5 w-1/2" />
+          <Skeleton className="mt-2 h-4 w-3/4" />
+          <Skeleton className="mt-4 h-12 w-full" />
+        </MCard>
+        <MListSkeleton rows={4} />
+      </div>
+    )
+  }
 
   return (
     <div className="space-y-4 lg:hidden">
@@ -270,6 +285,12 @@ export function MobileLessonDetail({ lesson, manage, canMessage, notice, conflic
       </BottomSheet>
     </div>
   )
+}
+
+/** Claims the page header while the circle loads or fails, so the shell's default bar never flashes first (CLS). */
+export function MobileLessonPending() {
+  const { t } = useTranslation('lessons')
+  return <MobilePage title={t('title')} back="/lessons" breadcrumb={[{ label: t('mobile:home'), to: '/' }, { label: t('title'), to: '/lessons' }]} />
 }
 
 function Mini({ label, value }: { label: string; value: string }) {

@@ -14,7 +14,7 @@ import AddStudentDialog from './AddStudentDialog'
 import ChangeLocationDialog from './ChangeLocationDialog'
 import LessonFormDialog from './LessonFormDialog'
 import { GENDER_TONE } from './LessonsHomePage'
-import { MobileLessonDetail } from './MobileLessons'
+import { MobileLessonDetail, MobileLessonPending } from './MobileLessons'
 
 export default function LessonDetailPage() {
   const { id } = useParams()
@@ -34,8 +34,8 @@ export default function LessonDetailPage() {
   const refresh = () => { void qc.invalidateQueries({ queryKey: ['lesson', lessonId] }); void qc.invalidateQueries({ queryKey: ['lessons'] }) }
   const unenroll = useMutation({ mutationFn: (sid: number) => lessonsApi.unenroll(lessonId, sid), onSuccess: refresh })
 
-  if (q.isLoading) return <LoadingState />
-  if (q.isError || !lesson) return <ErrorState message={parseApiError(q.error).message} onRetry={() => void q.refetch()} />
+  if (q.isLoading) return <><MobileLessonPending /><LoadingState /></>
+  if (q.isError || !lesson) return <><MobileLessonPending /><ErrorState message={parseApiError(q.error).message} onRetry={() => void q.refetch()} /></>
   const n = (v: number) => formatNumber(v, locale)
   const full = lesson.student_count >= lesson.capacity
   const manage = can('lessons.manage')
@@ -45,7 +45,7 @@ export default function LessonDetailPage() {
 
   return (
     <>
-    <MobileLessonDetail lesson={lesson} manage={manage} canMessage={can('messages.send')} notice={noticeEl} conflicts={conflictsEl}
+    <MobileLessonDetail lesson={lesson} manage={manage} canMessage={can('messages.send')} notice={noticeEl} conflicts={conflictsEl} pending={manage && conflicts.isLoading}
       onEdit={() => setEdit(true)} onChangeHall={() => setChange(true)} onAdd={() => setAdding(true)}
       onUnenroll={(sid, name) => window.confirm(t('detail.unenroll_confirm', { name })) && unenroll.mutate(sid)} />
     <div className="hidden space-y-5 lg:block">

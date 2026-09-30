@@ -197,5 +197,21 @@
     "enter": "إدخال الإجابات",
     "edit": "تعديل الإجابات",
     "saved": "{{name}}: {{score}} من {{total}}. حُفظت وصُحّحت."
+  },
+  "mobile": {
+    "segments": {"all":"الكل","published":"القادمة","closed":"للتصحيح","graded":"المنتهية"},
+    "error": "تعذّر تحميل الاختبارات.",
+    "retry": "إعادة المحاولة",
+    "today": "اليوم",
+    "in_days_zero": "اليوم",
+    "in_days_one": "غداً",
+    "in_days_two": "بعد يومين",
+    "in_days_few": "بعد {{n}} أيام",
+    "in_days_many": "بعد {{n}} يوماً",
+    "in_days_other": "بعد {{n}} يوم",
+    "enter_results": "إدخال النتائج",
+    "students": "قائمة الطلاب",
+    "questions": "الأسئلة",
+    "results": "النتائج"
   }
 }

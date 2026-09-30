@@ -14,6 +14,7 @@ import { formatDate, formatNumber } from '../../lib/format'
 import CompetitionForm from './CompetitionForm'
 import { ChallengesPanel } from './ChallengePages'
 import { MEDAL } from '../honor/HonorBoardPage'
+import { MobileChallengesFab, MobileCompetitionHeader, MobileCompetitionList, MobileCompetitionsTabs } from './MobileCompetitions'
 
 export const COMP_TONE: Record<CompetitionRow['status'], Tone> = { draft: 'muted', open: 'brand', running: 'gold', judging: 'gold', finished: 'brand', cancelled: 'muted' }
 const GENDER_TONE: Record<string, Tone> = { male: 'brand', female: 'gold' }
@@ -29,18 +30,34 @@ export function CompetitionsHomePage() {
   const navigate = useNavigate()
 
   return (
+    <>
     <div className="space-y-5">
-      <PageBand title={t('competitions.title')} subtitle={t('competitions.subtitle')}
-        actions={tab === 'competitions'
-          ? can('competitions.manage') && <button type="button" onClick={() => setOpen(true)} className={buttonClass('onDeep')}>+ {t('competitions.new')}</button>
-          : can('challenges.manage') && <button type="button" onClick={() => setOpenChallenge(true)} className={buttonClass('onDeep')}>+ {t('challenges.new')}</button>} />
-      {canComp && can('challenges.view') && (
-        <Segmented name="comp-tab" label="" value={tab} onChange={(v) => setParams(v === 'challenges' ? { tab: v } : {})}
-          options={[{ value: 'competitions', label: t('competitions.tab_competitions') }, { value: 'challenges', label: t('competitions.tab_challenges') }]} />
+      {/* Below lg: the page header carries the title; tabs, status groups and the FAB are the mobile variants
+          (mobile-only elements come before the shared ones so desktop spacing is unchanged). */}
+      <MobileCompetitionsTabs show={canComp && can('challenges.view')} tab={tab} onTab={(v) => setParams(v === 'challenges' ? { tab: v } : {})} />
+      <div className="hidden space-y-5 lg:block">
+        <PageBand title={t('competitions.title')} subtitle={t('competitions.subtitle')}
+          actions={tab === 'competitions'
+            ? can('competitions.manage') && <button type="button" onClick={() => setOpen(true)} className={buttonClass('onDeep')}>+ {t('competitions.new')}</button>
+            : can('challenges.manage') && <button type="button" onClick={() => setOpenChallenge(true)} className={buttonClass('onDeep')}>+ {t('challenges.new')}</button>} />
+        {canComp && can('challenges.view') && (
+          <Segmented name="comp-tab" label="" value={tab} onChange={(v) => setParams(v === 'challenges' ? { tab: v } : {})}
+            options={[{ value: 'competitions', label: t('competitions.tab_competitions') }, { value: 'challenges', label: t('competitions.tab_challenges') }]} />
+        )}
+      </div>
+      {tab === 'competitions' ? (
+        <>
+          <MobileCompetitionList canCreate={can('competitions.manage')} onCreate={() => setOpen(true)} />
+          <div className="hidden lg:block"><CompetitionList /></div>
+        </>
+      ) : (
+        <ChallengesPanel creating={openChallenge} onCloseCreate={() => setOpenChallenge(false)} />
       )}
-      {tab === 'competitions' ? <CompetitionList /> : <ChallengesPanel creating={openChallenge} onCloseCreate={() => setOpenChallenge(false)} />}
       {open && <CompetitionForm onClose={() => setOpen(false)} onSaved={(c) => { setOpen(false); navigate(`/competitions/${c.id}`) }} />}
     </div>
+    {/* Outside the spaced column: a trailing hidden element there would add bottom spacing on desktop. */}
+    {tab === 'challenges' && <MobileChallengesFab canCreate={can('challenges.manage')} onCreate={() => setOpenChallenge(true)} />}
+    </>
   )
 }
 
@@ -95,16 +112,17 @@ export function CompetitionDetailPage() {
 
   useEffect(() => { if (c && !c.can.manage && c.can.judge) setTab('judging') }, [c])
 
-  if (q.isLoading) return <LoadingState />
-  if (q.isError || !c) return <ErrorState onRetry={() => void q.refetch()} />
+  if (q.isLoading) return <><MobileCompetitionHeader /><LoadingState /></>
+  if (q.isError || !c) return <><MobileCompetitionHeader /><ErrorState onRetry={() => void q.refetch()} /></>
   const tabs: Tab[] = c.can.manage ? ['overview', 'participants', 'judges', 'judging', 'results'] : ['overview', 'judging']
   const d = (v: string) => formatDate(v, locale, { day: 'numeric', month: 'short', hour: 'numeric', minute: '2-digit' })
 
   return (
     <div className="space-y-5">
+      <MobileCompetitionHeader name={c.name} />
       <Link to="/competitions" className="inline-flex items-center gap-1 text-sm text-brand-700 hover:underline"><Icon name="chevron" className="size-4 ltr:rotate-180" /> {t('competitions.title')}</Link>
       <header className="flex flex-wrap items-start gap-4">
-        <div className="min-w-0 flex-1 space-y-1">
+        <div className="min-w-0 flex-1 space-y-1 max-lg:basis-full">
           <h1 dir="auto" className="font-display text-3xl text-ink">{c.name}</h1>
           <p className="flex flex-wrap items-center gap-2 text-sm text-ink/60">
             <Badge tone={COMP_TONE[c.status]}>{t(`competitions.status.${c.status}`)}</Badge>

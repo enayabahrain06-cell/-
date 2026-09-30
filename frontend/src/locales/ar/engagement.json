@@ -249,5 +249,16 @@
     "join": "انضم",
     "nothing_open": "لا يوجد شيء مفتوح حاليًا.",
     "nothing_joined": "لم تنضم إلى أي منها بعد."
+  },
+  "mobile": {
+    "groups": {"running":"جارية","upcoming":"قادمة","finished":"منتهية"},
+    "empty_group": "لا توجد مسابقات في هذا القسم.",
+    "participants_of": "{{n}} من {{max}} مشاركًا",
+    "participants": "{{n}} مشاركًا",
+    "rounds": "{{n}} جولات",
+    "register": "تسجيل طلاب",
+    "error": "تعذّر تحميل لوحة التميز.",
+    "retry": "إعادة المحاولة",
+    "level": {"track":"المسار","package":"الباقة","circle":"الحلقة"}
   }
 }

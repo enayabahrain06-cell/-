@@ -66,8 +66,9 @@ export function MSegmented<T extends string>({ label, value, options, onChange }
         const active = o.value === value
         return (
           <button key={o.value} type="button" role="tab" aria-selected={active} onClick={() => onChange(o.value)}
-            className={`relative min-w-0 flex-1 truncate rounded-lg px-2 text-[13px] font-semibold transition h-9 before:absolute before:-inset-y-1 before:inset-x-0 ${active ? 'bg-white text-brand-700 shadow-card' : 'text-ink/65'}`}>
-            {o.label}
+            className={`relative min-w-0 flex-1 rounded-lg px-2 text-[13px] font-semibold transition h-9 before:absolute before:-inset-y-1 before:inset-x-0 ${active ? 'bg-white text-brand-700 shadow-card' : 'text-ink/65'}`}>
+            {/* truncate on the label, not the button: the 44px hit area (before:) would count as clipped overflow */}
+            <span className="block truncate">{o.label}</span>
           </button>
         )
       })}

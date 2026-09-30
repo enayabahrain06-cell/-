@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { Link, useParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
@@ -10,6 +10,9 @@ import { OrnamentDivider } from '../../components/ornaments'
 import { Card, ErrorState, LoadingState, Notice, PrimaryButton, EmptyCard } from '../../components/ui'
 import { formatDate, formatNumber, formatPercent, formatTime } from '../../lib/format'
 import ScoreGrid, { emptyDraft, isComplete, type Draft } from './ScoreGrid'
+import MobileScoreEntry, { MobileEntryEmpty, MobileEntrySkeleton, MobileSetAll, MobileSheetHeader } from './MobileEvaluation'
+import { HeaderAction } from '../../components/mobile/MobileChrome'
+import MobileToast from '../../components/mobile/Toast'
 
 export default function EvaluationSheetPage() {
   const { sessionId } = useParams()
@@ -24,6 +27,10 @@ export default function EvaluationSheetPage() {
   const [suggestions, setSuggestions] = useState<Suggestion[]>([])
   const [dirty, setDirty] = useState(false)
   const [msg, setMsg] = useState<{ tone: 'success' | 'error'; text: string } | null>(null)
+  // Mobile feedback is a 4-second toast with its own state, so the desktop notice keeps its behaviour.
+  const [toast, setToast] = useState<{ tone: 'ok' | 'error'; text: string } | null>(null)
+  const [setAllOpen, setSetAllOpen] = useState(false)
+  const clearToast = useCallback(() => setToast(null), [])
 
   useEffect(() => {
     if (!q.data) return
@@ -45,13 +52,14 @@ export default function EvaluationSheetPage() {
       setSuggestions(r.suggested_issues)
       setDirty(false)
       setMsg({ tone: 'success', text: t('saved', { n: formatNumber(r.data.length, locale) }) })
+      setToast({ tone: 'ok', text: t('saved', { n: formatNumber(r.data.length, locale) }) })
       void qc.invalidateQueries({ queryKey: ['student-profile'] })
     },
-    onError: (e) => setMsg({ tone: 'error', text: parseApiError(e).message }),
+    onError: (e) => { setMsg({ tone: 'error', text: parseApiError(e).message }); setToast({ tone: 'error', text: parseApiError(e).message }) },
   })
 
-  if (q.isLoading) return <LoadingState />
-  if (q.isError || !q.data) return <ErrorState message={parseApiError(q.error).message} onRetry={() => void q.refetch()} />
+  if (q.isLoading) return <><MobileSheetHeader /><MobileEntrySkeleton /><div className="hidden lg:block"><LoadingState /></div></>
+  if (q.isError || !q.data) return <><MobileSheetHeader /><ErrorState message={parseApiError(q.error).message} onRetry={() => void q.refetch()} /></>
   const sheet = q.data
   const complete = Object.values(drafts).filter(isComplete).length
 
@@ -60,8 +68,24 @@ export default function EvaluationSheetPage() {
     setDirty(true)
   }
 
+  const onChange = (sid: number, patch: Partial<Draft>) => { setDrafts((ds) => ({ ...ds, [sid]: { ...ds[sid], ...patch } })); setDirty(true); setMsg(null) }
+  const onSuggestionDone = (s: Suggestion) => setSuggestions((all) => all.filter((x) => !(x.student_id === s.student_id && x.criterion === s.criterion)))
+
   return (
-    <div className="space-y-5 pb-24">
+    <>
+    <div className="space-y-4 lg:hidden">
+      <MobileSheetHeader title={sheet.lesson.name} date={sheet.date}
+        meta={[formatDate(sheet.date, locale, { weekday: 'long', day: 'numeric', month: 'long' }), `${formatTime(sheet.start_time, locale)}–${formatTime(sheet.end_time, locale)}`, sheet.location, sheet.lesson.teacher]}
+        actions={sheet.data.length > 0 ? <HeaderAction icon="edit" label={t('set_all')} onClick={() => setSetAllOpen(true)} /> : undefined} />
+      {suggestions.length > 0 && <p className="rounded-card bg-info/10 px-4 py-3 text-[13px] text-info"><b>{t('suggest.title')}.</b> {t('suggest.body', { n: formatNumber(sheet.threshold, locale) })}</p>}
+      {sheet.data.length === 0 ? <MobileEntryEmpty text={t('empty_roster')} /> : (
+        <MobileScoreEntry students={sheet.data.map((r) => r.student)} drafts={drafts} saved={saved} suggestions={suggestions} threshold={sheet.threshold} withProgress
+          onChange={onChange} onSuggestionDone={onSuggestionDone} onSave={() => save.mutate()} saving={save.isPending} dirty={dirty} />
+      )}
+      <MobileSetAll open={setAllOpen} onClose={() => setSetAllOpen(false)} onSet={setAll} />
+      <MobileToast message={toast?.text ?? null} tone={toast?.tone} onDone={clearToast} />
+    </div>
+    <div className="hidden space-y-5 pb-24 lg:block">
       <Link to={`/evaluation?date=${sheet.date}`} className="inline-flex items-center gap-1 text-sm font-medium text-brand-700 hover:underline">
         <Icon name="chevron" className="size-4 ltr:rotate-180" />{t('back')}
       </Link>
@@ -138,5 +162,6 @@ export default function EvaluationSheetPage() {
         </div>
       </div>
     </div>
+    </>
   )
 }

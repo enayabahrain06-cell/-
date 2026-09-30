@@ -1,5 +1,5 @@
-import { useEffect, useState } from 'react'
-import { keepPreviousData, useQuery } from '@tanstack/react-query'
+import { useCallback, useEffect, useState } from 'react'
+import { keepPreviousData, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useTranslation } from 'react-i18next'
 import { Link, useSearchParams } from 'react-router-dom'
 import { teachersApi, type TeacherFilters, type TeacherRow } from '../../api/teachers'
@@ -12,13 +12,20 @@ import { Badge, ErrorState, FilterBar, SearchInput, SURFACE, TABLE_HEAD, TableWr
 import { EmptyState, PageBand, StarSpinner } from '../../components/ornaments'
 import { formatNumber, formatPercent } from '../../lib/format'
 import { initialOf } from './initial'
+import MobileTeachers from './MobileTeachers'
+import UserDialog from '../users/UserDialog'
+import MobileToast from '../../components/mobile/Toast'
 
 const FILTER_KEYS = ['search', 'gender', 'active', 'page'] as const
 
 export default function TeachersList() {
   const { t, i18n } = useTranslation('teachers')
   const locale = i18n.language
-  const { user, hasRole } = useAuth()
+  const { user, hasRole, can } = useAuth()
+  const qc = useQueryClient()
+  const [creating, setCreating] = useState(false)
+  const [toast, setToast] = useState<string | null>(null)
+  const clearToast = useCallback(() => setToast(null), [])
   const [params, setParams] = useSearchParams()
   const [search, setSearch] = useState(params.get('search') ?? '')
 
@@ -50,8 +57,18 @@ export default function TeachersList() {
   const bothTracks = hasRole('super_admin') || !user?.track || user.track === 'both'
   const hasFilters = ['search', 'gender', 'active'].some((k) => params.get(k))
 
+  const clear = () => { setSearch(''); setParams(new URLSearchParams(), { replace: true }) }
+
   return (
-    <div className="space-y-5">
+    <>
+    <MobileTeachers rows={query.data?.data} total={query.data?.meta.total} loading={query.isLoading} error={query.isError} onRetry={() => void query.refetch()}
+      search={search} onSearch={setSearch} filters={filters} onFilter={setFilter} bothTracks={bothTracks} hasFilters={hasFilters} onClear={clear}
+      canCreate={can('users.manage')} onCreate={() => setCreating(true)}
+      pagination={query.data ? <Pagination page={query.data.meta.current_page} lastPage={query.data.meta.last_page} total={query.data.meta.total} onPage={(p) => setFilter('page', String(p))} /> : null} />
+    {/* Mobile FAB: the users screen's new-account dialog (a teacher is a user with the teacher role). */}
+    {creating && <UserDialog user={null} onClose={() => setCreating(false)} onSaved={(m) => { setCreating(false); setToast(m); void qc.invalidateQueries({ queryKey: ['teachers'] }) }} />}
+    <MobileToast message={toast} onDone={clearToast} />
+    <div className="hidden space-y-5 lg:block">
       <PageBand title={t('title')} subtitle={query.data ? t('subtitle', { n: formatNumber(query.data.meta.total, locale) }) : undefined} />
 
       <FilterBar layout="grid" label={t('filters.label')} className="sm:grid-cols-2 lg:grid-cols-4">
@@ -100,6 +117,7 @@ export default function TeachersList() {
         </>
       )}
     </div>
+    </>
   )
 }
 

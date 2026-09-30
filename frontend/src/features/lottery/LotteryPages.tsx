@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { Link, useNavigate, useParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
@@ -13,6 +13,8 @@ import { EmptyState, OrnamentDivider, PageBand } from '../../components/ornament
 import { Badge, buttonClass, Card, CardTitle, ErrorState, LoadingState, Modal, Notice, PrimaryButton, SecondaryButton, TextInput, type Tone, SURFACE, inputClass, EmptyCard, ROW_MAIN } from '../../components/ui'
 import { formatDate, formatNumber } from '../../lib/format'
 import { GENDER_TONE } from '../lessons/LessonsHomePage'
+import { MobileLotteryDetail, MobileLotteryList, MobileLotteryPending } from './MobileLottery'
+import MobileToast from '../../components/mobile/Toast'
 
 const STATUS_TONE: Record<string, Tone> = { draft: 'muted', run: 'gold', approved: 'brand', cancelled: 'muted' }
 
@@ -27,7 +29,9 @@ export function LotteryListPage() {
   const n = (v: number) => formatNumber(v, locale)
 
   return (
-    <div className="space-y-5">
+    <>
+    <MobileLotteryList rows={q.data?.data} loading={q.isLoading} error={q.isError} onRetry={() => void q.refetch()} canCreate={can('lottery.manage')} onCreate={() => setOpen(true)} />
+    <div className="hidden space-y-5 lg:block">
       <PageBand title={t('title')} subtitle={t('subtitle')} actions={can('lottery.manage') ? <button type="button" onClick={() => setOpen(true)} className={buttonClass('onDeep')}>+ {t('new')}</button> : undefined} />
       {q.isLoading ? <LoadingState /> : q.isError || !q.data ? <ErrorState onRetry={() => void q.refetch()} /> : q.data.data.length === 0 ? (
         <EmptyCard icon="lottery" title={t('empty')} />
@@ -47,8 +51,9 @@ export function LotteryListPage() {
           ))}
         </ul>
       )}
-      {open && <LotteryDialog onClose={() => setOpen(false)} onSaved={(d) => { setOpen(false); navigate(`/lottery/${d.id}`) }} />}
     </div>
+      {open && <LotteryDialog onClose={() => setOpen(false)} onSaved={(d) => { setOpen(false); navigate(`/lottery/${d.id}`) }} />}
+    </>
   )
 }
 
@@ -134,23 +139,33 @@ export function LotteryDetailPage() {
   const [edit, setEdit] = useState(false)
   const [notice, setNotice] = useState<{ tone: 'success' | 'error' | 'info'; text: string } | null>(null)
   const set = (d: LotteryDetail) => { qc.setQueryData(['lottery', lotteryId, locale], d); void qc.invalidateQueries({ queryKey: ['lotteries'] }) }
-  const onErr = (e: unknown) => setNotice({ tone: 'error', text: parseApiError(e).message })
+  // Mobile shows results and errors as a 4-second toast (own state; the desktop notice is unchanged).
+  const [toast, setToast] = useState<{ tone: 'ok' | 'error'; text: string } | null>(null)
+  const clearToast = useCallback(() => setToast(null), [])
+  const onErr = (e: unknown) => { setNotice({ tone: 'error', text: parseApiError(e).message }); setToast({ tone: 'error', text: parseApiError(e).message }) }
   const n = (v: number) => formatNumber(v, locale)
 
-  const run = useMutation({ mutationFn: () => lotteryApi.run(lotteryId, seed || undefined), onSuccess: (r) => { set(r.data); setNotice(r.run.split_families.length ? { tone: 'info', text: t('detail.split', { n: n(r.run.split_families.length) }) } : null) }, onError: onErr })
+  const run = useMutation({ mutationFn: () => lotteryApi.run(lotteryId, seed || undefined), onSuccess: (r) => { set(r.data); setNotice(r.run.split_families.length ? { tone: 'info', text: t('detail.split', { n: n(r.run.split_families.length) }) } : null); setToast({ tone: 'ok', text: r.run.split_families.length ? t('detail.split', { n: n(r.run.split_families.length) }) : r.message }) }, onError: onErr })
   const move = useMutation({ mutationFn: ({ rid, to }: { rid: number; to: number }) => lotteryApi.move(lotteryId, rid, to), onSuccess: set, onError: onErr })
-  const approve = useMutation({ mutationFn: () => lotteryApi.approve(lotteryId, notify), onSuccess: (r) => { set(r.data); setNotice({ tone: 'success', text: t('detail.approved', { enrolled: n(r.result.enrolled), skipped: n(r.result.skipped), notified: n(r.result.notified) }) }) }, onError: onErr })
+  const approve = useMutation({ mutationFn: () => lotteryApi.approve(lotteryId, notify), onSuccess: (r) => { set(r.data); setNotice({ tone: 'success', text: t('detail.approved', { enrolled: n(r.result.enrolled), skipped: n(r.result.skipped), notified: n(r.result.notified) }) }); setToast({ tone: 'ok', text: t('detail.approved', { enrolled: n(r.result.enrolled), skipped: n(r.result.skipped), notified: n(r.result.notified) }) }) }, onError: onErr })
   const cancel = useMutation({ mutationFn: () => lotteryApi.cancel(lotteryId), onSuccess: () => void q.refetch(), onError: onErr })
   const pool = useMutation({ mutationFn: () => lotteryApi.syncPool(lotteryId), onSuccess: set, onError: onErr })
 
-  if (q.isLoading) return <LoadingState />
-  if (q.isError || !q.data) return <ErrorState message={parseApiError(q.error).message} onRetry={() => void q.refetch()} />
+  if (q.isLoading) return <><MobileLotteryPending /><div className="hidden lg:block"><LoadingState /></div></>
+  if (q.isError || !q.data) return <><MobileLotteryPending skeleton={false} /><ErrorState message={parseApiError(q.error).message} onRetry={() => void q.refetch()} /></>
   const l = q.data
   const manage = can('lottery.manage')
   const editable = manage && (l.status === 'draft' || l.status === 'run')
 
   return (
-    <div className="space-y-5">
+    <>
+    <MobileLotteryDetail l={l} manage={manage} editable={editable} seed={seed} onSeed={setSeed} notify={notify} onNotify={setNotify}
+      running={run.isPending} approving={approve.isPending} pooling={pool.isPending}
+      onRun={() => run.mutate()} onApprove={() => window.confirm(t('detail.approve_confirm')) && approve.mutate()}
+      onCancel={() => window.confirm(t('detail.cancel_confirm')) && cancel.mutate()} onEdit={() => setEdit(true)} onPool={() => pool.mutate()}
+      onMove={(rid, to) => move.mutate({ rid, to })} />
+    <MobileToast message={toast?.text ?? null} tone={toast?.tone} onDone={clearToast} />
+    <div className="hidden space-y-5 lg:block">
       <Link to="/lottery" className="inline-flex items-center gap-1 text-sm font-medium text-brand-700 hover:underline"><Icon name="chevron" className="size-4 ltr:rotate-180" />{t('detail.back')}</Link>
       <header className={`${SURFACE} p-4 sm:p-5`}>
         <div className="flex flex-wrap items-start gap-3">
@@ -227,7 +242,8 @@ export function LotteryDetailPage() {
           <PrimaryButton className="ms-auto" loading={approve.isPending} onClick={() => window.confirm(t('detail.approve_confirm')) && approve.mutate()}>{t('detail.approve')}</PrimaryButton>
         </div>
       )}
-      {edit && <LotteryDialog lottery={l} onClose={() => setEdit(false)} onSaved={(d) => { setEdit(false); set(d) }} />}
     </div>
+      {edit && <LotteryDialog lottery={l} onClose={() => setEdit(false)} onSaved={(d) => { setEdit(false); set(d) }} />}
+    </>
   )
 }

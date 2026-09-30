@@ -1,4 +1,4 @@
-import { Fragment, useEffect, useMemo, useState, type ReactNode } from 'react'
+import { Fragment, useLayoutEffect, useMemo, useState, type ReactNode } from 'react'
 import { createPortal } from 'react-dom'
 import { Link, NavLink, useLocation } from 'react-router-dom'
 import { useQuery } from '@tanstack/react-query'
@@ -67,7 +67,8 @@ export function MobileChromeProvider({ children }: { children: (state: { bottomN
 /** A page's own mobile header, portalled into the shell's header slot (replaces the default one). */
 export function MobilePage({ title, back, actions, breadcrumb }: { title: string; back?: string; actions?: ReactNode; breadcrumb?: Crumb[] }) {
   const { slot, claim, bottomNav } = useMobileChrome()
-  useEffect(() => claim(), [claim])
+  // Layout effect: the default header is removed before the browser paints, so both never show for a frame (CLS).
+  useLayoutEffect(() => claim(), [claim])
   if (!slot) return null
   return createPortal(bottomNav ? <MobileAppBarSlotTitle /> : <MobilePageHeader title={title} back={back ?? '/'} actions={actions} breadcrumb={breadcrumb} />, slot)
 }
@@ -124,13 +125,16 @@ export function MobilePageHeader({ title, back, actions, breadcrumb }: { title: 
         {actions && <div className="flex shrink-0 items-center">{actions}</div>}
       </header>
       {breadcrumb && breadcrumb.length > 0 && (
-        <nav aria-label={t('breadcrumb')} className="truncate px-4 pb-2 text-xs text-ink/65">
-          {breadcrumb.map((c, i) => (
-            <Fragment key={i}>
-              {i > 0 && <span aria-hidden className="mx-1">›</span>}
-              {c.to ? <Link to={c.to} className="text-info">{c.label}</Link> : <span aria-current="page">{c.label}</span>}
-            </Fragment>
-          ))}
+        <nav aria-label={t('breadcrumb')} className="px-4 pb-2 text-xs text-ink/65">
+          {/* The ellipsis sits on an inner line inside the gutter, so a long last crumb is clipped there, not at the screen edge. */}
+          <p className="truncate">
+            {breadcrumb.map((c, i) => (
+              <Fragment key={i}>
+                {i > 0 && <span aria-hidden className="mx-1">›</span>}
+                {c.to ? <Link to={c.to} className="text-info">{c.label}</Link> : <span aria-current="page">{c.label}</span>}
+              </Fragment>
+            ))}
+          </p>
         </nav>
       )}
     </div>

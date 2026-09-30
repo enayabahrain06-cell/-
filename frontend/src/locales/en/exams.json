@@ -197,5 +197,17 @@
     "enter": "Enter answers",
     "edit": "Edit answers",
     "saved": "{{name}}: {{score}} of {{total}}. Saved and graded."
+  },
+  "mobile": {
+    "segments": {"all":"All","published":"Upcoming","closed":"To grade","graded":"Finished"},
+    "error": "Could not load the exams.",
+    "retry": "Try again",
+    "today": "Today",
+    "in_days_one": "Tomorrow",
+    "in_days_other": "In {{n}} days",
+    "enter_results": "Enter results",
+    "students": "Students",
+    "questions": "Questions",
+    "results": "Results"
   }
 }

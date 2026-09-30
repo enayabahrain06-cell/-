@@ -276,3 +276,123 @@ left out and listed under the page.
   pairs (no table).
 - Not in the app: infinite scroll by day (the API pages by 20 rows; `MPager` is used), actor profile pages, and
   a detail caption beyond the record reference (the API sends no summary line).
+## Circle detail fix (/lessons/:id)
+
+- The page claims its header while the circle loads or fails (`MobileLessonPending`), and waits for the hall-conflict
+  check before drawing the body (a skeleton in the same shape), so the notice no longer pushes the tabs down. CLS at
+  320px: 0.236 → 0.
+- Shared: `MobilePage` claims the header in a layout effect, so the default header is gone before the first paint on
+  every page that declares its own (this was the 0.05 shift on the student profile too). `MSegmented` truncates the
+  label instead of the button, whose 44px hit area was reported as clipped text.
+
+## Memorization (/evaluation, /evaluation/:sessionId) — Memorization.dc.html
+
+- Home: the page header carries the title; the desktop band and tabs become one segmented control (يومي / شهري) on
+  the same `tab` param. The daily tab is the attendance day view (already mobile).
+- Entry form (the session sheet), `MobileScoreEntry`: header with the circle name, back to the day and a "set a score
+  for everyone" action (bottom sheet); breadcrumb; one session line (date · time · hall · teacher); scored n of N with a
+  bar; student strip (avatar with the saved / changed / not-scored dot, name linking to the profile, n of N, state
+  pill, a roster sheet to jump to any student with their totals); the four 0–10 scores as 48px selects with the total
+  pill (gold when one is below the circle's threshold); today's ranges as (type | surah), (from ayah | to ayah) and a
+  preview line with the surah in font-quran; note textarea; low-score suggestions with فتح صعوبة; send to guardian.
+- Sticky حفظ التسميع (unsaved dot) and a 48px "next student" square: saves when the current row is finished and
+  changed (the same save call as desktop, which stores every complete row), then moves on. Feedback is a 4-second
+  toast; loading is a skeleton of the form.
+- Monthly tab: circle | month selectors, the hint, and the same one-student form without ranges.
+- Not in the app: the spec's grade buttons (ممتاز ٥ … إعادة ٢) — scores are four criteria out of 10; verse text for
+  the preview (the API has surah names and ayah counts only, so the preview names the surah and range); a recitation
+  history view (the header's history icon).
+
+## Exams (/exams) — Exams.dc.html
+
+- `MobileExams` under `lg:hidden`, same `['exams', filters]` query and URL params. Segmented الكل / القادمة /
+  للتصحيح / المنتهية on the existing `status` filter (published / closed / graded; drafts stay under الكل), type chips
+  on `type`.
+- Cards: date block (day number and short month, the paper exam's day or the online window's start), title (links to
+  the exam), status pill, circle (link) or package · attempts, type · marks, countdown pill (مفتوح الآن / اليوم /
+  بعد n يوم) on published exams. Two secondary buttons: قائمة الطلاب (grading tab) and النتائج (الأسئلة on drafts).
+  Awaiting-grading cards are gold-tinted and their first button is إدخال النتائج. FAB اختبار جديد (existing dialog).
+  Skeleton, empty and error states.
+- The spec's primary إدخال النتائج on the gold card is a secondary here: the FAB is the screen's one primary.
+- Not in the app: reminding guardians of an exam (تذكير أولياء الأمور) — the API only sends results.
+
+## Certificates (/certificates) — Certificates.dc.html
+
+- The page comes from `@ahl/certificates-react`; the package is unchanged. The app route now renders
+  `features/certificates/MobileCertificates.tsx` (`CertificatesHome`): its own mobile screen under `lg:hidden`, and the
+  package's `CertificatesPage` under `hidden lg:block`. The mobile screen uses the package's API, hooks
+  (`useCertificateActions`, `useCertificateOptions`), `IssueCertificateDialog` and `TemplatesPanel`, with the same URL
+  params and list query key as the package list.
+- Header with a templates action (template managers); live preview of the selected certificate (A-landscape ratio,
+  bg-deep, gold inner frame, corner khatam, type, Amiri title and student name, achievement · date, status pill) →
+  three secondary buttons: طباعة PDF (print, else download / view), إرسال لولي الأمر, تغيير القالب (or إجراءات أخرى)
+  and a link to the rest of the actions (approve, edit, delete, revoke…) in a bottom sheet.
+- Search + filter sheet (type, from, to), status chips with counts (the package's tabs), issued list rows (gold icon
+  badge, title, student · date · issuer, status pill); tapping a row previews it. Prev / next paging.
+- Sticky إصدار شهادة جديدة opens the package's issue dialog (student picker inside). Action results show as the
+  4-second toast. `?view=templates` shows the package's template panel under a mobile header.
+- Not on mobile: bulk approval of selected drafts (approve one at a time from the actions sheet).
+
+## Teachers (/teachers) — Teachers.dc.html
+
+- `MobileTeachers` under `lg:hidden`, same query, debounced search and `gender` / `active` params. Search → chips
+  (كل المسارات n، البنين، البنات for staff on both tracks; نشط / غير نشط) → cards: 44px avatar (initial without the
+  honorific), name, circles · students with the status pill (نشط / بلا حلقة بعد / غير نشط), and this month's stats row
+  (حضور طلابه · تقييمات الشهر · متوسط الدرجات). Cards open `/teachers?teacher=:id`. Skeleton, empty (with clear
+  filters) and error states.
+- FAB إضافة معلم (users.manage) opens the users screen's new-account dialog, where the teacher role is already the
+  default; saving refreshes the list and shows a toast.
+- Teacher page: the mobile header shows the teacher's name, back to the list and a breadcrumb (also while loading).
+  The page body is unchanged.
+- Not in the app: a "today" pill per teacher (the list has no per-day sessions) and a role preset passed from here.
+
+## Lottery (/lottery, /lottery/:id) — Lottery.dc.html
+
+- In this app a lottery distributes a package's waiting students over the participating teachers (rule-based, with a
+  seed), so the spec's draw screen maps onto the lottery page. Same queries and mutations as desktop.
+- List: subtitle line, cards (name, status pill, package · run date, pool · teachers pill, track pill), FAB قرعة
+  جديدة (existing dialog). Skeleton, empty and error states.
+- Detail: header with the lottery name and ⋯ (settings, cancel) when editable; breadcrumb. Draw card: package, the
+  rules as labelled chips (الإخوة معاً، توازن الأعمار، توازن المستوى), mini-KPIs (eligible, teachers, draws) and the
+  seed field. Sticky اسحب القرعة before the first draw; after it, إعادة القرعة is secondary and the sticky primary is
+  اعتماد وإرسال الإشعارات.
+- Result banner (bg-deep, corner khatam, Amiri gold "n of N placed", run and seed) with the إبلاغ أولياء الأمور
+  pill toggle (the existing notify flag, `aria-pressed`). Then one list per teacher (circle link, n of capacity pill,
+  students with age and level); moving a student opens a bottom sheet of the other teachers. Students without a seat
+  as labelled pills. Before a draw: the pool list with تحديث القائمة. Results and errors show as toasts.
+- Ages on mobile are shown in whole years (the API sends fractional ages).
+- Not in the app: prize-draw conditions (حضور ≥ ٩٠٪، أتمّ تسميع الأسبوع) and a single winner — the lottery places
+  every eligible student; there is no separate "previous draws" list beyond the run count and seed.
+
+## Excellence board (/honor) — Excellence.dc.html
+
+- `MobileHonor` under `lg:hidden`, sharing the page's state (month, track, view, level), query and mutations.
+  Header with the TV-screen action (opens the display in a new tab when a display key is set); breadcrumb.
+- Month input | boys / girls (staff on both tracks), segmented اللوحة / الأوسمة. Board: status and published pills,
+  ranked and badges counts, last update; for managers إعادة الحساب and نشر / إخفاء as secondary buttons and a sticky
+  تكريم الثلاثة الأوائل (existing dialog).
+- Podium: three cards 2 · 1 · 3, the first taller with a gold border, 56px avatar, corner khatam and a gold rank
+  badge; points in text-gold-700. The formula caption (the desktop "why" text), segmented المسار / الباقة / الحلقة
+  (the existing level), ranked list (rank with medal for the top three, avatar, name, circle, points, change vs last
+  month) with group headers per package / circle, and حلقة الشهر. Skeleton, empty and error states; toasts.
+- Badges tab: the existing badges panel.
+- Not in the app: term and year boards (the board is monthly; the month picker replaces the segmented period) and
+  exporting the board as an image (the share icon is the TV display link).
+
+## Competitions (/competitions) — Competitions.dc.html
+
+- Below lg the page header carries the title; المسابقات / التحديات is one segmented control on the same `tab` param.
+- Competitions: segmented جارية / قادمة / منتهية with counts, grouping the existing statuses (running + judging,
+  draft + open, finished + cancelled; starts on the first non-empty group), over the desktop list query. Cards: title
+  (links to the competition), status pill, type · scope · track · ages, the registration window (upcoming) or the
+  competition dates, a 6px participants bar against the maximum with n of max · rounds. Registration-open cards get a
+  secondary تسجيل طلاب. FAB مسابقة جديدة (existing form). Skeleton, empty and error states.
+- Challenges tab: the existing challenges panel with a FAB تحدٍّ جديد.
+- Competition page: the mobile header shows its name, back to the list and a breadcrumb (also while loading); the
+  body is unchanged.
+- Not in the app: the participants' avatar stack and current leader on list cards (the list API has counts only), and
+  opening the competition straight on its participants tab (the tab is not in the URL).
+- Competition page below lg: the title block takes the full row (`max-lg:basis-full`), so the name no longer squeezes
+  to a sliver beside the status buttons (390–414px).
+- Shared: the page-header breadcrumb truncates on an inner line inside the gutter, so a long last crumb (a long
+  Arabic name in English) is clipped with an ellipsis instead of running past the screen edge.

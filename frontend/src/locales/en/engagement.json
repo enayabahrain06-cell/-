@@ -249,5 +249,16 @@
     "join": "Join",
     "nothing_open": "Nothing open right now.",
     "nothing_joined": "You have not joined any yet."
+  },
+  "mobile": {
+    "groups": {"running":"Running","upcoming":"Upcoming","finished":"Finished"},
+    "empty_group": "No competitions here.",
+    "participants_of": "{{n}} of {{max}} participants",
+    "participants": "{{n}} participants",
+    "rounds": "{{n}} rounds",
+    "register": "Register students",
+    "error": "Could not load the board.",
+    "retry": "Try again",
+    "level": {"track":"Track","package":"Package","circle":"Circle"}
   }
 }

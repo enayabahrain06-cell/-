@@ -44,5 +44,20 @@
     "no_results": "The lottery has not been run yet.",
     "age": "{{n}} yrs",
     "of": "{{n}} of {{c}}"
+  },
+  "mobile": {
+    "error": "Could not load the lotteries.",
+    "retry": "Try again",
+    "more_actions": "Lottery options",
+    "options": {"keep_siblings":"Siblings together","balance_ages":"Balanced ages","balance_levels":"Balanced levels"},
+    "eligible": "Eligible",
+    "teachers": "Teachers",
+    "runs": "Draws",
+    "result": "Draw result",
+    "placed": "{{n}} of {{total}} placed",
+    "without_seat": "{{n}} without a seat",
+    "notify": "Notify guardians",
+    "no_students": "No students were placed with this teacher.",
+    "draw": "Run the draw"
   }
 }
