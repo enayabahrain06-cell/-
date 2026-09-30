@@ -39,5 +39,16 @@
         "placeholder": "Search by name, number or phone",
         "none": "No results"
     },
+    "sheet_import": {
+        "template": "Download template",
+        "choose": "Choose an Excel file",
+        "reading": "Reading the file…",
+        "row": "Row",
+        "status": "Status",
+        "ok": "OK",
+        "valid": "Valid: {{count}}",
+        "invalid": "With errors: {{count}}",
+        "preview": "File preview"
+    },
   "crud": { "edit": "Edit", "delete": "Delete", "save": "Save", "cancel": "Cancel" }
 }

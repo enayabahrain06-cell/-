@@ -94,7 +94,8 @@
         "wallet": "Wallet",
         "details": "Details",
         "certificates": "Certificates",
-        "placement": "Placement exam"
+        "placement": "Placement exam",
+        "archive": "Archive"
     },
     "placement_tab": {
         "empty": "No placement exam for this student.",

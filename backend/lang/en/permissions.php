@@ -24,4 +24,7 @@ return [
     'terms.manage' => 'Manage academic terms', 'levels.manage' => 'Manage levels', 'subjects.manage' => 'Manage subjects',
     'term_setup.view' => 'View term setup (plan and timetable)', 'term_setup.manage' => 'Manage term setup',
     'menu.manage' => 'Manage the menu', 'nights.manage' => 'Manage nights',
+    'distribution.manage' => 'Distribute, promote and change the level of students',
+    'archive.view' => 'View the archive', 'archive.manage' => 'Upload the archive and delete its batches',
+    'books.view' => 'View books and their follow-up', 'books.manage' => 'Manage and deliver books',
 ];

@@ -2,11 +2,13 @@ import { useState } from 'react'
 import { keepPreviousData, useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useTranslation } from 'react-i18next'
 import { parseApiError, type FieldErrors } from '../../api/client'
-import { termSetupApi, type SubjectLesson, type SubjectLessonInput } from '../../api/termSetup'
+import { termSetupApi, type SubjectLesson, type SubjectLessonInput, type SubjectLessonPreview } from '../../api/termSetup'
 import SelectField from '../../components/SelectField'
-import { Badge, EmptyCard, ErrorState, FilterBar, IconButton, LoadingState, Modal, SURFACE, TextArea, TextInput } from '../../components/ui'
+import Icon from '../../components/Icon'
+import { Badge, EmptyCard, ErrorState, FilterBar, IconButton, LoadingState, Modal, PrimaryButton, SecondaryButton, SURFACE, TABLE_HEAD, TableWrap, TextArea, TextInput } from '../../components/ui'
 import { formatNumber } from '../../lib/format'
 import { DialogFooter, Field, Toolbar, useRemove } from '../common/crud'
+import { PreviewCounts, SheetPicker } from '../common/SheetImport'
 import { useCanManage, useSetupOptions } from './shared'
 
 /** دروس المواد: a subject's curriculum, for one level or for every level. Not tied to a term. */
@@ -24,6 +26,7 @@ export default function SubjectLessonsTab() {
     enabled: subjectId > 0, placeholderData: keepPreviousData,
   })
   const [edit, setEdit] = useState<SubjectLesson | 'new' | null>(null)
+  const [importing, setImporting] = useState(false)
   const { notice, setNotice, remove } = useRemove(termSetupApi.removeSubjectLesson, [['term-setup-subject-lessons']], t('subject_lessons.delete_confirm'))
 
   return (
@@ -34,7 +37,9 @@ export default function SubjectLessonsTab() {
         <SelectField label={t('fields.level')} hideLabel className="sm:w-56" value={String(levelId)} onChange={(e) => setLevelId(e.target.value ? Number(e.target.value) : '')}
           options={[{ value: '', label: t('subject_lessons.all_levels_filter') }, ...levels.map((l) => ({ value: String(l.id), label: l.name }))]} />
       </FilterBar>
-      <Toolbar label={canManage ? t('subject_lessons.new') : undefined} onAdd={canManage ? () => setEdit('new') : undefined} notice={notice} />
+      <Toolbar label={canManage ? t('subject_lessons.new') : undefined} onAdd={canManage ? () => setEdit('new') : undefined} notice={notice}>
+        {canManage && <SecondaryButton onClick={() => setImporting(true)}><Icon name="table" className="size-4" />{t('subject_lessons.import')}</SecondaryButton>}
+      </Toolbar>
       <p className="text-sm text-ink/60">{t('subject_lessons.hint')}</p>
       {q.isLoading ? <LoadingState /> : q.isError ? <ErrorState onRetry={() => void q.refetch()} /> : !q.data?.length ? (
         <EmptyCard icon="evaluation" title={t('subject_lessons.empty')} />
@@ -59,6 +64,7 @@ export default function SubjectLessonsTab() {
           ))}
         </ol>
       )}
+      {importing && <ImportDialog onClose={() => setImporting(false)} onDone={(m) => { setImporting(false); setNotice({ tone: 'success', text: m }) }} />}
       {edit && (
         <SubjectLessonDialog row={edit === 'new' ? undefined : edit} subjectId={subjectId} levelId={levelId || null}
           onClose={() => setEdit(null)} onSaved={(m) => { setEdit(null); setNotice({ tone: 'success', text: m }) }} />
@@ -103,6 +109,62 @@ function SubjectLessonDialog({ row, subjectId, levelId, onClose, onSaved }: { ro
           {t('fields.is_active')}
         </label>
       </div>
+    </Modal>
+  )
+}
+
+/** Excel import of دروس المواد: template, preview with per-row errors, then create the valid rows. */
+function ImportDialog({ onClose, onDone }: { onClose: () => void; onDone: (m: string) => void }) {
+  const { t, i18n } = useTranslation('termSetup')
+  const { t: tc } = useTranslation('common')
+  const qc = useQueryClient()
+  const [preview, setPreview] = useState<SubjectLessonPreview | null>(null)
+  const [error, setError] = useState<string | null>(null)
+  const commit = useMutation({
+    mutationFn: () => termSetupApi.subjectLessonsImport(preview!.rows.filter((r) => !Object.keys(r.errors).length).map(({ row, data }) => ({ row, data }))),
+    onSuccess: (r) => { void qc.invalidateQueries({ queryKey: ['term-setup-subject-lessons'] }); onDone(r.message) },
+    onError: (e) => setError(parseApiError(e).message),
+  })
+
+  return (
+    <Modal wide title={t('subject_lessons.import')} onClose={onClose}
+      footer={<><SecondaryButton onClick={onClose}>{t('subject_lessons.close')}</SecondaryButton>
+        <PrimaryButton disabled={!preview || preview.valid === 0} loading={commit.isPending} onClick={() => commit.mutate()}>{t('subject_lessons.import_run', { count: preview?.valid ?? 0 })}</PrimaryButton></>}>
+      <p className="text-sm text-ink/65">{t('subject_lessons.import_hint')}</p>
+      <SheetPicker template={termSetupApi.subjectLessonsTemplate} templateName="subject-lessons-template.xlsx" onFile={async (f) => { setError(null); setPreview(await termSetupApi.subjectLessonsPreview(f)) }} />
+      {error && <p className="text-sm text-danger">{error}</p>}
+      {preview && (
+        <div className="space-y-3">
+          <PreviewCounts valid={preview.valid} invalid={preview.invalid} />
+          <TableWrap surface>
+            <table className="w-full min-w-[36rem] text-sm">
+              <thead className={TABLE_HEAD}>
+                <tr>
+                  <th scope="col" className="px-3 py-2 text-start font-medium">{tc('sheet_import.row')}</th>
+                  <th scope="col" className="px-3 py-2 text-start font-medium">{t('fields.subject')}</th>
+                  <th scope="col" className="px-3 py-2 text-start font-medium">{t('fields.level')}</th>
+                  <th scope="col" className="px-3 py-2 text-start font-medium">{t('fields.title')}</th>
+                  <th scope="col" className="px-3 py-2 text-start font-medium">{tc('sheet_import.status')}</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-ink/6">
+                {preview.rows.map((r) => {
+                  const errs = Object.values(r.errors)
+                  return (
+                    <tr key={r.row} className={errs.length ? 'bg-danger/5' : ''}>
+                      <td className="px-3 py-2 tabular-nums text-ink/60">{formatNumber(r.row, i18n.language)}</td>
+                      <td className="px-3 py-2" dir="auto">{r.data.subject_name ?? r.data.subject ?? ''}</td>
+                      <td className="px-3 py-2" dir="auto">{r.data.level_name ?? r.data.level ?? t('subject_lessons.all_levels')}</td>
+                      <td className="px-3 py-2 font-medium text-ink" dir="auto">{r.data.title ?? ''}</td>
+                      <td className="px-3 py-2">{errs.length ? <span className="text-danger">{errs.join('، ')}</span> : <span className="text-brand-700">{tc('sheet_import.ok')}</span>}</td>
+                    </tr>
+                  )
+                })}
+              </tbody>
+            </table>
+          </TableWrap>
+        </div>
+      )}
     </Modal>
   )
 }

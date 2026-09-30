@@ -33,6 +33,9 @@ class RolePermissionSeeder extends Seeder
         'term_setup.view', 'term_setup.manage',
         'menu.manage', // القائمة: menu order and hidden entries (Super Admin only)
         'nights.manage', // الليالي
+        'distribution.manage', // توزيع المستويات، ترفيع الطلبة، تحديث المستوى
+        'archive.view', 'archive.manage', // عرض الأرشيف / رفع الأرشيف
+        'books.view', 'books.manage', // الكتب ومتابعة الكتب
     ];
 
     /** Default matrix (editable later from the admin panel). */
@@ -57,6 +60,7 @@ class RolePermissionSeeder extends Seeder
             'reports.view', 'reports.export',
             'levels.manage', 'subjects.manage', // term setup master data; terms themselves stay with the Super Admin
             'term_setup.view', 'term_setup.manage', 'nights.manage',
+            'distribution.manage', 'archive.view', 'archive.manage', 'books.view', 'books.manage',
         ],
         'teacher' => [
             'dashboard.view',
@@ -69,6 +73,7 @@ class RolePermissionSeeder extends Seeder
             'honor.view', 'competitions.view', 'competitions.judge', 'challenges.view', // judging only where assigned
             'messages.send',
             'term_setup.view', // the plan and timetable, read-only
+            'books.view', // الكتب and متابعة الكتب of own classes, read-only
         ],
         'student' => [],
         'guardian' => [],

@@ -39,5 +39,16 @@
         "placeholder": "ابحث بالاسم أو الرقم أو الهاتف",
         "none": "لا توجد نتائج"
     },
+    "sheet_import": {
+        "template": "تنزيل النموذج",
+        "choose": "اختيار ملف Excel",
+        "reading": "جارٍ قراءة الملف…",
+        "row": "السطر",
+        "status": "الحالة",
+        "ok": "سليم",
+        "valid": "سليمة: {{count}}",
+        "invalid": "فيها أخطاء: {{count}}",
+        "preview": "معاينة الملف"
+    },
   "crud": { "edit": "تعديل", "delete": "حذف", "save": "حفظ", "cancel": "إلغاء" }
 }

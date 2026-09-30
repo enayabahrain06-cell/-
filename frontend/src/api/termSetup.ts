@@ -66,6 +66,13 @@ export interface LevelRoomRow {
   rooms: { location: Ref & { capacity: number }; level_room_id: number | null; sources: ('assigned' | 'circle' | 'timetable')[]; circles: string[] }[]
 }
 
+export interface SubjectLessonPreviewRow {
+  row: number
+  data: { subject: string | null; level: string | null; title: string | null; description: string | null; order: number | null; subject_name: string | null; level_name: string | null }
+  errors: Record<string, string>
+}
+export interface SubjectLessonPreview { rows: SubjectLessonPreviewRow[]; valid: number; invalid: number }
+
 export const termSetupApi = {
   options: () => api.get<{ data: SetupOptions }>('/term-setup/options').then((r) => r.data.data),
   copy: (d: { from_term_id: number; to_term_id: number; parts: CopyPart[] }) => api.post<{ message: string }>('/term-setup/copy', d).then((r) => r.data),
@@ -84,6 +91,14 @@ export const termSetupApi = {
   createSubjectLesson: (d: SubjectLessonInput) => api.post<Saved<SubjectLesson>>('/term-setup/subject-lessons', d).then((r) => r.data),
   updateSubjectLesson: (id: number, d: SubjectLessonInput) => api.put<Saved<SubjectLesson>>(`/term-setup/subject-lessons/${id}`, d).then((r) => r.data),
   removeSubjectLesson: (id: number) => api.delete<{ message: string }>(`/term-setup/subject-lessons/${id}`).then((r) => r.data),
+  subjectLessonsTemplate: () => api.get<Blob>('/term-setup/subject-lessons/import/template', { responseType: 'blob' }).then((r) => r.data),
+  subjectLessonsPreview: (file: File) => {
+    const form = new FormData()
+    form.append('file', file)
+    return api.post<SubjectLessonPreview>('/term-setup/subject-lessons/import/preview', form).then((r) => r.data)
+  },
+  subjectLessonsImport: (rows: { row: number; data: Record<string, unknown> }[]) =>
+    api.post<{ message: string; created: number }>('/term-setup/subject-lessons/import', { rows }).then((r) => r.data),
 
   plan: (levelSubjectId: number) => api.get<{ level_subject: LevelSubject; weeks: PlanWeek[]; data: PlanItem[] }>('/term-setup/plan', { params: { level_subject_id: levelSubjectId } }).then((r) => r.data),
   planView: (levelId: number) => api.get<PlanView>('/term-setup/plan/view', { params: { level_id: levelId } }).then((r) => r.data),

@@ -26,6 +26,12 @@
   "audit": "سجل التدقيق",
   "master_data": "القوائم",
   "term_setup": "إعدادات الفصل",
+  "level_distribution": "توزيع المستويات",
+  "promote_students": "ترفيع الطلبة",
+  "update_level": "تحديث المستوى",
+  "archive": "الأرشيف",
+  "payment_followup": "متابعة الدفع",
+  "books": "الكتب",
   "menu": {
     "dashboard": "لوحة التحكم",
     "menu": "القائمة",

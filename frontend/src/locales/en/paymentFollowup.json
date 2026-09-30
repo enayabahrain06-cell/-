@@ -1,0 +1,29 @@
+{
+  "subtitle": "Term fees: {{term}}",
+  "stats": {
+    "students": "Students",
+    "total": "Due",
+    "paid": "Paid",
+    "remaining": "Remaining"
+  },
+  "filters": "Filter",
+  "search": "Search by name, number or guardian phone",
+  "class": "Class",
+  "level": "Level",
+  "status": "Status",
+  "all_classes": "All classes",
+  "all_levels": "All levels",
+  "all_statuses": "All statuses",
+  "status_label": {
+    "paid": "Paid",
+    "partial": "Partly paid",
+    "unpaid": "Unpaid",
+    "none": "No invoice"
+  },
+  "empty": "No students match this filter.",
+  "student": "Student",
+  "actions": "Actions",
+  "overdue": "Overdue",
+  "record": "Record a payment",
+  "remind": "Send a payment reminder"
+}

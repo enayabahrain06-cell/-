@@ -93,7 +93,7 @@ class AcademicTermController extends Controller
             throw ValidationException::withMessages(['term' => __('terms.errors.in_use')]);
         }
         $setup = fn (string $model) => $model::where('academic_term_id', $academicTerm->id)->exists();
-        if ($setup(\App\Models\LevelSubject::class) || $setup(\App\Models\NightSupervisor::class) || $setup(\App\Models\TimetableSlot::class) || $setup(\App\Models\LevelRoom::class)) {
+        if ($setup(\App\Models\LevelSubject::class) || $setup(\App\Models\NightSupervisor::class) || $setup(\App\Models\TimetableSlot::class) || $setup(\App\Models\LevelRoom::class) || $setup(\App\Models\Book::class)) {
             throw ValidationException::withMessages(['term' => __('terms.errors.has_setup')]);
         }
         $this->audit->record('term.deleted', $academicTerm, $academicTerm->only(['name_ar', 'academic_year']), []);

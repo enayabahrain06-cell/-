@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api\TermSetup;
 
 use App\Models\SubjectLesson;
+use App\Services\TermSetup\SubjectLessonImport;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -52,6 +53,47 @@ class SubjectLessonController extends TermSetupBase
         $subjectLesson->delete();
 
         return response()->json(['message' => __('term_setup.deleted')]);
+    }
+
+    /** Excel template: the input sheet plus reference sheets of the subjects and levels it may name. */
+    public function importTemplate(Request $request): \Symfony\Component\HttpFoundation\BinaryFileResponse
+    {
+        $this->authorizeManage($request);
+        $subjects = \App\Models\Subject::ordered()->get()->map(fn ($s) => [$s->code, $s->name_ar, $s->name_en])->all();
+        $levels = \App\Models\Level::ordered()->get()->map(fn ($l) => [$l->code, $l->name_ar, $l->name_en])->all();
+
+        return \Maatwebsite\Excel\Facades\Excel::download(new \App\Exports\SheetTemplateExport('subject_lessons', SubjectLessonImport::COLUMNS,
+            [['quran', '', 'سورة الفاتحة', 'حفظ وتجويد', 1]],
+            ['subjects' => ['headings' => ['code', 'name_ar', 'name_en'], 'rows' => $subjects], 'levels' => ['headings' => ['code', 'name_ar', 'name_en'], 'rows' => $levels]],
+        ), 'subject-lessons-template.xlsx');
+    }
+
+    /** Validate an uploaded sheet without writing. */
+    public function importPreview(Request $request, SubjectLessonImport $import): JsonResponse
+    {
+        $this->authorizeManage($request);
+        $request->validate(['file' => ['required', 'file', 'mimes:xlsx,xls,csv', 'max:5120']]);
+        $rows = $import->preview($request->file('file'));
+
+        return response()->json([
+            'rows' => $rows,
+            'valid' => count(array_filter($rows, fn ($r) => ! $r['errors'])),
+            'invalid' => count(array_filter($rows, fn ($r) => (bool) $r['errors'])),
+        ]);
+    }
+
+    /** Create the previewed rows that are (still) valid. */
+    public function importCommit(Request $request, SubjectLessonImport $import): JsonResponse
+    {
+        $this->authorizeManage($request);
+        $data = $request->validate([
+            'rows' => ['required', 'array', 'min:1', 'max:'.SubjectLessonImport::MAX_ROWS],
+            'rows.*.row' => ['required', 'integer'],
+            'rows.*.data' => ['required', 'array'],
+        ]);
+        $result = $import->commit($request->user(), $data['rows']);
+
+        return response()->json($result + ['message' => __('term_setup.import.done', ['count' => $result['created']])]);
     }
 
     private function validated(Request $request, bool $update = false): array

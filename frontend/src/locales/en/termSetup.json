@@ -55,7 +55,11 @@
     "all_levels_filter": "All levels (no filter)",
     "title_new": "New lesson",
     "title_edit": "Edit lesson",
-    "delete_confirm": "Delete this lesson? Plan items that use it keep its title."
+    "delete_confirm": "Delete this lesson? Plan items that use it keep its title.",
+    "import": "Import from Excel",
+    "import_hint": "Columns: subject (code or name), level (code or name; empty for all levels), title, description, order. Rows with errors are skipped.",
+    "import_run": "Import {{count}} lessons",
+    "close": "Close"
   },
   "plan": {
     "no_subjects": "This level has no subjects this term. Add them under Level subjects.",

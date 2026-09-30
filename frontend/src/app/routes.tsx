@@ -53,6 +53,12 @@ import SchedulePage from '../features/portal/SchedulePage'
 import MessagesPage from '../features/portal/MessagesPage'
 import AccountPage from '../features/portal/AccountPage'
 import FamilyOnly from '../features/portal/FamilyOnly'
+import PaymentFollowupPage from '../features/payments/PaymentFollowupPage'
+import BooksPage from '../features/books/BooksPage'
+import LevelDistributionPage from '../features/distribution/LevelDistributionPage'
+import PromotionPage from '../features/distribution/PromotionPage'
+import UpdateLevelPage from '../features/distribution/UpdateLevelPage'
+import ArchivePage from '../features/archive/ArchivePage'
 
 function FullScreenLoader() {
   const { t } = useTranslation()
@@ -131,6 +137,12 @@ const BUILT: Record<string, React.ReactNode> = {
   reports: <ReportsHomePage />,
   messages: <MessagesHomePage />,
   teachers: <TeachersHomePage />,
+  payment_followup: <PaymentFollowupPage />,
+  books: <BooksPage />,
+  level_distribution: <LevelDistributionPage />,
+  promote_students: <PromotionPage />,
+  update_level: <UpdateLevelPage />,
+  archive: <ArchivePage />,
 }
 
 /** Detail pages under a section: [path, permissions (any), element]. */

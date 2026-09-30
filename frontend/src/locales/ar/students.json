@@ -94,7 +94,8 @@
         "wallet": "المحفظة",
         "details": "البيانات",
         "certificates": "الشهادات",
-        "placement": "تحديد المستوى"
+        "placement": "تحديد المستوى",
+        "archive": "الأرشيف"
     },
     "placement_tab": {
         "empty": "لا يوجد امتحان تحديد مستوى لهذا الطالب.",

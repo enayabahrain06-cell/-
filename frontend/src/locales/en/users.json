@@ -111,7 +111,10 @@
     "terms": "Academic terms",
     "levels": "Levels",
     "subjects": "Subjects",
-    "term_setup": "Term setup"
+    "term_setup": "Term setup",
+    "distribution": "Level distribution",
+    "archive": "Archive",
+    "books": "Books"
   },
   "mobile": {
     "all": "All",

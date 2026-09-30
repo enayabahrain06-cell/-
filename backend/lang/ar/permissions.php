@@ -24,4 +24,7 @@ return [
     'terms.manage' => 'إدارة الفصول الدراسية', 'levels.manage' => 'إدارة المستويات', 'subjects.manage' => 'إدارة المواد',
     'term_setup.view' => 'عرض إعدادات الفصل (الخطة والجدول)', 'term_setup.manage' => 'إدارة إعدادات الفصل',
     'menu.manage' => 'إدارة القائمة', 'nights.manage' => 'إدارة الليالي',
+    'distribution.manage' => 'توزيع الطلبة على المستويات وترفيعهم وتحديث مستوياتهم',
+    'archive.view' => 'عرض الأرشيف', 'archive.manage' => 'رفع الأرشيف وحذف دفعاته',
+    'books.view' => 'عرض الكتب ومتابعتها', 'books.manage' => 'إدارة الكتب وتسليمها',
 ];

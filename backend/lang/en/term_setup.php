@@ -20,6 +20,18 @@ return [
         'same_term' => 'Choose a different term to copy from.',
         'in_use' => 'Used in term setup (level subjects, lessons or the timetable); deactivate it instead of deleting it.',
     ],
+    'import' => [
+        'done' => ':count lessons imported.',
+        'subject_required' => 'The subject is required.',
+        'unknown_subject' => 'Unknown subject: :value',
+        'unknown_level' => 'Unknown level: :value',
+        'title_required' => 'The lesson title is required.',
+        'title_long' => 'The title is longer than 200 characters.',
+        'description_long' => 'The description is longer than 2000 characters.',
+        'bad_order' => 'The order must be a number from 0 to 9999.',
+        'duplicate_in_file' => 'Duplicate in the file (row :row).',
+        'exists' => 'This lesson already exists for this subject and level.',
+    ],
     'warnings' => [
         'teacher' => ':name already teaches at this time (:level, :from–:to).',
         'room' => 'Room :name is taken at this time (:level, :from–:to).',
