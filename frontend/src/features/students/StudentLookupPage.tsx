@@ -5,6 +5,7 @@ import type { StudentSummary } from '../../api/students'
 import StudentPicker from '../../components/StudentPicker'
 import { PageBand } from '../../components/ornaments'
 import { Card } from '../../components/ui'
+import { useOwnParam } from '../../app/embed'
 
 /**
  * تفاصيل الطالب / معلومات الطالب: find a student, then open their profile — the full history (overview) or the
@@ -14,7 +15,7 @@ export default function StudentLookupPage() {
   const { t } = useTranslation('students')
   const navigate = useNavigate()
   const [params] = useSearchParams()
-  const info = params.get('view') === 'info'
+  const info = useOwnParam(params, 'view') === 'info'
   const [student, setStudent] = useState<StudentSummary | null>(null)
   const title = info ? t('nav:menu.student_info') : t('nav:menu.student_details')
 

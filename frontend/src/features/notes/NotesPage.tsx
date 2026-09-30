@@ -10,6 +10,7 @@ import SelectField from '../../components/SelectField'
 import { Badge, EmptyCard, ErrorState, FilterBar, LoadingState, Notice, SearchInput, Segmented, SURFACE, TextInput } from '../../components/ui'
 import { formatNumber } from '../../lib/format'
 import NoteList from './NoteList'
+import { useEmbed, useOwnParam } from '../../app/embed'
 
 const TABS = ['students', 'general', 'levels', 'levels_view', 'subjects', 'subjects_view'] as const
 type Tab = (typeof TABS)[number]
@@ -22,7 +23,9 @@ const TAB_ENTRY: Record<Tab, string> = {
 export default function NotesPage() {
   const { t } = useTranslation('notes')
   const [params, setParams] = useSearchParams()
-  const tab: Tab = (TABS as readonly string[]).includes(params.get('tab') ?? '') ? (params.get('tab') as Tab) : 'students'
+  const host = useEmbed()
+  const ownTab = useOwnParam(params, 'tab')
+  const tab: Tab = (TABS as readonly string[]).includes(ownTab ?? '') ? (ownTab as Tab) : 'students'
   const opts = useQuery({ queryKey: ['note-options'], queryFn: notesApi.options })
 
   return (
@@ -30,10 +33,10 @@ export default function NotesPage() {
       <div className="hidden lg:block">
         <PageBand title={t('nav:notes')} subtitle={opts.data ? t('subtitle', { term: opts.data.term.name }) : undefined} />
       </div>
-      <div className="-mx-4 overflow-x-auto px-4 lg:mx-0 lg:px-0">
+      {!host && <div className="-mx-4 overflow-x-auto px-4 lg:mx-0 lg:px-0">
         <Segmented name="notes-tab" label={t('nav:notes')} value={tab} onChange={(v) => setParams({ tab: v }, { replace: true })}
           options={TABS.map((k) => ({ value: k, label: t(`nav:menu.${TAB_ENTRY[k]}`) }))} />
-      </div>
+      </div>}
       {opts.isLoading ? <LoadingState /> : opts.isError ? (
         isAxiosError(opts.error) && opts.error.response?.status === 422 ? <Notice tone="info">{parseApiError(opts.error).message}</Notice> : <ErrorState onRetry={() => void opts.refetch()} />
       ) : opts.data && (

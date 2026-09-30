@@ -10,6 +10,7 @@ import UserDialog from './UserDialog'
 import UsersList from './UsersList'
 import { MSegmented } from '../../components/mobile/atoms'
 import MobileToast from '../../components/mobile/Toast'
+import { useEmbed, useOwnParam } from '../../app/embed'
 
 type Tab = 'users' | 'roles'
 
@@ -17,8 +18,10 @@ export default function UsersHomePage() {
   const { t } = useTranslation('users')
   const { can } = useAuth()
   const [params, setParams] = useSearchParams()
+  const host = useEmbed()
+  const ownTab = useOwnParam(params, 'tab')
   const tabs: Tab[] = [...(can('users.view') ? ['users' as const] : []), ...(can('users.view', 'roles.manage') ? ['roles' as const] : [])]
-  const tab = (tabs as string[]).includes(params.get('tab') ?? '') ? (params.get('tab') as Tab) : tabs[0]
+  const tab = (tabs as string[]).includes(ownTab ?? '') ? (ownTab as Tab) : tabs[0]
   // undefined = closed, null = new user, AdminUser = editing
   const [editing, setEditing] = useState<AdminUser | null | undefined>(undefined)
   const [notice, setNoticeState] = useState<string | null>(null)
@@ -29,7 +32,7 @@ export default function UsersHomePage() {
   return (
     <div className="space-y-5">
       {/* Below lg: the shell header holds the title; tabs as a segmented control, notices as a toast, new user as the FAB. */}
-      {tabs.length > 1 && (
+      {!host && tabs.length > 1 && (
         <div className="lg:hidden">
           <MSegmented label={t('title')} value={tab} options={tabs.map((k) => ({ value: k, label: t(`tabs.${k}`) }))} onChange={(v) => { setNotice(null); setParams({ tab: v }, { replace: true }) }} />
         </div>
@@ -47,7 +50,7 @@ export default function UsersHomePage() {
           ) : undefined
         }
       />
-      {tabs.length > 1 && (
+      {!host && tabs.length > 1 && (
         <Segmented name="users-tab" label={t('title')} value={tab} options={tabs.map((k) => ({ value: k, label: t(`tabs.${k}`) }))} onChange={(v) => { setNotice(null); setParams({ tab: v }, { replace: true }) }} />
       )}
       {notice && <Notice>{notice}</Notice>}

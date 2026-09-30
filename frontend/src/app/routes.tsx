@@ -1,7 +1,11 @@
-import { Navigate, Outlet, createBrowserRouter, useLocation } from 'react-router-dom'
+import { Navigate, Outlet, createBrowserRouter, useLocation, useSearchParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
 import { useAuth } from './AuthContext'
 import { ALL_ROUTES } from './menuRoutes'
+import { useMenuV2, useNavV2 } from './menuV2'
+import { V2_SECTIONS, fromOldUrl, oldHref, pickView, redirectOf, visibleViews, type V2Tab } from './navV2'
+import TabPage from '../features/navV2/TabPage'
+import { LoadingState } from '../components/ui'
 import LoginPage from '../features/auth/LoginPage'
 import DashboardPage from '../features/dashboard/DashboardPage'
 import ComingSoon from '../features/common/ComingSoon'
@@ -201,6 +205,47 @@ const DETAIL: [string, string[], React.ReactNode][] = [
   ['gallery/:id', ['gallery.view'], <AlbumPage />],
 ]
 
+/**
+ * nav_v2 (runtime switch in القائمة). On: an old page URL goes to its tab and mode (router replace, other query
+ * values kept). Off: the old page renders exactly as before. Detail pages (/students/7 …) never move.
+ */
+function OldRoute({ children }: { children: React.ReactNode }) {
+  const v2 = useNavV2()
+  const { can } = useAuth()
+  const location = useLocation()
+  if (v2 === undefined) return <LoadingState />
+  if (v2) {
+    const params = new URLSearchParams(location.search)
+    const place = fromOldUrl(location.pathname, params, can)
+    if (place) return <Navigate to={redirectOf(place, params)} replace />
+  }
+  return <>{children}</>
+}
+
+/** A nav_v2 tab URL. With the switch off it goes back to the old page of the same screen. */
+function V2Route({ sectionKey, tab }: { sectionKey: string; tab: V2Tab }) {
+  const v2 = useNavV2()
+  const { can } = useAuth()
+  const [params] = useSearchParams()
+  if (v2 === undefined) return <LoadingState />
+  if (!v2) {
+    const view = pickView(visibleViews(tab, can), params)
+    return <Navigate to={view ? oldHref(view, params) : '/'} replace />
+  }
+  return <TabPage sectionKey={sectionKey} tabKey={tab.key} pages={BUILT} />
+}
+
+/** A nav_v2 section URL (/system …): its first tab this user may open. */
+function V2SectionRoot({ sectionKey }: { sectionKey: string }) {
+  const v2 = useNavV2()
+  const { sections } = useMenuV2()
+  if (v2 === undefined) return <LoadingState />
+  const s = v2 ? sections.find((x) => x.section.key === sectionKey) : undefined
+  return <Navigate to={s?.href ?? '/'} replace />
+}
+
+const OLD_PATHS = new Set(ALL_ROUTES.map((r) => r.path))
+
 /** A section the user has no permission for bounces back to the dashboard. */
 function Section({ keyName, icon, permissions }: { keyName: string; icon: string; permissions: string[] }) {
   const { can } = useAuth()
@@ -235,8 +280,11 @@ export const router = createBrowserRouter([
           { index: true, element: <DashboardPage /> },
           ...ALL_ROUTES.filter((s) => s.path !== '/').map((s) => ({
             path: s.path.slice(1),
-            element: BUILT[s.key] ? <Guard permissions={s.permissions}>{BUILT[s.key]}</Guard> : <Section keyName={s.key} icon={s.icon} permissions={s.permissions} />,
+            element: BUILT[s.key] ? <OldRoute><Guard permissions={s.permissions}>{BUILT[s.key]}</Guard></OldRoute> : <Section keyName={s.key} icon={s.icon} permissions={s.permissions} />,
           })),
+          // nav_v2: one route per tab, and the section URL when it is not also an old page.
+          ...V2_SECTIONS.flatMap((sec) => sec.tabs.map((tab) => ({ path: tab.path.slice(1), element: <V2Route sectionKey={sec.key} tab={tab} /> }))),
+          ...V2_SECTIONS.filter((sec) => !OLD_PATHS.has(sec.path)).map((sec) => ({ path: sec.path.slice(1), element: <V2SectionRoot sectionKey={sec.key} /> })),
           ...DETAIL.map(([path, perms, el]) => ({ path, element: <Guard permissions={perms}>{el}</Guard> })),
         ],
       },

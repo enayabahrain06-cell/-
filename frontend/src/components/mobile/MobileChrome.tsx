@@ -10,6 +10,8 @@ import { useAuth } from '../../app/AuthContext'
 import { entryHref, type MenuEntry, type NavSection } from '../../app/nav'
 import { ALL_ROUTES } from '../../app/menuRoutes'
 import { useMenu } from '../../app/menu'
+import { useEmbed } from '../../app/embed'
+import { useMenuV2, useNavV2 } from '../../app/menuV2'
 import { useTerm } from '../../app/term'
 import TermSelector from '../TermSelector'
 import { ChromeContext, TAB_ICON, useMobileChrome, useMobileTabs, type ChromeState, type Crumb } from './chrome'
@@ -68,11 +70,16 @@ export function MobileChromeProvider({ children }: { children: (state: { bottomN
   )
 }
 
-/** A page's own mobile header, portalled into the shell's header slot (replaces the default one). */
+/**
+ * A page's own mobile header, portalled into the shell's header slot (replaces the default one). Inside a nav_v2 tab
+ * page the tab page owns the header: a hosted page only adds its actions to it.
+ */
 export function MobilePage({ title, back, actions, breadcrumb }: { title: string; back?: string; actions?: ReactNode; breadcrumb?: Crumb[] }) {
   const { slot, claim, bottomNav } = useMobileChrome()
+  const host = useEmbed()
   // Layout effect: the default header is removed before the browser paints, so both never show for a frame (CLS).
-  useLayoutEffect(() => claim(), [claim])
+  useLayoutEffect(() => (host ? undefined : claim()), [claim, host])
+  if (host) return actions && host.mobileActions ? createPortal(actions, host.mobileActions) : null
   if (!slot) return null
   return createPortal(bottomNav ? <MobileAppBarSlotTitle /> : <MobilePageHeader title={title} back={back ?? '/'} actions={actions} breadcrumb={breadcrumb} />, slot)
 }
@@ -223,6 +230,8 @@ function MoreSheet({ open, onClose }: { open: boolean; onClose: () => void }) {
 
   const { sections, active } = useMenu()
   const activeSection = sections.find((s) => s.entries.some((e) => e.key === active))?.key
+  const v2 = useNavV2() === true
+  const menuV2 = useMenuV2()
   const [expanded, setExpanded] = useState<string | null>(null)
   const openKey = expanded ?? activeSection ?? null
   const switchTo = (next: 'ar' | 'en') => {
@@ -255,6 +264,25 @@ function MoreSheet({ open, onClose }: { open: boolean; onClose: () => void }) {
           </div>
         )}
 
+        {v2 ? (
+          // nav_v2: section names only; a section opens its page, whose tab row holds the rest.
+          <ul className="divide-y divide-ink/10 overflow-hidden rounded-card border border-ink/10 bg-white shadow-card">
+            {menuV2.sections.map(({ section, tabs, href }) => {
+              const on = menuV2.active === section.key
+              const total = tabs.reduce((n, x) => n + x.views.reduce((m, w) => m + (counts[w.feature ?? ''] ?? 0), 0), 0)
+              return (
+                <li key={section.key}>
+                  <Link to={href} onClick={onClose} aria-current={on ? 'page' : undefined} className="flex min-h-[52px] w-full items-center gap-3 px-4 py-2">
+                    <span className="inline-grid size-8 shrink-0 place-items-center rounded-lg bg-brand-50 text-brand-700"><Icon name={section.icon} className="size-[18px]" /></span>
+                    <span className={`min-w-0 flex-1 truncate text-[15px] ${on ? 'font-semibold text-brand-800' : 'text-ink'}`}>{t(`nav:sections.${section.key}`, { defaultValue: t(`nav:v2.sections.${section.key}`) })}</span>
+                    {total > 0 && <Pill tone="warn">{formatNumber(total, locale)}</Pill>}
+                    <Icon name="chevron" className="size-4 shrink-0 text-ink/40 rtl:rotate-180" />
+                  </Link>
+                </li>
+              )
+            })}
+          </ul>
+        ) : (
         <ul className="divide-y divide-ink/10 overflow-hidden rounded-card border border-ink/10 bg-white shadow-card">
           {sections.map((s) => {
             const isOpen = openKey === s.key
@@ -285,6 +313,7 @@ function MoreSheet({ open, onClose }: { open: boolean; onClose: () => void }) {
             )
           })}
         </ul>
+        )}
 
         <div className="flex min-h-[52px] items-center gap-3 rounded-card border border-ink/10 bg-white px-4 py-2 shadow-card">
           <span className="inline-grid size-8 shrink-0 place-items-center rounded-lg bg-brand-50 text-brand-700"><Icon name="globe" className="size-[18px]" /></span>

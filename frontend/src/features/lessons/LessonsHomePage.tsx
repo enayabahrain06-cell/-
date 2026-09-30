@@ -14,6 +14,7 @@ import { formatDate, formatNumber, formatTime } from '../../lib/format'
 import { BookingDialog, HallFormDialog } from './HallDialogs'
 import LessonFormDialog from './LessonFormDialog'
 import { MobileBookings, MobileCircles, MobileHalls, MobileLessonsHeader } from './MobileLessons'
+import { useEmbed, useOwnParam } from '../../app/embed'
 
 export const GENDER_TONE: Record<string, Tone> = { male: 'brand', female: 'gold', mixed: 'info', shared: 'muted' }
 
@@ -22,16 +23,18 @@ type Tab = 'circles' | 'halls' | 'bookings'
 export default function LessonsHomePage() {
   const { t } = useTranslation('lessons')
   const [params, setParams] = useSearchParams()
-  const tab = (['circles', 'halls', 'bookings'] as const).includes(params.get('tab') as Tab) ? (params.get('tab') as Tab) : 'circles'
+  const host = useEmbed()
+  const ownTab = useOwnParam(params, 'tab')
+  const tab = (['circles', 'halls', 'bookings'] as const).includes(ownTab as Tab) ? (ownTab as Tab) : 'circles'
 
   return (
     <div className="space-y-5">
-      <MobileLessonsHeader tab={tab} onTab={(v) => setParams({ tab: v }, { replace: true })} />
+      {!host && <MobileLessonsHeader tab={tab} onTab={(v) => setParams({ tab: v }, { replace: true })} />}
       <div className="hidden space-y-5 lg:block">
         <PageBand title={t('title')} subtitle={t('subtitle')} />
-        <Segmented name="lessons-tab" label={t('title')} value={tab}
+        {!host && <Segmented name="lessons-tab" label={t('title')} value={tab}
           options={(['circles', 'halls', 'bookings'] as const).map((k) => ({ value: k, label: t(`tabs.${k}`) }))}
-          onChange={(v) => setParams({ tab: v }, { replace: true })} />
+          onChange={(v) => setParams({ tab: v }, { replace: true })} />}
       </div>
       {tab === 'circles' && <Circles />}
       {tab === 'halls' && <Halls />}

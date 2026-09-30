@@ -13,6 +13,7 @@ import { formatDate, formatNumber, formatPercent } from '../../lib/format'
 import MobileHonor from './MobileHonor'
 import MobileToast from '../../components/mobile/Toast'
 import TopStudentsPanel from './TopStudentsPanel'
+import { useEmbed, useOwnParam } from '../../app/embed'
 
 export type HonorTab = 'board' | 'badges' | 'grades'
 
@@ -42,8 +43,10 @@ export default function HonorBoardPage() {
   const [level, setLevel] = useState<'track' | 'package' | 'circle'>('track')
   // The tab lives in the URL: the menu entry تحديد المتفوقين opens ?tab=grades (the grades source of the board).
   const [params, setParams] = useSearchParams()
+  const host = useEmbed()
+  const ownTab = useOwnParam(params, 'tab')
   const grades = can('grades.view')
-  const asked = params.get('tab')
+  const asked = ownTab
   const tab: HonorTab = asked === 'badges' ? 'badges' : asked === 'grades' && grades ? 'grades' : 'board'
   const setTab = (v: HonorTab) => setParams(v === 'board' ? {} : { tab: v }, { replace: true })
   const tabOptions = [{ value: 'board' as const, label: t('honor.tab_board') }, { value: 'badges' as const, label: t('honor.tab_badges') }, ...(grades ? [{ value: 'grades' as const, label: t('nav:menu.top_students') }] : [])]
@@ -75,7 +78,7 @@ export default function HonorBoardPage() {
   return (
     <>
     <MobileHonor board={board} loading={q.isLoading} error={q.isError} onRetry={() => void q.refetch()} period={period} maxPeriod={currentMonth()} onPeriod={setPeriod}
-      both={both} gender={gender} onGender={setGender} tab={tab} onTab={setTab} tabOptions={tabOptions} level={level} onLevel={setLevel} manage={manage} displayKey={displayKey} tvUrl={tvUrl}
+      both={both} gender={gender} onGender={setGender} tab={tab} onTab={setTab} tabOptions={host ? [] : tabOptions} level={level} onLevel={setLevel} manage={manage} displayKey={displayKey} tvUrl={tvUrl}
       computing={compute.isPending} publishing={publish.isPending} onCompute={() => compute.mutate()} onPublish={(v) => publish.mutate(v)} onHonor={() => setHonorOpen(true)}
       badges={<div className="lg:hidden"><BadgesPanel manage={manage} /></div>}
       grades={tab === 'grades' ? <div className="lg:hidden"><TopStudentsPanel gender={both ? gender : undefined} /></div> : null} />
@@ -100,7 +103,7 @@ export default function HonorBoardPage() {
           </label>
         )}
         {both && <Segmented name="honor-gender" label={t('honor.track')} value={gender} onChange={setGender} options={[{ value: 'male', label: t('display.boys') }, { value: 'female', label: t('display.girls') }]} />}
-        <Segmented name="honor-tab" label={t('honor.view')} value={tab} onChange={setTab} options={tabOptions} />
+        {!host && <Segmented name="honor-tab" label={t('honor.view')} value={tab} onChange={setTab} options={tabOptions} />}
       </FilterBar>
 
       {notice && <Notice tone={notice.tone}>{notice.text}</Notice>}

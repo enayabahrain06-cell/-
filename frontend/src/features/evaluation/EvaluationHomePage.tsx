@@ -14,26 +14,29 @@ import ScoreGrid, { emptyDraft, isComplete, type Draft } from './ScoreGrid'
 import MobileScoreEntry, { MobileEntryEmpty, MobileEntrySkeleton } from './MobileEvaluation'
 import { MSegmented, MSelect } from '../../components/mobile/atoms'
 import MobileToast from '../../components/mobile/Toast'
+import { useEmbed, useOwnParam } from '../../app/embed'
 
 export default function EvaluationHomePage() {
   const { t } = useTranslation('evaluation')
   const [params, setParams] = useSearchParams()
-  const tab = params.get('tab') === 'monthly' ? 'monthly' : 'daily'
+  const host = useEmbed()
+  const ownTab = useOwnParam(params, 'tab')
+  const tab = ownTab === 'monthly' ? 'monthly' : 'daily'
   const setTab = (v: string) => { const n = new URLSearchParams(params); n.set('tab', v); setParams(n, { replace: true }) }
 
   return (
     <div className="space-y-5">
       <div className="hidden space-y-5 lg:block">
         <PageBand title={t('title')} subtitle={t('subtitle')} />
-        <Segmented name="eval-tab" label={t('title')} value={tab} fill
+        {!host && <Segmented name="eval-tab" label={t('title')} value={tab} fill
           options={[{ value: 'daily', label: t('tabs.daily') }, { value: 'monthly', label: t('tabs.monthly') }]}
-          onChange={setTab} />
+          onChange={setTab} />}
       </div>
       {/* Below lg the page header carries the title; the two tabs stay as one segmented control. */}
-      <div className="lg:hidden">
+      {!host && <div className="lg:hidden">
         <MSegmented label={t('title')} value={tab} onChange={setTab}
           options={[{ value: 'daily', label: t('tabs.daily') }, { value: 'monthly', label: t('tabs.monthly') }]} />
-      </div>
+      </div>}
       {tab === 'daily' ? <AttendanceDayPage basePath="/evaluation" embedded /> : <Monthly />}
     </div>
   )

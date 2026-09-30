@@ -12,6 +12,7 @@ import { Badge, EmptyCard, ErrorState, FilterBar, IconButton, LoadingState, Moda
 import { formatDate, formatMoney, formatNumber } from '../../lib/format'
 import { toLatinDigits } from '../../lib/phone'
 import { DialogFooter, Field, Toolbar, useRemove } from '../common/crud'
+import { useEmbed, useOwnParam } from '../../app/embed'
 
 type Tab = 'books' | 'followup'
 
@@ -19,7 +20,9 @@ type Tab = 'books' | 'followup'
 export default function BooksPage() {
   const { t } = useTranslation('books')
   const [params, setParams] = useSearchParams()
-  const tab: Tab = params.get('tab') === 'followup' ? 'followup' : 'books'
+  const host = useEmbed()
+  const ownTab = useOwnParam(params, 'tab')
+  const tab: Tab = ownTab === 'followup' ? 'followup' : 'books'
   const q = useQuery({ queryKey: ['books'], queryFn: booksApi.list })
 
   return (
@@ -27,10 +30,10 @@ export default function BooksPage() {
       <div className="hidden lg:block">
         <PageBand title={t('nav:menu.books')} subtitle={q.data ? t('subtitle', { term: q.data.term.name }) : undefined} />
       </div>
-      <div className="-mx-4 overflow-x-auto px-4 lg:mx-0 lg:px-0">
+      {!host && <div className="-mx-4 overflow-x-auto px-4 lg:mx-0 lg:px-0">
         <Segmented name="books-tab" label={t('nav:menu.books')} value={tab} onChange={(v) => setParams({ tab: v }, { replace: true })}
           options={[{ value: 'books', label: t('nav:menu.books') }, { value: 'followup', label: t('nav:menu.books_followup') }]} />
-      </div>
+      </div>}
       {q.isLoading ? <LoadingState /> : q.isError ? (
         isAxiosError(q.error) && q.error.response?.status === 422 ? <Notice tone="info">{parseApiError(q.error).message}</Notice> : <ErrorState onRetry={() => void q.refetch()} />
       ) : q.data && (tab === 'books'

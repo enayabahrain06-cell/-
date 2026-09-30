@@ -157,5 +157,318 @@
     "grades": "الدرجات",
     "communication": "التواصل والتقارير"
   },
-  "gallery": "معرض الصور"
+  "gallery": "معرض الصور",
+  "v2": {
+    "sections": {
+      "motivation": "التحفيز"
+    },
+    "tabs": {
+      "system": {
+        "users": "المستخدمون",
+        "general": "عامة",
+        "menu": "القائمة",
+        "audit": "سجل التدقيق"
+      },
+      "lists": {
+        "terms": "الفصول الدراسية",
+        "nights": "الليالي",
+        "rooms": "الغرف",
+        "subjects": "المواد",
+        "classes": "الصفوف",
+        "levels": "المستويات",
+        "teachers": "المعلمون",
+        "supervisors": "المشرفون"
+      },
+      "term_setup": {
+        "level_rooms": "غرف المستويات",
+        "subjects": "المواد والدروس",
+        "plan": "الخطة",
+        "supervisors": "مشرفو الليالي",
+        "timetable": "الجدول الدراسي"
+      },
+      "registration": {
+        "new": "طالب جديد",
+        "students": "الطلبة",
+        "levels": "المستويات",
+        "archive": "الأرشيف",
+        "fees": "الرسوم الدراسية",
+        "books": "الكتب الدراسية",
+        "packages": "الباقات والقرعة"
+      },
+      "followup": {
+        "student": "الطالب",
+        "notes": "الملاحظات",
+        "divisions": "التقسيمات",
+        "evaluation": "التقييم",
+        "lessons": "الدروس"
+      },
+      "attendance": {
+        "students": "الطلبة",
+        "supervisors": "المشرفون",
+        "teachers": "المعلمون"
+      },
+      "programs": {
+        "overview": "نظرة عامة",
+        "registration": "التسجيل",
+        "fees": "الرسوم",
+        "book": "الكتاب",
+        "attendance": "الحضور",
+        "evaluation": "التقييم"
+      },
+      "trips": {
+        "overview": "نظرة عامة",
+        "registration": "التسجيل",
+        "fees": "الرسوم",
+        "attendance": "الحضور"
+      },
+      "grades": {
+        "exams": "الامتحانات",
+        "marking": "رصد الدرجات",
+        "distribution": "التوزيع"
+      },
+      "motivation": {
+        "competitions": "المسابقات",
+        "honor": "لوحة التميز",
+        "certificates": "الشهادات"
+      },
+      "communication": {
+        "messages": "الرسائل",
+        "reports": "التقارير",
+        "gallery": "معرض الصور"
+      }
+    },
+    "modes": {
+      "system": {
+        "users": {
+          "users": "الحسابات",
+          "roles": "الصلاحيات"
+        },
+        "general": {
+          "general": "الإعدادات",
+          "committee": "اللجنة"
+        }
+      },
+      "lists": {
+        "rooms": {
+          "rooms": "الغرف",
+          "bookings": "الحجوزات"
+        }
+      },
+      "term_setup": {
+        "subjects": {
+          "subjects": "المواد",
+          "lessons": "الدروس"
+        },
+        "plan": {
+          "edit": "تعديل",
+          "view": "عرض"
+        }
+      },
+      "registration": {
+        "levels": {
+          "distribute": "التوزيع",
+          "promote": "الترفيع",
+          "update": "التحديث"
+        },
+        "archive": {
+          "view": "عرض",
+          "upload": "رفع"
+        },
+        "fees": {
+          "pay": "الدفع",
+          "track": "المتابعة",
+          "invoices": "الفواتير",
+          "refunds": "الاستردادات",
+          "report": "التقرير"
+        },
+        "books": {
+          "books": "الكتب",
+          "track": "المتابعة"
+        },
+        "packages": {
+          "packages": "الباقات",
+          "requests": "الطلبات",
+          "lottery": "القرعة"
+        }
+      },
+      "followup": {
+        "student": {
+          "details": "التفاصيل",
+          "info": "المعلومات"
+        },
+        "notes": {
+          "record": "تسجيل",
+          "view": "عرض"
+        },
+        "evaluation": {
+          "record": "تسجيل",
+          "view": "عرض",
+          "criteria": "المعايير"
+        },
+        "lessons": {
+          "quran": "القرآن",
+          "subjects": "المواد"
+        }
+      },
+      "attendance": {
+        "students": {
+          "record": "تسجيل",
+          "view": "عرض",
+          "monitor": "مراقبة"
+        },
+        "supervisors": {
+          "record": "تسجيل",
+          "view": "عرض"
+        },
+        "teachers": {
+          "view": "عرض",
+          "record": "تسجيل"
+        }
+      },
+      "programs": {
+        "registration": {
+          "register": "تسجيل",
+          "list": "المسجّلون"
+        },
+        "fees": {
+          "pay": "الدفع",
+          "track": "المتابعة"
+        },
+        "book": {
+          "deliver": "التسليم",
+          "track": "المتابعة"
+        },
+        "attendance": {
+          "record": "تسجيل",
+          "track": "المتابعة"
+        },
+        "evaluation": {
+          "enter": "إدخال",
+          "view": "عرض"
+        }
+      },
+      "trips": {
+        "fees": {
+          "pay": "الدفع",
+          "track": "المتابعة"
+        },
+        "attendance": {
+          "record": "تسجيل",
+          "track": "المتابعة"
+        }
+      },
+      "grades": {
+        "exams": {
+          "list": "القائمة",
+          "upload": "الرفع"
+        },
+        "marking": {
+          "record": "رصد",
+          "view": "عرض",
+          "monitor": "مراقبة"
+        },
+        "distribution": {
+          "distribution": "التوزيع",
+          "required": "الدروس المطلوبة"
+        }
+      },
+      "motivation": {
+        "competitions": {
+          "competitions": "المسابقات",
+          "challenges": "التحديات"
+        },
+        "honor": {
+          "board": "اللوحة",
+          "badges": "الأوسمة",
+          "top": "المتفوقون"
+        }
+      },
+      "communication": {
+        "messages": {
+          "log": "السجل",
+          "inbox": "الوارد",
+          "send": "إرسال",
+          "templates": "القوالب",
+          "rules": "القواعد",
+          "whatsapp": "واتساب"
+        }
+      }
+    },
+    "kinds": {
+      "system": {},
+      "lists": {},
+      "term_setup": {},
+      "registration": {},
+      "followup": {
+        "notes": {
+          "students": "الطلبة",
+          "general": "عامة",
+          "levels": "المستويات",
+          "subjects": "مواد المستويات"
+        },
+        "evaluation": {
+          "daily": "يومي",
+          "monthly": "شهري",
+          "class": "الصف",
+          "division": "التقسيم"
+        }
+      },
+      "attendance": {
+        "students": {
+          "class": "الصف",
+          "division": "التقسيم"
+        }
+      },
+      "programs": {},
+      "trips": {},
+      "grades": {
+        "marking": {
+          "table": "عرض الدرجات",
+          "download": "تنزيل الدرجات"
+        }
+      },
+      "motivation": {},
+      "communication": {}
+    },
+    "kindLabels": {
+      "system": {},
+      "lists": {},
+      "term_setup": {},
+      "registration": {},
+      "followup": {
+        "notes": "النوع",
+        "evaluation": "النوع"
+      },
+      "attendance": {
+        "students": "النوع"
+      },
+      "programs": {},
+      "trips": {},
+      "grades": {},
+      "motivation": {},
+      "communication": {}
+    },
+    "extra": {
+      "room_bookings": "حجوزات الغرف",
+      "registration_requests": "طلبات التسجيل",
+      "invoices": "الفواتير",
+      "refunds": "الاستردادات",
+      "finance_report": "التقرير المالي",
+      "monthly_evaluation": "التقييم الشهري",
+      "record_teacher_attendance": "تسجيل حضور المعلمين",
+      "challenges": "التحديات",
+      "badges": "الأوسمة",
+      "message_inbox": "الوارد والأعذار",
+      "message_send": "إرسال رسالة",
+      "message_templates": "قوالب الرسائل",
+      "message_rules": "قواعد الرسائل",
+      "whatsapp": "واتساب"
+    }
+  },
+  "v2search": {
+    "open": "بحث سريع",
+    "title": "بحث سريع في الشاشات",
+    "placeholder": "اكتب اسم الشاشة، مثل: دفع رسوم البرنامج",
+    "none": "لا توجد شاشة بهذا الاسم."
+  }
 }

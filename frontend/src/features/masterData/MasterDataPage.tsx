@@ -11,6 +11,7 @@ import { Badge, EmptyCard, ErrorState, LoadingState, Modal, Notice, SecondaryBut
 import { formatDate, formatNumber } from '../../lib/format'
 import { DialogFooter, Field, ItemActions, Toolbar, useRemove } from '../common/crud'
 import { NightsTab, SupervisorsTab } from './NightsTab'
+import { useEmbed, useOwnParam } from '../../app/embed'
 
 type Tab = 'terms' | 'nights' | 'subjects' | 'levels' | 'supervisors'
 /** In the order of the other system's القوائم menu (الغرف، الصفوف and المعلمين open their own screens). */
@@ -27,15 +28,17 @@ export default function MasterDataPage() {
   const { t } = useTranslation('masterData')
   const { can } = useAuth()
   const [params, setParams] = useSearchParams()
+  const host = useEmbed()
+  const ownTab = useOwnParam(params, 'tab')
   const tabs = TABS.filter((x) => can(...x.permissions))
-  const tab = tabs.find((x) => x.key === params.get('tab'))?.key ?? tabs[0]?.key ?? 'terms'
+  const tab = tabs.find((x) => x.key === ownTab)?.key ?? tabs[0]?.key ?? 'terms'
 
   return (
     <div className="space-y-5">
       <div className="hidden lg:block">
         <PageBand title={t('title')} subtitle={t('subtitle')} />
       </div>
-      {tabs.length > 1 && (
+      {!host && tabs.length > 1 && (
         <div className="-mx-4 overflow-x-auto px-4 lg:mx-0 lg:px-0">
           <Segmented name="master-data-tab" label={t('title')} value={tab}
             options={tabs.map((x) => ({ value: x.key, label: t(`tabs.${x.key}`) }))}

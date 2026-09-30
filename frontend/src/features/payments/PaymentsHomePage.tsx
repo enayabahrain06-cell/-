@@ -16,6 +16,7 @@ import { formatDate, formatMoney, formatNumber } from '../../lib/format'
 import { FinanceOverview, MethodBars, OutstandingBars, PackageBars } from './FinanceCharts'
 import MobilePayments from './MobilePayments'
 import { AdjustDialog, InvoiceDialog, RecordPaymentDialog, RefundDialog } from './PaymentDialogs'
+import { useEmbed, useOwnParam } from '../../app/embed'
 
 type Tab = 'payments' | 'invoices' | 'refunds' | 'report'
 const monthStart = () => { const d = new Date(); return new Date(d.getFullYear(), d.getMonth(), 1).toLocaleDateString('en-CA') }
@@ -25,8 +26,10 @@ export default function PaymentsHomePage() {
   const { t } = useTranslation('payments')
   const { can } = useAuth()
   const [params, setParams] = useSearchParams()
+  const host = useEmbed()
+  const ownTab = useOwnParam(params, 'tab')
   const tabs: Tab[] = ['payments', 'invoices', 'refunds', ...(can('reports.view') || can('wallets.view') ? ['report' as const] : [])]
-  const tab = (tabs as string[]).includes(params.get('tab') ?? '') ? (params.get('tab') as Tab) : 'payments'
+  const tab = (tabs as string[]).includes(ownTab ?? '') ? (ownTab as Tab) : 'payments'
   const [dialog, setDialog] = useState<'pay' | 'invoice' | 'refund' | 'adjust' | null>(null)
   const [notice, setNotice] = useState<string | null>(null)
   // The mobile toast clears itself after 4s; it has its own state so the desktop notice is untouched.
@@ -46,7 +49,7 @@ export default function PaymentsHomePage() {
           )}
         </div>} />
       <div className="flex flex-wrap items-center gap-2">
-        <Segmented name="pay-tab" label={t('title')} value={tab} options={tabs.map((k) => ({ value: k, label: t(`tabs.${k}`) }))} onChange={(v) => setParams({ tab: v }, { replace: true })} />
+        {!host && <Segmented name="pay-tab" label={t('title')} value={tab} options={tabs.map((k) => ({ value: k, label: t(`tabs.${k}`) }))} onChange={(v) => setParams({ tab: v }, { replace: true })} />}
         <div className="ms-auto flex flex-wrap gap-2">
           {can('payments.record') && <SecondaryButton onClick={() => setDialog('invoice')}>{t('new_invoice')}</SecondaryButton>}
           {can('refunds.manage') && <SecondaryButton onClick={() => setDialog('refund')}>{t('new_refund')}</SecondaryButton>}

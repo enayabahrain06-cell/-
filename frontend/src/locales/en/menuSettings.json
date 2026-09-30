@@ -7,5 +7,14 @@
   "hide": "Hide",
   "show": "Show",
   "hidden": "Hidden",
-  "not_built": "Not built yet"
+  "not_built": "Not built yet",
+  "v2": {
+    "switch": "Menu layout",
+    "switch_hint": "Current menu: sections with their entries in the sidebar. New menu: section names only, each section a page with tabs. The change applies to everyone at once and can be switched back at any time.",
+    "old": "Current menu",
+    "new": "New menu",
+    "sep": ", ",
+    "shows_again_one": "{{count}} entry hidden in the current menu shows again, because its tab is shown:",
+    "shows_again_other": "{{count}} entries hidden in the current menu show again, because their tabs are shown:"
+  }
 }

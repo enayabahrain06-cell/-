@@ -12,6 +12,7 @@ import { formatDate, formatNumber } from '../../lib/format'
 import { useRemove } from '../common/crud'
 import { PreviewCounts, SheetPicker } from '../common/SheetImport'
 import { ArchiveTable } from './StudentArchiveTab'
+import { useEmbed, useOwnParam } from '../../app/embed'
 
 type Tab = 'upload' | 'view'
 
@@ -20,15 +21,17 @@ export default function ArchivePage() {
   const { t } = useTranslation('archive')
   const { can } = useAuth()
   const [params, setParams] = useSearchParams()
+  const host = useEmbed()
+  const ownTab = useOwnParam(params, 'tab')
   const tabs: Tab[] = [...(can('archive.manage') ? ['upload' as const] : []), 'view']
-  const tab: Tab = params.get('tab') === 'upload' && can('archive.manage') ? 'upload' : 'view'
+  const tab: Tab = ownTab === 'upload' && can('archive.manage') ? 'upload' : 'view'
 
   return (
     <div className="space-y-5">
       <div className="hidden lg:block">
         <PageBand title={t('title')} subtitle={t('subtitle')} />
       </div>
-      {tabs.length > 1 && (
+      {!host && tabs.length > 1 && (
         <div className="-mx-4 overflow-x-auto px-4 lg:mx-0 lg:px-0">
           <Segmented name="archive-tab" label={t('title')} value={tab} onChange={(v) => setParams({ tab: v }, { replace: true })}
             options={[{ value: 'view', label: t('nav:menu.view_archive') }, { value: 'upload', label: t('nav:menu.upload_archive') }]} />

@@ -16,6 +16,7 @@ import LinkedAlbums from '../gallery/LinkedAlbums'
 import { ChallengesPanel } from './ChallengePages'
 import { MEDAL } from '../honor/HonorBoardPage'
 import { MobileChallengesFab, MobileCompetitionHeader, MobileCompetitionList, MobileCompetitionsTabs } from './MobileCompetitions'
+import { useEmbed, useOwnParam } from '../../app/embed'
 
 export const COMP_TONE: Record<CompetitionRow['status'], Tone> = { draft: 'muted', open: 'brand', running: 'gold', judging: 'gold', finished: 'brand', cancelled: 'muted' }
 const GENDER_TONE: Record<string, Tone> = { male: 'brand', female: 'gold' }
@@ -24,8 +25,10 @@ export function CompetitionsHomePage() {
   const { t } = useTranslation('engagement')
   const { can } = useAuth()
   const [params, setParams] = useSearchParams()
+  const host = useEmbed()
+  const ownTab = useOwnParam(params, 'tab')
   const canComp = can('competitions.view')
-  const tab = (params.get('tab') === 'challenges' || !canComp) && can('challenges.view') ? 'challenges' : 'competitions'
+  const tab = (ownTab === 'challenges' || !canComp) && can('challenges.view') ? 'challenges' : 'competitions'
   const [open, setOpen] = useState(false)
   const [openChallenge, setOpenChallenge] = useState(false)
   const navigate = useNavigate()
@@ -35,13 +38,13 @@ export function CompetitionsHomePage() {
     <div className="space-y-5">
       {/* Below lg: the page header carries the title; tabs, status groups and the FAB are the mobile variants
           (mobile-only elements come before the shared ones so desktop spacing is unchanged). */}
-      <MobileCompetitionsTabs show={canComp && can('challenges.view')} tab={tab} onTab={(v) => setParams(v === 'challenges' ? { tab: v } : {})} />
+      <MobileCompetitionsTabs show={!host && canComp && can('challenges.view')} tab={tab} onTab={(v) => setParams(v === 'challenges' ? { tab: v } : {})} />
       <div className="hidden space-y-5 lg:block">
         <PageBand title={t('competitions.title')} subtitle={t('competitions.subtitle')}
           actions={tab === 'competitions'
             ? can('competitions.manage') && <button type="button" onClick={() => setOpen(true)} className={buttonClass('onDeep')}>+ {t('competitions.new')}</button>
             : can('challenges.manage') && <button type="button" onClick={() => setOpenChallenge(true)} className={buttonClass('onDeep')}>+ {t('challenges.new')}</button>} />
-        {canComp && can('challenges.view') && (
+        {!host && canComp && can('challenges.view') && (
           <Segmented name="comp-tab" label="" value={tab} onChange={(v) => setParams(v === 'challenges' ? { tab: v } : {})}
             options={[{ value: 'competitions', label: t('competitions.tab_competitions') }, { value: 'challenges', label: t('competitions.tab_challenges') }]} />
         )}

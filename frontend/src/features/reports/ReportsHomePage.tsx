@@ -13,13 +13,15 @@ import AttendanceRateChart from './AttendanceRateChart'
 import ReportTable from './ReportTable'
 import { presets } from './presets'
 import { MobileCatalog, MobileViewerBar } from './MobileReports'
+import { useOwnParam } from '../../app/embed'
 
 /** Reports: a catalog grouped by subject; ?report=<key> opens one with its filters kept in the URL. */
 export default function ReportsHomePage() {
   const { t, i18n } = useTranslation('reports')
   const [params] = useSearchParams()
+  const own = useOwnParam(params, 'report')
   const catalog = useQuery({ queryKey: ['reports', 'catalog', i18n.language], queryFn: reportsApi.catalog })
-  const key = params.get('report')
+  const key = own
   const entry = catalog.data?.data.find((r) => r.key === key)
 
   return (

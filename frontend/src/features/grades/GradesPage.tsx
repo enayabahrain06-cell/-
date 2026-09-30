@@ -12,6 +12,7 @@ import { PageBand } from '../../components/ornaments'
 import SelectField from '../../components/SelectField'
 import { Badge, EmptyCard, ErrorState, FilterBar, LoadingState, Modal, Notice, PrimaryButton, SecondaryButton, Segmented, SURFACE, TABLE_HEAD, TableWrap, inputClass } from '../../components/ui'
 import { formatNumber, formatPercent } from '../../lib/format'
+import { useEmbed, useOwnParam } from '../../app/embed'
 
 type Tab = 'record' | 'view' | 'download'
 const MENU: Record<Tab, string> = { record: 'grades', view: 'view_grades', download: 'download_grades' }
@@ -21,8 +22,10 @@ export default function GradesPage() {
   const { t } = useTranslation('grades')
   const { can } = useAuth()
   const [params, setParams] = useSearchParams()
+  const host = useEmbed()
+  const ownTab = useOwnParam(params, 'tab')
   const tabs = ([['record', 'grades.record'], ['view', 'grades.view'], ['download', 'grades.view']] as const).filter(([, p]) => can(p)).map(([k]) => k)
-  const asked = params.get('tab') as Tab | null
+  const asked = ownTab as Tab | null
   const tab: Tab = asked && (tabs as string[]).includes(asked) ? asked : tabs[0] ?? 'view'
   const [lessonId, setLessonId] = useState<number | ''>(() => Number(params.get('lesson')) || '')
   const [subjectId, setSubjectId] = useState<number | undefined>(undefined)
@@ -30,7 +33,7 @@ export default function GradesPage() {
   return (
     <div className="space-y-5">
       <div className="hidden lg:block"><PageBand title={t(`nav:menu.${MENU[tab]}`)} subtitle={t(`book.subtitle_${tab}`)} /></div>
-      {tabs.length > 1 && (
+      {!host && tabs.length > 1 && (
         <div className="-mx-4 overflow-x-auto px-4 lg:mx-0 lg:px-0">
           <Segmented name="grades-tab" label={t('nav:menu.grades')} value={tab} onChange={(v) => setParams({ tab: v }, { replace: true })}
             options={tabs.map((k) => ({ value: k, label: t(`nav:menu.${MENU[k]}`) }))} />
