@@ -8,7 +8,14 @@ export const CRITERIA: Criterion[] = ['memorization', 'tajweed', 'revision', 'be
 export interface SavedScore extends ScoreRow {
   student_id: number
   sent_to_guardian_at: string | null
+  subject_id?: number | null
+  division_id?: number | null
+  /** U5: score per criterion id (Quran's four system criteria mirror the columns). */
+  scores?: Record<string, number>
 }
+
+/** An active criterion of the evaluated subject (التقييمات). */
+export interface SheetCriterion { id: number; key: string | null; name: string; max_score: number; weight: number; is_system: boolean }
 
 export interface SheetRow {
   student: StudentSummary
@@ -23,7 +30,23 @@ export interface Sheet {
   lesson: { id: number; name: string; teacher: string | null }
   location: string | null
   threshold: number
+  subject?: { id: number; name: string; code: string | null; is_quran: boolean } | null
+  subjects?: { id: number; name: string; code: string | null }[]
+  criteria?: SheetCriterion[]
+  division?: { id: number; name: string } | null
+  divisions?: { id: number; name: string }[]
   data: SheetRow[]
+}
+
+/** One student's scores for a subject other than Quran (or Quran with extra criteria): criterion id → score. */
+export interface CriteriaEntry {
+  student_id: number
+  memorization?: number
+  tajweed?: number
+  revision?: number
+  behavior?: number
+  scores: Record<number, number>
+  note?: string | null
 }
 
 export interface Suggestion {
@@ -62,9 +85,13 @@ export interface NewIssue {
 }
 
 export const evaluationsApi = {
-  sheet: (sessionId: number) => api.get<Sheet>(`/sessions/${sessionId}/evaluations`).then((r) => r.data),
-  saveDaily: (sessionId: number, entries: EvaluationEntry[]) =>
-    api.post<{ message: string; data: SavedScore[]; suggested_issues: Suggestion[] }>(`/sessions/${sessionId}/evaluations`, { entries }).then((r) => r.data),
+  /** Subjects this user may evaluate in the session's class (a subject teacher who does not teach Quran there). */
+  subjects: (sessionId: number) => api.get<{ data: { id: number; name: string; code: string | null }[] }>(`/sessions/${sessionId}/evaluation-subjects`).then((r) => r.data.data),
+  sheet: (sessionId: number, p: { subject_id?: number; division_id?: number } = {}) => api.get<Sheet>(`/sessions/${sessionId}/evaluations`, { params: p }).then((r) => r.data),
+  saveDaily: (sessionId: number, entries: EvaluationEntry[], divisionId?: number | null) =>
+    api.post<{ message: string; data: SavedScore[]; suggested_issues: Suggestion[] }>(`/sessions/${sessionId}/evaluations`, { entries, division_id: divisionId ?? undefined }).then((r) => r.data),
+  saveCriteria: (sessionId: number, subjectId: number, entries: CriteriaEntry[], divisionId?: number | null) =>
+    api.post<{ message: string; data: SavedScore[]; suggested_issues: Suggestion[] }>(`/sessions/${sessionId}/evaluations`, { subject_id: subjectId, entries, division_id: divisionId ?? undefined }).then((r) => r.data),
   monthlyList: (lessonId: number, period: string) =>
     api.get<{ data: (SavedScore & { student: StudentSummary })[] }>('/evaluations', { params: { lesson_id: lessonId, type: 'monthly', period, per_page: 200 } }).then((r) => r.data.data),
   saveMonthly: (lessonId: number, period: string, entries: EvaluationEntry[]) =>

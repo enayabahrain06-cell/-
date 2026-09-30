@@ -23,7 +23,8 @@ class Subject extends Model
     /** Id of the Quran subject: the default for evaluations and exams that name no subject. */
     public static function quranId(): ?int
     {
-        return static::where('code', self::QURAN)->value('id');
+        // once(): read once per request (Laravel flushes it between requests and tests); the Quran row never changes code.
+        return once(fn () => static::where('code', self::QURAN)->value('id'));
     }
 
     public function scopeOrdered(Builder $q): Builder

@@ -27,4 +27,8 @@ return [
     'distribution.manage' => 'توزيع الطلبة على المستويات وترفيعهم وتحديث مستوياتهم',
     'archive.view' => 'عرض الأرشيف', 'archive.manage' => 'رفع الأرشيف وحذف دفعاته',
     'books.view' => 'عرض الكتب ومتابعتها', 'books.manage' => 'إدارة الكتب وتسليمها',
+    'notes.view' => 'عرض الملاحظات', 'notes.manage' => 'كتابة الملاحظات',
+    'divisions.manage' => 'إدارة التقسيمات',
+    'evaluation_criteria.manage' => 'إدارة معايير التقييم',
+    'subject_progress.record' => 'تحديث دروس المواد',
 ];

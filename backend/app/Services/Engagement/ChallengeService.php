@@ -111,7 +111,7 @@ class ChallengeService
                 $min = (int) ($c->min_score ?? 8);
                 $best = 0;
                 $run = 0;
-                Evaluation::where('student_id', $s->id)->where('type', EvaluationType::Daily->value)
+                Evaluation::quran()->where('student_id', $s->id)->where('type', EvaluationType::Daily->value)
                     ->whereBetween('evaluated_on', [$from, $to])->orderBy('evaluated_on')->orderBy('id')->get()
                     ->each(function ($e) use (&$best, &$run, $criterion, $min) {
                         $score = $criterion === 'total' ? ($e->memorization + $e->tajweed + $e->revision + $e->behavior) / 4 : $e->{$criterion};

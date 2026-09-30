@@ -95,7 +95,8 @@
         "details": "البيانات",
         "certificates": "الشهادات",
         "placement": "تحديد المستوى",
-        "archive": "الأرشيف"
+        "archive": "الأرشيف",
+        "notes": "الملاحظات"
     },
     "placement_tab": {
         "empty": "لا يوجد امتحان تحديد مستوى لهذا الطالب.",

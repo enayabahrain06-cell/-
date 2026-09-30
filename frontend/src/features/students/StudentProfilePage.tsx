@@ -12,11 +12,12 @@ import { AttendanceTab, DetailsTab, EvaluationTab, IssuesTab, OverviewTab, Walle
 import StudentCertificatesTab from '../certificates/StudentCertificatesTab'
 import PlacementTab from './profile/PlacementTab'
 import StudentArchiveTab from '../archive/StudentArchiveTab'
+import StudentNotesTab from '../notes/StudentNotesTab'
 import MobileProfileHeader, { MobileProfileActions, MobileProfilePending } from './MobileProfileHeader'
 import { openObjectUrl, studentReportObjectUrl } from '../../api/certificates'
 import { ErrorState, SURFACE } from '../../components/ui'
 
-const TABS = ['overview', 'evaluation', 'issues', 'attendance', 'wallet', 'certificates', 'placement', 'archive', 'details'] as const
+const TABS = ['overview', 'evaluation', 'issues', 'notes', 'attendance', 'wallet', 'certificates', 'placement', 'archive', 'details'] as const
 type Tab = (typeof TABS)[number]
 
 export default function StudentProfilePage() {
@@ -33,7 +34,7 @@ export default function StudentProfilePage() {
 
   const readOnly = profile.data?.meta.read_only ?? true
   // Placement answers include the answer key, so only staff who can view students see that tab.
-  const tabs = TABS.filter((k) => (k === 'wallet' ? can('wallets.view') : k === 'placement' ? can('students.view') : k === 'archive' ? can('archive.view', 'archive.manage') : true))
+  const tabs = TABS.filter((k) => (k === 'wallet' ? can('wallets.view') : k === 'placement' ? can('students.view') : k === 'archive' ? can('archive.view', 'archive.manage') : k === 'notes' ? can('notes.view', 'notes.manage') : true))
   const tab: Tab = (tabs as readonly string[]).includes(params.get('tab') ?? '') ? (params.get('tab') as Tab) : 'overview'
 
   if (profile.isLoading || detail.isLoading) {
@@ -165,6 +166,7 @@ export default function StudentProfilePage() {
         {tab === 'certificates' && <StudentCertificatesTab studentId={studentId} />}
         {tab === 'placement' && <PlacementTab studentId={studentId} />}
         {tab === 'archive' && <StudentArchiveTab studentId={studentId} />}
+        {tab === 'notes' && <StudentNotesTab studentId={studentId} />}
         {tab === 'details' && <DetailsTab student={detail.data} canEdit={!readOnly && can('students.manage')} canPhoto={can('students.photo')} />}
       </div>
     </div>

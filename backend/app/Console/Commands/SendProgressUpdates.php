@@ -69,7 +69,7 @@ class SendProgressUpdates extends Command
         $summary = $progress->summary($student, $locale);
         $current = $summary['position']['current'];
 
-        $recent = $student->evaluations()->where('type', EvaluationType::Daily->value)
+        $recent = $student->evaluations()->quran()->where('type', EvaluationType::Daily->value)
             ->where('evaluated_on', '>=', today()->subDays(30)->toDateString())->get();
         $avg = $recent->isEmpty() ? null : $evaluations->averages($recent);
 

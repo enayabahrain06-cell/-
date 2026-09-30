@@ -114,7 +114,11 @@
     "term_setup": "إعدادات الفصل",
     "distribution": "توزيع المستويات",
     "archive": "الأرشيف",
-    "books": "الكتب"
+    "books": "الكتب",
+    "notes": "الملاحظات",
+    "divisions": "التقسيمات",
+    "evaluation_criteria": "التقييمات",
+    "subject_progress": "تحديث دروس المواد"
   },
   "mobile": {
     "all": "الكل",

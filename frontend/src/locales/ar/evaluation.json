@@ -5,6 +5,8 @@
   "sheet_title": "كشف التقييم",
   "back": "العودة إلى صفوف اليوم",
   "criteria": { "memorization": "الحفظ", "tajweed": "التجويد", "revision": "المراجعة", "behavior": "السلوك" },
+  "scope": { "subject": "المادة", "division": "التقسيم", "all_students": "كل طلبة الصف" },
+  "criteria_sheet": { "no_criteria": "لا توجد معايير تقييم فعّالة لهذه المادة. أضفها من شاشة التقييمات.", "out_of": "من {{n}}", "note": "ملاحظة" },
   "total": "المجموع",
   "note": "ملاحظة للطالب وولي الأمر",
   "save": "حفظ التقييمات",

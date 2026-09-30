@@ -20,26 +20,26 @@ class EvaluationPolicy
     }
 
     /**
-     * Record evaluations for a class: evaluations.record plus lessons.manage, or teaching the subject there. Until
-     * التقييمات (Phase 4) the four criteria are Quran's, so a subject teacher evaluates only where they teach Quran.
+     * Record evaluations of a subject (Quran when none is named) for a class: evaluations.record plus lessons.manage,
+     * or teaching that subject there (TeacherScope with the subject; the class teacher always counts).
      */
-    public function record(User $user, Lesson $lesson): bool
+    public function record(User $user, Lesson $lesson, ?int $subjectId = null): bool
     {
-        return $user->can('evaluations.record') && LessonPolicy::ownsOrManages($user, $lesson, Subject::quranId());
+        return $user->can('evaluations.record') && LessonPolicy::ownsOrManages($user, $lesson, $subjectId ?? Subject::quranId());
     }
 
     public function update(User $user, Evaluation $evaluation): bool
     {
-        return $this->record($user, $evaluation->lesson);
+        return $this->record($user, $evaluation->lesson, $evaluation->subject_id);
     }
 
     public function delete(User $user, Evaluation $evaluation): bool
     {
-        return $this->record($user, $evaluation->lesson);
+        return $this->record($user, $evaluation->lesson, $evaluation->subject_id);
     }
 
     public function send(User $user, Evaluation $evaluation): bool
     {
-        return $this->record($user, $evaluation->lesson);
+        return $this->record($user, $evaluation->lesson, $evaluation->subject_id);
     }
 }

@@ -114,7 +114,11 @@
     "term_setup": "Term setup",
     "distribution": "Level distribution",
     "archive": "Archive",
-    "books": "Books"
+    "books": "Books",
+    "notes": "Notes",
+    "divisions": "Divisions",
+    "evaluation_criteria": "Evaluation criteria",
+    "subject_progress": "Update subject lessons"
   },
   "mobile": {
     "all": "All",

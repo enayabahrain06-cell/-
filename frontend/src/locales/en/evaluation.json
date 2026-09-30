@@ -5,6 +5,8 @@
   "sheet_title": "Evaluation sheet",
   "back": "Back to the day's classes",
   "criteria": { "memorization": "Memorization", "tajweed": "Tajweed", "revision": "Revision", "behavior": "Behavior" },
+  "scope": { "subject": "Subject", "division": "Division", "all_students": "All students of the class" },
+  "criteria_sheet": { "no_criteria": "This subject has no active evaluation criteria. Add them in Evaluation criteria.", "out_of": "of {{n}}", "note": "Note" },
   "total": "Total",
   "note": "Note for the student and guardian",
   "save": "Save evaluations",

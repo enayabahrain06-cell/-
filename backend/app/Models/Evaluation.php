@@ -23,6 +23,33 @@ class Evaluation extends Model
         return $this->belongsTo(Subject::class);
     }
 
+    /** One score per criterion (U5). For Quran the four columns hold the same values (dual write). */
+    public function scores(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(EvaluationScore::class);
+    }
+
+    public function division(): BelongsTo
+    {
+        return $this->belongsTo(Division::class);
+    }
+
+    /**
+     * Quran evaluations only: every reader that averages the four columns (honor board, challenges, reports, portal,
+     * messages, the profile) goes through this, so evaluations of other subjects never mix in.
+     */
+    public function scopeQuran(\Illuminate\Database\Eloquent\Builder $q): \Illuminate\Database\Eloquent\Builder
+    {
+        $quran = Subject::quranId();
+
+        return $q->where(fn ($w) => $w->whereNull($q->qualifyColumn('subject_id'))->when($quran, fn ($x) => $x->orWhere($q->qualifyColumn('subject_id'), $quran)));
+    }
+
+    public function isQuran(): bool
+    {
+        return $this->subject_id === null || (int) $this->subject_id === (int) Subject::quranId();
+    }
+
     protected function casts(): array
     {
         return [
@@ -35,7 +62,7 @@ class Evaluation extends Model
 
     public function total(): int
     {
-        return $this->memorization + $this->tajweed + $this->revision + $this->behavior;
+        return (int) $this->memorization + (int) $this->tajweed + (int) $this->revision + (int) $this->behavior;
     }
 
     public function student(): BelongsTo

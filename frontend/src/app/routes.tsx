@@ -59,6 +59,12 @@ import LevelDistributionPage from '../features/distribution/LevelDistributionPag
 import PromotionPage from '../features/distribution/PromotionPage'
 import UpdateLevelPage from '../features/distribution/UpdateLevelPage'
 import ArchivePage from '../features/archive/ArchivePage'
+import NotesPage from '../features/notes/NotesPage'
+import DivisionsPage from '../features/divisions/DivisionsPage'
+import CriteriaPage from '../features/evaluation/CriteriaPage'
+import DivisionEvaluationPage from '../features/evaluation/DivisionEvaluationPage'
+import QuranLessonsPage from '../features/progress/QuranLessonsPage'
+import SubjectProgressPage from '../features/progress/SubjectProgressPage'
 
 function FullScreenLoader() {
   const { t } = useTranslation()
@@ -143,6 +149,12 @@ const BUILT: Record<string, React.ReactNode> = {
   promote_students: <PromotionPage />,
   update_level: <UpdateLevelPage />,
   archive: <ArchivePage />,
+  notes: <NotesPage />,
+  divisions: <DivisionsPage />,
+  evaluation_criteria: <CriteriaPage />,
+  division_evaluation: <DivisionEvaluationPage />,
+  quran_lessons: <QuranLessonsPage />,
+  subject_progress: <SubjectProgressPage />,
 }
 
 /** Detail pages under a section: [path, permissions (any), element]. */

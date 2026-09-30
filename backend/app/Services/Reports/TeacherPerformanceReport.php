@@ -30,7 +30,7 @@ class TeacherPerformanceReport
             ->whereBetween('session_date', [$ctx->fromDate(), $ctx->dueUntil()])
             ->get(['id', 'lesson_id', 'session_date', 'status', 'attendance_taken_at']);
         $attendance = Attendance::whereIn('lesson_session_id', $sessions->pluck('id')->all() ?: [0])->get(['id', 'lesson_session_id', 'status']);
-        $evals = Evaluation::whereIn('lesson_id', $ctx->lessonIds())->whereBetween('evaluated_on', [$ctx->fromDate(), $ctx->toDate()])
+        $evals = Evaluation::quran()->whereIn('lesson_id', $ctx->lessonIds())->whereBetween('evaluated_on', [$ctx->fromDate(), $ctx->toDate()])
             ->get(['id', 'lesson_id', 'memorization', 'tajweed', 'revision', 'behavior']);
 
         $lessonTeacher = $lessons->pluck('teacher_id', 'id');

@@ -36,6 +36,10 @@ class RolePermissionSeeder extends Seeder
         'distribution.manage', // توزيع المستويات، ترفيع الطلبة، تحديث المستوى
         'archive.view', 'archive.manage', // عرض الأرشيف / رفع الأرشيف
         'books.view', 'books.manage', // الكتب ومتابعة الكتب
+        'notes.view', 'notes.manage', // ملاحظات الطلبة، العامة، المستويات، مواد المستويات
+        'divisions.manage', // التقسيمات
+        'evaluation_criteria.manage', // التقييمات (معايير التقييم لكل مادة)
+        'subject_progress.record', // تحديث دروس المواد
     ];
 
     /** Default matrix (editable later from the admin panel). */
@@ -61,6 +65,7 @@ class RolePermissionSeeder extends Seeder
             'levels.manage', 'subjects.manage', // term setup master data; terms themselves stay with the Super Admin
             'term_setup.view', 'term_setup.manage', 'nights.manage',
             'distribution.manage', 'archive.view', 'archive.manage', 'books.view', 'books.manage',
+            'notes.view', 'notes.manage', 'divisions.manage', 'evaluation_criteria.manage', 'subject_progress.record',
         ],
         'teacher' => [
             'dashboard.view',
@@ -74,6 +79,9 @@ class RolePermissionSeeder extends Seeder
             'messages.send',
             'term_setup.view', // the plan and timetable, read-only
             'books.view', // الكتب and متابعة الكتب of own classes, read-only
+            'notes.view', 'notes.manage', // own classes, levels and subjects only
+            'divisions.manage', // own classes only
+            'subject_progress.record', // subjects they teach only
         ],
         'student' => [],
         'guardian' => [],

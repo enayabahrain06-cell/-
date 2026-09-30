@@ -27,4 +27,8 @@ return [
     'distribution.manage' => 'Distribute, promote and change the level of students',
     'archive.view' => 'View the archive', 'archive.manage' => 'Upload the archive and delete its batches',
     'books.view' => 'View books and their follow-up', 'books.manage' => 'Manage and deliver books',
+    'notes.view' => 'View notes', 'notes.manage' => 'Write notes',
+    'divisions.manage' => 'Manage divisions',
+    'evaluation_criteria.manage' => 'Manage evaluation criteria',
+    'subject_progress.record' => 'Update subject lessons',
 ];

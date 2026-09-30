@@ -203,7 +203,7 @@ class FamilyPortalController extends Controller
             ->orderBy('session_date')->orderBy('start_time')->first() : null;
         $todayMark = $today ? Attendance::where('lesson_session_id', $today->id)->where('student_id', $s->id)->first()?->status?->value : null;
 
-        $recent = Evaluation::where('student_id', $s->id)->where('type', EvaluationType::Daily->value)
+        $recent = Evaluation::quran()->where('student_id', $s->id)->where('type', EvaluationType::Daily->value)
             ->where('evaluated_on', '>=', today()->subDays(30)->toDateString())->get();
         $latestNote = Evaluation::with('evaluator:id,name')->where('student_id', $s->id)->whereNotNull('note')->where('note', '!=', '')
             ->orderByDesc('evaluated_on')->orderByDesc('id')->first();

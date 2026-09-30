@@ -92,7 +92,7 @@ class HonorService
             $counted = $att->sum() - ($att['excused'] ?? 0);
             $attPct = $counted > 0 ? (int) round((($att['present'] ?? 0) + ($att['late'] ?? 0)) * 100 / $counted) : 0;
 
-            $evals = Evaluation::where('student_id', $studentId)->where('type', EvaluationType::Daily->value)
+            $evals = Evaluation::quran()->where('student_id', $studentId)->where('type', EvaluationType::Daily->value)
                 ->whereBetween('evaluated_on', [$from->toDateString(), $to->toDateString()])->get(['memorization', 'tajweed', 'revision', 'behavior']);
             $evalAvgX100 = $evals->isEmpty() ? 0 : (int) round($evals->avg(fn ($e) => ($e->memorization + $e->tajweed + $e->revision + $e->behavior) / 4) * 100);
 

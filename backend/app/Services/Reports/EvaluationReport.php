@@ -21,6 +21,7 @@ class EvaluationReport
         $ctx = new ReportContext($user, $f);
 
         $evals = Evaluation::with(['student:id,student_no,full_name', 'lesson:id,name,teacher_id', 'lesson.teacher:id,name'])
+            ->quran()
             ->whereIn('lesson_id', $ctx->lessonIds())
             ->whereBetween('evaluated_on', [$ctx->fromDate(), $ctx->toDate()])
             ->get(['id', 'student_id', 'lesson_id', 'type', 'evaluated_on', ...self::CRITERIA]);

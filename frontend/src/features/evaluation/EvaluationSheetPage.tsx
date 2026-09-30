@@ -1,8 +1,9 @@
 import { useCallback, useEffect, useState } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { Link, useParams } from 'react-router-dom'
+import { Link, useParams, useSearchParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
-import { CRITERIA, evaluationsApi, type Criterion, type SavedScore, type Suggestion } from '../../api/evaluations'
+import { CRITERIA, evaluationsApi, type Criterion, type SavedScore, type Sheet, type Suggestion } from '../../api/evaluations'
+import { isAxiosError } from 'axios'
 import { parseApiError } from '../../api/client'
 import Icon from '../../components/Icon'
 import SelectField from '../../components/SelectField'
@@ -13,6 +14,7 @@ import ScoreGrid, { emptyDraft, isComplete, type Draft } from './ScoreGrid'
 import MobileScoreEntry, { MobileEntryEmpty, MobileEntrySkeleton, MobileSetAll, MobileSheetHeader } from './MobileEvaluation'
 import { HeaderAction } from '../../components/mobile/MobileChrome'
 import MobileToast from '../../components/mobile/Toast'
+import CriteriaSheet from './CriteriaSheet'
 
 export default function EvaluationSheetPage() {
   const { sessionId } = useParams()
@@ -20,7 +22,21 @@ export default function EvaluationSheetPage() {
   const { t, i18n } = useTranslation('evaluation')
   const locale = i18n.language
   const qc = useQueryClient()
-  const q = useQuery({ queryKey: ['evaluation-sheet', id], queryFn: () => evaluationsApi.sheet(id) })
+  // ?subject= evaluates another subject of the class (التقييمات); ?division= keeps one division's students (تقييم طلبة التقسيم).
+  const [params, setParams] = useSearchParams()
+  const subjectId = Number(params.get('subject')) || undefined
+  const divisionId = Number(params.get('division')) || undefined
+  const q = useQuery({ queryKey: ['evaluation-sheet', id, subjectId ?? null, divisionId ?? null], queryFn: () => evaluationsApi.sheet(id, { subject_id: subjectId, division_id: divisionId }) })
+  // The sheet opens on Quran. A subject teacher who does not teach Quran in this class goes to their first subject.
+  const refused = q.isError && isAxiosError(q.error) && q.error.response?.status === 403 && !subjectId
+  const own = useQuery({ queryKey: ['evaluation-subjects', id], queryFn: () => evaluationsApi.subjects(id), enabled: refused, retry: false })
+  useEffect(() => {
+    const first = own.data?.[0]
+    if (!first) return
+    const next = new URLSearchParams(params)
+    next.set('subject', String(first.id))
+    setParams(next, { replace: true })
+  }, [own.data, params, setParams])
 
   const [drafts, setDrafts] = useState<Record<number, Draft>>({})
   const [saved, setSaved] = useState<Record<number, SavedScore | null>>({})
@@ -45,7 +61,7 @@ export default function EvaluationSheetPage() {
       memorization: d.memorization as number, tajweed: d.tajweed as number, revision: d.revision as number, behavior: d.behavior as number,
       note: d.note || null,
       ...(d.progress.length ? { progress: d.progress } : {}),
-    }))),
+    })), divisionId),
     onSuccess: (r) => {
       setSaved((s) => ({ ...s, ...Object.fromEntries(r.data.map((e) => [e.student_id, e])) }))
       setDrafts((ds) => Object.fromEntries(Object.entries(ds).map(([k, d]) => [k, { ...d, progress: [] }])))
@@ -58,10 +74,30 @@ export default function EvaluationSheetPage() {
     onError: (e) => { setMsg({ tone: 'error', text: parseApiError(e).message }); setToast({ tone: 'error', text: parseApiError(e).message }) },
   })
 
-  if (q.isLoading) return <><MobileSheetHeader /><MobileEntrySkeleton /><div className="hidden lg:block"><LoadingState /></div></>
+  if (q.isLoading || (refused && (own.isLoading || (own.data?.length ?? 0) > 0))) return <><MobileSheetHeader /><MobileEntrySkeleton /><div className="hidden lg:block"><LoadingState /></div></>
   if (q.isError || !q.data) return <><MobileSheetHeader /><ErrorState message={parseApiError(q.error).message} onRetry={() => void q.refetch()} /></>
   const sheet = q.data
   const complete = Object.values(drafts).filter(isComplete).length
+  const pick = (key: 'subject' | 'division', v: string) => { const next = new URLSearchParams(params); if (v) next.set(key, v); else next.delete(key); setParams(next, { replace: true }) }
+  const scope = <SheetScope sheet={sheet} onPick={pick} />
+  // Quran with only its four criteria keeps the sheet below as it always was; any other subject (or extra criteria) uses the criteria sheet.
+  const generic = !!sheet.subject && (!sheet.subject.is_quran || (sheet.criteria ?? []).some((c) => !c.is_system))
+
+  if (generic) {
+    return (
+      <>
+        <div className="space-y-4 lg:hidden">
+          <MobileSheetHeader title={sheet.lesson.name} date={sheet.date} meta={[sheet.subject?.name ?? null, formatDate(sheet.date, locale, { weekday: 'long', day: 'numeric', month: 'long' }), sheet.division?.name ?? null]} />
+          {scope}
+        </div>
+        <div className="hidden space-y-5 lg:block">
+          <SheetHeader sheet={sheet} />
+          {scope}
+        </div>
+        <div className="mt-4 lg:mt-5"><CriteriaSheet sheet={sheet} sessionId={id} divisionId={divisionId ?? null} /></div>
+      </>
+    )
+  }
 
   const setAll = (c: Criterion, v: number | null) => {
     setDrafts((ds) => Object.fromEntries(Object.entries(ds).map(([k, d]) => [k, { ...d, [c]: v }])))
@@ -77,6 +113,7 @@ export default function EvaluationSheetPage() {
       <MobileSheetHeader title={sheet.lesson.name} date={sheet.date}
         meta={[formatDate(sheet.date, locale, { weekday: 'long', day: 'numeric', month: 'long' }), `${formatTime(sheet.start_time, locale)}–${formatTime(sheet.end_time, locale)}`, sheet.location, sheet.lesson.teacher]}
         actions={sheet.data.length > 0 ? <HeaderAction icon="edit" label={t('set_all')} onClick={() => setSetAllOpen(true)} /> : undefined} />
+      {scope}
       {suggestions.length > 0 && <p className="rounded-card bg-info/10 px-4 py-3 text-[13px] text-info"><b>{t('suggest.title')}.</b> {t('suggest.body', { n: formatNumber(sheet.threshold, locale) })}</p>}
       {sheet.data.length === 0 ? <MobileEntryEmpty text={t('empty_roster')} /> : (
         <MobileScoreEntry students={sheet.data.map((r) => r.student)} drafts={drafts} saved={saved} suggestions={suggestions} threshold={sheet.threshold} withProgress
@@ -86,27 +123,8 @@ export default function EvaluationSheetPage() {
       <MobileToast message={toast?.text ?? null} tone={toast?.tone} onDone={clearToast} />
     </div>
     <div className="hidden space-y-5 pb-24 lg:block">
-      <Link to={`/evaluation?date=${sheet.date}`} className="inline-flex items-center gap-1 text-sm font-medium text-brand-700 hover:underline">
-        <Icon name="chevron" className="size-4 ltr:rotate-180" />{t('back')}
-      </Link>
-
-      <header>
-        <p className="text-sm text-ink/55">{t('sheet_title')}</p>
-        <h1 dir="auto" className="font-display text-3xl text-ink">{sheet.lesson.name}</h1>
-        <OrnamentDivider className="my-2 max-w-60 text-gold-500/70" />
-        <ul className="flex flex-wrap gap-x-4 gap-y-1.5 text-sm text-ink/65">
-          <li className="inline-flex items-center gap-1.5">
-            <Icon name="attendance" className="size-4 text-ink/45" />
-            {formatDate(sheet.date, locale, { weekday: 'long', day: 'numeric', month: 'long' })}
-          </li>
-          <li className="inline-flex items-center gap-1.5">
-            <Icon name="clock" className="size-4 text-ink/45" />
-            <span className="tabular-nums">{formatTime(sheet.start_time, locale)}–{formatTime(sheet.end_time, locale)}</span>
-          </li>
-          {sheet.location && <li className="inline-flex items-center gap-1.5"><Icon name="pin" className="size-4 text-ink/45" /><span dir="auto">{sheet.location}</span></li>}
-          {sheet.lesson.teacher && <li className="inline-flex items-center gap-1.5"><Icon name="teachers" className="size-4 text-ink/45" /><span dir="auto">{sheet.lesson.teacher}</span></li>}
-        </ul>
-      </header>
+      <SheetHeader sheet={sheet} />
+      {scope}
 
       {/* One band: progress on the start side, "set a score for everyone" on the end side (stacked below xl, where the four selects would be too narrow). */}
       {sheet.data.length > 0 && (
@@ -163,5 +181,58 @@ export default function EvaluationSheetPage() {
       </div>
     </div>
     </>
+  )
+}
+
+/** Back link, class name, date, time, room and teacher of the session. */
+function SheetHeader({ sheet }: { sheet: Sheet }) {
+  const { t, i18n } = useTranslation('evaluation')
+  const locale = i18n.language
+  return (
+    <>
+      <Link to={`/evaluation?date=${sheet.date}`} className="inline-flex items-center gap-1 text-sm font-medium text-brand-700 hover:underline">
+        <Icon name="chevron" className="size-4 ltr:rotate-180" />{t('back')}
+      </Link>
+
+      <header>
+        <p className="text-sm text-ink/55">{t('sheet_title')}</p>
+        <h1 dir="auto" className="font-display text-3xl text-ink">{sheet.lesson.name}</h1>
+        <OrnamentDivider className="my-2 max-w-60 text-gold-500/70" />
+        <ul className="flex flex-wrap gap-x-4 gap-y-1.5 text-sm text-ink/65">
+          <li className="inline-flex items-center gap-1.5">
+            <Icon name="attendance" className="size-4 text-ink/45" />
+            {formatDate(sheet.date, locale, { weekday: 'long', day: 'numeric', month: 'long' })}
+          </li>
+          <li className="inline-flex items-center gap-1.5">
+            <Icon name="clock" className="size-4 text-ink/45" />
+            <span className="tabular-nums">{formatTime(sheet.start_time, locale)}–{formatTime(sheet.end_time, locale)}</span>
+          </li>
+          {sheet.location && <li className="inline-flex items-center gap-1.5"><Icon name="pin" className="size-4 text-ink/45" /><span dir="auto">{sheet.location}</span></li>}
+          {sheet.lesson.teacher && <li className="inline-flex items-center gap-1.5"><Icon name="teachers" className="size-4 text-ink/45" /><span dir="auto">{sheet.lesson.teacher}</span></li>}
+          {sheet.subject && !sheet.subject.is_quran && <li className="inline-flex items-center gap-1.5"><Icon name="lessons" className="size-4 text-ink/45" /><span dir="auto">{sheet.subject.name}</span></li>}
+          {sheet.division && <li className="inline-flex items-center gap-1.5"><Icon name="students" className="size-4 text-ink/45" /><span dir="auto">{sheet.division.name}</span></li>}
+        </ul>
+      </header>
+    </>
+  )
+}
+
+/** Subject (when the user may evaluate more than one here) and division of the sheet. Hidden when there is nothing to choose. */
+function SheetScope({ sheet, onPick }: { sheet: Sheet; onPick: (key: 'subject' | 'division', v: string) => void }) {
+  const { t } = useTranslation('evaluation')
+  const subjects = sheet.subjects ?? []
+  const divisions = sheet.divisions ?? []
+  if (subjects.length <= 1 && divisions.length === 0 && !sheet.division) return null
+  return (
+    <div className="flex flex-wrap items-end gap-3">
+      {subjects.length > 1 && (
+        <SelectField label={t('scope.subject')} className="w-full sm:w-56" value={String(sheet.subject?.id ?? '')} onChange={(e) => onPick('subject', e.target.value)}
+          options={subjects.map((s) => ({ value: String(s.id), label: s.name }))} />
+      )}
+      {(divisions.length > 0 || sheet.division) && (
+        <SelectField label={t('scope.division')} className="w-full sm:w-56" value={String(sheet.division?.id ?? '')} onChange={(e) => onPick('division', e.target.value)}
+          options={[{ value: '', label: t('scope.all_students') }, ...divisions.map((d) => ({ value: String(d.id), label: d.name }))]} />
+      )}
+    </div>
   )
 }
