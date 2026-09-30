@@ -164,3 +164,16 @@ left out and listed under the page.
   second bg-brand-700 on the screen.
 - Differs from the spec: payment is recorded in the same save (the existing "record a cash payment" option) rather
   than "حفظ وتسجيل دفعة → payments/new"; the halaqa capacity shows as free seats per circle.
+
+## Packages (/packages) — Packages.dc.html
+
+- `MobilePackageList` under `lg:hidden`; the desktop grid is unchanged under `hidden lg:block`. Same `['packages']`
+  query and `PackageFormDialog` (edit, and new from the FAB باقة جديدة, the screen's one primary).
+- Cards: name, status pill (مفتوحة / مسودة / مغلقة) and, for `packages.manage`, a 44×26 on/off switch that sends
+  the same package update as the edit dialog with only `status` (open ↔ closed); price 22px + days · start date;
+  pills for seats (gold "full" when full), track, ages and time; pending / waitlist pills open the requests tab
+  filtered to the package; تعديل secondary. Non-open packages at 75% opacity. Skeleton cards, empty state with a
+  create action, error toast when the switch fails.
+- Not in the backend: الاشتراكات النشطة and الخصومات tabs (no subscriptions or discounts API; the segmented control
+  keeps the app's الباقات / طلبات التسجيل), a "recommended" package flag, feature lists per package, a billing period
+  (packages have a price per term).

@@ -240,6 +240,7 @@
     "today": "Today",
     "days_ago_one": "1 day ago",
     "days_ago_other": "{{n}} days ago",
-    "accept": "Accept and place"
+    "accept": "Accept and place",
+    "package_open": "{{name}}: open for registration"
   }
 }

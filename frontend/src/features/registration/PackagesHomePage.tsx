@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useCallback, useState } from 'react'
 import { keepPreviousData, useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { Link, useSearchParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
@@ -15,6 +15,8 @@ import { GENDER_TONE } from '../lessons/LessonsHomePage'
 import PackageFormDialog from './PackageFormDialog'
 import CardApplyDialog from '../enrollment/CardApplyDialog'
 import { MobilePackagesHeader, MobileRequests } from './MobilePackages'
+import { MobilePackageList } from './MobilePackageList'
+import MobileToast from '../../components/mobile/Toast'
 
 /** Outcomes the server treats as final (RegistrationStatus::isDecided); accept, waitlist and reject are refused for them. */
 const DECIDED: string[] = ['accepted', 'enrolled', 'pending_lottery']
@@ -53,9 +55,24 @@ function Packages() {
   const q = useQuery({ queryKey: ['packages', locale], queryFn: () => packagesApi.list() })
   const [edit, setEdit] = useState<Package | 'new' | null>(null)
   const n = (v: number) => formatNumber(v, locale)
+  // Mobile card switch: the same package update the edit dialog sends, with only the status.
+  const qc = useQueryClient()
+  const [toast, setToast] = useState<string | null>(null)
+  const clearToast = useCallback(() => setToast(null), [])
+  const toggle = useMutation({
+    mutationFn: ({ p, open }: { p: Package; open: boolean }) => packagesApi.update(p.id, { status: open ? 'open' : 'closed' }),
+    onSuccess: () => void qc.invalidateQueries({ queryKey: ['packages'] }),
+    onError: (e) => setToast(parseApiError(e).message),
+  })
 
   return (
     <div className="space-y-4">
+      <MobilePackageList packages={q.data?.data} loading={q.isLoading} error={q.isError ? <ErrorState onRetry={() => void q.refetch()} /> : null}
+        canManage={can('packages.manage')} onEdit={setEdit} onCreate={() => setEdit('new')}
+        onToggle={(p, open) => toggle.mutate({ p, open })} toggling={toggle.isPending ? toggle.variables?.p.id ?? null : null}
+        onRequests={(p, status) => setParams({ tab: 'requests', status, package_id: String(p.id) })} />
+      <MobileToast message={toast} tone="error" onDone={clearToast} />
+      <div className="hidden space-y-4 lg:block">
       {can('packages.manage') && <div className="flex justify-end"><PrimaryButton onClick={() => setEdit('new')}>+ {t('admin.new_package')}</PrimaryButton></div>}
       {q.isLoading ? <LoadingState /> : q.isError || !q.data ? <ErrorState onRetry={() => void q.refetch()} /> : q.data.data.length === 0 ? (
         <EmptyCard icon="packages" title={t('admin.empty_packages')} />
@@ -85,6 +102,7 @@ function Packages() {
           })}
         </ul>
       )}
+      </div>
       {edit && <PackageFormDialog pkg={edit === 'new' ? undefined : edit} onClose={() => setEdit(null)} />}
     </div>
   )
