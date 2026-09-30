@@ -57,5 +57,17 @@
     "period": "Month",
     "choose_circle": "Choose a circle",
     "hint": "One monthly evaluation per student, circle and month; saving again updates it."
+  },
+  "mobile": {
+    "position": "{{n}} of {{total}}",
+    "pick_student": "Choose student",
+    "scores": "Scores",
+    "save": "Save recitation",
+    "next": "Save and go to {{name}}",
+    "from_ayah": "From ayah",
+    "to_ayah": "To ayah",
+    "ayahs": "Ayahs {{from}}–{{to}}",
+    "done": "Done",
+    "circle_empty": "Choose a circle to see its students"
   }
 }

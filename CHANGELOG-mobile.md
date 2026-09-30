@@ -85,3 +85,30 @@ left out and listed under the page.
   the Share → Add to Home Screen hint on iPhone, hidden once installed.
 - Chrome's installability check (`Page.getInstallabilityErrors`) reports no errors on :5180. On phones the site
   must be served over HTTPS (localhost is the only exception).
+
+## Circle detail fix (/lessons/:id)
+
+- The page claims its header while the circle loads or fails (`MobileLessonPending`), and waits for the hall-conflict
+  check before drawing the body (a skeleton in the same shape), so the notice no longer pushes the tabs down. CLS at
+  320px: 0.236 → 0.
+- Shared: `MobilePage` claims the header in a layout effect, so the default header is gone before the first paint on
+  every page that declares its own (this was the 0.05 shift on the student profile too). `MSegmented` truncates the
+  label instead of the button, whose 44px hit area was reported as clipped text.
+
+## Memorization (/evaluation, /evaluation/:sessionId) — Memorization.dc.html
+
+- Home: the page header carries the title; the desktop band and tabs become one segmented control (يومي / شهري) on
+  the same `tab` param. The daily tab is the attendance day view (already mobile).
+- Entry form (the session sheet), `MobileScoreEntry`: header with the circle name, back to the day and a "set a score
+  for everyone" action (bottom sheet); breadcrumb; one session line (date · time · hall · teacher); scored n of N with a
+  bar; student strip (avatar with the saved / changed / not-scored dot, name linking to the profile, n of N, state
+  pill, a roster sheet to jump to any student with their totals); the four 0–10 scores as 48px selects with the total
+  pill (gold when one is below the circle's threshold); today's ranges as (type | surah), (from ayah | to ayah) and a
+  preview line with the surah in font-quran; note textarea; low-score suggestions with فتح صعوبة; send to guardian.
+- Sticky حفظ التسميع (unsaved dot) and a 48px "next student" square: saves when the current row is finished and
+  changed (the same save call as desktop, which stores every complete row), then moves on. Feedback is a 4-second
+  toast; loading is a skeleton of the form.
+- Monthly tab: circle | month selectors, the hint, and the same one-student form without ranges.
+- Not in the app: the spec's grade buttons (ممتاز ٥ … إعادة ٢) — scores are four criteria out of 10; verse text for
+  the preview (the API has surah names and ayah counts only, so the preview names the surah and range); a recitation
+  history view (the header's history icon).

@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { useMutation, useQuery } from '@tanstack/react-query'
 import { useSearchParams } from 'react-router-dom'
 import { useTranslation } from 'react-i18next'
@@ -11,18 +11,29 @@ import { LoadingState, Notice, PrimaryButton, Segmented, TextInput, EmptyCard, F
 import { formatNumber } from '../../lib/format'
 import AttendanceDayPage from '../attendance/AttendanceDayPage'
 import ScoreGrid, { emptyDraft, isComplete, type Draft } from './ScoreGrid'
+import MobileScoreEntry, { MobileEntryEmpty, MobileEntrySkeleton } from './MobileEvaluation'
+import { MSegmented, MSelect } from '../../components/mobile/atoms'
+import MobileToast from '../../components/mobile/Toast'
 
 export default function EvaluationHomePage() {
   const { t } = useTranslation('evaluation')
   const [params, setParams] = useSearchParams()
   const tab = params.get('tab') === 'monthly' ? 'monthly' : 'daily'
+  const setTab = (v: string) => { const n = new URLSearchParams(params); n.set('tab', v); setParams(n, { replace: true }) }
 
   return (
     <div className="space-y-5">
-      <PageBand title={t('title')} subtitle={t('subtitle')} />
-      <Segmented name="eval-tab" label={t('title')} value={tab} fill
-        options={[{ value: 'daily', label: t('tabs.daily') }, { value: 'monthly', label: t('tabs.monthly') }]}
-        onChange={(v) => { const n = new URLSearchParams(params); n.set('tab', v); setParams(n, { replace: true }) }} />
+      <div className="hidden space-y-5 lg:block">
+        <PageBand title={t('title')} subtitle={t('subtitle')} />
+        <Segmented name="eval-tab" label={t('title')} value={tab} fill
+          options={[{ value: 'daily', label: t('tabs.daily') }, { value: 'monthly', label: t('tabs.monthly') }]}
+          onChange={setTab} />
+      </div>
+      {/* Below lg the page header carries the title; the two tabs stay as one segmented control. */}
+      <div className="lg:hidden">
+        <MSegmented label={t('title')} value={tab} onChange={setTab}
+          options={[{ value: 'daily', label: t('tabs.daily') }, { value: 'monthly', label: t('tabs.monthly') }]} />
+      </div>
       {tab === 'daily' ? <AttendanceDayPage basePath="/evaluation" embedded /> : <Monthly />}
     </div>
   )
@@ -46,6 +57,9 @@ function Monthly() {
   const [saved, setSaved] = useState<Record<number, SavedScore | null>>({})
   const [suggestions, setSuggestions] = useState<Suggestion[]>([])
   const [msg, setMsg] = useState<{ tone: 'success' | 'error'; text: string } | null>(null)
+  // Mobile feedback: a 4-second toast with its own state (the desktop notice is unchanged).
+  const [toast, setToast] = useState<{ tone: 'ok' | 'error'; text: string } | null>(null)
+  const clearToast = useCallback(() => setToast(null), [])
 
   useEffect(() => {
     if (!roster.data || !existing.data) return
@@ -63,12 +77,35 @@ function Monthly() {
       setSaved((s) => ({ ...s, ...Object.fromEntries(r.data.map((e) => [e.student_id, e])) }))
       setSuggestions(r.suggested_issues)
       setMsg({ tone: 'success', text: t('saved', { n: formatNumber(r.data.length, locale) }) })
+      setToast({ tone: 'ok', text: t('saved', { n: formatNumber(r.data.length, locale) }) })
     },
-    onError: (e) => setMsg({ tone: 'error', text: parseApiError(e).message }),
+    onError: (e) => { setMsg({ tone: 'error', text: parseApiError(e).message }); setToast({ tone: 'error', text: parseApiError(e).message }) },
   })
 
   return (
-    <div className="space-y-4">
+    <>
+    <div className="space-y-4 lg:hidden">
+      <div className="grid gap-3 min-[400px]:grid-cols-[minmax(0,3fr)_minmax(0,2fr)]">
+        <MSelect label={t('monthly.circle')} value={lessonId ? String(lessonId) : ''} onChange={(v) => setLessonId(Number(v))}
+          options={(lessons.data ?? []).map((l) => ({ value: String(l.id), label: l.name }))} />
+        <label className="block min-w-0">
+          <span className="mb-1.5 block text-[13px] font-medium text-ink/75">{t('monthly.period')}</span>
+          <input type="month" value={period} max={new Date().toISOString().slice(0, 7)} onChange={(e) => e.target.value && setPeriod(e.target.value)}
+            className="h-12 w-full min-w-0 rounded-md border border-ink/10 bg-white px-3 text-[15px] tabular-nums text-ink" />
+        </label>
+      </div>
+      <p className="text-[13px] text-ink/65">{t('monthly.hint')}</p>
+      {lessons.isLoading || (lessonId && (roster.isLoading || existing.isLoading)) ? <MobileEntrySkeleton /> : !lessonId ? (
+        <MobileEntryEmpty text={t('mobile.circle_empty')} />
+      ) : (roster.data?.data.length ?? 0) === 0 ? <MobileEntryEmpty text={t('empty_roster')} /> : (
+        <MobileScoreEntry students={roster.data!.data} drafts={drafts} saved={saved} suggestions={suggestions} threshold={6} withProgress={false}
+          onChange={(sid, patch) => { setDrafts((ds) => ({ ...ds, [sid]: { ...ds[sid], ...patch } })); setMsg(null) }}
+          onSuggestionDone={(s) => setSuggestions((all) => all.filter((x) => !(x.student_id === s.student_id && x.criterion === s.criterion)))}
+          onSave={() => save.mutate()} saving={save.isPending} dirty={false} saveLabel={t('save')} />
+      )}
+      <MobileToast message={toast?.text ?? null} tone={toast?.tone} onDone={clearToast} />
+    </div>
+    <div className="hidden space-y-4 lg:block">
       <FilterBar layout="grid" label={t('monthly.circle')} className="sm:grid-cols-3">
         <SelectField label={t('monthly.circle')} value={lessonId ?? ''} onChange={(e) => setLessonId(Number(e.target.value))}
           options={(lessons.data ?? []).map((l) => ({ value: String(l.id), label: l.name }))} />
@@ -91,5 +128,6 @@ function Monthly() {
         </>
       )}
     </div>
+    </>
   )
 }
