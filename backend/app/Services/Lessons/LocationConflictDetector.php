@@ -4,6 +4,7 @@ namespace App\Services\Lessons;
 
 use App\Enums\LessonStatus;
 use App\Enums\SessionStatus;
+use App\Models\Activity;
 use App\Models\Lesson;
 use App\Models\LessonLocationOverride;
 use App\Models\LessonSession;
@@ -18,7 +19,8 @@ use Carbon\CarbonInterface;
  *  - classes' periods from الجدول الدراسي (ClassSchedule: the period's room, else the class's room) — on a single
  *    date a cancelled session frees it and a one-day override moves the whole night away;
  *  - one-day overrides that move another class INTO the room;
- *  - manual / event / exam bookings.
+ *  - manual / event / exam bookings;
+ *  - programs (activities) held in the room at their times on every day of their dates.
  * Overlap rule: start < other_end AND end > other_start (adjacent periods are fine). The same whole-level period
  * shared by several classes of a level is one use of the room, so it never clashes with itself.
  *
@@ -54,6 +56,25 @@ class LocationConflictDetector
 
         return $this->detect($locationId, Carbon::instance($from)->startOfDay(), Carbon::instance($to)->startOfDay(), $days, $start, $end, array_filter([$ignoreLessonId, ...$ignoreLessonIds]), null, $ignoreSlotId);
     }
+
+    /**
+     * Conflicts of a program held in a room every day from $from to $to (البرامج), ignoring the program itself.
+     *
+     * @return list<Conflict>
+     */
+    public function forActivity(int $locationId, CarbonInterface $from, CarbonInterface $to, string $start, string $end, ?int $ignoreActivityId = null): array
+    {
+        $this->ignoreActivityId = $ignoreActivityId;
+        try {
+            return $this->detect($locationId, Carbon::instance($from)->startOfDay(), Carbon::instance($to)->startOfDay(), array_values(WeekDays::MAP), $start, $end, [], null, null);
+        } finally {
+            $this->ignoreActivityId = null;
+        }
+    }
+
+    private ?int $ignoreActivityId = null;
+
+    private static ?bool $hasActivities = null;
 
     /**
      * Conflicts of a class's own weekly periods, each in its effective room.
@@ -152,6 +173,30 @@ class LocationConflictDetector
         foreach ($bookings as $b) {
             if (in_array(WeekDays::keyFor($b->booking_date), $days, true) && WeekDays::overlaps($start, $end, $b->start_time, $b->end_time)) {
                 $conflicts[] = $this->item('booking', $b->id, $b->title, $b->booking_date->toDateString(), null, $b->start_time, $b->end_time);
+            }
+        }
+
+        // 4. Programs held in the room (every day of their dates, at their times). Skipped until the activities
+        // migration has run on this database.
+        self::$hasActivities ??= \Illuminate\Support\Facades\Schema::hasTable('activities');
+        $activities = ! self::$hasActivities ? collect() : Activity::query()
+            ->where('location_id', $locationId)->whereNotNull('start_time')->whereNotNull('end_time')
+            ->where('status', '!=', 'done')
+            ->when($this->ignoreActivityId, fn ($q, $id) => $q->whereKeyNot($id))
+            ->where('starts_on', '<=', $to->toDateString())
+            ->where(fn ($q) => $q->where(fn ($w) => $w->whereNull('ends_on')->where('starts_on', '>=', $from->toDateString()))->orWhere('ends_on', '>=', $from->toDateString()))
+            ->get();
+        foreach ($activities as $a) {
+            if (! WeekDays::overlaps($start, $end, $a->start_time, $a->end_time)) {
+                continue;
+            }
+            $first = $a->starts_on->max($from);
+            $last = $a->lastDay()->min($to);
+            for ($d = $first->copy(), $n = 0; $d->lte($last) && $n < 8; $d->addDay(), $n++) {
+                if (in_array(WeekDays::keyFor($d), $days, true)) {
+                    $conflicts[] = $this->item('activity', $a->id, $a->name_ar, $first->equalTo($last) ? $first->toDateString() : null, null, $a->start_time, $a->end_time);
+                    break;
+                }
             }
         }
 

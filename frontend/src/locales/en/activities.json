@@ -1,0 +1,195 @@
+{
+  "subtitle": {
+    "program": "Programs of {{term}}",
+    "trip": "Trips of {{term}}"
+  },
+  "screen": "Screen",
+  "filters": "Filters",
+  "search": "Search by name or number",
+  "actions": "Actions",
+  "save": "Save",
+  "edit": "Edit",
+  "delete": "Delete",
+  "remove": "Remove",
+  "select": "Select",
+  "select_all": "Select all",
+  "student": "Student",
+  "class": "Class",
+  "class_option": "{{name}} ({{level}})",
+  "all_levels": "All levels",
+  "free": "Free",
+  "sep": " · ",
+  "range": "{{from}} to {{to}}",
+  "pick": {
+    "program": "Program",
+    "trip": "Trip"
+  },
+  "option_status": "{{name}} ({{status}})",
+  "empty": {
+    "program": "No programs in this term.",
+    "trip": "No trips in this term."
+  },
+  "new": {
+    "program": "New program",
+    "trip": "New trip"
+  },
+  "title_new": {
+    "program": "New program",
+    "trip": "New trip"
+  },
+  "title_edit": {
+    "program": "Edit program",
+    "trip": "Edit trip"
+  },
+  "delete_confirm": {
+    "program": "Delete this program?",
+    "trip": "Delete this trip?"
+  },
+  "status": {
+    "draft": "Draft",
+    "open": "Registration open",
+    "closed": "Registration closed",
+    "done": "Finished"
+  },
+  "gender": {
+    "male": "Boys",
+    "female": "Girls",
+    "mixed": "Mixed",
+    "any": "Everyone"
+  },
+  "age_badge": "Age {{min}}–{{max}}",
+  "has_book": "Has a book",
+  "registered": "Registered",
+  "waitlist": "Waiting list",
+  "of_seats": "{{count}} of {{seats}}",
+  "seats_left": "Seats left: {{n}}",
+  "open_screen": "Open",
+  "no_room": "No room",
+  "unlimited": "Not set",
+  "fee_hint": "The fee is issued as an invoice in the student's wallet on registration and paid from the usual payments screen.",
+  "fields": {
+    "name_ar": "Name in Arabic",
+    "name_en": "Name in English",
+    "description": "Description",
+    "starts_on": "Start date",
+    "ends_on": "End date",
+    "start_time": "Start time",
+    "end_time": "End time",
+    "room": "Room",
+    "place": "Place",
+    "seats": "Seats",
+    "price": "Fee (BHD)",
+    "gender": "Gender",
+    "min_age": "Minimum age",
+    "max_age": "Maximum age",
+    "level": "Level",
+    "status": "Status",
+    "has_book": "The program has a book",
+    "book_title": "Book title",
+    "book_price": "Book price (BHD)"
+  },
+  "not_open_notice": "Registration is not open; open it from the list to register students.",
+  "register": {
+    "title": "Register students",
+    "by_student": "One by one",
+    "by_class": "Whole class",
+    "add_student": "Add a student",
+    "result": "Result",
+    "charge_book": "Bill the book price now",
+    "submit": "Register ({{n}})",
+    "fee_note": "A fee invoice is issued for each registered student; waiting-list students get none until they are moved to registered.",
+    "current": "Current registrations"
+  },
+  "outcome": {
+    "register": "Will register",
+    "waitlist": "Waiting list",
+    "already": "Registered",
+    "refused": "Not eligible"
+  },
+  "reasons": {
+    "not_open": "Registration is not open",
+    "inactive": "Student not active",
+    "track": "Outside your track",
+    "gender": "Not for the student's gender",
+    "no_birth_date": "No birth date",
+    "age": "Age outside the range",
+    "level": "Not in the required level",
+    "full": "All seats taken",
+    "already_registered": "Already registered",
+    "on_waitlist": "Already on the waiting list"
+  },
+  "reg_status": {
+    "registered": "Registered",
+    "waitlist": "Waiting",
+    "cancelled": "Cancelled"
+  },
+  "no_registrations": "No students registered yet.",
+  "confirm": "Move to registered",
+  "cancel_registration": "Cancel registration",
+  "cancel_confirm": "Cancel this student's registration? Its unpaid invoice is cancelled.",
+  "money": {
+    "paid": "Paid",
+    "partial": "Partly paid",
+    "unpaid": "Unpaid",
+    "none": "No fee",
+    "all": "All",
+    "status": "Payment status",
+    "fees": "Fees",
+    "fee_invoice": "Fee invoice",
+    "book_invoice": "Book invoice",
+    "remaining": "Remaining",
+    "remaining_of": "{{amount}} remaining",
+    "total": "Due",
+    "paid_total": "Paid",
+    "pay": "Pay",
+    "nothing_due": "No fees due.",
+    "empty": "No students with this status.",
+    "overdue": "Overdue",
+    "remind": "Remind the guardian",
+    "settles_note": "The payment goes into the student's wallet and settles their oldest open invoices first."
+  },
+  "book": {
+    "title": "Book",
+    "none": "This program has no book.",
+    "delivered": "Delivered",
+    "not_delivered": "Not delivered",
+    "delivered_at": "Delivery date",
+    "delivered_by": "Delivered by",
+    "charge": "Bill the book price",
+    "deliver": "Deliver ({{n}})",
+    "undo": "Undo delivery",
+    "undo_confirm": "Undo the book delivery? Its unpaid invoice is cancelled."
+  },
+  "attendance": {
+    "date": "Day",
+    "sheet": "Attendance sheet",
+    "all_present": "All present",
+    "note": "Note",
+    "marked": "{{marked}} of {{total}} marked",
+    "not_started": "The activity has not started yet.",
+    "status": {
+      "present": "Present",
+      "late": "Late",
+      "absent": "Absent",
+      "excused": "Excused"
+    },
+    "rate": "Attendance rate",
+    "none": "No record",
+    "per_student": "By student",
+    "per_date": "By day",
+    "not_recorded": "Not recorded",
+    "rate_hint": "Rate = (present + late) ÷ recorded days, leaving out excused days."
+  },
+  "evaluation": {
+    "title": "Evaluation",
+    "score": "Score",
+    "out_of": "of 100",
+    "grade": "Grade",
+    "notes": "Notes",
+    "by": "Evaluated by",
+    "evaluated": "Evaluated",
+    "average": "Average score",
+    "score_of": "{{n}} of 100",
+    "invalid": "The score is a whole number from 0 to 100."
+  }
+}

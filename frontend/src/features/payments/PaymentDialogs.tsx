@@ -30,11 +30,12 @@ function WalletLine({ student }: { student: StudentSummary }) {
 
 const errOf = (errors: FieldErrors, ...keys: string[]) => keys.map((k) => errors[k]?.[0]).find(Boolean)
 
-export function RecordPaymentDialog({ initial, onClose, onDone }: { initial?: StudentSummary | null; onClose: () => void; onDone: (msg: string) => void }) {
+/** `initialAmount` (BHD text) prefills the amount, e.g. an invoice's remaining balance on the programs and trips fee screens. */
+export function RecordPaymentDialog({ initial, initialAmount, onClose, onDone }: { initial?: StudentSummary | null; initialAmount?: string; onClose: () => void; onDone: (msg: string) => void }) {
   const { t } = useTranslation('payments')
   const invalidate = useInvalidate()
   const [student, setStudent] = useState<StudentSummary | null>(initial ?? null)
-  const [form, setForm] = useState({ amount: '', method: 'cash' as Method, reference: '', note: '', paid_at: new Date().toISOString().slice(0, 10), notify: true })
+  const [form, setForm] = useState({ amount: initialAmount ?? '', method: 'cash' as Method, reference: '', note: '', paid_at: new Date().toISOString().slice(0, 10), notify: true })
   const [file, setFile] = useState<File | null>(null)
   const [errors, setErrors] = useState<FieldErrors>({})
   const [msg, setMsg] = useState<string | null>(null)

@@ -52,7 +52,7 @@ export interface LessonCandidate {
 }
 
 export interface Conflict {
-  kind: 'lesson' | 'session' | 'override' | 'booking'
+  kind: 'lesson' | 'session' | 'override' | 'booking' | 'activity'
   id: number
   title: string
   date: string | null

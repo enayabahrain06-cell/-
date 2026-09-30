@@ -75,6 +75,7 @@ import RequiredLessonsPage from '../features/grades/RequiredLessonsPage'
 import UploadExamGradesPage from '../features/grades/UploadExamGradesPage'
 import GradesPage from '../features/grades/GradesPage'
 import GradeMonitorPage from '../features/grades/GradeMonitorPage'
+import ActivitiesPage from '../features/activities/ActivitiesPage'
 
 function FullScreenLoader() {
   const { t } = useTranslation()
@@ -175,6 +176,8 @@ const BUILT: Record<string, React.ReactNode> = {
   upload_exam_grades: <UploadExamGradesPage />,
   gradebook: <GradesPage />,
   grade_monitor: <GradeMonitorPage />,
+  activities_programs: <ActivitiesPage key="program" type="program" />,
+  activities_trips: <ActivitiesPage key="trip" type="trip" />,
 }
 
 /** Detail pages under a section: [path, permissions (any), element]. */

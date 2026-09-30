@@ -33,4 +33,6 @@ return [
     'subject_progress.record' => 'تحديث دروس المواد',
     'staff_attendance.view' => 'عرض حضور المشرفين والمعلمين', 'staff_attendance.record' => 'تسجيل حضور المشرفين والمعلمين',
     'grades.view' => 'عرض الدرجات', 'grades.record' => 'رصد الدرجات', 'grades.manage' => 'توزيع الدرجات والدروس المطلوبة',
+    'activities.view' => 'عرض البرامج والرحلات', 'activities.manage' => 'إدارة البرامج والرحلات وتسليم كتب البرامج', 'activities.register' => 'التسجيل في البرامج والرحلات',
+    'activities.attendance' => 'تسجيل حضور البرامج والرحلات', 'activities.evaluate' => 'تقييم طلبة البرامج',
 ];
