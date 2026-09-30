@@ -3,7 +3,6 @@ import { useTranslation } from 'react-i18next'
 import { useAuth } from './AuthContext'
 import { NAV_SECTIONS } from './nav'
 import LoginPage from '../features/auth/LoginPage'
-import HomePage from '../features/home/HomePage'
 import DashboardPage from '../features/dashboard/DashboardPage'
 import ComingSoon from '../features/common/ComingSoon'
 import StudentsListPage from '../features/students/StudentsListPage'
@@ -41,6 +40,14 @@ import { CompetitionDetailPage, CompetitionsHomePage } from '../features/competi
 import { ChallengeDetailPage } from '../features/competitions/ChallengePages'
 import SessionDeliveryPage from '../features/messages/SessionDeliveryPage'
 import AuditLogPage from '../features/audit/AuditLogPage'
+import ParentHomePage from '../features/portal/ParentHomePage'
+import StudentProgressPage from '../features/portal/StudentProgressPage'
+import { ChildAttendancePage, ChildCertificatesPage, ChildMemorizationPage } from '../features/portal/ChildPages'
+import InvoicesPage from '../features/portal/InvoicesPage'
+import SchedulePage from '../features/portal/SchedulePage'
+import MessagesPage from '../features/portal/MessagesPage'
+import AccountPage from '../features/portal/AccountPage'
+import FamilyOnly from '../features/portal/FamilyOnly'
 
 function FullScreenLoader() {
   const { t } = useTranslation()
@@ -65,11 +72,28 @@ function GuestOnly() {
   return user ? <Navigate to="/" replace /> : <Outlet />
 }
 
-/** Staff (anyone with dashboard.view) get the admin shell; students and guardians their own home. */
+/** Staff (anyone with dashboard.view) get the admin shell; guardians go to /my-children, students to /my-progress. */
 function StaffOrFamily() {
-  const { can } = useAuth()
-  return can('dashboard.view') ? <AppLayout /> : <HomePage />
+  const { can, hasRole } = useAuth()
+  if (can('dashboard.view')) return <AppLayout />
+  return <Navigate to={hasRole('student') && !hasRole('guardian') ? '/my-progress' : '/my-children'} replace />
 }
+
+/** Student / guardian portal (3.4), in its own shell: [path, page]. */
+const PORTAL: [string, React.ComponentType][] = [
+  ['/my-children', ParentHomePage],
+  ['/my-children/:id/attendance', ChildAttendancePage],
+  ['/my-children/:id/memorization', ChildMemorizationPage],
+  ['/my-children/:id/certificates', ChildCertificatesPage],
+  ['/my-progress', StudentProgressPage],
+  ['/my-progress/attendance', ChildAttendancePage],
+  ['/my-progress/memorization', ChildMemorizationPage],
+  ['/my-progress/certificates', ChildCertificatesPage],
+  ['/my-invoices', InvoicesPage],
+  ['/my-schedule', SchedulePage],
+  ['/my-messages', MessagesPage],
+  ['/my-account', AccountPage],
+]
 
 /** Guards a built page by the same permissions as its sidebar entry. */
 function Guard({ permissions, children }: { permissions: string[]; children: React.ReactNode }) {
@@ -140,6 +164,7 @@ export const router = createBrowserRouter([
       { path: '/my/exams', element: <MyExamsPage /> },
       { path: '/my/exams/:id', element: <ExamPlayerPage /> },
       { path: '/my/honor', element: <MyEngagementPage /> },
+      ...PORTAL.map(([path, Page]) => ({ path, element: <FamilyOnly><Page /></FamilyOnly> })),
       {
         path: '/',
         element: <StaffOrFamily />,
