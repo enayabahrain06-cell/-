@@ -8,11 +8,13 @@ import Icon from '../../components/Icon'
 import SelectField from '../../components/SelectField'
 import { EmptyCard, ErrorState, FilterBar, LoadingState, Notice, SecondaryButton, TABLE_HEAD, TableWrap } from '../../components/ui'
 import { formatNumber, formatPercent } from '../../lib/format'
+import { useTermScope } from '../../app/term'
 const MEDAL = ['text-gold-500', 'text-ink/45', 'text-gold-700']
 
 /** تحديد المتفوقين: the honor board's grades source — students ranked by their weighted grade totals of the term. */
 export default function TopStudentsPanel({ gender }: { gender?: 'male' | 'female' }) {
   const { t, i18n } = useTranslation('grades')
+  const ts = useTermScope()
   const locale = i18n.language
   const [levelId, setLevelId] = useState('')
   const [lessonId, setLessonId] = useState('')
@@ -44,7 +46,7 @@ export default function TopStudentsPanel({ gender }: { gender?: 'male' | 'female
           options={['3', '10', '20', '50'].map((v) => ({ value: v, label: n(Number(v)) }))} />
         <SecondaryButton className="self-end sm:ms-auto" onClick={() => window.print()}><Icon name="printer" className="size-4" />{t('top.print')}</SecondaryButton>
       </FilterBar>
-      <p className="text-sm text-ink/60">{t('top.hint', { term: d.term.name, n: n(d.ranked) })}</p>
+      <p className="text-sm text-ink/60">{t('top.hint', { term: ts.label(d.term.name), n: n(d.ranked) })}</p>
       {d.rows.length === 0 ? <EmptyCard icon="medal" title={t('top.empty')} body={t('top.empty_body')} /> : (
         <TableWrap surface>
           <table className="w-full min-w-[34rem] text-sm">

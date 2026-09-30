@@ -1,7 +1,7 @@
 {
   "subtitle": "Books of the term: {{term}}",
   "new": "New book",
-  "empty": "No books for this term yet.",
+  "empty": "No books {{scope}} yet.",
   "edit": "Edit",
   "delete": "Delete",
   "delete_confirm": "Delete this book?",

@@ -13,12 +13,14 @@ import { formatDate, formatMoney, formatNumber } from '../../lib/format'
 import { toLatinDigits } from '../../lib/phone'
 import { DialogFooter, Field, Toolbar, useRemove } from '../common/crud'
 import { useEmbed, useOwnParam } from '../../app/embed'
+import { useTermScope } from '../../app/term'
 
 type Tab = 'books' | 'followup'
 
 /** الكتب (the term's books) and متابعة الكتب (who received them). */
 export default function BooksPage() {
   const { t } = useTranslation('books')
+  const ts = useTermScope()
   const [params, setParams] = useSearchParams()
   const host = useEmbed()
   const ownTab = useOwnParam(params, 'tab')
@@ -28,7 +30,7 @@ export default function BooksPage() {
   return (
     <div className="space-y-5">
       <div className="hidden lg:block">
-        <PageBand title={t('nav:menu.books')} subtitle={q.data ? t('subtitle', { term: q.data.term.name }) : undefined} />
+        <PageBand title={t('nav:menu.books')} subtitle={q.data ? t('subtitle', { term: ts.label(q.data.term.name) }) : undefined} />
       </div>
       {!host && <div className="-mx-4 overflow-x-auto px-4 lg:mx-0 lg:px-0">
         <Segmented name="books-tab" label={t('nav:menu.books')} value={tab} onChange={(v) => setParams({ tab: v }, { replace: true })}
@@ -45,6 +47,7 @@ export default function BooksPage() {
 
 function BooksTab({ books, termId, options }: { books: Book[]; termId: number; options: BookOptions }) {
   const { t, i18n } = useTranslation('books')
+  const ts = useTermScope()
   const { can } = useAuth()
   const canManage = can('books.manage')
   const [edit, setEdit] = useState<Book | 'new' | null>(null)
@@ -53,7 +56,7 @@ function BooksTab({ books, termId, options }: { books: Book[]; termId: number; o
   return (
     <div className="space-y-4">
       <Toolbar label={canManage ? t('new') : undefined} onAdd={canManage ? () => setEdit('new') : undefined} notice={notice} />
-      {books.length === 0 ? <EmptyCard icon="lessons" title={t('empty')} /> : (
+      {books.length === 0 ? <EmptyCard icon="lessons" title={t('empty', { scope: ts.scope() })} /> : (
         <div className="grid gap-3 *:min-w-0 md:grid-cols-2 xl:grid-cols-3">
           {books.map((b) => (
             <article key={b.id} className={`${SURFACE} space-y-2 p-4 ${b.is_active ? '' : 'opacity-60'}`}>
@@ -131,6 +134,7 @@ function BookDialog({ row, termId, options, onClose, onSaved }: { row?: Book; te
 
 function FollowupTab({ books, options }: { books: Book[]; options: BookOptions }) {
   const { t, i18n } = useTranslation('books')
+  const ts = useTermScope()
   const locale = i18n.language
   const { can } = useAuth()
   const canManage = can('books.manage')
@@ -164,7 +168,7 @@ function FollowupTab({ books, options }: { books: Book[]; options: BookOptions }
   const classes = options.classes.filter((c) => !book?.level || c.level_id === book.level.id)
   const allPicked = open.length > 0 && open.every((r) => picked.includes(r.student.id))
 
-  if (books.length === 0) return <EmptyCard icon="lessons" title={t('empty')} />
+  if (books.length === 0) return <EmptyCard icon="lessons" title={t('empty', { scope: ts.scope() })} />
 
   return (
     <div className="space-y-4">

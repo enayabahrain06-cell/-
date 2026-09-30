@@ -2,7 +2,7 @@
   "subtitle": "Groups inside a class in {{term}}",
   "class": "Class",
   "pick_class": "Pick a class to see its divisions.",
-  "no_classes": "You have no classes this term.",
+  "no_classes": "You have no classes {{scope}}.",
   "new": "New division",
   "title_new": "New division",
   "title_edit": "Edit division",

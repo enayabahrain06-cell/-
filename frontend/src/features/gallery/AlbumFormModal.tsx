@@ -6,6 +6,7 @@ import { galleryApi, type Album, type AlbumGender, type AlbumInput, type AlbumLi
 import SelectField from '../../components/SelectField'
 import { Modal, Notice, PrimaryButton, SecondaryButton, TextArea, TextInput } from '../../components/ui'
 import { linkOptions } from './utils'
+import { useTermScope } from '../../app/term'
 
 /**
  * New album or album details. Teachers link to one of their own classes (their albums stay staff-only); managers
@@ -14,6 +15,7 @@ import { linkOptions } from './utils'
  */
 export default function AlbumFormModal({ options: o, album, onClose, onSaved }: { options: GalleryOptions; album?: Album; onClose: () => void; onSaved?: (a: Album) => void }) {
   const { t } = useTranslation('gallery')
+  const ts = useTermScope()
   const qc = useQueryClient()
   const types: AlbumLinkType[] = o.can_manage ? o.link_types : ['lesson']
   const [title, setTitle] = useState(album?.title ?? '')
@@ -44,7 +46,7 @@ export default function AlbumFormModal({ options: o, album, onClose, onSaved }: 
   const submit = (e: FormEvent) => { e.preventDefault(); save.mutate() }
 
   if (!o.can_manage && o.classes.length === 0) {
-    return <Modal title={t('new_album')} onClose={onClose}><Notice tone="info">{t('no_classes')}</Notice></Modal>
+    return <Modal title={t('new_album')} onClose={onClose}><Notice tone="info">{t('no_classes', { scope: ts.scope() })}</Notice></Modal>
   }
 
   return (

@@ -11,10 +11,12 @@ import { buttonClass, EmptyCard, ErrorState, FilterBar, LoadingState, SearchInpu
 import AlbumFormModal from './AlbumFormModal'
 import { AlbumCard } from './shared'
 import { linkOptions } from './utils'
+import { useTermScope } from '../../app/term'
 
 /** معرض الصور: the term's albums (the shell's term selector), filtered by link and visibility, newest first. */
 export default function GalleryPage() {
   const { t } = useTranslation('gallery')
+  const ts = useTermScope('all')
   const navigate = useNavigate()
   const opts = useQuery({ queryKey: ['gallery-options'], queryFn: galleryApi.options })
   const [linkType, setLinkType] = useState<AlbumLinkType | ''>('')
@@ -53,7 +55,7 @@ export default function GalleryPage() {
       </FilterBar>
 
       {albums.isLoading || opts.isLoading ? <LoadingState /> : albums.isError ? <ErrorState onRetry={() => void albums.refetch()} /> : albums.data && albums.data.data.length === 0 ? (
-        <EmptyCard icon="camera" title={t('empty')} body={o?.can_create ? t('empty_create') : undefined} />
+        <EmptyCard icon="camera" title={t('empty', { scope: ts.scope() })} body={o?.can_create ? t('empty_create') : undefined} />
       ) : albums.data && (
         <>
           <ul className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 2xl:grid-cols-4" aria-label={t('albums')}>

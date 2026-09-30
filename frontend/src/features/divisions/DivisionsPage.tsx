@@ -9,10 +9,12 @@ import SelectField from '../../components/SelectField'
 import { Badge, EmptyCard, ErrorState, FilterBar, IconButton, LoadingState, Modal, Notice, SecondaryButton, SURFACE, TextInput } from '../../components/ui'
 import { formatNumber } from '../../lib/format'
 import { DialogFooter, Field, Toolbar, useRemove } from '../common/crud'
+import { useTermScope } from '../../app/term'
 
 /** التقسيمات: pick a class of the term, then create, edit and delete its divisions and assign its students. */
 export default function DivisionsPage() {
   const { t, i18n } = useTranslation('divisions')
+  const ts = useTermScope()
   const locale = i18n.language
   const [lessonId, setLessonId] = useState<number | ''>('')
   const base = useQuery({ queryKey: ['divisions', 'classes'], queryFn: () => divisionsApi.list() })
@@ -27,11 +29,11 @@ export default function DivisionsPage() {
   return (
     <div className="space-y-5">
       <div className="hidden lg:block">
-        <PageBand title={t('nav:menu.divisions')} subtitle={base.data ? t('subtitle', { term: base.data.term.name }) : undefined} />
+        <PageBand title={t('nav:menu.divisions')} subtitle={base.data ? t('subtitle', { term: ts.label(base.data.term.name) }) : undefined} />
       </div>
       {base.isLoading ? <LoadingState /> : base.isError ? (
         isAxiosError(base.error) && base.error.response?.status === 422 ? <Notice tone="info">{parseApiError(base.error).message}</Notice> : <ErrorState onRetry={() => void base.refetch()} />
-      ) : base.data && (base.data.classes.length === 0 ? <EmptyCard icon="lessons" title={t('no_classes')} /> : (
+      ) : base.data && (base.data.classes.length === 0 ? <EmptyCard icon="lessons" title={t('no_classes', { scope: ts.scope() })} /> : (
         <>
           <FilterBar label={t('class')}>
             <SelectField label={t('class')} hideLabel className="sm:w-72" value={String(lessonId)} onChange={(e) => setLessonId(e.target.value ? Number(e.target.value) : '')}

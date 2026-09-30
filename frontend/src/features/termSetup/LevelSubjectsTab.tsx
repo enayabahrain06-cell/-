@@ -9,21 +9,23 @@ import { Badge, EmptyCard, ErrorState, IconButton, LoadingState, Modal, Secondar
 import { formatNumber } from '../../lib/format'
 import { DialogFooter, Field, Toolbar, useRemove } from '../common/crud'
 import { useCanManage, useSetupOptions } from './shared'
+import { useTermScope } from '../../app/term'
 
 /** مواد المستويات: one card per level listing its subjects for the term. */
 export default function LevelSubjectsTab() {
   const { t, i18n } = useTranslation('termSetup')
+  const ts = useTermScope()
   const canManage = useCanManage()
   const options = useSetupOptions()
   const q = useQuery({ queryKey: ['term-setup-level-subjects'], queryFn: () => termSetupApi.levelSubjects() })
   const [edit, setEdit] = useState<{ level: Ref; row?: LevelSubject } | null>(null)
-  const { notice, setNotice, remove } = useRemove(termSetupApi.removeLevelSubject, [['term-setup-level-subjects']], t('level_subjects.delete_confirm'))
+  const { notice, setNotice, remove } = useRemove(termSetupApi.removeLevelSubject, [['term-setup-level-subjects']], t('level_subjects.delete_confirm', { scope: ts.scope() }))
   const levels = options.data?.levels ?? []
 
   return (
     <div className="space-y-4">
       <Toolbar notice={notice} />
-      <p className="text-sm text-ink/60">{t('level_subjects.hint')}</p>
+      <p className="text-sm text-ink/60">{t('level_subjects.hint', { scope: ts.scope() })}</p>
       {q.isLoading ? <LoadingState /> : q.isError ? <ErrorState onRetry={() => void q.refetch()} /> : levels.length === 0 ? (
         <EmptyCard icon="lessons" title={t('no_levels')} />
       ) : (

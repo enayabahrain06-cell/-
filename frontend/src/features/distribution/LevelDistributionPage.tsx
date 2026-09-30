@@ -8,12 +8,14 @@ import SelectField from '../../components/SelectField'
 import { Badge, EmptyCard, ErrorState, FilterBar, LoadingState, Notice, PrimaryButton, SearchInput, Segmented, SecondaryButton, SURFACE, TABLE_HEAD, TableWrap } from '../../components/ui'
 import { formatNumber } from '../../lib/format'
 import { OptionsError, ResultsList, useClassOptions, useDistOptions } from './shared'
+import { useTermScope } from '../../app/term'
 
 type View = 'unplaced' | 'level'
 
 /** توزيع المستويات: put the term's students in a class of a level (capacity, gender and age rules apply). */
 export default function LevelDistributionPage() {
   const { t, i18n } = useTranslation('distribution')
+  const ts = useTermScope()
   const n = (v: number) => formatNumber(v, i18n.language)
   const qc = useQueryClient()
   const options = useDistOptions()
@@ -55,7 +57,7 @@ export default function LevelDistributionPage() {
   return (
     <div className="space-y-5">
       <div className="hidden lg:block">
-        <PageBand title={t('nav:menu.level_distribution')} subtitle={options.data ? t('subtitle', { term: options.data.term.name }) : undefined} />
+        <PageBand title={t('nav:menu.level_distribution')} subtitle={options.data ? t('subtitle', { term: ts.label(options.data.term.name) }) : undefined} />
       </div>
       {options.isLoading ? <LoadingState /> : options.isError ? <OptionsError error={options.error} onRetry={() => void options.refetch()} /> : (
         <>
@@ -79,15 +81,15 @@ export default function LevelDistributionPage() {
                 {t('place_run', { count: picked.length, n: n(picked.length) })}
               </PrimaryButton>
             </div>
-            {levelId !== '' && levelClasses.length === 0 && <div className="sm:col-span-2 lg:col-span-3"><Notice tone="info">{t('no_classes')}</Notice></div>}
+            {levelId !== '' && levelClasses.length === 0 && <div className="sm:col-span-2 lg:col-span-3"><Notice tone="info">{t('no_classes', { scope: ts.scope() })}</Notice></div>}
           </section>
 
           {error && <Notice tone="error">{error}</Notice>}
           {outcome && <ResultsList message={outcome.message} results={outcome.results} />}
 
-          {view === 'level' && filterLevel === '' ? <Notice tone="info">{t('choose_level_hint')}</Notice>
+          {view === 'level' && filterLevel === '' ? <Notice tone="info">{t('choose_level_hint', { scope: ts.scope() })}</Notice>
             : students.isLoading ? <LoadingState /> : students.isError ? <ErrorState onRetry={() => void students.refetch()} /> : rows.length === 0 ? (
-              <EmptyCard icon="students" title={view === 'unplaced' ? t('empty_unplaced') : t('empty_level')} />
+              <EmptyCard icon="students" title={view === 'unplaced' ? t('empty_unplaced', { scope: ts.scope() }) : t('empty_level')} />
             ) : (
               <TableWrap surface>
                 <table className="w-full min-w-[44rem] text-sm">

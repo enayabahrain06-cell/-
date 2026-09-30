@@ -10,10 +10,12 @@ import StudentPicker from '../../components/StudentPicker'
 import { Badge, ErrorState, LoadingState, Notice, PrimaryButton, SURFACE, TABLE_HEAD, TableWrap, TextArea } from '../../components/ui'
 import { formatDate } from '../../lib/format'
 import { OptionsError, useClassOptions, useDistOptions } from './shared'
+import { useTermScope } from '../../app/term'
 
 /** تحديث المستوى: move one student to a class of another level this term, with a reason, and show the level history. */
 export default function UpdateLevelPage() {
   const { t, i18n } = useTranslation('distribution')
+  const ts = useTermScope()
   const qc = useQueryClient()
   const options = useDistOptions()
   const [student, setStudent] = useState<StudentSummary | null>(null)
@@ -38,7 +40,7 @@ export default function UpdateLevelPage() {
   return (
     <div className="space-y-5">
       <div className="hidden lg:block">
-        <PageBand title={t('nav:menu.update_level')} subtitle={options.data ? t('subtitle', { term: options.data.term.name }) : undefined} />
+        <PageBand title={t('nav:menu.update_level')} subtitle={options.data ? t('subtitle', { term: ts.label(options.data.term.name) }) : undefined} />
       </div>
       {options.isLoading ? <LoadingState /> : options.isError ? <OptionsError error={options.error} onRetry={() => void options.refetch()} /> : (
         <div className="grid gap-4 *:min-w-0 lg:grid-cols-2">

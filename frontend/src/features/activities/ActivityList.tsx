@@ -9,6 +9,7 @@ import { formatMoney, formatNumber } from '../../lib/format'
 import { toLatinDigits } from '../../lib/phone'
 import { DialogFooter, Field, Toolbar, useRemove } from '../common/crud'
 import { ActivityWhen, STATUS_TONE } from './shared'
+import { useTermScope } from '../../app/term'
 
 const STATUSES: ActivityStatus[] = ['draft', 'open', 'closed', 'done']
 
@@ -17,6 +18,7 @@ type ListData = { term: { id: number; name: string }; data: Activity[]; options:
 /** البرامج / الرحلات: the term's programs or trips as cards; managers create, edit, open and close them. */
 export default function ActivityList({ type, data, onOpen }: { type: ActivityType; data: ListData; onOpen: (a: Activity) => void }) {
   const { t, i18n } = useTranslation('activities')
+  const ts = useTermScope()
   const locale = i18n.language
   const n = (v: number) => formatNumber(v, locale)
   const qc = useQueryClient()
@@ -32,7 +34,7 @@ export default function ActivityList({ type, data, onOpen }: { type: ActivityTyp
   return (
     <div className="space-y-4">
       <Toolbar label={canManage ? t(`new.${type}`) : undefined} onAdd={canManage ? () => setEdit('new') : undefined} notice={notice} />
-      {data.data.length === 0 ? <EmptyCard icon={type === 'trip' ? 'pin' : 'trophy'} title={t(`empty.${type}`)} /> : (
+      {data.data.length === 0 ? <EmptyCard icon={type === 'trip' ? 'pin' : 'trophy'} title={t(`empty.${type}`, { scope: ts.scope() })} /> : (
         <div className="grid gap-3 *:min-w-0 md:grid-cols-2 xl:grid-cols-3">
           {data.data.map((a) => (
             <article key={a.id} className={`${SURFACE} flex flex-col gap-3 p-4`}>

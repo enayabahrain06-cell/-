@@ -14,6 +14,7 @@ import { BookDeliveryTab, BookFollowupTab, EvaluationTab, EvaluationViewTab, Fee
 import LinkedAlbums from '../gallery/LinkedAlbums'
 import { ActivityWhen, TABS, type Tab } from './shared'
 import { useEmbed, useOwnParam } from '../../app/embed'
+import { useTermScope } from '../../app/term'
 
 /**
  * البرامج / الرحلات: one page per type on the one activities engine. Each menu entry of the section opens its tab
@@ -21,6 +22,7 @@ import { useEmbed, useOwnParam } from '../../app/embed'
  */
 export default function ActivitiesPage({ type }: { type: ActivityType }) {
   const { t } = useTranslation('activities')
+  const ts = useTermScope()
   const { can } = useAuth()
   const [params, setParams] = useSearchParams()
   const host = useEmbed()
@@ -35,7 +37,7 @@ export default function ActivitiesPage({ type }: { type: ActivityType }) {
 
   return (
     <div className="space-y-5">
-      <div className="hidden lg:block"><PageBand title={title} subtitle={q.data ? t(`subtitle.${type}`, { term: q.data.term.name }) : undefined} /></div>
+      <div className="hidden lg:block"><PageBand title={title} subtitle={q.data ? t(`subtitle.${type}`, { term: ts.label(q.data.term.name) }) : undefined} /></div>
       {!host && tabs.length > 1 && (
         <>
           <div className="hidden lg:block">
@@ -60,7 +62,8 @@ const ALBUMS_TAB: Record<ActivityType, Tab> = { program: 'students', trip: 'atte
 
 function Picked({ type, tab, list, options, activityId, onPick }: { type: ActivityType; tab: Tab; list: Activity[]; options: ActivityOptions; activityId: number | null; onPick: (id: number) => void }) {
   const { t } = useTranslation('activities')
-  if (list.length === 0) return <EmptyCard icon={type === 'trip' ? 'pin' : 'trophy'} title={t(`empty.${type}`)} />
+  const ts = useTermScope()
+  if (list.length === 0) return <EmptyCard icon={type === 'trip' ? 'pin' : 'trophy'} title={t(`empty.${type}`, { scope: ts.scope() })} />
   const activity = list.find((a) => a.id === activityId) ?? list.find((a) => a.status === 'open') ?? list[0]
 
   return (

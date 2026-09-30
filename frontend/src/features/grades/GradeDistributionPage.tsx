@@ -9,10 +9,12 @@ import SelectField from '../../components/SelectField'
 import { Badge, EmptyCard, ErrorState, FilterBar, IconButton, LoadingState, Modal, Notice, SURFACE, TextInput } from '../../components/ui'
 import { formatNumber } from '../../lib/format'
 import { DialogFooter, Field, Toolbar, useRemove } from '../common/crud'
+import { useTermScope } from '../../app/term'
 
 /** توزيع الدرجات: the grade components of a level subject of the term (weights are percent shares of 100). */
 export default function GradeDistributionPage() {
   const { t, i18n } = useTranslation('grades')
+  const ts = useTermScope()
   const locale = i18n.language
   const qc = useQueryClient()
   const [levelId, setLevelId] = useState<number | ''>('')
@@ -42,10 +44,10 @@ export default function GradeDistributionPage() {
 
   return (
     <div className="space-y-5">
-      <div className="hidden lg:block"><PageBand title={t('nav:menu.grade_distribution')} subtitle={d ? t('distribution.subtitle', { term: d.term.name }) : undefined} /></div>
+      <div className="hidden lg:block"><PageBand title={t('nav:menu.grade_distribution')} subtitle={d ? t('distribution.subtitle', { term: ts.label(d.term.name) }) : undefined} /></div>
       {q.isLoading && !d ? <LoadingState /> : q.isError ? (
         isAxiosError(q.error) && q.error.response?.status === 422 ? <Notice tone="info">{parseApiError(q.error).message}</Notice> : <ErrorState message={parseApiError(q.error).message} onRetry={() => void q.refetch()} />
-      ) : d && (d.level_subjects.length === 0 ? <EmptyCard icon="evaluation" title={t('distribution.no_level_subjects')} /> : (
+      ) : d && (d.level_subjects.length === 0 ? <EmptyCard icon="evaluation" title={t('distribution.no_level_subjects', { scope: ts.scope() })} /> : (
         <>
           <FilterBar label={t('common.filters')}>
             <SelectField label={t('common.level')} className="sm:w-60" value={String(levelId)} onChange={(e) => { setLevelId(e.target.value ? Number(e.target.value) : ''); setLsId('') }}

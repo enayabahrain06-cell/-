@@ -26,8 +26,8 @@
   },
   "option_status": "{{name}} ({{status}})",
   "empty": {
-    "program": "No programs in this term.",
-    "trip": "No trips in this term."
+    "program": "No programs {{scope}}.",
+    "trip": "No trips {{scope}}."
   },
   "new": {
     "program": "New program",

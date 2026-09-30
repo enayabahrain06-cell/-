@@ -11,6 +11,7 @@ import { Badge, EmptyCard, ErrorState, FilterBar, LoadingState, Notice, SearchIn
 import { formatNumber } from '../../lib/format'
 import NoteList from './NoteList'
 import { useEmbed, useOwnParam } from '../../app/embed'
+import { useTermScope } from '../../app/term'
 
 const TABS = ['students', 'general', 'levels', 'levels_view', 'subjects', 'subjects_view'] as const
 type Tab = (typeof TABS)[number]
@@ -22,6 +23,7 @@ const TAB_ENTRY: Record<Tab, string> = {
 /** U9 الملاحظات: one page, one tab per menu entry (students, general, levels and level subjects, with their views). */
 export default function NotesPage() {
   const { t } = useTranslation('notes')
+  const ts = useTermScope()
   const [params, setParams] = useSearchParams()
   const host = useEmbed()
   const ownTab = useOwnParam(params, 'tab')
@@ -31,7 +33,7 @@ export default function NotesPage() {
   return (
     <div className="space-y-5">
       <div className="hidden lg:block">
-        <PageBand title={t('nav:notes')} subtitle={opts.data ? t('subtitle', { term: opts.data.term.name }) : undefined} />
+        <PageBand title={t('nav:notes')} subtitle={opts.data ? t('subtitle', { term: ts.label(opts.data.term.name) }) : undefined} />
       </div>
       {!host && <div className="-mx-4 overflow-x-auto px-4 lg:mx-0 lg:px-0">
         <Segmented name="notes-tab" label={t('nav:notes')} value={tab} onChange={(v) => setParams({ tab: v }, { replace: true })}
@@ -56,6 +58,7 @@ export default function NotesPage() {
 /** ملاحظات الطلبة: class → its students (with how many notes) → the chosen student's notes and the add form. */
 function StudentsTab({ o }: { o: NoteOptions }) {
   const { t, i18n } = useTranslation('notes')
+  const ts = useTermScope()
   const locale = i18n.language
   const [lessonId, setLessonId] = useState<number | ''>(o.classes[0]?.id ?? '')
   const [studentId, setStudentId] = useState<number | null>(null)
@@ -64,7 +67,7 @@ function StudentsTab({ o }: { o: NoteOptions }) {
   const rows = (students.data?.data ?? []).filter((s) => !search.trim() || s.full_name.includes(search.trim()) || s.student_no.includes(search.trim()))
   const student = students.data?.data.find((s) => s.id === studentId)
 
-  if (o.classes.length === 0) return <EmptyCard icon="lessons" title={t('no_classes')} />
+  if (o.classes.length === 0) return <EmptyCard icon="lessons" title={t('no_classes', { scope: ts.scope() })} />
   return (
     <div className="grid gap-4 *:min-w-0 lg:grid-cols-[minmax(16rem,22rem)_1fr]">
       <section className={`${SURFACE} space-y-3 p-4`} aria-label={t('students')}>
@@ -106,11 +109,12 @@ function StudentsTab({ o }: { o: NoteOptions }) {
 /** ملاحظات المستويات / ملاحظات مواد المستويات: pick the level (or level subject), add and manage its notes. */
 function TargetTab({ o, kind }: { o: NoteOptions; kind: 'level' | 'level_subject' }) {
   const { t } = useTranslation('notes')
+  const ts = useTermScope()
   const options = kind === 'level'
     ? o.levels.map((l) => ({ value: String(l.id), label: l.name }))
     : o.level_subjects.map((ls) => ({ value: String(ls.id), label: `${ls.subject.name}، ${ls.level.name}` }))
   const [id, setId] = useState<string>(options[0]?.value ?? '')
-  if (options.length === 0) return <EmptyCard icon="edit" title={kind === 'level' ? t('no_levels') : t('no_level_subjects')} />
+  if (options.length === 0) return <EmptyCard icon="edit" title={kind === 'level' ? t('no_levels', { scope: ts.scope() }) : t('no_level_subjects', { scope: ts.scope() })} />
   const target = Number(id)
   return (
     <div className="space-y-4">

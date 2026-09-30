@@ -9,10 +9,12 @@ import { PageBand } from '../../components/ornaments'
 import SelectField from '../../components/SelectField'
 import { Badge, EmptyCard, ErrorState, FilterBar, LoadingState, Notice, SURFACE, TABLE_HEAD, TableWrap } from '../../components/ui'
 import { formatNumber } from '../../lib/format'
+import { useTermScope } from '../../app/term'
 
 /** مراقبة تسليم الدرجات: per class, subject and grade component, the students still without a score and who owes them. */
 export default function GradeMonitorPage() {
   const { t, i18n } = useTranslation('grades')
+  const ts = useTermScope()
   const locale = i18n.language
   const [levelId, setLevelId] = useState('')
   const [teacherId, setTeacherId] = useState('')
@@ -27,7 +29,7 @@ export default function GradeMonitorPage() {
 
   return (
     <div className="space-y-5">
-      <div className="hidden lg:block"><PageBand title={t('nav:menu.grade_submission_monitor')} subtitle={d ? t('monitor.subtitle', { term: d.term.name }) : undefined} /></div>
+      <div className="hidden lg:block"><PageBand title={t('nav:menu.grade_submission_monitor')} subtitle={d ? t('monitor.subtitle', { term: ts.label(d.term.name) }) : undefined} /></div>
       {q.isLoading && !d ? <LoadingState /> : q.isError ? (
         isAxiosError(q.error) && q.error.response?.status === 422 ? <Notice tone="info">{parseApiError(q.error).message}</Notice> : <ErrorState message={parseApiError(q.error).message} onRetry={() => void q.refetch()} />
       ) : d && (

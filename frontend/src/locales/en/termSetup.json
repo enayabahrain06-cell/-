@@ -38,14 +38,14 @@
     "target_ayahs": "Ayahs to add this week"
   },
   "level_subjects": {
-    "hint": "The subjects each level studies this term, and their default teacher.",
+    "hint": "The subjects each level studies {{scope}}, and their default teacher.",
     "count": "Subjects: {{n}}",
     "none": "No subjects yet.",
     "add": "Add subject",
     "weekly": "{{n}} a week",
     "title_new": "Add a subject to {{level}}",
     "title_edit": "Edit a subject of {{level}}",
-    "delete_confirm": "Remove this subject from the level? Its plan for this term goes too."
+    "delete_confirm": "Remove this subject from the level? Its plan {{scope}} goes too."
   },
   "subject_lessons": {
     "hint": "Each subject's lessons in order, for one level or all levels. Not tied to a term, so every term's plan uses them.",
@@ -62,7 +62,7 @@
     "close": "Close"
   },
   "plan": {
-    "no_subjects": "This level has no subjects this term. Add them under Level subjects.",
+    "no_subjects": "This level has no subjects {{scope}}. Add them under Level subjects.",
     "week": "Week {{n}}",
     "add": "Add",
     "no_lesson": "No lesson (free title)",
@@ -73,7 +73,7 @@
     "ayahs": "{{n}} ayahs"
   },
   "supervisors": {
-    "hint": "Supervisors on duty each night this term.",
+    "hint": "Supervisors on duty each night {{scope}}.",
     "none": "No supervisor.",
     "add": "Add",
     "choose": "Choose a supervisor",
@@ -113,7 +113,7 @@
   },
   "list_sep": " · ",
   "level_rooms": {
-    "hint": "Each level's rooms this term: the ones assigned here, and the ones its classes and timetable already use.",
+    "hint": "Each level's rooms {{scope}}: the ones assigned here, and the ones its classes and timetable already use.",
     "count": "Rooms: {{n}}",
     "none": "No rooms for this level yet.",
     "add": "Add",

@@ -10,10 +10,12 @@ import { PageBand } from '../../components/ornaments'
 import SelectField from '../../components/SelectField'
 import { Badge, EmptyCard, ErrorState, FilterBar, LoadingState, Notice, PrimaryButton, SURFACE } from '../../components/ui'
 import { formatDate, formatNumber } from '../../lib/format'
+import { useTermScope } from '../../app/term'
 
 /** الدروس المطلوبة: pick an exam, then the subject lessons (دروس المواد) it covers. The syllabus text stays as a note. */
 export default function RequiredLessonsPage() {
   const { t, i18n } = useTranslation('grades')
+  const ts = useTermScope()
   const locale = i18n.language
   const qc = useQueryClient()
   const [params] = useSearchParams()
@@ -43,7 +45,7 @@ export default function RequiredLessonsPage() {
     <div className="space-y-5">
       <div className="hidden lg:block"><PageBand title={t('nav:menu.required_lessons')} subtitle={t('required.subtitle')} /></div>
       {exams.isLoading ? <LoadingState /> : exams.isError ? <ErrorState message={parseApiError(exams.error).message} onRetry={() => void exams.refetch()} /> : list.length === 0 ? (
-        <EmptyCard icon="exams" title={t('required.no_exams')} />
+        <EmptyCard icon="exams" title={t('required.no_exams', { scope: ts.scope() })} />
       ) : (
         <>
           <FilterBar label={t('common.exam')}>

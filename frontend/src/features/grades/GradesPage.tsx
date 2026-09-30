@@ -13,6 +13,7 @@ import SelectField from '../../components/SelectField'
 import { Badge, EmptyCard, ErrorState, FilterBar, LoadingState, Modal, Notice, PrimaryButton, SecondaryButton, Segmented, SURFACE, TABLE_HEAD, TableWrap, inputClass } from '../../components/ui'
 import { formatNumber, formatPercent } from '../../lib/format'
 import { useEmbed, useOwnParam } from '../../app/embed'
+import { useTermScope } from '../../app/term'
 
 type Tab = 'record' | 'view' | 'download'
 const MENU: Record<Tab, string> = { record: 'grades', view: 'view_grades', download: 'download_grades' }
@@ -46,6 +47,7 @@ export default function GradesPage() {
 
 function Book({ tab, lessonId, onLesson, subjectId, onSubject }: { tab: Tab; lessonId: number | ''; onLesson: (v: number | '') => void; subjectId?: number; onSubject: (v: number | undefined) => void }) {
   const { t } = useTranslation('grades')
+  const ts = useTermScope()
   const record = tab === 'record'
   const q = useQuery({
     queryKey: ['gradebook', tab, lessonId, tab === 'download' ? null : subjectId ?? null],
@@ -56,7 +58,7 @@ function Book({ tab, lessonId, onLesson, subjectId, onSubject }: { tab: Tab; les
   if (q.isLoading && !d) return <LoadingState />
   if (q.isError) return isAxiosError(q.error) && q.error.response?.status === 422 ? <Notice tone="info">{parseApiError(q.error).message}</Notice> : <ErrorState message={parseApiError(q.error).message} onRetry={() => void q.refetch()} />
   if (!d) return null
-  if (d.classes.length === 0) return <EmptyCard icon="lessons" title={t('book.no_classes')} />
+  if (d.classes.length === 0) return <EmptyCard icon="lessons" title={t('book.no_classes', { scope: ts.scope() })} />
   const ready = lessonId !== '' && d.lesson?.id === lessonId
 
   return (
@@ -71,7 +73,7 @@ function Book({ tab, lessonId, onLesson, subjectId, onSubject }: { tab: Tab; les
       </FilterBar>
       {lessonId === '' ? <EmptyCard icon="lessons" title={t('book.pick_class')} />
         : !ready ? <LoadingState />
-        : (d.subjects ?? []).length === 0 ? <EmptyCard icon="evaluation" title={record ? t('book.no_subjects_record') : t('book.no_subjects')} />
+        : (d.subjects ?? []).length === 0 ? <EmptyCard icon="evaluation" title={record ? t('book.no_subjects_record') : t('book.no_subjects', { scope: ts.scope() })} />
         : tab === 'download' ? <DownloadPanel data={d} />
         : (d.components ?? []).length === 0 ? <EmptyCard icon="chart" title={t('book.no_components')} body={t('book.no_components_body')} />
         : record ? <RecordPanel data={d} /> : <ViewPanel data={d} />}

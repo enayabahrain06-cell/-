@@ -11,12 +11,14 @@ import SelectField from '../../components/SelectField'
 import StudentPicker from '../../components/StudentPicker'
 import { Badge, EmptyCard, ErrorState, FilterBar, LoadingState, Notice, SecondaryButton, Segmented, TABLE_HEAD, TableWrap, TextInput } from '../../components/ui'
 import { formatDate, formatNumber } from '../../lib/format'
+import { useTermScope } from '../../app/term'
 
 type Type = 'all' | 'memorized' | 'revised'
 
 /** دروس القرآن: the term's memorization ledger, read-only (recorded from the attendance and evaluation sheets). */
 export default function QuranLessonsPage() {
   const { t, i18n } = useTranslation('education')
+  const ts = useTermScope()
   const locale = i18n.language
   const [lessonId, setLessonId] = useState('')
   const [student, setStudent] = useState<StudentSummary | null>(null)
@@ -31,7 +33,7 @@ export default function QuranLessonsPage() {
   return (
     <div className="space-y-5">
       <div className="hidden lg:block">
-        <PageBand title={t('nav:menu.quran_lessons')} subtitle={q.data ? t('quran.subtitle', { term: q.data.term.name }) : undefined} />
+        <PageBand title={t('nav:menu.quran_lessons')} subtitle={q.data ? t('quran.subtitle', { term: ts.label(q.data.term.name) }) : undefined} />
       </div>
       <FilterBar label={t('quran.class')}>
         <SelectField label={t('quran.class')} className="sm:w-52" value={lessonId} onChange={(e) => { setLessonId(e.target.value); reset() }}

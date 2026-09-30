@@ -50,5 +50,17 @@
         "invalid": "With errors: {{count}}",
         "preview": "File preview"
     },
-  "crud": { "edit": "Edit", "delete": "Delete", "save": "Save", "cancel": "Cancel" }
+    "crud": {
+        "edit": "Edit",
+        "delete": "Delete",
+        "save": "Save",
+        "cancel": "Cancel"
+    },
+    "term_scope": {
+        "this": "in this term",
+        "all": "in any term",
+        "current": "in the current term ({{name}})",
+        "current_label": "{{name}} (current term)",
+        "all_label": "All terms"
+    }
 }

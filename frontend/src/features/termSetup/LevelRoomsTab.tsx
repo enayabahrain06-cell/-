@@ -8,12 +8,14 @@ import { Badge, EmptyCard, ErrorState, IconButton, LoadingState, Notice, Seconda
 import { formatNumber } from '../../lib/format'
 import { useRemove, type CrudNotice } from '../common/crud'
 import { useCanManage, useSetupOptions } from './shared'
+import { useTermScope } from '../../app/term'
 
 const SOURCE_TONE: Record<string, Tone> = { assigned: 'brand', circle: 'info', timetable: 'muted' }
 
 /** غرف المستويات: each level's rooms this term — assigned here, or already used by its circles and timetable. */
 export default function LevelRoomsTab() {
   const { t, i18n } = useTranslation('termSetup')
+  const ts = useTermScope()
   const canManage = useCanManage()
   const options = useSetupOptions()
   const q = useQuery({ queryKey: ['term-setup-level-rooms'], queryFn: termSetupApi.levelRooms })
@@ -26,7 +28,7 @@ export default function LevelRoomsTab() {
   return (
     <div className="space-y-4">
       {notice && <Notice tone={notice.tone}>{notice.text}</Notice>}
-      <p className="text-sm text-ink/60">{t('level_rooms.hint')}</p>
+      <p className="text-sm text-ink/60">{t('level_rooms.hint', { scope: ts.scope() })}</p>
       <ul className="grid gap-3 *:min-w-0 md:grid-cols-2 xl:grid-cols-3">
         {q.data.data.map((row) => (
           <li key={row.level.id} className={`${SURFACE} p-4`}>

@@ -24,7 +24,7 @@
   },
   "distribution": {
     "subtitle": "The parts of each level subject's grade in {{term}} and their weights out of 100%.",
-    "no_level_subjects": "No level subjects in this term. Add them in term setup.",
+    "no_level_subjects": "No level subjects {{scope}}. Add them in term setup.",
     "pick": "Choose a level, then a subject.",
     "new": "Add component",
     "edit": "Edit component",
@@ -54,7 +54,7 @@
   },
   "required": {
     "subtitle": "The subject lessons each exam covers. The syllabus text stays as a note.",
-    "no_exams": "No exams in this term.",
+    "no_exams": "No exams {{scope}}.",
     "pick": "Choose an exam.",
     "all_levels": "All levels",
     "count": "Chosen: {{n}}",
@@ -64,7 +64,7 @@
   },
   "upload": {
     "subtitle": "A paper exam's scores from an Excel file, or typed by hand.",
-    "no_exams": "No paper exams without a question paper in this term.",
+    "no_exams": "No paper exams without a question paper {{scope}}.",
     "no_exams_body": "A paper exam with a question paper is graded from each student's answers on the exam screen.",
     "pick": "Choose a paper exam.",
     "marks": "Total {{total}}, pass mark {{pass}}",
@@ -85,9 +85,9 @@
     "subtitle_record": "Enter the class's scores for the subject's components.",
     "subtitle_view": "The class's grades in the subject with weighted totals and averages.",
     "subtitle_download": "Download the class's grades as Excel.",
-    "no_classes": "You have no classes in this term.",
+    "no_classes": "You have no classes {{scope}}.",
     "pick_class": "Choose a class.",
-    "no_subjects": "No subjects for this class's level in this term.",
+    "no_subjects": "No subjects for this class's level {{scope}}.",
     "no_subjects_record": "No subject you can record in this class.",
     "no_components": "This subject has no grade distribution yet.",
     "no_components_body": "A supervisor sets the grade components in Grade distribution.",

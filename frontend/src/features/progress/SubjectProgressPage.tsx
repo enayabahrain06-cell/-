@@ -9,6 +9,7 @@ import SelectField from '../../components/SelectField'
 import { Badge, EmptyCard, ErrorState, FilterBar, LoadingState, Modal, Notice, SecondaryButton, SURFACE, TextArea, TextInput, type Tone } from '../../components/ui'
 import { formatDate, formatNumber } from '../../lib/format'
 import { DialogFooter, Field } from '../common/crud'
+import { useTermScope } from '../../app/term'
 
 const STATUS_TONE: Record<PlanStatus, Tone> = { on_time: 'brand', late: 'gold', overdue: 'danger', upcoming: 'muted' }
 const ymd = (d: Date) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`
@@ -16,6 +17,7 @@ const ymd = (d: Date) => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart
 /** تحديث دروس المواد: per class and subject of the term, the plan by week against what was actually taught. */
 export default function SubjectProgressPage() {
   const { t, i18n } = useTranslation('education')
+  const ts = useTermScope()
   const locale = i18n.language
   const qc = useQueryClient()
   const [lessonId, setLessonId] = useState<number | ''>('')
@@ -39,11 +41,11 @@ export default function SubjectProgressPage() {
   return (
     <div className="space-y-5">
       <div className="hidden lg:block">
-        <PageBand title={t('nav:menu.update_subject_lessons')} subtitle={d ? t('progress.subtitle', { term: d.term.name }) : undefined} />
+        <PageBand title={t('nav:menu.update_subject_lessons')} subtitle={d ? t('progress.subtitle', { term: ts.label(d.term.name) }) : undefined} />
       </div>
       {q.isLoading && !d ? <LoadingState /> : q.isError ? (
         isAxiosError(q.error) && q.error.response?.status === 422 ? <Notice tone="info">{parseApiError(q.error).message}</Notice> : <ErrorState message={parseApiError(q.error).message} onRetry={() => void q.refetch()} />
-      ) : d && (d.classes.length === 0 ? <EmptyCard icon="lessons" title={t('progress.no_classes')} /> : (
+      ) : d && (d.classes.length === 0 ? <EmptyCard icon="lessons" title={t('progress.no_classes', { scope: ts.scope() })} /> : (
         <>
           <FilterBar label={t('progress.class')}>
             <SelectField label={t('progress.class')} className="sm:w-64" value={String(lessonId)} onChange={(e) => { setLessonId(e.target.value ? Number(e.target.value) : ''); setSubjectId(undefined) }}
@@ -55,7 +57,7 @@ export default function SubjectProgressPage() {
           </FilterBar>
           {notice && <Notice tone={notice.tone}>{notice.text}</Notice>}
           {lessonId === '' ? <EmptyCard icon="lessons" title={t('progress.pick_class')} />
-            : (d.subjects ?? []).length === 0 ? <EmptyCard icon="lessons" title={t('progress.no_subjects')} />
+            : (d.subjects ?? []).length === 0 ? <EmptyCard icon="lessons" title={t('progress.no_subjects', { scope: ts.scope() })} />
             : (d.items ?? []).length === 0 ? <EmptyCard icon="edit" title={t('progress.no_plan')} /> : (
               <>
                 {d.summary && (

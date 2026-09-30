@@ -50,5 +50,17 @@
         "invalid": "فيها أخطاء: {{count}}",
         "preview": "معاينة الملف"
     },
-  "crud": { "edit": "تعديل", "delete": "حذف", "save": "حفظ", "cancel": "إلغاء" }
+    "crud": {
+        "edit": "تعديل",
+        "delete": "حذف",
+        "save": "حفظ",
+        "cancel": "إلغاء"
+    },
+    "term_scope": {
+        "this": "في هذا الفصل",
+        "all": "في كل الفصول",
+        "current": "في الفصل الحالي ({{name}})",
+        "current_label": "{{name}} (الفصل الحالي)",
+        "all_label": "كل الفصول"
+    }
 }

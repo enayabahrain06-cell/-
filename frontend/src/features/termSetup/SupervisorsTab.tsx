@@ -7,10 +7,12 @@ import SelectField from '../../components/SelectField'
 import { ErrorState, IconButton, LoadingState, Notice, SecondaryButton, SURFACE } from '../../components/ui'
 import { useRemove } from '../common/crud'
 import { useCanManage, useNights, useSetupOptions } from './shared'
+import { useTermScope } from '../../app/term'
 
 /** مشرفو الليالي: who is on duty each weekday of the term. */
 export default function SupervisorsTab() {
   const { t } = useTranslation('termSetup')
+  const ts = useTermScope()
   const canManage = useCanManage()
   const options = useSetupOptions()
   const q = useQuery({ queryKey: ['term-setup-supervisors'], queryFn: termSetupApi.supervisors })
@@ -23,7 +25,7 @@ export default function SupervisorsTab() {
   return (
     <div className="space-y-4">
       {notice && <Notice tone={notice.tone}>{notice.text}</Notice>}
-      <p className="text-sm text-ink/60">{t('supervisors.hint')}</p>
+      <p className="text-sm text-ink/60">{t('supervisors.hint', { scope: ts.scope() })}</p>
       <ul className="grid gap-3 *:min-w-0 sm:grid-cols-2 xl:grid-cols-4">
         {nights.map((d) => {
           const rows = (q.data?.data ?? []).filter((r) => r.weekday === d)

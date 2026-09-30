@@ -28,7 +28,7 @@
     "linked": "Shown in the family portal only to guardians of students in \"{{link}}\".",
     "all_guardians": "Shown in the family portal to every guardian of the album's track (boys or girls)."
   },
-  "empty": "No albums in this term.",
+  "empty": "No albums {{scope}}.",
   "empty_create": "Create an album, then upload photos to it.",
   "photos_count_one": "{{n}} photo",
   "photos_count_other": "{{n}} photos",
@@ -45,7 +45,7 @@
     "mixed": "Mixed (early years)"
   },
   "teacher_staff_only": "Teachers' albums are for staff only. A supervisor decides whether to share them with guardians.",
-  "no_classes": "You teach no classes this term, so you cannot create an album.",
+  "no_classes": "You teach no classes {{scope}}, so you cannot create an album.",
   "created_by": "Created by {{name}}",
   "download_allowed": "Download allowed",
   "arrange": "Manage photos",

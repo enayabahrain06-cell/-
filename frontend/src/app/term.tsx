@@ -1,5 +1,6 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from 'react'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
+import { useTranslation } from 'react-i18next'
 import { termsApi, type AcademicTerm } from '../api/masterData'
 import { setActiveTerm } from '../lib/termParam'
 import { useAuth } from './AuthContext'
@@ -81,4 +82,28 @@ export function useTerm(): TermState {
   const ctx = useContext(TermContext)
   if (!ctx) throw new Error('useTerm must be used inside TermProvider')
   return ctx
+}
+
+/**
+ * How a term-scoped page names the term it shows, so "كل الفصول" never reads as one term.
+ *
+ * - `single` pages (the server works on one term: TermScope::single) fall back to the current term when "كل الفصول"
+ *   is chosen: the header says "<name> (الفصل الحالي)" and empty states "في الفصل الحالي (<name>)".
+ * - `all` pages list every term when "كل الفصول" is chosen: "كل الفصول" / "في كل الفصول".
+ * - With one term chosen, both keep "<name>" and "في هذا الفصل".
+ *
+ * Both take the term the endpoint says it used (response `term.name`) when the page has it, else the current term's
+ * name. `label(name)` goes into {{term}} of a page subtitle, `scope(name)` into {{scope}} of an empty state or hint.
+ */
+// eslint-disable-next-line react-refresh/only-export-components
+export function useTermScope(lists: 'single' | 'all' = 'single'): { label: (serverName?: string | null) => string; scope: (serverName?: string | null) => string } {
+  const { t } = useTranslation('common')
+  const { term, current, selected } = useTerm()
+  const nameOf = (serverName?: string | null) => serverName ?? (term === 'all' ? current?.name : selected?.name) ?? ''
+  return {
+    label: (serverName) => term !== 'all' ? nameOf(serverName)
+      : lists === 'all' ? t('term_scope.all_label') : t('term_scope.current_label', { name: nameOf(serverName) }),
+    scope: (serverName) => term !== 'all' ? t('term_scope.this')
+      : lists === 'all' ? t('term_scope.all') : t('term_scope.current', { name: nameOf(serverName) }),
+  }
 }

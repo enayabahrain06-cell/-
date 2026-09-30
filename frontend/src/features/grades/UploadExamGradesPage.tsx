@@ -12,6 +12,7 @@ import { Badge, EmptyCard, ErrorState, FilterBar, LoadingState, Notice, PrimaryB
 import { formatDate, formatNumber } from '../../lib/format'
 import { PaperGrading } from '../exams/ExamDetailPage'
 import { PreviewCounts, SheetPicker } from '../common/SheetImport'
+import { useTermScope } from '../../app/term'
 
 type Mode = 'upload' | 'manual'
 
@@ -21,6 +22,7 @@ type Mode = 'upload' | 'manual'
  */
 export default function UploadExamGradesPage() {
   const { t, i18n } = useTranslation('grades')
+  const ts = useTermScope()
   const locale = i18n.language
   const qc = useQueryClient()
   const [params, setParams] = useSearchParams()
@@ -48,7 +50,7 @@ export default function UploadExamGradesPage() {
     <div className="space-y-5">
       <div className="hidden lg:block"><PageBand title={t('nav:menu.upload_exam_grades')} subtitle={t('upload.subtitle')} /></div>
       {exams.isLoading ? <LoadingState /> : exams.isError ? <ErrorState message={parseApiError(exams.error).message} onRetry={() => void exams.refetch()} /> : list.length === 0 ? (
-        <EmptyCard icon="exams" title={t('upload.no_exams')} body={t('upload.no_exams_body')} />
+        <EmptyCard icon="exams" title={t('upload.no_exams', { scope: ts.scope() })} body={t('upload.no_exams_body')} />
       ) : (
         <>
           <FilterBar label={t('common.exam')}>

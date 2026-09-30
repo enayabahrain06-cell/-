@@ -9,6 +9,7 @@ import { EmptyCard, ErrorState, FilterBar, IconButton, LoadingState, Modal, SURF
 import { formatDate, formatNumber } from '../../lib/format'
 import { DialogFooter, Field, Toolbar, useRemove } from '../common/crud'
 import { useCanManage, useSetupOptions } from './shared'
+import { useTermScope } from '../../app/term'
 
 /** Level picker shared by الخطة and عرض الخطة. */
 function LevelPicked({ children }: { children: (levelId: number) => React.ReactNode }) {
@@ -53,6 +54,7 @@ function WeekLabel({ w }: { w: PlanWeek }) {
 
 function PlanEditor({ levelId }: { levelId: number }) {
   const { t, i18n } = useTranslation('termSetup')
+  const ts = useTermScope()
   const subjects = useQuery({ queryKey: ['term-setup-level-subjects', levelId], queryFn: () => termSetupApi.levelSubjects({ level_id: levelId }) })
   const [picked, setPicked] = useState<number | null>(null)
   const list = subjects.data?.data ?? []
@@ -64,7 +66,7 @@ function PlanEditor({ levelId }: { levelId: number }) {
 
   if (subjects.isLoading) return <LoadingState />
   if (subjects.isError) return <ErrorState onRetry={() => void subjects.refetch()} />
-  if (!current) return <EmptyCard icon="evaluation" title={t('plan.no_subjects')} />
+  if (!current) return <EmptyCard icon="evaluation" title={t('plan.no_subjects', { scope: ts.scope() })} />
 
   return (
     <div className="space-y-4">
@@ -153,11 +155,12 @@ function PlanItemDialog({ levelSubject, week, item, weeks, onClose, onSaved }: {
 /** عرض الخطة: weeks down the side, the level's subjects across. */
 function PlanGrid({ levelId }: { levelId: number }) {
   const { t, i18n } = useTranslation('termSetup')
+  const ts = useTermScope()
   const q = useQuery({ queryKey: ['term-setup-plan-view', levelId], queryFn: () => termSetupApi.planView(levelId), enabled: levelId > 0 })
 
   if (q.isLoading) return <LoadingState />
   if (q.isError || !q.data) return <ErrorState onRetry={() => void q.refetch()} />
-  if (q.data.subjects.length === 0) return <EmptyCard icon="evaluation" title={t('plan.no_subjects')} />
+  if (q.data.subjects.length === 0) return <EmptyCard icon="evaluation" title={t('plan.no_subjects', { scope: ts.scope() })} />
 
   return (
     <TableWrap surface>

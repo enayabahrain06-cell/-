@@ -12,6 +12,7 @@ import SelectField from '../../components/SelectField'
 import { EmptyCard, ErrorState, FilterBar, LoadingState, Notice, Segmented, SURFACE, TABLE_HEAD, TableWrap, TextInput, buttonClass } from '../../components/ui'
 import { formatDate, formatNumber, formatPercent, formatTime } from '../../lib/format'
 import { useEmbed, useOwnParam } from '../../app/embed'
+import { useTermScope } from '../../app/term'
 
 type Tab = 'record' | 'view'
 
@@ -25,6 +26,7 @@ const shift = (days: number) => { const d = new Date(); d.setDate(d.getDate() + 
  */
 export default function DivisionEvaluationPage() {
   const { t } = useTranslation('education')
+  const ts = useTermScope()
   const [params, setParams] = useSearchParams()
   const host = useEmbed()
   const ownTab = useOwnParam(params, 'tab')
@@ -46,7 +48,7 @@ export default function DivisionEvaluationPage() {
       </div>}
       {base.isLoading ? <LoadingState /> : base.isError ? (
         isAxiosError(base.error) && base.error.response?.status === 422 ? <Notice tone="info">{parseApiError(base.error).message}</Notice> : <ErrorState onRetry={() => void base.refetch()} />
-      ) : base.data && (base.data.classes.length === 0 ? <EmptyCard icon="lessons" title={t('division_eval.no_classes')} /> : (
+      ) : base.data && (base.data.classes.length === 0 ? <EmptyCard icon="lessons" title={t('division_eval.no_classes', { scope: ts.scope() })} /> : (
         <>
           <FilterBar label={t('division_eval.class')}>
             <SelectField label={t('division_eval.class')} className="sm:w-64" value={String(lessonId)} onChange={(e) => { setLessonId(e.target.value ? Number(e.target.value) : ''); setDivisionId('') }}

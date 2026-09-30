@@ -12,6 +12,7 @@ import SelectField from '../../components/SelectField'
 import { Badge, EmptyCard, ErrorState, FilterBar, IconButton, LoadingState, Notice, SearchInput, SURFACE, TABLE_HEAD, TableWrap, type Tone } from '../../components/ui'
 import { formatMoney, formatNumber } from '../../lib/format'
 import { RecordPaymentDialog } from './PaymentDialogs'
+import { useTermScope } from '../../app/term'
 
 const STATUSES: FeeStatus[] = ['unpaid', 'partial', 'paid', 'none']
 const TONE: Record<FeeStatus, Tone> = { paid: 'brand', partial: 'gold', unpaid: 'danger', none: 'muted' }
@@ -19,6 +20,7 @@ const TONE: Record<FeeStatus, Tone> = { paid: 'brand', partial: 'gold', unpaid: 
 /** متابعة الدفع: every student with a class this term, their term invoices, what is paid and what remains. */
 export default function PaymentFollowupPage() {
   const { t, i18n } = useTranslation('paymentFollowup')
+  const ts = useTermScope()
   const locale = i18n.language
   const { can } = useAuth()
   const q = useQuery({ queryKey: ['payment-followup'], queryFn: () => paymentFollowupApi.list({}) })
@@ -45,7 +47,7 @@ export default function PaymentFollowupPage() {
   return (
     <div className="space-y-5">
       <div className="hidden lg:block">
-        <PageBand title={t('nav:menu.payment_followup')} subtitle={q.data ? t('subtitle', { term: q.data.term.name }) : undefined} />
+        <PageBand title={t('nav:menu.payment_followup')} subtitle={q.data ? t('subtitle', { term: ts.label(q.data.term.name) }) : undefined} />
       </div>
       {q.isLoading ? <LoadingState /> : q.isError ? (
         isAxiosError(q.error) && q.error.response?.status === 422 ? <Notice tone="info">{parseApiError(q.error).message}</Notice> : <ErrorState onRetry={() => void q.refetch()} />
