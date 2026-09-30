@@ -11,6 +11,7 @@ import SelectField from '../../components/SelectField'
 import { ErrorState, FilterBar, LoadingState, Modal, Notice, PrimaryButton, SearchInput, SecondaryButton, SURFACE, TextInput, EmptyCard } from '../../components/ui'
 import { formatNumber } from '../../lib/format'
 import { formatDateTime, STATUS_META, StatusBadge } from './status'
+import MobileLog from './MobileLog'
 
 const FILTER_KEYS = ['status', 'type', 'phone', 'from', 'to', 'page'] as const
 
@@ -25,7 +26,10 @@ export default function LogTab() {
   const [phone, setPhone] = useState(filters.phone)
   const [open, setOpen] = useState<MessageLog | null>(null)
   const [confirmAll, setConfirmAll] = useState(false)
-  const [notice, setNotice] = useState<{ tone: 'success' | 'error'; text: string } | null>(null)
+  const [notice, setNoticeState] = useState<{ tone: 'success' | 'error'; text: string } | null>(null)
+  // The mobile toast has its own state (it hides after 4s); the desktop notice stays as it was.
+  const [toast, setToast] = useState<{ tone: 'success' | 'error'; text: string } | null>(null)
+  const setNotice = (v: { tone: 'success' | 'error'; text: string } | null) => { setNoticeState(v); setToast(v) }
 
   const set = (k: (typeof FILTER_KEYS)[number], v: string) => {
     const n = new URLSearchParams(params)
@@ -63,8 +67,15 @@ export default function LogTab() {
     .map((k) => ({ value: k, label: t(`types.${k}`) }))
     .sort((a, b) => a.label.localeCompare(b.label, locale))
 
+  const clear = () => { setPhone(''); setParams(params.get('tab') ? { tab: params.get('tab') as string } : {}, { replace: true }) }
+
   return (
-    <div className="space-y-5">
+    <>
+    <MobileLog filters={filters} set={set} phone={phone} onPhone={setPhone} onClear={clear} hasFilters={hasFilters} stats={stats.data} logs={logs.data}
+      loading={logs.isLoading} error={logs.isError} onRetry={() => void logs.refetch()} typeOptions={typeOptions} onOpen={setOpen}
+      canResend={can('messages.manage')} onResend={(id) => resend.mutate(id)} resending={resend.isPending ? resend.variables ?? null : null}
+      failed={failed} onResendAll={() => setConfirmAll(true)} toast={toast} onToastDone={() => setToast(null)} />
+    <div className="hidden space-y-5 lg:block">
       {/* Counts per status; a tile filters the list to that status. */}
       <section aria-label={t('stats.label')} className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
         <StatTile label={t('stats.total')} value={stats.data ? n(stats.data.total) : '—'} icon="messages" active={!filters.status} onClick={() => set('status', '')} />
@@ -140,6 +151,7 @@ export default function LogTab() {
         </>
       )}
 
+    </div>
       {open && <DetailModal id={open.id} initial={open} onClose={() => setOpen(null)} />}
       {confirmAll && (
         <Modal title={t('log.resend_all_confirm_title')} onClose={() => setConfirmAll(false)}
@@ -150,7 +162,7 @@ export default function LogTab() {
           <p className="text-sm text-ink/75">{t('log.resend_all_confirm', { n: n(failed) })}</p>
         </Modal>
       )}
-    </div>
+    </>
   )
 }
 

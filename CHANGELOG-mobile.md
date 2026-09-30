@@ -104,3 +104,22 @@ left out and listed under the page.
 - Sticky تسجيل دفعة (the one primary). New shared file `components/mobile/MPager.tsx` (44px previous / next).
 - Desktop only: the refunds list, the finance report tab (period, package and track filters, exports) and
   cancelling an invoice.
+
+## Messages (/messages, compose = /messages?tab=send) — Messages.dc.html
+
+- Below lg the page band and segmented tabs are replaced by a chip row of the same tabs (same `?tab=` param) under
+  the shell's page header.
+- Compose (send tab): `MobileCompose` under `lg:hidden`. Its state, validation and send call come from
+  `useSendForm` (moved out of `SendTab` unchanged, so the desktop form and the mobile screen share one hook).
+  Card: students / phone numbers (when allowed), recipient tags (removable, 44px remove target) with a 48px
+  student search, recipient segmented (ولي الأمر / الطالب / كلاهما), language, message textarea with the n / 1000
+  counter. آخر الرسائل: the last five log rows with status pills and a الكل link to the log. Sticky
+  "إرسال إلى n ولي أمر" (Arabic plural forms; student / both / numbers variants). Result as a 4-second toast.
+- Log tab: `MobileLog` under `lg:hidden` (state stays in `LogTab`): phone search + filter sheet (type, from, to),
+  status chips with counts, resend-all as a secondary button, rows (name, phone · type, time, error, status pill)
+  opening the existing details dialog, 44px resend on failed rows, `MPager`.
+- Inbox, templates, rules and WhatsApp tabs render their existing (already stacking) layouts on mobile.
+- Not in the app: channel choice (SMS / in-app; only WhatsApp exists), the template row (manual send has no
+  per-student placeholders such as {اسم_الطالب}), recipients prefilled from a student, circle or overdue list
+  (the send tab takes no query params), delivery and reply counts per sent message.
+- Open: the inbox tab still shows one primary قبول button per excuse card on mobile.
