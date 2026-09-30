@@ -247,5 +247,13 @@
     "honor.weight_evaluation": "٪",
     "honor.weight_memorization": "٪",
     "honor.full_attendance_min_sessions": "جلسات"
+  },
+  "mobile": {
+    "account": "حسابي",
+    "display": "العرض",
+    "language": "اللغة",
+    "ornament": "الزخرفة",
+    "authority": "المؤسسة",
+    "error": "تعذر تحميل الإعدادات."
   }
 }

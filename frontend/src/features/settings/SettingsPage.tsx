@@ -1,7 +1,7 @@
 import { useEffect, useId, useMemo, useRef, useState } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useTranslation } from 'react-i18next'
-import { Link } from 'react-router-dom'
+import { Link, useSearchParams } from 'react-router-dom'
 import { parseApiError, type FieldErrors } from '../../api/client'
 import { settingsApi, type SettingItem, type SettingsGroup, type SettingsPayload, type SettingValue } from '../../api/settings'
 import Icon from '../../components/Icon'
@@ -9,6 +9,8 @@ import SelectField from '../../components/SelectField'
 import { PageBand } from '../../components/ornaments'
 import { Card, ErrorState, LoadingState, Notice, PrimaryButton, SecondaryButton, Segmented, TextInput } from '../../components/ui'
 import { applyOrnamentLevel, type OrnamentLevel } from '../../lib/ornament'
+import MSwitch from '../../components/mobile/MSwitch'
+import MobileSettings from './MobileSettings'
 
 /** Groups with a screen here, in display order. Others (e.g. messaging, managed in Messages) are not shown. */
 const GROUPS = ['authority', 'locale', 'reminders', 'attendance', 'registration', 'sessions', 'progress', 'certificates', 'honor', 'ui', 'media'] as const
@@ -25,9 +27,15 @@ export default function SettingsPage() {
     const byKey = new Map((query.data?.groups ?? []).map((g) => [g.key, g]))
     return GROUPS.map((k) => byKey.get(k)).filter((g): g is SettingsGroup => !!g)
   }, [query.data])
+  const [params] = useSearchParams()
+  const openGroup = groups.find((g) => g.key === params.get('group'))
 
   return (
-    <div className="space-y-5">
+    <>
+    <MobileSettings groups={groups} loading={query.isLoading} error={query.isError} onRetry={() => void query.refetch()} open={openGroup}
+      ornament={groups.find((g) => g.key === 'ui')?.settings.find((x) => x.key === 'ui.ornament_level')?.value as string | undefined}
+      renderGroup={(g) => <GroupCard group={g} logoUrl={query.data?.logo_url ?? null} anchor={false} mobile />} />
+    <div className="hidden space-y-5 lg:block">
       <PageBand title={t('title')} subtitle={t('subtitle')} />
 
       {query.isLoading ? (
@@ -45,6 +53,7 @@ export default function SettingsPage() {
         </div>
       )}
     </div>
+    </>
   )
 }
 
@@ -88,7 +97,8 @@ function SectionIndex({ groups }: { groups: SettingsGroup[] }) {
   )
 }
 
-function GroupCard({ group, logoUrl }: { group: SettingsGroup; logoUrl: string | null }) {
+/** `anchor` false: no section id (the mobile copy of a group, so ids stay unique); `mobile`: 44px switches. */
+function GroupCard({ group, logoUrl, anchor = true, mobile = false }: { group: SettingsGroup; logoUrl: string | null; anchor?: boolean; mobile?: boolean }) {
   const { t } = useTranslation('settings')
   const qc = useQueryClient()
   const items = useMemo(() => group.settings.filter((s) => !HIDDEN_KEYS.has(s.key)), [group.settings])
@@ -126,9 +136,9 @@ function GroupCard({ group, logoUrl }: { group: SettingsGroup; logoUrl: string |
   }
 
   return (
-    <Card as="section" id={`settings-${group.key}`} aria-labelledby={`settings-${group.key}-title`} className="scroll-mt-4">
+    <Card as="section" id={anchor ? `settings-${group.key}` : undefined} aria-labelledby={`${anchor ? '' : 'm-'}settings-${group.key}-title`} className="scroll-mt-4">
       <header className="mb-4">
-        <h2 id={`settings-${group.key}-title`} className="text-base font-semibold text-ink">{t(`groups.${group.key}.title`)}</h2>
+        <h2 id={`${anchor ? '' : 'm-'}settings-${group.key}-title`} className="text-base font-semibold text-ink">{t(`groups.${group.key}.title`)}</h2>
         <p className="mt-0.5 text-sm text-ink/55">{t(`groups.${group.key}.desc`)}</p>
       </header>
 
@@ -136,7 +146,7 @@ function GroupCard({ group, logoUrl }: { group: SettingsGroup; logoUrl: string |
 
       <div className="divide-y divide-ink/6">
         {items.map((s) => (
-          <Field key={s.key} item={s} value={draft[s.key]} error={errors[s.key]?.[0]} onChange={(v) => set(s.key, v)} />
+          <Field key={s.key} item={s} value={draft[s.key]} error={errors[s.key]?.[0]} onChange={(v) => set(s.key, v)} mobile={mobile} />
         ))}
       </div>
 
@@ -163,7 +173,7 @@ function GroupCard({ group, logoUrl }: { group: SettingsGroup; logoUrl: string |
   )
 }
 
-function Field({ item: s, value, error, onChange }: { item: SettingItem; value: SettingValue; error?: string; onChange: (v: SettingValue) => void }) {
+function Field({ item: s, value, error, onChange, mobile = false }: { item: SettingItem; value: SettingValue; error?: string; onChange: (v: SettingValue) => void; mobile?: boolean }) {
   const { t, i18n } = useTranslation('settings')
   const id = useId()
   const label = t(`fields.${s.key}.label`, { defaultValue: s.key })
@@ -181,6 +191,8 @@ function Field({ item: s, value, error, onChange }: { item: SettingItem; value: 
         <span className="text-xs text-ink/50">· {t('read_only')}</span>
       </p>
     )
+  } else if (s.type === 'bool' && mobile) {
+    control = <MSwitch checked={value === true} onChange={onChange} labelledBy={`${id}-label`} />
   } else if (s.type === 'bool') {
     control = <Toggle id={id} checked={value === true} onChange={onChange} describedBy={describedBy} />
   } else if (s.options && s.options.length <= 4) {

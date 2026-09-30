@@ -157,3 +157,17 @@ left out and listed under the page.
   (label + code); مدير النظام is locked. Sticky تجاهل + حفظ when there are unsaved changes.
 - New shared file `components/mobile/MSwitch.tsx` (44×26 track in a 44px hit area, `role="switch"`).
 - Not in the app: an accountant or read-only role (so no warn/neutral staff role pills beyond the existing roles).
+
+## Settings (/settings, /settings?group=…) — Settings.dc.html
+
+- `MobileSettings` under `lg:hidden`; the desktop page (index + all group cards) is unchanged under
+  `hidden lg:block`.
+- Grouped lists: حسابي (avatar, name, phone `dir=ltr`, roles) · العرض (language segmented العربية / English, same
+  switch as the المزيد sheet; الزخرفة with its current level, opening the ui group) · المؤسسة (every settings group
+  as a 52px row with icon badge and description).
+- A group opens at `?group=<key>` (header back to /settings, breadcrumb) and shows the same `GroupCard` as desktop:
+  fields, validation, save / discard and notices are the desktop logic. On mobile its on/off fields use the new
+  44px `MSwitch`; the mobile copy has no section id so ids stay unique.
+- Not in the app: password change (no API), numerals and dark-mode choices, notification switches, a per-user
+  ornament choice (ornament is the organisation-wide `ui.ornament_level`), and calendar / holidays and templates
+  entries (templates live in Messages).

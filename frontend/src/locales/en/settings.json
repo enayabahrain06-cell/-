@@ -243,5 +243,13 @@
     "honor.weight_evaluation": "%",
     "honor.weight_memorization": "%",
     "honor.full_attendance_min_sessions": "sessions"
+  },
+  "mobile": {
+    "account": "My account",
+    "display": "Display",
+    "language": "Language",
+    "ornament": "Ornament",
+    "authority": "Organisation",
+    "error": "Could not load the settings."
   }
 }
