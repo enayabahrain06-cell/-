@@ -16,7 +16,7 @@
   "columns": {
     "teacher": "المعلم",
     "circles": "الصفوف",
-    "students": "الطلاب",
+    "students": "الطلبة",
     "taken_rate": "تسجيل الحضور",
     "avg_evaluation": "متوسط الدرجات",
     "status": "الحالة"
@@ -44,12 +44,12 @@
     "cancel": "إلغاء",
     "saved": "تم الحفظ.",
     "kpi": {
-      "students": "الطلاب النشطون",
+      "students": "الطلبة النشطون",
       "sessions": "حصص الصفوف هذا الشهر",
       "taken_rate": "تسجيل الحضور",
       "on_time": "التسجيل في الوقت",
       "avg_evaluation": "متوسط الدرجات",
-      "attendance_rate": "حضور الطلاب",
+      "attendance_rate": "حضور الطلبة",
       "evaluations": "التقييمات (30 يومًا)"
     },
     "circles": "الصفوف",
@@ -86,7 +86,7 @@
   },
   "mobile": {
     "retry": "إعادة المحاولة",
-    "attendance": "حضور طلابه",
+    "attendance": "حضور طلبته",
     "evaluations": "تقييمات الشهر",
     "avg": "متوسط الدرجات",
     "new_teacher": "إضافة معلم"

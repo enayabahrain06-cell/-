@@ -94,11 +94,11 @@
         "wallet": "Wallet",
         "details": "Details",
         "certificates": "Certificates",
-        "placement": "Placement test"
+        "placement": "Placement exam"
     },
     "placement_tab": {
-        "empty": "No placement test for this student.",
-        "empty_body": "Students who registered for a package with a placement test show their result here.",
+        "empty": "No placement exam for this student.",
+        "empty_body": "Students who registered for a package with a placement exam show their result here.",
         "score": "Score",
         "marks": "{{score}} of {{total}} marks",
         "correct": "{{correct}} of {{total}} correct",

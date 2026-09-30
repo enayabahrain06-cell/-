@@ -180,3 +180,18 @@ it('reports rows that would get no term and dry-runs the conversion without writ
     expect($new->fresh()->academic_term_id)->toBe($t2->id)
         ->and(AcademicTerm::where('is_current', true)->pluck('id')->all())->toBe([$current->id]);
 });
+
+it('stops writing the free-text term once academic terms exist and shows the term name instead (U7)', function () {
+    actingAsRole('super_admin');
+    $term = makeTerm(['is_current' => true, 'name_ar' => 'الفصل الأول', 'name_en' => 'First term']);
+
+    $payload = Package::factory()->make()->only(['name', 'min_age', 'max_age', 'gender', 'seats', 'price_fils', 'days', 'start_date', 'end_date'])
+        + ['start_time' => '16:00', 'end_time' => '17:00', 'term' => 'نص قديم'];
+    $res = $this->postJson('/api/packages', $payload)->assertCreated();
+    expect(Package::find($res->json('data.id'))->term)->toBeNull()
+        ->and($res->json('data.term'))->toBe('الفصل الأول');
+
+    $invoice = app(WalletService::class)->createInvoice(Student::factory()->create(), null, 500, now(), 'manual', 'نص قديم');
+    expect($invoice->term)->toBeNull()->and($invoice->academic_term_id)->toBe($term->id);
+    $this->getJson('/api/invoices?term_id='.$term->id)->assertJsonPath('data.0.term', 'الفصل الأول');
+});

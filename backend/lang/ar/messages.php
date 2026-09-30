@@ -4,7 +4,7 @@ return [
     'unknown_placeholders' => 'متغيرات غير معروفة في القالب: :list',
     'requeued' => 'تمت إعادة جدولة :count رسالة.',
     'queued' => 'تمت جدولة :count رسالة للإرسال.',
-    'not_your_students' => 'يمكنك مراسلة طلاب صفوفك فقط.',
+    'not_your_students' => 'يمكنك مراسلة طلبة صفوفك فقط.',
     'phones_need_manage' => 'إرسال رسائل إلى أرقام حرة يتطلب صلاحية إدارة الرسائل.',
     'send_now_done' => 'أُرسلت التذكيرات: :n.',
     'excuse_reviewed' => 'سبقت مراجعة هذا العذر.',

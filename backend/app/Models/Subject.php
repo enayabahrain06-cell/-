@@ -20,6 +20,12 @@ class Subject extends Model
         return ['is_active' => 'boolean', 'is_system' => 'boolean', 'sort' => 'integer'];
     }
 
+    /** Id of the Quran subject: the default for evaluations and exams that name no subject. */
+    public static function quranId(): ?int
+    {
+        return static::where('code', self::QURAN)->value('id');
+    }
+
     public function scopeOrdered(Builder $q): Builder
     {
         return $q->orderBy('sort')->orderBy('id');

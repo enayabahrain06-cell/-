@@ -3,13 +3,13 @@
 return [
     'cannot_delete_with_attendance' => 'A class with recorded attendance cannot be deleted.',
     'capacity_exceeded' => 'The class is over its capacity (:capacity students).',
-    'target_hall_busy' => 'The selected hall is busy at that time.',
-    'slot_busy' => 'The hall is already booked at that time.',
-    'location_in_use' => 'A hall linked to classes cannot be deleted.',
+    'target_hall_busy' => 'The selected room is busy at that time.',
+    'slot_busy' => 'The room is already booked at that time.',
+    'location_in_use' => 'A room linked to classes cannot be deleted.',
     'end_after_start' => 'End time must be after start time.',
     'teacher_role_required' => 'The selected user is not a teacher.',
     'all_upcoming' => 'all upcoming lessons',
-    'alert_conflict_title' => 'Hall conflict: :lesson',
+    'alert_conflict_title' => 'Room conflict: :lesson',
     'occupied_other_track' => 'Occupied (other track)',
 
     // Adding existing students from the circle page.

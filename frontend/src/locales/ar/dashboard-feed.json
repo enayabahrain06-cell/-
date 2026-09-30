@@ -4,18 +4,18 @@
   "upcoming": {
     "title": "القادم هذا الأسبوع",
     "empty": "لا شيء قادم هذا الأسبوع.",
-    "empty_body": "ستظهر هنا الاختبارات والباقات التي تنتهي والشهادات بانتظار الاعتماد والرسائل غير المقروءة.",
+    "empty_body": "ستظهر هنا الامتحانات والباقات التي تنتهي والشهادات بانتظار الاعتماد والرسائل غير المقروءة.",
     "today": "اليوم",
     "tomorrow": "غدًا",
     "draft": "مسودة",
     "since": "بانتظار منذ {{date}}",
-    "students_zero": "لا طلاب",
+    "students_zero": "لا طلبة",
     "students_one": "طالب واحد",
     "students_two": "طالبان",
-    "students_few": "{{n}} طلاب",
+    "students_few": "{{n}} طلبة",
     "students_many": "{{n}} طالبًا",
     "students_other": "{{n}} طالب",
-    "type": { "exam": "اختبار", "certificates": "شهادات", "messages": "رسائل", "package": "باقة" }
+    "type": { "exam": "امتحان", "certificates": "شهادات", "messages": "رسائل", "package": "باقة" }
   },
   "activity": {
     "title": "آخر النشاطات",

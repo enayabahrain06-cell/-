@@ -66,7 +66,8 @@ class SubjectController extends Controller
             throw ValidationException::withMessages(['subject' => __('subjects.errors.system_delete')]);
         }
         if (\App\Models\LevelSubject::where('subject_id', $subject->id)->exists() || \App\Models\SubjectLesson::where('subject_id', $subject->id)->exists()
-            || \App\Models\TimetableSlot::where('subject_id', $subject->id)->exists()) {
+            || \App\Models\TimetableSlot::where('subject_id', $subject->id)->exists()
+            || \App\Models\Evaluation::where('subject_id', $subject->id)->exists() || \App\Models\Exam::where('subject_id', $subject->id)->exists()) {
             throw ValidationException::withMessages(['subject' => __('term_setup.errors.in_use')]);
         }
         $this->audit->record('subject.deleted', $subject, $subject->only(['name_ar', 'code']), []);

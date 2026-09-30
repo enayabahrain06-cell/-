@@ -29,15 +29,15 @@
     "present_of": "{{present}} present of {{enrolled}}",
     "no_teacher": "No teacher",
     "status": {
-      "ok": "Hall ready",
-      "changed": "Hall changed today",
-      "conflict": "Hall conflict",
-      "no_hall": "No hall",
+      "ok": "Room ready",
+      "changed": "Room changed today",
+      "conflict": "Room conflict",
+      "no_hall": "No room",
       "cancelled": "Cancelled"
     },
     "take_attendance": "Take attendance",
     "evaluate": "Evaluate",
-    "fix_hall": "Open the class to change its hall"
+    "fix_hall": "Open the class to change its room"
   },
   "chart": {
     "title": "Attendance — last 14 days",
@@ -67,7 +67,7 @@
     "view_all": "View all {{n}} alerts",
     "loading": "Loading…",
     "types": {
-      "location_conflict": "Hall conflict",
+      "location_conflict": "Room conflict",
       "registration_request": "Registration requests",
       "repeated_absence": "Repeated absence",
       "lottery_pending": "Lottery awaiting approval",
@@ -112,7 +112,7 @@
     "attendance": "Take attendance",
     "enroll": "Quick enrollment",
     "requests": "Registration requests",
-    "halls": "Classes and halls",
+    "halls": "Classes and rooms",
     "payment": "Record payment"
   },
   "age": {

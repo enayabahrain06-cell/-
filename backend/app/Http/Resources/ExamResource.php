@@ -14,6 +14,7 @@ class ExamResource extends JsonResource
             'gender' => $this->gender?->value,
             'name' => $this->name,
             'type' => $this->type?->value,
+            'subject_id' => $this->subject_id,
             'type_label' => $this->type?->label(),
             'status' => $this->status?->value,
             'status_label' => $this->status?->label(),

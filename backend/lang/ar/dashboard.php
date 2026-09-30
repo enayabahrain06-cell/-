@@ -2,7 +2,7 @@
 
 return [
     'lottery_pending' => 'القرعة «:name» بانتظار الاعتماد',
-    'exam_upcoming' => 'اختبار «:name» يفتح قريباً',
+    'exam_upcoming' => 'امتحان «:name» يفتح قريباً',
     'alert_resolved' => 'تم إغلاق التنبيه.',
     'conflict_title' => 'تعارض في :location: :lesson',
     'conflict_summary' => 'مع :with — :count جلسة بين :from و:to، كل :days :time',

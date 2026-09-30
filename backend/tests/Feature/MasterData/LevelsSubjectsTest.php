@@ -70,3 +70,20 @@ it('gives the new permissions to super admins and supervisors only', function ()
         ->and($supervisor->hasPermissionTo('terms.manage'))->toBeFalse()
         ->and($teacher->hasPermissionTo('levels.manage'))->toBeFalse();
 });
+
+it('files evaluations and exams under Quran unless another subject is given, and protects used subjects (U8)', function () {
+    $quran = Subject::where('code', Subject::QURAN)->value('id');
+    $fiqh = Subject::create(['name_ar' => 'الفقه', 'name_en' => 'Fiqh', 'code' => 'fiqh']);
+    $exam = \App\Models\Exam::factory()->create();
+    $other = \App\Models\Exam::factory()->create(['subject_id' => $fiqh->id]);
+    $lesson = Lesson::factory()->create();
+    $evaluation = \App\Models\Evaluation::create(['student_id' => \App\Models\Student::factory()->create()->id, 'lesson_id' => $lesson->id, 'type' => 'daily',
+        'evaluated_on' => today()->toDateString(), 'memorization' => 8, 'tajweed' => 8, 'revision' => 8, 'behavior' => 8]);
+
+    expect($exam->fresh()->subject_id)->toBe($quran)
+        ->and($other->fresh()->subject_id)->toBe($fiqh->id)
+        ->and($evaluation->fresh()->subject_id)->toBe($quran);
+
+    actingAsRole('super_admin');
+    $this->deleteJson("/api/subjects/{$fiqh->id}")->assertJsonValidationErrors('subject');
+});

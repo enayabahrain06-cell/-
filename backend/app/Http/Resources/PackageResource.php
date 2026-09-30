@@ -34,7 +34,8 @@ class PackageResource extends JsonResource
             'end_time' => substr((string) $this->end_time, 0, 5),
             'start_date' => $this->start_date?->toDateString(),
             'end_date' => $this->end_date?->toDateString(),
-            'term' => $this->term,
+            // The academic term's name; the old free-text value only for packages that have no term.
+            'term' => \App\Models\AcademicTerm::nameFor($this->academic_term_id) ?? $this->term,
             'academic_term_id' => $this->academic_term_id,
             'academic_term' => $this->whenLoaded('academicTerm', fn () => $this->academicTerm ? ['id' => $this->academicTerm->id, 'name' => $this->academicTerm->name()] : null),
             'plan_ayahs' => $this->plan_ayahs,

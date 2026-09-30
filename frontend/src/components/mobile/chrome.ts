@@ -14,7 +14,7 @@ export interface ChromeState {
 export const ChromeContext = createContext<ChromeState>({ bottomNav: false, slot: null, claim: () => () => undefined, openMore: () => undefined })
 export const useMobileChrome = () => useContext(ChromeContext)
 
-/** Staff tabs: the spec's الرئيسية · الحضور · الحلقات · الطلاب, filled from these when a permission is missing. */
+/** Staff tabs: the spec's الرئيسية · الحضور · الصفوف · الطلبة, filled from these when a permission is missing. */
 const PREFERRED = ['dashboard', 'attendance', 'lessons', 'students']
 const FILL = ['payments', 'reports', 'messages', 'evaluation', 'teachers']
 export const TAB_ICON: Record<string, string> = { dashboard: 'home' }

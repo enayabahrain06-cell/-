@@ -22,6 +22,7 @@ class StoreExamRequest extends FormRequest
             'package_id' => ['nullable', 'required_without:lesson_id', 'exists:packages,id'],
             'lesson_id' => ['nullable', 'required_without:package_id', 'exists:lessons,id'],
             'type' => ['required', ExamType::rule()],
+            'subject_id' => ['nullable', 'integer', 'exists:subjects,id'],
             'exam_date' => ['required', 'date'],
             'opens_at' => ['required', 'date'],
             'closes_at' => ['required', 'date', 'after:opens_at'],

@@ -3,10 +3,10 @@
 return [
     'saved' => 'تم الحفظ.',
     'deleted' => 'تم الحذف.',
-    'copied' => 'تم النسخ — القاعات: :rooms، المواد: :level_subjects، بنود الخطة: :plan_items، المشرفون: :supervisors، الحصص: :slots.',
+    'copied' => 'تم النسخ — الغرف: :rooms، المواد: :level_subjects، بنود الخطة: :plan_items، المشرفون: :supervisors، الحصص: :slots.',
     'errors' => [
         'duplicate_subject' => 'هذه المادة مضافة لهذا المستوى في هذا الفصل بالفعل.',
-        'duplicate_room' => 'هذه القاعة مضافة لهذا المستوى في هذا الفصل بالفعل.',
+        'duplicate_room' => 'هذه الغرفة مضافة لهذا المستوى في هذا الفصل بالفعل.',
         'duplicate_supervisor' => 'هذا المشرف مضاف لهذه الليلة بالفعل.',
         'supervisor_role' => 'اختر مستخدماً بدور مشرف.',
         'teacher_role' => 'اختر مستخدماً بدور معلم.',
@@ -19,6 +19,6 @@ return [
     ],
     'warnings' => [
         'teacher' => 'المعلم :name لديه حصة أخرى في هذا الوقت (:level، :from–:to).',
-        'room' => 'القاعة :name مشغولة في هذا الوقت (:level، :from–:to).',
+        'room' => 'الغرفة :name مشغولة في هذا الوقت (:level، :from–:to).',
     ],
 ];

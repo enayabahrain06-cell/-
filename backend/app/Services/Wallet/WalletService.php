@@ -57,6 +57,8 @@ class WalletService
         return DB::transaction(function () use ($student, $package, $amountFils, $dueDate, $description, $term, $issuedBy, $academicTermId) {
             $wallet = $this->lockedWallet($student);
 
+            // The chosen term, else the package's, else the current one, so the invoice shows under the term selector.
+            $termId = $academicTermId ?? $package?->academic_term_id ?? \App\Support\TermScope::defaultId();
             $invoice = Invoice::create([
                 'invoice_no' => Invoice::nextNo(),
                 'student_id' => $student->id,
@@ -66,9 +68,9 @@ class WalletService
                 'paid_fils' => 0,
                 'due_date' => $dueDate->toDateString(),
                 'status' => InvoiceStatus::Open,
-                'term' => $term ?? $package?->term,
-                // The chosen term, else the package's, else the current one, so the invoice shows under the term selector.
-                'academic_term_id' => $academicTermId ?? $package?->academic_term_id ?? \App\Support\TermScope::defaultId(),
+                // U7: the academic term is the only source; free text is written only while no terms exist.
+                'term' => $termId ? null : ($term ?? $package?->term),
+                'academic_term_id' => $termId,
                 'issued_by' => $issuedBy ?? auth()->id(),
             ]);
 

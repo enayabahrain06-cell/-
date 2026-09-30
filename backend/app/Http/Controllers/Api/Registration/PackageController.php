@@ -42,7 +42,12 @@ class PackageController extends Controller
         $this->authorize('create', Package::class);
 
         // A new package joins the current term unless another one was chosen.
-        $package = Package::create($request->validated() + ['academic_term_id' => TermScope::defaultId()]);
+        $data = $request->validated() + ['academic_term_id' => TermScope::defaultId()];
+        // U7: the free-text term is kept only for history; a package with an academic term does not write it.
+        if ($data['academic_term_id']) {
+            unset($data['term']);
+        }
+        $package = Package::create($data);
         $audit->record('package.created', $package, [], $package->only(['name', 'price_fils', 'seats', 'status']));
 
         return (new PackageResource($package))->response()->setStatusCode(201);

@@ -2,7 +2,7 @@
 
 return [
     'actions' => [
-        'exam_graded' => 'تصحيح اختبار',
+        'exam_graded' => 'تصحيح امتحان',
         'wallet_refunded' => 'استرداد',
         'wallet_adjusted' => 'تعديل المحفظة',
         'user_roles_updated' => 'تغيير أدوار مستخدم',
@@ -22,7 +22,7 @@ return [
         'messaging_rules_updated' => 'تعديل قواعد الرسائل',
         'message_template_updated' => 'تعديل قالب رسالة',
         'lottery_approved' => 'اعتماد قرعة',
-        'lesson_students_added' => 'إضافة طلاب لصف',
+        'lesson_students_added' => 'إضافة طلبة لصف',
         'invoice_reminder_sent' => 'إرسال تذكير فاتورة',
         'invoice_cancelled' => 'إلغاء فاتورة',
         'enrollment_waitlist' => 'إضافة لقائمة الانتظار',
@@ -35,11 +35,11 @@ return [
         'attendance_corrected' => 'تصحيح الحضور',
     ],
     'groups' => [
-        'exam' => 'الاختبارات',
+        'exam' => 'الامتحانات',
         'wallet' => 'المحافظ',
         'user' => 'المستخدمون',
         'teacher' => 'المعلمون',
-        'student' => 'الطلاب',
+        'student' => 'الطلبة',
         'settings' => 'الإعدادات',
         'role' => 'الأدوار',
         'registration' => 'التسجيل',

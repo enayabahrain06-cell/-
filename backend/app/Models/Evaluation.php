@@ -10,6 +10,19 @@ class Evaluation extends Model
 {
     protected $guarded = ['id'];
 
+    /** An evaluation without a subject is of Quran (the four fixed criteria are Quran's until التقييمات arrives). */
+    protected static function booted(): void
+    {
+        static::creating(function (Evaluation $e) {
+            $e->subject_id ??= Subject::quranId();
+        });
+    }
+
+    public function subject(): BelongsTo
+    {
+        return $this->belongsTo(Subject::class);
+    }
+
     protected function casts(): array
     {
         return [

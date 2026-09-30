@@ -16,7 +16,7 @@ return [
         'registration_accepted' => 'Registration accepted: :name',
         'registration_quick' => 'Student registered (quick enrollment): :name',
         'payment' => 'Payment received from :student',
-        'hall_changed' => 'Hall changed for :circle on :date → :hall',
+        'hall_changed' => 'Room changed for :circle on :date → :hall',
         'package_schedule' => 'Schedule changed for package :package',
         'circle_moved' => ':student moved to :circle',
     ],

@@ -5,5 +5,5 @@ return [
     'certificate_achievement' => 'لوحة التميز — :place لشهر :month',
     'computed' => 'تم تحديث لوحة التميز.',
     'honored' => 'أُنشئت :certificates شهادة وأُرسلت :messages رسالة.',
-    'published' => 'نُشرت اللوحة للطلاب.',
+    'published' => 'نُشرت اللوحة للطلبة.',
 ];

@@ -61,7 +61,7 @@
     "week": "Week {{n}}",
     "add": "Add",
     "no_lesson": "No lesson (free title)",
-    "title_hint": "Pick one of the subject's lessons, or write a free title (revision, test...).",
+    "title_hint": "Pick one of the subject's lessons, or write a free title (revision, exam...).",
     "item_title": "Plan item for {{subject}}",
     "delete_confirm": "Remove this plan item?"
   },
@@ -112,7 +112,7 @@
     "delete_confirm": "Remove this room from the level?",
     "source": {
       "assigned": "Assigned",
-      "circle": "Class hall",
+      "circle": "Class's room",
       "timetable": "In timetable"
     }
   }

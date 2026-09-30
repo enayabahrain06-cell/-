@@ -42,6 +42,18 @@ class AcademicTerm extends Model
             ->orderByDesc('start_date')->orderBy('sort')->orderByDesc('id');
     }
 
+    /** Display name of a term id, for resources that show "the term" (U7: the id is the only source). */
+    public static function nameFor(?int $id): ?string
+    {
+        if ($id === null) {
+            return null;
+        }
+        // once(): the (tiny) table is read once per request; Laravel flushes it between requests and tests.
+        $names = once(fn () => static::query()->get()->mapWithKeys(fn (self $t) => [$t->id => $t->name()])->all());
+
+        return $names[$id] ?? static::find($id)?->name();
+    }
+
     public static function current(): ?self
     {
         return static::where('is_current', true)->orderByDesc('id')->first();

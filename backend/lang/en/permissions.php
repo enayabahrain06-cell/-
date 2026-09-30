@@ -7,7 +7,7 @@ return [
     'registrations.view' => 'View registration requests', 'registrations.manage' => 'Decide registration requests', 'enrollment.quick' => 'Quick enrollment into classes',
     'students.view' => 'View students', 'students.manage' => 'Manage students', 'students.photo' => 'Edit student photos',
     'teachers.view' => 'View teachers', 'teachers.manage' => 'Manage teachers',
-    'locations.view' => 'View halls', 'locations.manage' => 'Manage halls and bookings',
+    'locations.view' => 'View rooms', 'locations.manage' => 'Manage rooms and bookings',
     'lessons.view' => 'View classes', 'lessons.manage' => 'Manage classes',
     'attendance.view' => 'View attendance', 'attendance.record' => 'Record attendance',
     'evaluations.view' => 'View evaluations', 'evaluations.record' => 'Record evaluations',

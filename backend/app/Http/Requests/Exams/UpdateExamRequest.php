@@ -21,6 +21,7 @@ class UpdateExamRequest extends FormRequest
             'package_id' => ['nullable', 'exists:packages,id'],
             'lesson_id' => ['nullable', 'exists:lessons,id'],
             'type' => ['sometimes', ExamType::rule()],
+            'subject_id' => ['sometimes', 'nullable', 'integer', 'exists:subjects,id'],
             'exam_date' => ['sometimes', 'date'],
             'opens_at' => ['sometimes', 'date'],
             'closes_at' => ['sometimes', 'date'],

@@ -19,6 +19,10 @@ class Exam extends Model
     /** Exam gender follows its package, else its circle. */
     protected static function booted(): void
     {
+        // An exam without a subject is a Quran exam (every exam before subjects existed was).
+        static::creating(function (Exam $exam) {
+            $exam->subject_id ??= Subject::quranId();
+        });
         static::saving(function (Exam $exam) {
             if ($exam->isDirty(['package_id', 'lesson_id']) || ! $exam->gender) {
                 $exam->gender = $exam->package_id
@@ -104,6 +108,11 @@ class Exam extends Model
     public function isOpenAt(\DateTimeInterface $at): bool
     {
         return $this->status === ExamStatus::Published && $at >= $this->opens_at && $at <= $this->closes_at;
+    }
+
+    public function subject(): BelongsTo
+    {
+        return $this->belongsTo(Subject::class);
     }
 
     public function package(): BelongsTo

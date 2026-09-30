@@ -34,6 +34,8 @@ export default function PackageFormDialog({ pkg, onClose }: { pkg?: Package; onC
     term: pkg?.term ?? '',
     // A new package goes to the term being viewed (or the current one); the server defaults to the current term too.
     academic_term_id: pkg ? pkg.academic_term_id ?? null : selected?.id ?? current?.id ?? null,
+    ...(!pkg && (selected ?? current)?.start_date ? { start_date: (selected ?? current)!.start_date! } : {}),
+    ...(!pkg && (selected ?? current)?.end_date ? { end_date: (selected ?? current)!.end_date } : {}),
     plan_ayahs: pkg?.plan_ayahs ?? 0,
     memorization_direction: pkg?.memorization_direction ?? 'backward',
     status: pkg?.status ?? 'draft',
@@ -43,6 +45,8 @@ export default function PackageFormDialog({ pkg, onClose }: { pkg?: Package; onC
   const save = useMutation({
     mutationFn: () => {
       const d = { ...form, name: form.name_ar || form.name_en || form.name }
+      // The academic term is the only source once terms exist; the old text is not sent (kept for history).
+      if (terms.length > 0) delete d.term
       return pkg ? packagesApi.update(pkg.id, d) : packagesApi.create(d)
     },
     onSuccess: () => { void qc.invalidateQueries({ queryKey: ['packages'] }); void qc.invalidateQueries({ queryKey: ['package-options'] }); onClose() },
@@ -50,6 +54,19 @@ export default function PackageFormDialog({ pkg, onClose }: { pkg?: Package; onC
   })
   const set = <K extends keyof PackageInput>(k: K, v: PackageInput[K]) => setForm((f) => ({ ...f, [k]: v }))
   const e = (k: string) => errors[k]?.[0]
+  const chosenTerm = terms.find((x) => x.id === form.academic_term_id)
+  const outsideTerm = !!chosenTerm && ((!!chosenTerm.start_date && form.start_date < chosenTerm.start_date) ||
+    (!!chosenTerm.end_date && (form.end_date ?? form.start_date) > chosenTerm.end_date))
+  /** A new package takes the term's dates when a term is picked. */
+  const pickTerm = (id: number | null) => {
+    const term = terms.find((x) => x.id === id)
+    setForm((f) => ({
+      ...f,
+      academic_term_id: id,
+      ...(!pkg && term?.start_date ? { start_date: term.start_date } : {}),
+      ...(!pkg && term?.end_date ? { end_date: term.end_date } : {}),
+    }))
+  }
   const genders = (['male', 'female', 'mixed'] as const).filter((g) => !scoped || g === scoped || g === 'mixed')
 
   return (
@@ -96,9 +113,10 @@ export default function PackageFormDialog({ pkg, onClose }: { pkg?: Package; onC
         <TextInput label={t('form.end_date')} type="date" value={form.end_date ?? ''} onChange={(ev) => set('end_date', ev.target.value || null)} />
         {terms.length > 0 ? (
           <div>
-            <SelectField label={t('form.term')} value={form.academic_term_id ?? ''} onChange={(ev) => set('academic_term_id', ev.target.value ? Number(ev.target.value) : null)}
+            <SelectField label={t('form.term')} value={form.academic_term_id ?? ''} onChange={(ev) => pickTerm(ev.target.value ? Number(ev.target.value) : null)}
               options={[{ value: '', label: t('form.no_term') }, ...terms.map((x) => ({ value: String(x.id), label: x.name }))]} />
             {e('academic_term_id') && <p className="mt-1 text-sm text-danger">{e('academic_term_id')}</p>}
+            {outsideTerm && <p className="mt-1 text-sm text-gold-700">{t('form.outside_term', { from: chosenTerm?.start_date ?? '—', to: chosenTerm?.end_date ?? '—' })}</p>}
           </div>
         ) : (
           <TextInput label={t('form.term')} value={form.term ?? ''} onChange={(ev) => set('term', ev.target.value)} dir="auto" />

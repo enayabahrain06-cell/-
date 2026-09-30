@@ -22,7 +22,7 @@ class InvoiceResource extends JsonResource
             'is_overdue' => in_array($this->status->value, ['open', 'partial'], true) && $this->due_date?->isPast(),
             'status' => $this->status->value,
             'status_label' => $this->status->label(),
-            'term' => $this->term,
+            'term' => \App\Models\AcademicTerm::nameFor($this->academic_term_id) ?? $this->term,
             'academic_term_id' => $this->academic_term_id,
             'created_at' => display_tz($this->created_at)?->toIso8601String(),
         ];

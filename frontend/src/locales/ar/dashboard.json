@@ -11,14 +11,14 @@
   "error": "تعذر تحميل لوحة التحكم.",
   "retry": "إعادة المحاولة",
   "kpi": {
-    "active_students": "الطلاب النشطون",
+    "active_students": "الطلبة النشطون",
     "active_circles": "الصفوف النشطة",
     "sessions_today": "صفوف اليوم",
     "attendance_taken": "رُصد الحضور في {{taken}} من {{total}}",
     "attendance_rate_7d": "الحضور خلال ٧ أيام",
     "pending_registrations": "طلبات تسجيل معلقة",
     "collected_this_month": "المحصّل هذا الشهر",
-    "students_due": "طلاب عليهم مستحقات",
+    "students_due": "طلبة عليهم مستحقات",
     "outstanding": "إجمالي المستحق {{amount}}"
   },
   "today": {
@@ -29,19 +29,19 @@
     "present_of": "{{present}} حاضر من {{enrolled}}",
     "no_teacher": "بدون معلم",
     "status": {
-      "ok": "القاعة جاهزة",
-      "changed": "تغيّرت القاعة اليوم",
-      "conflict": "تعارض في القاعة",
-      "no_hall": "لا توجد قاعة",
+      "ok": "الغرفة جاهزة",
+      "changed": "تغيّرت الغرفة اليوم",
+      "conflict": "تعارض في الغرفة",
+      "no_hall": "لا توجد غرفة",
       "cancelled": "ملغى"
     },
     "take_attendance": "سجّل الحضور",
     "evaluate": "التقييم",
-    "fix_hall": "افتح الصف لتغيير القاعة"
+    "fix_hall": "افتح الصف لتغيير الغرفة"
   },
   "chart": {
     "title": "الحضور — آخر ١٤ يوماً",
-    "subtitle": "عدد الطلاب يومياً حسب الحالة",
+    "subtitle": "عدد الطلبة يومياً حسب الحالة",
     "present": "حاضر",
     "late": "متأخر",
     "absent": "غائب",
@@ -67,11 +67,11 @@
     "view_all": "عرض كل التنبيهات ({{n}})",
     "loading": "جارٍ التحميل…",
     "types": {
-      "location_conflict": "تعارض قاعة",
+      "location_conflict": "تعارض غرفة",
       "registration_request": "طلبات التسجيل",
       "repeated_absence": "غياب متكرر",
       "lottery_pending": "قرعة بانتظار الاعتماد",
-      "exam_upcoming": "اختبار قريب",
+      "exam_upcoming": "امتحان قريب",
       "invoice_overdue": "فاتورة متأخرة",
       "lesson_no_teacher": "صف بلا معلم"
     },
@@ -83,7 +83,7 @@
     "view_all_short": "عرض الكل",
     "show_less": "عرض أقل",
     "error": "تعذّر تحميل التنبيهات.",
-    "empty_hint": "ستظهر هنا تعارضات القاعات والغياب المتكرر والصفوف بلا معلم.",
+    "empty_hint": "ستظهر هنا تعارضات الغرف والغياب المتكرر والصفوف بلا معلم.",
     "action_failed": "لم تنجح العملية، حاول مرة أخرى.",
     "handled_by": "تم التعامل بواسطة {{name}} الساعة {{time}}.",
     "no_phone": "لا يوجد رقم لولي الأمر",
@@ -97,12 +97,12 @@
       "message_parents": "مراسلة ولي الأمر",
       "open_student": "ملف الطالب",
       "assign_teacher": "تعيين معلم",
-      "circle_students": "طلاب الصف",
+      "circle_students": "طلبة الصف",
       "review_requests": "مراجعة الطلبات",
       "open_wallet": "فتح المحفظة",
       "invoices": "الفواتير",
       "review_lottery": "مراجعة القرعة",
-      "open_exam": "فتح الاختبار"
+      "open_exam": "فتح الامتحان"
     },
     "conflict_line": "مع {{with}} — {{count}} جلسة بين {{from}} و{{to}}، كل {{days}} من {{start}} إلى {{end}}"
   },
@@ -112,19 +112,19 @@
     "attendance": "تسجيل الحضور",
     "enroll": "تسجيل سريع",
     "requests": "طلبات التسجيل",
-    "halls": "الصفوف والقاعات",
+    "halls": "الصفوف والغرف",
     "payment": "تسجيل دفعة"
   },
   "age": {
-    "title": "الطلاب حسب العمر",
+    "title": "الطلبة حسب العمر",
     "subtitle": "متوسط العمر {{avg}} سنة",
-    "subtitle_empty": "الطلاب النشطون",
-    "empty": "لا يوجد طلاب نشطون بعد.",
+    "subtitle_empty": "الطلبة النشطون",
+    "empty": "لا يوجد طلبة نشطون بعد.",
     "band": "{{min}}–{{max}}",
     "band_upto": "{{max}} فأقل",
     "band_plus": "{{min}} فأكثر",
     "age": "العمر (بالسنوات)",
-    "students": "الطلاب",
+    "students": "الطلبة",
     "share": "النسبة",
     "tooltip": "{{count}} طالب · {{share}}"
   },
