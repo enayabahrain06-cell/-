@@ -50,7 +50,7 @@ class DashboardController extends Controller
         ]);
 
         return response()->json($dashboard->alertsPage(
-            $request->user(), $v['type'] ?? null, (int) ($v['page'] ?? 1), (int) ($v['per_page'] ?? 20), null, $v['term'] ?? null,
+            $request->user(), $v['type'] ?? null, (int) ($v['page'] ?? 1), (int) ($v['per_page'] ?? 20), null, \App\Support\TermScope::fromRequest($request),
         ));
     }
 

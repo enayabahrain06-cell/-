@@ -2,6 +2,7 @@
 
 namespace App\Services\Dashboard;
 
+use App\Support\TermScope;
 use App\Enums\InvoiceStatus;
 use App\Enums\LessonStudentStatus;
 use App\Enums\MessageType;
@@ -27,7 +28,7 @@ class FeesPanel
 {
     public function __construct(private DashboardService $dashboard, private MessageService $messages, private AuditLogger $audit) {}
 
-    public function build(User $user, ?string $term = null): array
+    public function build(User $user, string|int|null $term = null): array
     {
         $tz = config('ahl.display_timezone', 'Asia/Bahrain');
         $now = now($tz);
@@ -87,7 +88,7 @@ class FeesPanel
     }
 
     /** Whether the student is inside what this user may see on the card. */
-    public function visible(User $user, Student $student, ?string $term = null): bool
+    public function visible(User $user, Student $student, string|int|null $term = null): bool
     {
         return $this->scoped(Student::query()->whereKey($student->id), $user, $term, 'self')->exists();
     }
@@ -145,7 +146,7 @@ class FeesPanel
     }
 
     /** Track via the student; term / teacher-only via active enrolment in the allowed circles. */
-    private function scoped(Builder $query, User $user, ?string $term, string $via = 'student'): Builder
+    private function scoped(Builder $query, User $user, string|int|null $term, string $via = 'student'): Builder
     {
         $restrict = $term !== null || $this->dashboard->teacherOnly($user);
         $studentIds = fn () => LessonStudent::where('status', LessonStudentStatus::Active->value)

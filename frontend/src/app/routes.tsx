@@ -31,6 +31,7 @@ import ExamPlayerPage from '../features/exams/ExamPlayerPage'
 import { LotteryDetailPage, LotteryListPage } from '../features/lottery/LotteryPages'
 import UsersHomePage from '../features/users/UsersHomePage'
 import SettingsPage from '../features/settings/SettingsPage'
+import MasterDataPage from '../features/masterData/MasterDataPage'
 import ReportsHomePage from '../features/reports/ReportsHomePage'
 import MessagesHomePage from '../features/messages/MessagesHomePage'
 import TeachersHomePage from '../features/teachers/TeachersHomePage'
@@ -120,6 +121,7 @@ const BUILT: Record<string, React.ReactNode> = {
   audit: <AuditLogPage />,
   users: <UsersHomePage />,
   settings: <SettingsPage />,
+  master_data: <MasterDataPage />,
   reports: <ReportsHomePage />,
   messages: <MessagesHomePage />,
   teachers: <TeachersHomePage />,

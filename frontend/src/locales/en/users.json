@@ -107,7 +107,10 @@
     "teachers": "Teachers",
     "users": "Users",
     "wallets": "Wallets",
-    "whatsapp": "WhatsApp"
+    "whatsapp": "WhatsApp",
+    "terms": "Academic terms",
+    "levels": "Levels",
+    "subjects": "Subjects"
   },
   "mobile": {
     "all": "All",

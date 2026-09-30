@@ -21,4 +21,5 @@ return [
     'messages.view' => 'View messages', 'messages.manage' => 'Manage templates and resend', 'messages.send' => 'Send reminders to students', 'whatsapp.status' => 'WhatsApp status and linking',
     'reports.view' => 'View reports', 'reports.export' => 'Export reports',
     'settings.manage' => 'Manage settings', 'audit.view' => 'View audit log',
+    'terms.manage' => 'Manage academic terms', 'levels.manage' => 'Manage levels', 'subjects.manage' => 'Manage subjects',
 ];

@@ -2,6 +2,7 @@
 
 namespace App\Services\Dashboard;
 
+use App\Support\TermScope;
 use App\Enums\LessonStudentStatus;
 use App\Enums\ProgressType;
 use App\Enums\StudentStatus;
@@ -32,7 +33,7 @@ class MemorizationPanel
 
     public function __construct(private DashboardService $dashboard, private ProgressService $progress) {}
 
-    public function build(User $user, ?string $term = null): array
+    public function build(User $user, string|int|null $term = null): array
     {
         $tz = config('ahl.display_timezone', 'Asia/Bahrain');
         $today = Carbon::parse(now($tz)->toDateString());

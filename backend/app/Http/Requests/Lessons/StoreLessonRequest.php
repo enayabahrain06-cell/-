@@ -48,6 +48,8 @@ class StoreLessonRequest extends FormRequest
             'status' => ['nullable', LessonStatus::rule()],
             // Age group of the circle; min/max default to the group's (or the package's) range.
             'age_group_id' => ['nullable', 'integer', 'exists:age_groups,id'],
+            // Optional study level above the circle.
+            'level_id' => ['sometimes', 'nullable', 'integer', 'exists:levels,id'],
             'min_age' => ['nullable', 'integer', 'min:3', 'max:99'],
             'max_age' => ['nullable', 'integer', 'min:3', 'max:99', 'gte:min_age'],
         ];

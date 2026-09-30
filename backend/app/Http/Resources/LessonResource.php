@@ -33,6 +33,8 @@ class LessonResource extends JsonResource
             'free_seats' => max(0, $this->capacity - $count),
             'age_group_id' => $this->age_group_id,
             'age_group' => $this->whenLoaded('ageGroup', fn () => $this->ageGroup ? ['id' => $this->ageGroup->id, 'name' => $this->ageGroup->name(), 'sort' => $this->ageGroup->sort] : null),
+            'level_id' => $this->level_id,
+            'level' => $this->whenLoaded('level', fn () => $this->level ? ['id' => $this->level->id, 'name' => $this->level->name()] : null),
             'min_age' => CircleMatcher::range($this->resource)[0],
             'max_age' => CircleMatcher::range($this->resource)[1],
             'start_date' => $this->start_date?->toDateString(),

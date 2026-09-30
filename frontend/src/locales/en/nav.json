@@ -32,5 +32,6 @@
     "finance": "Finance",
     "communication": "Communication",
     "admin": "Administration"
-  }
+  },
+  "master_data": "Master data"
 }

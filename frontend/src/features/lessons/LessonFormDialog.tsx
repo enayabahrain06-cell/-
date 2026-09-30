@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { useTranslation } from 'react-i18next'
 import { hallsApi, lessonsApi, optionsApi, type Conflict, type Lesson, type LessonInput } from '../../api/lessons'
+import { levelsApi } from '../../api/masterData'
 import { parseApiError, type FieldErrors } from '../../api/client'
 import SelectField from '../../components/SelectField'
 import { Modal, Notice, PrimaryButton, SecondaryButton, TextInput } from '../../components/ui'
@@ -25,6 +26,7 @@ export default function LessonFormDialog({ lesson, onClose, onSaved }: { lesson?
     start_date: lesson?.start_date ?? new Date().toISOString().slice(0, 10),
     end_date: lesson?.end_date ?? null,
     status: lesson?.status ?? 'active',
+    level_id: lesson?.level_id ?? null,
   }))
   const [errors, setErrors] = useState<FieldErrors>({})
   const [message, setMessage] = useState<string | null>(null)
@@ -32,6 +34,7 @@ export default function LessonFormDialog({ lesson, onClose, onSaved }: { lesson?
   const pkg = packages.data?.find((p) => p.id === form.package_id)
   const gender = pkg?.gender
   const teachers = useQuery({ queryKey: ['teacher-options', gender], queryFn: () => optionsApi.teachers(gender), enabled: !!gender })
+  const levels = useQuery({ queryKey: ['level-options'], queryFn: () => levelsApi.list({ active: true }), staleTime: 5 * 60_000 })
   const halls = useQuery({ queryKey: ['hall-options'], queryFn: () => hallsApi.list({ active: true }), staleTime: 60_000 })
   const hallOk = (g: string) => g === 'shared' || g === gender || (gender === 'mixed' && g === 'female')
 
@@ -72,6 +75,13 @@ export default function LessonFormDialog({ lesson, onClose, onSaved }: { lesson?
           <SelectField label={t('form.hall')} value={form.location_id ?? ''} onChange={(e) => set('location_id', e.target.value ? Number(e.target.value) : null)}
             options={[{ value: '', label: t('no_hall') }, ...(halls.data ?? []).filter((h) => !gender || hallOk(h.gender)).map((h) => ({ value: String(h.id), label: `${h.name} · ${t(`gender.${h.gender}`)}` }))]} />
           {err('location_id') && <p className="mt-1 text-sm text-danger">{err('location_id')}</p>}
+        </div>
+        <div>
+          <SelectField label={t('form.level')} value={form.level_id ?? ''} onChange={(e) => set('level_id', e.target.value ? Number(e.target.value) : null)}
+            options={[{ value: '', label: t('form.no_level') }, ...(levels.data ?? []).map((l) => ({ value: String(l.id), label: l.name })),
+              // Keep an inactive level the circle already has selectable, so saving does not clear it.
+              ...(lesson?.level && !(levels.data ?? []).some((l) => l.id === lesson.level?.id) ? [{ value: String(lesson.level.id), label: lesson.level.name }] : [])]} />
+          {err('level_id') && <p className="mt-1 text-sm text-danger">{err('level_id')}</p>}
         </div>
         <TextInput label={t('form.capacity')} type="number" min={1} max={500} value={form.capacity} onChange={(e) => set('capacity', Number(e.target.value))} />
         <fieldset className="sm:col-span-2">

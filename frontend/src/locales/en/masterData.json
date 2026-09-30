@@ -1,0 +1,65 @@
+{
+  "title": "Master data",
+  "subtitle": "Academic terms, levels and subjects that circles and plans are built on.",
+  "tabs": {
+    "terms": "Academic terms",
+    "levels": "Levels",
+    "subjects": "Subjects"
+  },
+  "selector": {
+    "label": "Academic term",
+    "all": "All terms",
+    "current": "{{name}} (current)"
+  },
+  "edit": "Edit",
+  "delete": "Delete",
+  "save": "Save",
+  "cancel": "Cancel",
+  "inactive": "Inactive",
+  "fields": {
+    "name_ar": "Arabic name",
+    "name_en": "English name",
+    "academic_year": "Academic year",
+    "start_date": "Start date",
+    "end_date": "End date",
+    "code": "Code",
+    "sort": "Order",
+    "description": "Description",
+    "is_active": "Active"
+  },
+  "terms": {
+    "new": "New term",
+    "title_new": "New academic term",
+    "title_edit": "Edit academic term",
+    "empty": "No academic terms yet.",
+    "current": "Current term",
+    "make_current": "Make current",
+    "set_current": "Make this the current term",
+    "delete_confirm": "Delete this academic term?",
+    "counts": "{{packages}} packages · {{invoices}} invoices",
+    "migrated": "Created from the earlier value: {{label}}",
+    "name_placeholder": "الفصل الدراسي الأول - 2026/2027",
+    "hint": "The current term is selected by default at the top of every page; each user can pick another term or All terms."
+  },
+  "levels": {
+    "new": "New level",
+    "title_new": "New level",
+    "title_edit": "Edit level",
+    "empty": "No levels yet.",
+    "delete_confirm": "Delete this level?",
+    "circles": "{{n}} circles",
+    "name_placeholder": "المستوى الأول",
+    "hint": "A level sits above circles: one level holds several circles, chosen on the circle form. Circles without a level work as before."
+  },
+  "subjects": {
+    "new": "New subject",
+    "title_new": "New subject",
+    "title_edit": "Edit subject",
+    "empty": "No subjects yet.",
+    "delete_confirm": "Delete this subject?",
+    "system": "System",
+    "system_hint": "The Holy Quran is a system subject: only its name and order can change.",
+    "name_placeholder": "الفقه",
+    "hint": "Subjects taught in the levels (Holy Quran, fiqh, aqeedah, seerah, akhlaq...). Memorization tracking is unchanged."
+  }
+}

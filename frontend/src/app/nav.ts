@@ -31,6 +31,7 @@ export const NAV_SECTIONS: NavSection[] = [
   { key: 'messages', path: '/messages', icon: 'messages', permissions: ['messages.view', 'messages.send'], group: 'communication' },
   { key: 'reports', path: '/reports', icon: 'reports', permissions: ['reports.view'], group: 'communication' },
   { key: 'users', path: '/users', icon: 'users', permissions: ['users.view', 'roles.manage'], group: 'admin' },
+  { key: 'master_data', path: '/master-data', icon: 'table', permissions: ['terms.manage', 'levels.manage', 'subjects.manage'], group: 'admin' },
   { key: 'settings', path: '/settings', icon: 'settings', permissions: ['settings.manage'], group: 'admin' },
   { key: 'audit', path: '/audit', icon: 'eye', permissions: ['audit.view'], group: 'admin' },
 ]

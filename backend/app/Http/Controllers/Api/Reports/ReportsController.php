@@ -35,8 +35,9 @@ class ReportsController extends Controller
         $reports = ReportCatalog::for($user);
         abort_if($reports === [], 403);
 
-        $lessons = (new ReportContext($user))->lessonQuery()->with('teacher:id,name')->orderBy('name')->get(['id', 'name', 'package_id', 'teacher_id', 'gender', 'status']);
-        $packages = Package::query()->tap(fn ($q) => Track::scope($q, $user))
+        $term = \App\Support\TermScope::fromRequest($request);
+        $lessons = (new ReportContext($user, ['term' => $term]))->lessonQuery()->with('teacher:id,name')->orderBy('name')->get(['id', 'name', 'package_id', 'teacher_id', 'gender', 'status']);
+        $packages = Package::query()->tap(fn ($q) => Track::scope($q, $user))->tap(fn ($q) => \App\Support\TermScope::packages($q, $term))
             ->when(! $user->can('lessons.manage'), fn ($q) => $q->whereIn('id', $lessons->pluck('package_id')->unique()->all() ?: [0]))
             ->orderByDesc('id')->get(['id', 'name', 'name_ar', 'name_en', 'gender']);
 
@@ -76,6 +77,7 @@ class ReportsController extends Controller
             'status' => ['nullable', 'string', 'max:32'],
             'format' => ['nullable', 'in:json,xlsx,pdf'],
         ]);
+        $f['term'] = \App\Support\TermScope::fromRequest($request);
         // A track-limited user cannot widen their view with a gender filter.
         if (Track::genderFor($user) !== null) {
             unset($f['gender']);

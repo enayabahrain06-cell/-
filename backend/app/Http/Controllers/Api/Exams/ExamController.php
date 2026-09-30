@@ -38,6 +38,7 @@ class ExamController extends Controller
 
         $q = Exam::with(['package', 'lesson'])->withCount(['questions', 'attempts'])
             ->tap(fn ($q) => \App\Support\Track::scope($q, $user))
+            ->tap(fn ($q) => \App\Support\TermScope::viaPackageOrLesson($q, \App\Support\TermScope::fromRequest($request), 'exam_date'))
             ->when($request->filled('type'), fn ($q) => $q->where('type', $request->string('type')))
             ->when($request->filled('status'), fn ($q) => $q->where('status', $request->string('status')))
             ->when($request->filled('package_id'), fn ($q) => $q->where('package_id', $request->integer('package_id')))

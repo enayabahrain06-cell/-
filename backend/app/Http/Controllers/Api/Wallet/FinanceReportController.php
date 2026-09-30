@@ -26,6 +26,7 @@ class FinanceReportController extends Controller
             'from' => ['nullable', 'date'], 'to' => ['nullable', 'date'],
             'package_id' => ['nullable', 'integer'], 'gender' => ['nullable', 'in:male,female'],
         ]);
+        $data['term'] = \App\Support\TermScope::fromRequest($request);
 
         return $responder->respond($request, $report->build($request->user(), $data), 'finance-report');
     }

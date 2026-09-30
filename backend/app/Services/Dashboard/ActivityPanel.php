@@ -2,6 +2,7 @@
 
 namespace App\Services\Dashboard;
 
+use App\Support\TermScope;
 use App\Models\AuditLog;
 use App\Models\Evaluation;
 use App\Models\Lesson;
@@ -37,7 +38,7 @@ class ActivityPanel
     public function __construct(private DashboardService $dashboard) {}
 
     /** @return array{data: list<array>, meta: array} */
-    public function page(User $user, ?string $term, int $page, int $perPage, ?string $locale = null): array
+    public function page(User $user, string|int|null $term, int $page, int $perPage, ?string $locale = null): array
     {
         $items = $this->items($user, $term, $locale ?? app()->getLocale());
         $lastPage = max(1, (int) ceil($items->count() / $perPage));
@@ -49,7 +50,7 @@ class ActivityPanel
         ];
     }
 
-    public function items(User $user, ?string $term, string $locale): Collection
+    public function items(User $user, string|int|null $term, string $locale): Collection
     {
         $since = now()->subDays(self::WINDOW_DAYS);
 
@@ -62,7 +63,7 @@ class ActivityPanel
             ->sortByDesc('at')->values();
     }
 
-    private function attendance(User $user, ?string $term, Carbon $since, string $locale): Collection
+    private function attendance(User $user, string|int|null $term, Carbon $since, string $locale): Collection
     {
         return LessonSession::with(['lesson:id,name', 'takenBy:id,name'])
             ->withCount(['attendances', 'attendances as present_count' => fn ($q) => $q->whereIn('status', ['present', 'late'])])
@@ -79,7 +80,7 @@ class ActivityPanel
     }
 
     /** One event per sheet: evaluations saved together (same session or circle + day, same evaluator) are grouped. */
-    private function evaluations(User $user, ?string $term, Carbon $since, string $locale): Collection
+    private function evaluations(User $user, string|int|null $term, Carbon $since, string $locale): Collection
     {
         return Evaluation::with(['lesson:id,name', 'student:id,full_name', 'evaluator:id,name'])
             ->where('created_at', '>=', $since)
@@ -100,7 +101,7 @@ class ActivityPanel
     }
 
     /** Public registration requests, quick enrollments and accepted requests (the last two carry the staff member). */
-    private function registrations(User $user, ?string $term, Carbon $since, string $locale): Collection
+    private function registrations(User $user, string|int|null $term, Carbon $since, string $locale): Collection
     {
         $out = collect();
         $studentLink = fn (?int $id) => $id && $user->can('students.view') ? "/students/{$id}" : null;
@@ -108,7 +109,7 @@ class ActivityPanel
         if ($user->can('registrations.view')) {
             RegistrationRequest::with('package:id,name,name_ar,name_en')
                 ->where('source', 'public')->where('created_at', '>=', $since)
-                ->when($term, fn ($q) => $q->whereHas('package', fn ($p) => $p->where('term', $term)))
+                ->when($term, fn ($q) => $q->whereHas('package', fn ($p) => TermScope::packages($p, $term)))
                 ->tap(fn ($q) => Track::scope($q, $user))
                 ->orderByDesc('created_at')->limit(self::SOURCE_CAP)->get()
                 ->each(fn (RegistrationRequest $r) => $out->push($this->item('registration', "request-{$r->id}", $r->created_at, null,
@@ -118,7 +119,7 @@ class ActivityPanel
             $this->audits(['registration.accepted'], $since)
                 ->each(function (AuditLog $a) use ($user, $term, $out, $locale, $studentLink) {
                     $r = $a->getRelation('subject');
-                    if (! $r instanceof RegistrationRequest || ! Track::allows($user, $r->gender) || ($term && $r->package?->term !== $term)) {
+                    if (! $r instanceof RegistrationRequest || ! Track::allows($user, $r->gender) || ($term && ! TermScope::matches($r->package, $term))) {
                         return;
                     }
                     $out->push($this->item('registration', "audit-{$a->id}", $a->created_at, $a->user?->name,
@@ -135,7 +136,7 @@ class ActivityPanel
                     if (! $s instanceof Student || ! Track::allows($user, $s->gender) || ($own && ! $own->has($lessonId))) {
                         return;
                     }
-                    if ($term && Package::whereKey($a->new_values['package_id'] ?? 0)->value('term') !== $term) {
+                    if ($term && ! TermScope::matches(Package::find($a->new_values['package_id'] ?? 0), $term)) {
                         return;
                     }
                     $out->push($this->item('registration', "audit-{$a->id}", $a->created_at, $a->user?->name,
@@ -159,7 +160,7 @@ class ActivityPanel
     }
 
     /** One-day hall changes, package schedule edits and circle moves. */
-    private function schedule(User $user, ?string $term, Carbon $since, string $locale): Collection
+    private function schedule(User $user, string|int|null $term, Carbon $since, string $locale): Collection
     {
         $scope = $this->dashboard->lessonScope($user, $term);
         $out = LessonLocationOverride::with(['lesson:id,name', 'location:id,name'])
@@ -179,7 +180,7 @@ class ActivityPanel
                 $p = $a->getRelation('subject');
                 $changed = array_intersect(self::PACKAGE_SCHEDULE_KEYS, array_keys(array_diff_assoc(
                     array_map('json_encode', (array) $a->new_values), array_map('json_encode', (array) $a->old_values))));
-                if (! $p instanceof Package || ! $changed || ! Track::allows($user, $p->gender) || ($term && $p->term !== $term)) {
+                if (! $p instanceof Package || ! $changed || ! Track::allows($user, $p->gender) || ($term && ! TermScope::matches($p, $term))) {
                     return;
                 }
                 $out->push($this->item('schedule', "audit-{$a->id}", $a->created_at, $a->user?->name,

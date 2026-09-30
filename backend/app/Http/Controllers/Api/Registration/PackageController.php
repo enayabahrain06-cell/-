@@ -8,6 +8,7 @@ use App\Http\Requests\Registration\PackageRequest;
 use App\Http\Resources\PackageResource;
 use App\Models\Package;
 use App\Services\AuditLogger;
+use App\Support\TermScope;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
@@ -21,7 +22,7 @@ class PackageController extends Controller
     {
         $this->authorize('viewAny', Package::class);
 
-        $q = Package::withCount([
+        $q = Package::with('academicTerm')->withCount([
             'registrationRequests as accepted_count' => fn ($q) => $q->whereIn('status', RegistrationStatus::seated()),
             'registrationRequests as pending_count' => fn ($q) => $q->where('status', 'pending'),
             'registrationRequests as waitlist_count' => fn ($q) => $q->where('status', 'waitlist'),
@@ -30,6 +31,7 @@ class PackageController extends Controller
             ->when($request->filled('status'), fn ($q) => $q->where('status', $request->string('status')))
             ->when($request->filled('gender'), fn ($q) => $q->where('gender', $request->string('gender')))
             ->tap(fn ($q) => \App\Support\Track::scope($q, $request->user()))
+            ->tap(fn ($q) => TermScope::packages($q, TermScope::fromRequest($request)))
             ->orderByDesc('start_date');
 
         return PackageResource::collection($q->paginate((int) $request->integer('per_page', 25)));
@@ -39,7 +41,8 @@ class PackageController extends Controller
     {
         $this->authorize('create', Package::class);
 
-        $package = Package::create($request->validated());
+        // A new package joins the current term unless another one was chosen.
+        $package = Package::create($request->validated() + ['academic_term_id' => TermScope::defaultId()]);
         $audit->record('package.created', $package, [], $package->only(['name', 'price_fils', 'seats', 'status']));
 
         return (new PackageResource($package))->response()->setStatusCode(201);
@@ -56,14 +59,14 @@ class PackageController extends Controller
             'lessons',
         ]);
 
-        return new PackageResource($package);
+        return new PackageResource($package->load('academicTerm'));
     }
 
     public function update(PackageRequest $request, Package $package, AuditLogger $audit): PackageResource
     {
         $this->authorize('update', $package);
 
-        $old = $package->only(['name', 'price_fils', 'seats', 'status', 'min_age', 'max_age', 'gender']);
+        $old = $package->only(['name', 'price_fils', 'seats', 'status', 'min_age', 'max_age', 'gender', 'academic_term_id']);
         $package->update($request->validated());
         $audit->record('package.updated', $package, $old, $package->only(array_keys($old)));
 

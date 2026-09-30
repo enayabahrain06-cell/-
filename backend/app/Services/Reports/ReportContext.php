@@ -4,6 +4,7 @@ namespace App\Services\Reports;
 
 use App\Models\Lesson;
 use App\Models\User;
+use App\Support\TermScope;
 use App\Support\Track;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
@@ -49,7 +50,14 @@ final class ReportContext
             ->when(! empty($this->f['lesson_id']), fn ($q) => $q->where('id', $this->f['lesson_id']))
             ->when(! empty($this->f['package_id']), fn ($q) => $q->where('package_id', $this->f['package_id']))
             ->when(! empty($this->f['teacher_id']), fn ($q) => $q->where('teacher_id', $this->f['teacher_id']))
-            ->when(! empty($this->f['gender']), fn ($q) => $q->where('gender', $this->f['gender']));
+            ->when(! empty($this->f['gender']), fn ($q) => $q->where('gender', $this->f['gender']))
+            ->tap(fn ($q) => TermScope::via($q, $this->term()));
+    }
+
+    /** Academic term filter (id, or a legacy label), set by the controller from ?term_id=. */
+    public function term(): int|string|null
+    {
+        return $this->f['term'] ?? null;
     }
 
     public function lessonIds(): Builder
@@ -87,6 +95,7 @@ final class ReportContext
             'package_id' => $this->f['package_id'] ?? null,
             'teacher_id' => $this->f['teacher_id'] ?? null,
             'gender' => $this->f['gender'] ?? null,
+            'term_id' => is_int($this->term()) ? $this->term() : null,
             'track' => Track::genderFor($this->user)?->value ?? 'both',
             'own_circles_only' => $this->teacherOnly(),
         ];

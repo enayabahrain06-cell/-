@@ -53,10 +53,12 @@ class DashboardFeedController extends Controller
         return response()->json($panel->page($request->user(), $term, (int) ($v['page'] ?? 1), (int) ($v['per_page'] ?? 20)));
     }
 
-    private function term(Request $request): ?string
+    /** ?term_id= (academic term) or the older ?term= label. */
+    private function term(Request $request): int|string|null
     {
         abort_unless($request->user()->can('dashboard.view'), 403);
+        $request->validate(['term' => ['nullable', 'string', 'max:60']]);
 
-        return $request->validate(['term' => ['nullable', 'string', 'max:60']])['term'] ?? null;
+        return \App\Support\TermScope::fromRequest($request);
     }
 }

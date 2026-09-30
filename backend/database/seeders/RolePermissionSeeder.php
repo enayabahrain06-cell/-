@@ -29,6 +29,7 @@ class RolePermissionSeeder extends Seeder
         'messages.view', 'messages.manage', 'messages.send', 'whatsapp.status',
         'reports.view', 'reports.export',
         'settings.manage', 'audit.view',
+        'terms.manage', 'levels.manage', 'subjects.manage',
     ];
 
     /** Default matrix (editable later from the admin panel). */
@@ -51,6 +52,7 @@ class RolePermissionSeeder extends Seeder
             'wallets.view', 'payments.record', 'wallets.adjust', 'refunds.manage',
             'messages.view', 'messages.manage', 'messages.send', 'whatsapp.status',
             'reports.view', 'reports.export',
+            'levels.manage', 'subjects.manage', // term setup master data; terms themselves stay with the Super Admin
         ],
         'teacher' => [
             'dashboard.view',

@@ -25,6 +25,8 @@ export interface Lesson {
   end_date: string | null
   status: 'active' | 'paused' | 'ended'
   status_label: string
+  level_id?: number | null
+  level?: { id: number; name: string } | null
   students?: { id: number; student: StudentSummary; status: string; joined_at: string | null; current_memorization: string | null }[]
   next_sessions?: SessionInfo[]
   /** Detail view only: whether this user may add students here (LessonPolicy::addStudents). */
@@ -111,6 +113,8 @@ export interface LessonInput {
   start_date: string
   end_date: string | null
   status: string
+  /** Optional study level above the circle. */
+  level_id?: number | null
 }
 
 export interface Paged<T> { data: T[]; meta: { current_page: number; last_page: number; total: number } }

@@ -27,6 +27,7 @@ class LotteryController extends Controller
 
         $page = Lottery::with('package:id,name,name_ar,name_en')->withCount(['pool', 'results', 'teachers'])
             ->when($limit, fn ($q) => $q->whereIn('gender', [$limit, 'mixed']))
+            ->tap(fn ($q) => \App\Support\TermScope::via($q, \App\Support\TermScope::fromRequest($request)))
             ->when($request->filled('package_id'), fn ($q) => $q->where('package_id', $request->integer('package_id')))
             ->when($request->filled('status'), fn ($q) => $q->where('status', $request->string('status')))
             ->orderByDesc('id')->paginate((int) $request->integer('per_page', 20));

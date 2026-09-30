@@ -21,4 +21,5 @@ return [
     'messages.view' => 'عرض الرسائل', 'messages.manage' => 'إدارة القوالب وإعادة الإرسال', 'messages.send' => 'إرسال تذكير للطلاب', 'whatsapp.status' => 'حالة واتساب وربط الجلسة',
     'reports.view' => 'عرض التقارير', 'reports.export' => 'تصدير التقارير',
     'settings.manage' => 'إدارة الإعدادات', 'audit.view' => 'عرض سجل التدقيق',
+    'terms.manage' => 'إدارة الفصول الدراسية', 'levels.manage' => 'إدارة المستويات', 'subjects.manage' => 'إدارة المواد',
 ];

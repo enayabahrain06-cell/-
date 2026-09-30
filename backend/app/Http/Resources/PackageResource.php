@@ -35,6 +35,8 @@ class PackageResource extends JsonResource
             'start_date' => $this->start_date?->toDateString(),
             'end_date' => $this->end_date?->toDateString(),
             'term' => $this->term,
+            'academic_term_id' => $this->academic_term_id,
+            'academic_term' => $this->whenLoaded('academicTerm', fn () => $this->academicTerm ? ['id' => $this->academicTerm->id, 'name' => $this->academicTerm->name()] : null),
             'plan_ayahs' => $this->plan_ayahs,
             'memorization_direction' => $this->memorization_direction?->value,
             'status' => $this->status->value,

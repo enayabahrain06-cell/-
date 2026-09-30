@@ -8,14 +8,26 @@ import LanguageSwitcher from '../components/LanguageSwitcher'
 import { LogoMark, OrnamentStrip } from '../components/ornaments'
 import { MobileChromeProvider } from '../components/mobile/MobileChrome'
 import TeacherTodayDialog from '../features/attendance/TeacherTodayDialog'
+import { TermProvider, useTerm } from '../app/term'
+import TermSelector from '../components/TermSelector'
+import { LoadingState } from '../components/ui'
 
 /**
  * Staff shell: sidebar and header on desktop (lg+). Below lg the mobile shell (components/mobile) takes over:
  * app bar or page header, bottom nav on the root tabs, and the المزيد sheet with the full section map.
  */
 export default function AppLayout() {
+  return (
+    <TermProvider>
+      <StaffShell />
+    </TermProvider>
+  )
+}
+
+function StaffShell() {
   const { t } = useTranslation('nav')
   const { user, can, signOut } = useAuth()
+  const { ready } = useTerm()
   const sections = NAV_SECTIONS.filter((s) => can(...s.permissions))
 
   const nav = (
@@ -70,6 +82,7 @@ export default function AppLayout() {
           <div ref={mobile.setSlot} />
         </div>
         <header className="sticky top-0 z-30 flex items-center gap-3 border-b border-ink/8 bg-page/90 px-4 py-3 backdrop-blur max-lg:hidden sm:px-6 lg:px-8">
+          <TermSelector className="w-64 max-w-[40%]" />
           <div className="ms-auto flex items-center gap-2 sm:gap-3">
             <LanguageSwitcher className="text-ink/70" />
             <div className="hidden text-end sm:block">
@@ -85,7 +98,7 @@ export default function AppLayout() {
           {/* The one page container for every staff page (ui-design-system: page container). It fills the
               column beside the sidebar; max-w-page only stops lines running across QHD/4K screens. */}
           <div className="mx-auto w-full max-w-page">
-            <Outlet />
+            {ready ? <Outlet /> : <LoadingState />}
             <TeacherTodayDialog />
           </div>
         </main>

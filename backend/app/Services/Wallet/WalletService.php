@@ -67,6 +67,8 @@ class WalletService
                 'due_date' => $dueDate->toDateString(),
                 'status' => InvoiceStatus::Open,
                 'term' => $term ?? $package?->term,
+                // The package's term, otherwise the current one, so the invoice shows under the term selector.
+                'academic_term_id' => $package?->academic_term_id ?? \App\Support\TermScope::defaultId(),
                 'issued_by' => $issuedBy ?? auth()->id(),
             ]);
 

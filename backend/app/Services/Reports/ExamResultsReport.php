@@ -27,6 +27,7 @@ class ExamResultsReport
             ->when(! empty($f['package_id']), fn ($q) => $q->where(fn ($w) => $w->where('package_id', $f['package_id'])
                 ->orWhereIn('lesson_id', \App\Models\Lesson::where('package_id', $f['package_id'])->select('id'))))
             ->when(! empty($f['gender']), fn ($q) => $q->where('gender', $f['gender']))
+            ->tap(fn (Builder $q) => \App\Support\TermScope::viaPackageOrLesson($q, $ctx->term(), 'exam_date'))
             ->orderBy('exam_date')
             ->get(['id', 'name', 'type', 'exam_date', 'total_marks', 'pass_mark', 'lesson_id', 'package_id', 'status']);
 

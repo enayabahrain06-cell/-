@@ -2,6 +2,7 @@
 
 namespace App\Services\Dashboard;
 
+use App\Support\TermScope;
 use App\Enums\AlertStatus;
 use App\Enums\AlertType;
 use App\Enums\ExamStatus;
@@ -67,11 +68,11 @@ class DashboardService
     }
 
     /** Circles the user may see on the dashboard. */
-    public function lessonScope(User $user, ?string $term = null): Builder
+    public function lessonScope(User $user, string|int|null $term = null): Builder
     {
         return Lesson::query()
             ->when($this->teacherOnly($user), fn ($q) => $q->where('teacher_id', $user->id))
-            ->when($term, fn ($q) => $q->whereHas('package', fn ($p) => $p->where('term', $term)))
+            ->when($term, fn ($q) => $q->whereHas('package', fn ($p) => TermScope::packages($p, $term)))
             ->tap(fn ($q) => Track::scope($q, $user));
     }
 
@@ -245,7 +246,7 @@ class DashboardService
      * The alerts section (also "view all"): optionally filtered by type and term, paginated in PHP
      * (the list is permission-filtered). meta.by_type counts every type before the type filter.
      */
-    public function alertsPage(User $user, ?string $type, int $page, int $perPage, ?string $locale = null, ?string $term = null): array
+    public function alertsPage(User $user, ?string $type, int $page, int $perPage, ?string $locale = null, string|int|null $term = null): array
     {
         $all = $this->alertItems($user, $locale ?? app()->getLocale(), $term);
         $items = $all->when($type, fn ($c) => $c->where('type', $type))->values();
@@ -266,7 +267,7 @@ class DashboardService
      * plus computed items (circles without a teacher, lotteries awaiting approval, exams in the next 3 days).
      * Filtered to what the user may see (and to one term when given), sorted by severity, newest first.
      */
-    private function alertItems(User $user, string $locale, ?string $term = null): Collection
+    private function alertItems(User $user, string $locale, string|int|null $term = null): Collection
     {
         $resolvable = $user->can('lessons.manage') || $user->can('registrations.manage');
         $termLessons = $term ? $this->lessonScope($user, $term)->pluck('id')->flip() : null;
@@ -336,7 +337,7 @@ class DashboardService
 
         if ($user->can('lottery.view')) {
             Lottery::with('package:id,name,term')->where('status', LotteryStatus::Run->value)
-                ->when($term, fn ($q) => $q->whereHas('package', fn ($p) => $p->where('term', $term)))
+                ->when($term, fn ($q) => $q->whereHas('package', fn ($p) => TermScope::packages($p, $term)))
                 ->tap(fn ($q) => Track::scope($q, $user))->get()
                 ->each(fn (Lottery $l) => $items->push([
                     'id' => null, 'kind' => 'computed', 'type' => AlertType::LotteryPending->value,
@@ -366,14 +367,14 @@ class DashboardService
     }
 
     /** Does an alert's subject belong to the chosen term? Subjects without a term link are kept. */
-    private function inTerm(?Model $subject, string $term, Collection $termLessons): bool
+    private function inTerm(?Model $subject, string|int $term, Collection $termLessons): bool
     {
         return match (true) {
             $subject instanceof Lesson => $termLessons->has($subject->id),
-            $subject instanceof Package => $subject->term === $term,
+            $subject instanceof Package => TermScope::matches($subject, $term),
             $subject instanceof Student => LessonStudent::where('student_id', $subject->id)->where('status', LessonStudentStatus::Active->value)
                 ->whereIn('lesson_id', $termLessons->keys())->exists(),
-            $subject instanceof Invoice => $subject->package_id === null || Package::whereKey($subject->package_id)->where('term', $term)->exists(),
+            $subject instanceof Invoice => $subject->package_id === null || TermScope::packages(Package::whereKey($subject->package_id), $term)->exists(),
             default => true,
         };
     }

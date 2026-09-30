@@ -25,16 +25,18 @@ class LessonController extends Controller
 {
     public function __construct(private LessonService $service) {}
 
-    /** Filters: package_id, teacher_id, location_id, status, search, gender, age_group_id (0 = none), age, has_seats. Teachers only see their own circles. */
+    /** Filters: package_id, teacher_id, location_id, status, search, gender, age_group_id (0 = none), level_id (0 = none), term_id, age, has_seats. Teachers only see their own circles. */
     public function index(Request $request): AnonymousResourceCollection
     {
         $this->authorize('viewAny', Lesson::class);
         $user = $request->user();
 
-        $lessons = Lesson::with(['package', 'teacher', 'location', 'ageGroup'])
+        $lessons = Lesson::with(['package', 'teacher', 'location', 'ageGroup', 'level'])
             ->withCount(['lessonStudents as active_students_count' => fn ($q) => $q->where('status', LessonStudentStatus::Active->value)])
             ->when(! $user->can('lessons.manage'), fn ($q) => $q->where('teacher_id', $user->id))
             ->tap(fn ($q) => \App\Support\Track::scope($q, $user))
+            ->tap(fn ($q) => \App\Support\TermScope::via($q, \App\Support\TermScope::fromRequest($request)))
+            ->when($request->filled('level_id'), fn ($q) => $request->integer('level_id') === 0 ? $q->whereNull('level_id') : $q->where('level_id', $request->integer('level_id')))
             ->when($request->filled('gender'), fn ($q) => $q->where('gender', $request->string('gender')))
             ->when($request->filled('package_id'), fn ($q) => $q->where('package_id', $request->integer('package_id')))
             ->when($request->filled('teacher_id'), fn ($q) => $q->where('teacher_id', $request->integer('teacher_id')))
@@ -56,7 +58,7 @@ class LessonController extends Controller
         $result = $this->service->create($request->validated());
 
         return response()->json([
-            'data' => new LessonResource($result['lesson']->load(['package', 'teacher', 'location', 'ageGroup'])),
+            'data' => new LessonResource($result['lesson']->load(['package', 'teacher', 'location', 'ageGroup', 'level'])),
             'conflicts' => $result['conflicts'],
         ], 201);
     }
@@ -66,7 +68,7 @@ class LessonController extends Controller
         $this->authorize('view', $lesson);
 
         $lesson->load([
-            'package', 'teacher', 'location', 'ageGroup',
+            'package', 'teacher', 'location', 'ageGroup', 'level',
             'lessonStudents' => fn ($q) => $q->where('status', LessonStudentStatus::Active->value)->with('student.wallet'),
             'sessions' => fn ($q) => $q->where('session_date', '>=', today()->toDateString())->orderBy('session_date')->limit(10)->with('location'),
         ]);
@@ -79,7 +81,7 @@ class LessonController extends Controller
         $result = $this->service->update($lesson, $request->validated());
 
         return response()->json([
-            'data' => new LessonResource($result['lesson']->load(['package', 'teacher', 'location', 'ageGroup'])),
+            'data' => new LessonResource($result['lesson']->load(['package', 'teacher', 'location', 'ageGroup', 'level'])),
             'conflicts' => $result['conflicts'],
         ]);
     }
@@ -185,7 +187,7 @@ class LessonController extends Controller
             'message' => __('api.saved'),
             'notified' => $result['notified'],
             'dates' => $result['dates'],
-            'data' => new LessonResource($lesson->fresh()->load(['package', 'teacher', 'location', 'ageGroup'])),
+            'data' => new LessonResource($lesson->fresh()->load(['package', 'teacher', 'location', 'ageGroup', 'level'])),
         ]);
     }
 

@@ -45,6 +45,11 @@ class Invoice extends Model
         return $this->belongsTo(Package::class);
     }
 
+    public function academicTerm(): BelongsTo
+    {
+        return $this->belongsTo(AcademicTerm::class);
+    }
+
     public function allocations(): HasMany
     {
         return $this->hasMany(InvoicePayment::class);

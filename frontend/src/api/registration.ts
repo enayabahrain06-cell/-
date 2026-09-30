@@ -28,6 +28,8 @@ export interface Package {
   start_date: string
   end_date: string | null
   term: string | null
+  academic_term_id?: number | null
+  academic_term?: { id: number; name: string } | null
   plan_ayahs: number
   memorization_direction: 'forward' | 'backward'
   status: 'draft' | 'open' | 'closed' | 'archived' | string
@@ -154,6 +156,7 @@ export interface PackageInput {
   start_date: string
   end_date?: string | null
   term?: string | null
+  academic_term_id?: number | null
   plan_ayahs?: number | null
   memorization_direction: 'forward' | 'backward'
   status: string

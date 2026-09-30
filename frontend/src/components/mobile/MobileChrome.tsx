@@ -8,6 +8,8 @@ import { tokenStore } from '../../api/client'
 import { dashboardApi } from '../../api/dashboard'
 import { useAuth } from '../../app/AuthContext'
 import { NAV_SECTIONS, type NavSection } from '../../app/nav'
+import { useTerm } from '../../app/term'
+import TermSelector from '../TermSelector'
 import { ChromeContext, TAB_ICON, useMobileChrome, useMobileTabs, type ChromeState, type Crumb } from './chrome'
 import { setLocale } from '../../lib/i18n'
 import { formatNumber } from '../../lib/format'
@@ -214,6 +216,7 @@ function MoreSheet({ open, onClose }: { open: boolean; onClose: () => void }) {
   }
   const roles = user?.roles.map((r) => t(`common:roles.${r}`, r)).join(' · ')
   const install = useInstall()
+  const { terms } = useTerm()
 
   return (
     <BottomSheet title={t('more')} open={open} onClose={onClose}>
@@ -225,6 +228,16 @@ function MoreSheet({ open, onClose }: { open: boolean; onClose: () => void }) {
             <p className="truncate text-[13px] text-ink/65">{roles}{user?.track && <> · {t(`tracks.${user.track}`)}</>}</p>
           </div>
         </div>
+
+        {terms.length > 0 && (
+          <div className="space-y-2 rounded-card border border-ink/10 bg-white px-4 py-3 shadow-card">
+            <div className="flex items-center gap-3">
+              <span className="inline-grid size-8 shrink-0 place-items-center rounded-lg bg-brand-50 text-brand-700"><Icon name="history" className="size-[18px]" /></span>
+              <label htmlFor="m-term-selector" className="text-[15px] text-ink">{t('masterData:selector.label')}</label>
+            </div>
+            <TermSelector id="m-term-selector" className="w-full" />
+          </div>
+        )}
 
         {groups.map((g) => (
           <section key={g ?? 'top'} className="space-y-2">

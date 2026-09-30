@@ -27,6 +27,7 @@ class RegistrationRequestController extends Controller
 
         $q = RegistrationRequest::with(['package', 'student', 'decider', 'levelConfirmer', 'placementAttempt.exam', 'placementAttempt.answers'])
             ->tap(fn ($q) => \App\Support\Track::scope($q, $request->user()))
+            ->tap(fn ($q) => \App\Support\TermScope::via($q, \App\Support\TermScope::fromRequest($request)))
             ->when($request->filled('status'), fn ($q) => $q->where('status', $request->string('status')))
             ->when($request->filled('package_id'), fn ($q) => $q->where('package_id', $request->integer('package_id')))
             ->when($request->filled('search'), function ($q) use ($request) {

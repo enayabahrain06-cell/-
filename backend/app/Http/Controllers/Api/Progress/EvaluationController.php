@@ -36,6 +36,7 @@ class EvaluationController extends Controller
         $page = Evaluation::with(['student', 'evaluator:id,name'])
             ->when(! $user->can('lessons.manage'), fn ($q) => $q->whereIn('lesson_id', $user->lessons()->select('id')))
             ->tap(fn ($q) => \App\Support\Track::scopeVia($q, $user, 'student'))
+            ->tap(fn ($q) => \App\Support\TermScope::via($q, \App\Support\TermScope::fromRequest($request), 'lesson.package'))
             ->when($request->filled('student_id'), fn ($q) => $q->where('student_id', $request->integer('student_id')))
             ->when($request->filled('lesson_id'), fn ($q) => $q->where('lesson_id', $request->integer('lesson_id')))
             ->when($request->filled('type'), fn ($q) => $q->where('type', $request->string('type')))

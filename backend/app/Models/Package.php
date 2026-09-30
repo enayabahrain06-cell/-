@@ -7,6 +7,7 @@ use App\Enums\PackageStatus;
 use App\Enums\RegistrationStatus;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Package extends Model
@@ -38,6 +39,11 @@ class Package extends Model
     public function localizedName(string $locale): string
     {
         return ($locale === 'en' ? $this->name_en : $this->name_ar) ?: $this->name;
+    }
+
+    public function academicTerm(): BelongsTo
+    {
+        return $this->belongsTo(AcademicTerm::class);
     }
 
     public function registrationRequests(): HasMany

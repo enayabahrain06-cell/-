@@ -50,10 +50,11 @@ class DashboardPanelsController extends Controller
         return response()->json(['message' => __('dashboard_panels.fees.reminder_sent'), 'sent' => $sent]);
     }
 
-    private function term(Request $request): ?string
+    /** ?term_id= (academic term) or the older ?term= label. */
+    private function term(Request $request): int|string|null
     {
         $request->validate(['term' => ['nullable', 'string', 'max:60']]);
 
-        return $request->filled('term') ? $request->string('term')->toString() : null;
+        return \App\Support\TermScope::fromRequest($request);
     }
 }

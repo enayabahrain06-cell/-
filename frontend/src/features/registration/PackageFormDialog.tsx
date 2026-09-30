@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next'
 import { packagesApi, type Package, type PackageInput } from '../../api/registration'
 import { parseApiError, type FieldErrors } from '../../api/client'
 import { useAuth } from '../../app/AuthContext'
+import { useTerm } from '../../app/term'
 import SelectField from '../../components/SelectField'
 import { Modal, Notice, PrimaryButton, SecondaryButton, TextArea, TextInput } from '../../components/ui'
 import { WEEK_DAYS } from '../lessons/LessonFormDialog'
@@ -13,6 +14,7 @@ export default function PackageFormDialog({ pkg, onClose }: { pkg?: Package; onC
   const { t: tl } = useTranslation('lessons')
   const { user, hasRole } = useAuth()
   const qc = useQueryClient()
+  const { terms, selected, current } = useTerm()
   const scoped = !hasRole('super_admin') && user?.track && user.track !== 'both' ? user.track : null
   const [form, setForm] = useState<PackageInput>(() => ({
     name: pkg?.name_ar ?? '',
@@ -30,6 +32,8 @@ export default function PackageFormDialog({ pkg, onClose }: { pkg?: Package; onC
     start_date: pkg?.start_date ?? new Date().toISOString().slice(0, 10),
     end_date: pkg?.end_date ?? null,
     term: pkg?.term ?? '',
+    // A new package goes to the term being viewed (or the current one); the server defaults to the current term too.
+    academic_term_id: pkg ? pkg.academic_term_id ?? null : selected?.id ?? current?.id ?? null,
     plan_ayahs: pkg?.plan_ayahs ?? 0,
     memorization_direction: pkg?.memorization_direction ?? 'backward',
     status: pkg?.status ?? 'draft',
@@ -90,7 +94,15 @@ export default function PackageFormDialog({ pkg, onClose }: { pkg?: Package; onC
         </div>
         <TextInput label={t('form.start_date')} type="date" value={form.start_date} onChange={(ev) => set('start_date', ev.target.value)} />
         <TextInput label={t('form.end_date')} type="date" value={form.end_date ?? ''} onChange={(ev) => set('end_date', ev.target.value || null)} />
-        <TextInput label={t('form.term')} value={form.term ?? ''} onChange={(ev) => set('term', ev.target.value)} dir="auto" />
+        {terms.length > 0 ? (
+          <div>
+            <SelectField label={t('form.term')} value={form.academic_term_id ?? ''} onChange={(ev) => set('academic_term_id', ev.target.value ? Number(ev.target.value) : null)}
+              options={[{ value: '', label: t('form.no_term') }, ...terms.map((x) => ({ value: String(x.id), label: x.name }))]} />
+            {e('academic_term_id') && <p className="mt-1 text-sm text-danger">{e('academic_term_id')}</p>}
+          </div>
+        ) : (
+          <TextInput label={t('form.term')} value={form.term ?? ''} onChange={(ev) => set('term', ev.target.value)} dir="auto" />
+        )}
         <TextInput label={t('form.plan_ayahs')} type="number" min={0} value={form.plan_ayahs ?? 0} onChange={(ev) => set('plan_ayahs', Number(ev.target.value))} />
         <SelectField label={t('form.direction')} value={form.memorization_direction} onChange={(ev) => set('memorization_direction', ev.target.value as PackageInput['memorization_direction'])}
           options={[{ value: 'backward', label: t('form.backward') }, { value: 'forward', label: t('form.forward') }]} />

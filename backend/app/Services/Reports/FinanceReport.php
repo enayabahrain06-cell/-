@@ -8,6 +8,7 @@ use App\Models\Refund;
 use App\Models\User;
 use App\Models\Wallet;
 use App\Support\Money;
+use App\Support\TermScope;
 use App\Support\Track;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Builder;
@@ -38,6 +39,7 @@ class FinanceReport
             ->whereBetween('paid_at', [$from->copy()->utc(), $to->copy()->utc()])
             ->tap($viaStudent)
             ->when(! empty($f['package_id']), fn ($q) => $q->whereHas('allocations.invoice', fn ($i) => $i->where('package_id', $f['package_id'])))
+            ->when($f['term'] ?? null, fn ($q, $term) => $q->whereHas('allocations.invoice', fn ($i) => TermScope::packages($i, $term)))
             ->get();
 
         $refunds = Refund::whereBetween('paid_at', [$from->copy()->utc(), $to->copy()->utc()])->tap($viaStudent)->get(['id', 'student_id', 'amount_fils', 'method', 'paid_at']);
@@ -46,6 +48,7 @@ class FinanceReport
             ->whereBetween('created_at', [$from->copy()->utc(), $to->copy()->utc()])
             ->tap($viaStudent)
             ->when(! empty($f['package_id']), fn ($q) => $q->where('package_id', $f['package_id']))
+            ->tap(fn ($q) => TermScope::packages($q, $f['term'] ?? null))
             ->get(['id', 'student_id', 'package_id', 'amount_fils', 'paid_fils', 'status', 'due_date']);
 
         $due = Wallet::with('student:id,full_name,student_no,gender,guardian_phone')->where('balance_fils', '<', 0)->tap($viaStudent)

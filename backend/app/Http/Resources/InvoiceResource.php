@@ -23,6 +23,7 @@ class InvoiceResource extends JsonResource
             'status' => $this->status->value,
             'status_label' => $this->status->label(),
             'term' => $this->term,
+            'academic_term_id' => $this->academic_term_id,
             'created_at' => display_tz($this->created_at)?->toIso8601String(),
         ];
     }

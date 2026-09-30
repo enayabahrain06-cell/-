@@ -199,6 +199,7 @@
     "full_error": "The package is full."
   },
   "form": {
+    "no_term": "No term",
     "title_new": "New package",
     "title_edit": "Edit package",
     "name_ar": "Name in Arabic",

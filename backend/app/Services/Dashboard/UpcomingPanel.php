@@ -2,6 +2,7 @@
 
 namespace App\Services\Dashboard;
 
+use App\Support\TermScope;
 use Ahl\Certificates\Enums\CertificateStatus;
 use App\Enums\ExamStatus;
 use App\Enums\InboundStatus;
@@ -27,7 +28,7 @@ class UpcomingPanel
 {
     public function __construct(private DashboardService $dashboard) {}
 
-    public function build(User $user, ?string $term = null, ?string $locale = null): array
+    public function build(User $user, string|int|null $term = null, ?string $locale = null): array
     {
         $locale ??= app()->getLocale();
         $tz = config('ahl.display_timezone', 'Asia/Bahrain');
@@ -47,7 +48,7 @@ class UpcomingPanel
         ];
     }
 
-    private function exams(User $user, ?string $term, Carbon $today, Carbon $last, string $locale): Collection
+    private function exams(User $user, string|int|null $term, Carbon $today, Carbon $last, string $locale): Collection
     {
         $from = $today->copy()->utc();
         $to = $last->copy()->endOfDay()->utc();
@@ -57,8 +58,8 @@ class UpcomingPanel
             ->whereBetween('opens_at', [$from, $to])
             ->when($this->dashboard->teacherOnly($user) && ! $user->can('exams.manage'),
                 fn ($q) => $q->whereIn('lesson_id', $this->dashboard->lessonScope($user)->select('id')))
-            ->when($term, fn ($q) => $q->where(fn ($w) => $w->whereHas('package', fn ($p) => $p->where('term', $term))
-                ->orWhereHas('lesson.package', fn ($p) => $p->where('term', $term))))
+            ->when($term, fn ($q) => $q->where(fn ($w) => $w->whereHas('package', fn ($p) => TermScope::packages($p, $term))
+                ->orWhereHas('lesson.package', fn ($p) => TermScope::packages($p, $term))))
             ->tap(fn ($q) => Track::scope($q, $user))
             ->get();
 
@@ -92,11 +93,11 @@ class UpcomingPanel
         });
     }
 
-    private function packages(User $user, ?string $term, Carbon $today, Carbon $last, string $locale): Collection
+    private function packages(User $user, string|int|null $term, Carbon $today, Carbon $last, string $locale): Collection
     {
         return Package::where('status', PackageStatus::Open->value)
             ->whereBetween('end_date', [$today->toDateString(), $last->toDateString()])
-            ->when($term, fn ($q) => $q->where('term', $term))
+            ->tap(fn ($q) => TermScope::packages($q, $term))
             ->tap(fn ($q) => Track::scope($q, $user))
             ->get()
             ->map(fn (Package $p) => [
@@ -112,10 +113,10 @@ class UpcomingPanel
     }
 
     /** One item: how many drafts wait, and since when. It sits on today; `since` is the oldest draft. */
-    private function certificates(User $user, ?string $term, Carbon $today, string $locale): array
+    private function certificates(User $user, string|int|null $term, Carbon $today, string $locale): array
     {
         $drafts = Certificate::where('status', CertificateStatus::Draft->value)
-            ->when($term, fn ($q) => $q->whereHas('lesson.package', fn ($p) => $p->where('term', $term)))
+            ->when($term, fn ($q) => $q->whereHas('lesson.package', fn ($p) => TermScope::packages($p, $term)))
             ->tap(fn ($q) => Track::scopeVia($q, $user, 'student'));
         $count = (clone $drafts)->count();
         if ($count === 0) {

@@ -50,6 +50,12 @@ class Lesson extends Model
         return $this->belongsTo(AgeGroup::class);
     }
 
+    /** Optional study level above the circle. */
+    public function level(): BelongsTo
+    {
+        return $this->belongsTo(Level::class);
+    }
+
     public function teacher(): BelongsTo
     {
         return $this->belongsTo(User::class, 'teacher_id');

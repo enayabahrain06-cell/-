@@ -14,6 +14,8 @@
   "empty_halls": "No halls yet.",
   "empty_bookings": "No upcoming bookings.",
   "form": {
+    "level": "Level",
+    "no_level": "No level",
     "title_new": "New circle",
     "title_edit": "Edit circle",
     "name": "Circle name",
