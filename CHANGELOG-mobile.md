@@ -171,3 +171,16 @@ left out and listed under the page.
 - Not in the app: password change (no API), numerals and dark-mode choices, notification switches, a per-user
   ornament choice (ornament is the organisation-wide `ui.ornament_level`), and calendar / holidays and templates
   entries (templates live in Messages).
+
+## Audit log (/audit) — Audit.dc.html
+
+- `MobileAudit` under `lg:hidden`; filters, query and paging stay in `AuditLogPage` on the same URL params
+  (`action`, `user_id`, `from`, `to`, `page`).
+- Area chips (الكل + each area from the options endpoint) and a filter button (sheet: staff member, from, to,
+  clear). Events grouped under day headers (weekday, Gregorian · Hijri). Row: 30px icon badge by area, coloured by
+  kind (records ok, money gold, users / settings lapis, removals / cancellations / refunds clay), "actor · action"
+  (the actor filters the log to that staff member), the record as a link when it has a page (student, circle,
+  registration requests, users), time on the end, and a 44px expand button showing before / after as stacked
+  pairs (no table).
+- Not in the app: infinite scroll by day (the API pages by 20 rows; `MPager` is used), actor profile pages, and
+  a detail caption beyond the record reference (the API sends no summary line).
